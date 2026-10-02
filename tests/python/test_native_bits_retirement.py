@@ -13,9 +13,8 @@ def test_native_bits_no_longer_authors_test_source() -> None:
     tests = BACKEND / "cpp/test"
     assert not (tests / "gen_test_bits.rb").exists()
     assert not list(tests.glob("test_bits_random_*.cpp"))
-    rake = (BACKEND / "tasks.rake").read_text()
-    assert "gen_test_bits" not in rake and "test_bits_random_0.cpp" not in rake
-    assert "cpp/test/*.{cpp,hpp,cmake}" in rake
+    cmake = (tests / "CMakeLists.txt").read_text()
+    assert 'include("${CMAKE_CURRENT_LIST_DIR}/bits-tests.cmake")' in cmake
     module = (tests / "bits-tests.cmake").read_text()
     for source in tests.glob("test_bits_properties_*.cpp"):
         assert source.name in module
@@ -26,12 +25,11 @@ def test_native_bits_no_longer_authors_test_source() -> None:
     assert "find_library(" not in module
 
 
-def test_native_bits_ci_does_not_depend_on_hart_generation() -> None:
-    commands = (ROOT / "tools/dev/regression-tasks/test/ci/native-bits").read_text()
-    assert "cmake -S backends/cpp_hart_gen/cpp/test" in commands
-    assert "--target test_bits_random test_bits_directed -j1" in commands
-    assert "ctest --test-dir gen/native-bits" in commands
+def test_native_bits_task_does_not_depend_on_hart_generation() -> None:
+    commands = (ROOT / "tools/dev/tasks.toml").read_text()
+    assert '["test:native-bits"]' in commands
+    assert "tools.dev.native.cli test native-bits" in commands
     assert "./do" not in commands and "ruby" not in commands
     workflow = YAML(typ="safe").load(ROOT / ".github/workflows/regress.yml")
     steps = workflow["jobs"]["native-bits"]["steps"]
-    assert any(step.get("run") == "mise run test:ci:native-bits" for step in steps)
+    assert any(step.get("run") == "mise run test:native-bits" for step in steps)

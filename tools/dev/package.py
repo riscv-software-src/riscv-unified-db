@@ -7,7 +7,9 @@ import argparse
 import os
 import shutil
 import subprocess
+import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from .common import ROOT, DevError, entrypoint, python_command
 
@@ -32,88 +34,174 @@ def build(output: Path, *, wheel_only: bool, sdist_only: bool) -> int:
     ).returncode
 
 
-def check(*, rebuild_sdist: bool) -> int:
-    dist = ROOT / "dist"
+def _venv_executable(environment: Path, name: str) -> Path:
+    directory = "Scripts" if os.name == "nt" else "bin"
+    suffix = ".exe" if os.name == "nt" else ""
+    return environment / directory / f"{name}{suffix}"
+
+
+def _run(command: list[str], *, cwd: Path, env: dict[str, str] | None = None) -> int:
+    return subprocess.run(command, cwd=cwd, env=env, check=False).returncode
+
+
+def _uv_executable() -> str:
+    executable = shutil.which("uv")
+    if executable is None:
+        raise DevError("uv is required for offline package acceptance", 2)
+    return executable
+
+
+def _installed_environment(environment: Path) -> dict[str, str]:
+    clean = os.environ.copy()
+    clean["PATH"] = str(_venv_executable(environment, "python").parent)
+    clean["PYTHONNOUSERSITE"] = "1"
+    for name in ("PYTHONHOME", "PYTHONPATH", "RUBYLIB", "RUBYOPT", "BUNDLE_GEMFILE"):
+        clean.pop(name, None)
+    return clean
+
+
+def _check_installed_wheel(wheel: Path, root: Path, acceptance: Path) -> int:
+    root.mkdir(parents=True)
+    environment = root / "environment"
+    status = _run(
+        [
+            _uv_executable(),
+            "venv",
+            "--offline",
+            "--no-config",
+            "--python",
+            sys.executable,
+            str(environment),
+        ],
+        cwd=root,
+    )
+    if status:
+        return status
+    python = _venv_executable(environment, "python")
+    status = _run(
+        [
+            _uv_executable(),
+            "pip",
+            "install",
+            "--offline",
+            "--no-config",
+            "--strict",
+            "--python",
+            str(python),
+            str(wheel),
+        ],
+        cwd=root,
+    )
+    if status:
+        return status
+    work = root / "work"
+    work.mkdir()
+    return _run(
+        [
+            str(python),
+            "-I",
+            str(acceptance / "installed_smoke.py"),
+            "--root",
+            str(root / "output"),
+            "--full-config",
+            str(acceptance / "full-config.yaml"),
+        ],
+        cwd=work,
+        env=_installed_environment(environment),
+    )
+
+
+def _check_artifacts(
+    wheel: Path,
+    sdist: Path,
+    *,
+    rebuild_sdist: bool,
+    check_root: Path,
+) -> int:
+    acceptance = check_root / "acceptance"
+    acceptance.mkdir(parents=True)
+    shutil.copy2(ROOT / "tests/package/installed_smoke.py", acceptance)
+    shutil.copy2(
+        ROOT / "cfgs/mc100-32-full-example.yaml",
+        acceptance / "full-config.yaml",
+    )
+    status = _check_installed_wheel(wheel.resolve(), check_root / "wheel", acceptance)
+    if status:
+        return status
+    if rebuild_sdist:
+        sdist_root = check_root / "sdist"
+        sdist_root.mkdir()
+        status = _run(
+            [
+                _uv_executable(),
+                "build",
+                "--offline",
+                "--no-config",
+                "--wheel",
+                "--out-dir",
+                str(sdist_root / "rebuilt"),
+                str(sdist.resolve()),
+            ],
+            cwd=sdist_root,
+        )
+        if status:
+            return status
+        rebuilt = sorted((sdist_root / "rebuilt").glob("*.whl"))
+        if not rebuilt:
+            raise DevError("source archive rebuild produced no wheel", 3)
+        status = _check_installed_wheel(
+            rebuilt[-1].resolve(),
+            check_root / "rebuilt-wheel",
+            acceptance,
+        )
+        if status:
+            return status
+    return 0
+
+
+def check(*, rebuild_sdist: bool, dist: Path | None = None) -> int:
+    dist = ROOT / "dist" if dist is None else dist
     wheels = sorted(dist.glob("*.whl"))
     sdists = sorted(dist.glob("*.tar.gz"))
     if not wheels or not sdists:
         raise DevError("dist/ must contain a wheel and source archive; run package build", 2)
-    check_root = ROOT / "gen/package-check"
-    shutil.rmtree(check_root, ignore_errors=True)
-    commands: list[list[str]] = [
-        python_command("-m", "venv", "--system-site-packages", str(check_root / "wheel")),
+    with TemporaryDirectory(prefix="udb-package-check-") as directory:
+        return _check_artifacts(
+            wheels[-1],
+            sdists[-1],
+            rebuild_sdist=rebuild_sdist,
+            check_root=Path(directory),
+        )
+
+
+def test() -> int:
+    status = _run(
+        python_command("-m", "pytest", "-q", "-m", "package"),
+        cwd=ROOT,
+    )
+    if status:
+        return status
+    test_root = ROOT / "gen/package-test"
+    shutil.rmtree(test_root, ignore_errors=True)
+    artifacts = test_root / "artifacts"
+    artifacts.mkdir(parents=True)
+    status = _run(
         [
-            str(check_root / "wheel/bin/python"),
-            "-m",
-            "pip",
-            "install",
-            "--no-index",
-            "--no-deps",
-            str(wheels[-1]),
+            _uv_executable(),
+            "build",
+            "--offline",
+            "--no-config",
+            "--python",
+            sys.executable,
+            "--out-dir",
+            str(artifacts),
+            str(ROOT),
         ],
-        [
-            str(check_root / "wheel/bin/python"),
-            str(ROOT / "tools/test/check_python_install.py"),
-        ],
-    ]
-    for command in commands:
-        status = subprocess.run(command, cwd=ROOT, check=False).returncode
-        if status:
-            return status
-    if rebuild_sdist:
-        rebuild_commands = [
-            python_command(
-                "-m",
-                "venv",
-                "--system-site-packages",
-                str(check_root / "sdist"),
-            ),
-            [
-                str(check_root / "sdist/bin/python"),
-                "-m",
-                "pip",
-                "wheel",
-                "--no-index",
-                "--no-deps",
-                "--no-build-isolation",
-                "--wheel-dir",
-                str(check_root / "rebuilt"),
-                str(sdists[-1]),
-            ],
-        ]
-        for command in rebuild_commands:
-            status = subprocess.run(command, cwd=ROOT, check=False).returncode
-            if status:
-                return status
-        rebuilt = sorted((check_root / "rebuilt").glob("*.whl"))
-        if not rebuilt:
-            raise DevError("source archive rebuild produced no wheel", 3)
-        rebuilt_commands = [
-            python_command(
-                "-m",
-                "venv",
-                "--system-site-packages",
-                str(check_root / "rebuilt-wheel"),
-            ),
-            [
-                str(check_root / "rebuilt-wheel/bin/python"),
-                "-m",
-                "pip",
-                "install",
-                "--no-index",
-                "--no-deps",
-                str(rebuilt[-1]),
-            ],
-            [
-                str(check_root / "rebuilt-wheel/bin/python"),
-                str(ROOT / "tools/test/check_python_install.py"),
-            ],
-        ]
-        for command in rebuilt_commands:
-            status = subprocess.run(command, cwd=ROOT, check=False).returncode
-            if status:
-                return status
-    return 0
+        cwd=test_root,
+    )
+    if status:
+        return status
+    return check(rebuild_sdist=True, dist=artifacts)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -138,6 +226,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     check_parser = commands.add_parser("check")
     check_parser.add_argument("--rebuild-sdist", action="store_true")
+    commands.add_parser("test")
     args = parser.parse_args(argv)
     if args.command == "build":
         return build(
@@ -145,9 +234,11 @@ def main(argv: list[str] | None = None) -> int:
             wheel_only=args.wheel_only,
             sdist_only=args.sdist_only,
         )
-    return check(
-        rebuild_sdist=args.rebuild_sdist or os.environ.get("usage_rebuild_sdist") == "true"
-    )
+    if args.command == "check":
+        return check(
+            rebuild_sdist=args.rebuild_sdist or os.environ.get("usage_rebuild_sdist") == "true"
+        )
+    return test()
 
 
 if __name__ == "__main__":

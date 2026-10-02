@@ -143,11 +143,7 @@ def test_doctor_compiles_cxx_requirements_with_shared_check(monkeypatch, tmp_pat
 
 def test_mise_includes_developer_tasks_without_bin_dev() -> None:
     config = tomllib.loads((ROOT / ".mise.toml").read_text(encoding="utf-8"))
-    assert config["task_config"]["includes"] == [
-        "tools/dev/tasks.toml",
-        "tools/dev/regression-aggregates.toml",
-        "tools/dev/regression-tasks",
-    ]
+    assert config["task_config"]["includes"] == ["tools/dev/tasks.toml"]
     assert not (ROOT / "bin/dev").exists()
     assert not (ROOT / "tools/dev/cli.py").exists()
 

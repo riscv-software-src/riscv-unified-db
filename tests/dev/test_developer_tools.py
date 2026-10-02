@@ -47,9 +47,19 @@ def test_step9_task_tree_is_discoverable() -> None:
         "check:schema-versions",
         "lint",
         "fmt",
-        "test:python",
+        "test",
+        "test:slow",
+        "test:slow:idl",
+        "test:slow:prose",
+        "test:package",
+        "check:all",
+        "check:pre-commit",
+        "test:java",
+        "test:vscode",
         "docs:build",
         "docs:serve",
+        "artifact:reuse-manifest",
+        "artifact:resolved-unconfigured",
         "build:package",
         "build:wheel",
         "build:sdist",
@@ -58,6 +68,14 @@ def test_step9_task_tree_is_discoverable() -> None:
         "release:schemas",
     }
     assert expected <= task_names()
+
+
+def test_developer_tasks_use_uv_environment() -> None:
+    source = (ROOT / "tools/dev/tasks.toml").read_text(encoding="utf-8")
+    assert ".venv/bin/python" not in source
+    assert "PYTHONPATH" not in source
+    assert "UV_NO_SYNC" not in source
+    assert "uv run --locked" not in source
 
 
 def test_fixture_registry_marks_ruby_oracles_frozen(capsys) -> None:

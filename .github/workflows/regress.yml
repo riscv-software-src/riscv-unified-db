@@ -1,198 +1,79 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-# Hand-written CI workflow; regression commands live in mise tasks.
-
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-name: CI/CD
+name: CI
 
 permissions:
   contents: read
-  pull-requests: write
   packages: read
 
 on:
   pull_request:
     branches:
-    - main
+      - main
   merge_group:
     types: [checks_requested]
   workflow_dispatch:
   push:
     branches:
-    - main
+      - main
 
 env:
-  DEPLOY_DIR: _site
-  GITHUB_TOKEN: ${{ github.token }}
+  UDB_REQUIRE_TOOLS: '1'
 
-# cancel any prior actions from the same PR that are still running (we only care about the final commit)
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number ||
-    github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  regress-python-package:
-    name: Python package (${{ matrix.python }}, ${{ matrix.runner }})
+  python-fast:
+    name: Python ${{ matrix.python }} (${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
-    container: python:${{ matrix.python }}-slim
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         python: ['3.12', '3.13', '3.14']
         runner: [ubuntu-latest, ubuntu-24.04-arm]
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Install Python package and test dependencies
-      run: >-
-        python -m pip install --only-binary=:all: . pytest pytest-xdist build hatchling
-    - name: Install compiler for generated C++ tests
-      run: apt-get update -qq && apt-get install -y --no-install-recommends g++
-    - name: Verify the package without Ruby or repository setup
-      run: python -m pytest -n auto tests/python
-    - name: Build a wheelhouse including runtime dependencies
-      run: |
-        python -m pip wheel --only-binary=:all: . hatchling --wheel-dir /tmp/udb-wheels
-        python -m build --sdist --outdir /tmp/udb-sdist
-    - name: Install offline and query outside the checkout
-      run: |
-        python -m venv /tmp/udb-install
-        /tmp/udb-install/bin/python -m pip install --no-cache-dir --no-index --find-links /tmp/udb-wheels udb
-        cp tools/test/check_python_install.py /tmp/check_python_install.py
-        cp tools/test/check_python_install_qc_layouts.py /tmp/check_python_install_qc_layouts.py
-        cp tests/data/qc_layouts/oracle.json /tmp/qc-layouts-oracle.json
-        cp tests/python/query_reports_installed_acceptance.py /tmp/query_reports_installed_acceptance.py
-        cp -r tests/python/fixtures/query_reports /tmp/query-reports-fixtures
-        cd /tmp
-        export PATH=/tmp/udb-install/bin
-        unset UDB_ROOT PYTHONPATH
-        python -I /tmp/check_python_install.py
-        python -I /tmp/check_python_install_qc_layouts.py --root /tmp/qc-wheel-acceptance --oracle /tmp/qc-layouts-oracle.json
-        python -I /tmp/query_reports_installed_acceptance.py /tmp/query-reports-fixtures
-    - name: Install the source archive offline with build isolation
-      run: |
-        python -m venv /tmp/udb-sdist-install
-        /tmp/udb-sdist-install/bin/python -m pip install --no-cache-dir --no-index --find-links /tmp/udb-wheels /tmp/udb-sdist/udb-*.tar.gz
-        cd /tmp
-        export PATH=/tmp/udb-sdist-install/bin
-        unset UDB_ROOT PYTHONPATH
-        python -I /tmp/check_python_install.py
-        python -I /tmp/check_python_install_qc_layouts.py --root /tmp/qc-sdist-acceptance --oracle /tmp/qc-layouts-oracle.json
-        python -I /tmp/query_reports_installed_acceptance.py /tmp/query-reports-fixtures
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python and mise environment
+        uses: ./.github/actions/mise-setup
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Run unit and specification tests
+        run: mise run test
 
-  regress-pre-commit:
+  pre-commit:
+    name: Pre-commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Run pre-commit checks
+        run: mise run check:pre-commit
+
+  llvm:
+    name: LLVM instruction data
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-        # there are some symlinks in udb-gen that look broken without submodules
-      with:
-        submodules: true
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - uses: j178/prek-action@4e14d07f9231acabce116ccfca13b13dd9755ece   # v3.0.0
-
-  regress-llvm:
-    runs-on: ubuntu-latest
-    needs: [build-llvm]
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Get current LLVM submodule commit SHA
-      id: get-llvm-sha
-      run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print
-        $3}')" >> "$GITHUB_ENV"
-    - name: Restore cache RISC-V JSON
-      id: cache-riscv
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9   # v6.1.0
-      with:
-        path: ext/llvm-project/riscv.json
-        key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
-    - name: Test LLVM
-      run: mise run test:llvm
-
-  regress-udb-cov-report:
-    runs-on: ubuntu-latest
-    needs: [udb-unit-test]
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: download coverage
-      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c   # v8
-      with:
-        pattern: udb-*-cov
-        path: _cov/udb
-        merge-multiple: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Collate coverage
-      run: ./do chore:udb:collate_cov[_cov/udb]
-    - name: Upload udb coverage reports to Codecov
-      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5   # v7.1.1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        disable_search: true
-        files: tools/ruby-gems/udb/coverage/coverage.xml
-        flags: udb
-
-  build-llvm:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out repository (no submodules, shallow fetch)
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-      with:
-        submodules: false
-        fetch-depth: 1
-    - name: Get current LLVM submodule commit SHA
-      id: get-llvm-sha
-      run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print
-        $3}')" >> "$GITHUB_ENV"
-    - name: Cache RISC-V JSON
-      id: cache-riscv
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9   # v6.1.0
-      with:
-        path: ext/llvm-project/riscv.json
-        key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
-    - name: Initialize LLVM submodule (shallow + sparse)
-      if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
-      run: |
-        rm -rf ext/llvm-project
-        git submodule sync --recursive
-        git submodule update --init --recursive --depth=1 ext/llvm-project
-    - name: Check for required directories and files
-      if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
-      run: |
-        ls -l ext/llvm-project/llvm/include
-        ls -l ext/llvm-project/llvm/lib/Target/RISCV
-        ls -l ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td
-    - name: Configure and build llvm-tblgen
-      if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
-      run: |
-        cmake -S ext/llvm-project/llvm -B ext/llvm-project/build -DCMAKE_BUILD_TYPE=Release
-        cmake --build ext/llvm-project/build --target llvm-tblgen
-    - name: Generate RISC-V JSON
-      if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
-      run: |
-        chmod +x ./ext/llvm-project/build/bin/llvm-tblgen
-        ./ext/llvm-project/build/bin/llvm-tblgen \
-          -I ext/llvm-project/llvm/include \
-          -I ext/llvm-project/llvm/lib/Target/RISCV \
-          ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td \
-          --dump-json \
-          -o ext/llvm-project/riscv.json
-    - name: Show riscv.json output
-      run: ls -l ext/llvm-project/riscv.json
-    - name: Upload RISC-V JSON as Artifact
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7
-      with:
-        name: riscv-json
-        path: ext/llvm-project/riscv.json
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: false
+          fetch-depth: 1
+      - name: Initialize LLVM
+        run: git submodule update --init --recursive --depth=1 ext/llvm-project
+      - name: Set up mise and the native toolchain
+        uses: ./.github/actions/mise-setup
+        with:
+          toolchain: 'true'
+      - name: Build llvm-tblgen and test generated instruction data
+        run: mise run test:llvm
 
   java-tests:
     name: Java (Xtext) tests
@@ -201,555 +82,360 @@ jobs:
       run:
         working-directory: tools/eclipse/dev/org.xtext.udb.parent
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Setup Temurin JDK 21
-      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6   # v6.0.1
-      with:
-        distribution: temurin
-        java-version: '21'
-        cache: maven
-    - name: Build & test (whole reactor)
-      working-directory: tools/eclipse/dev/org.xtext.udb.parent
-      env:
-        MAVEN_OPTS: -Djdk.xml.maxGeneralEntitySizeLimit=0
-          -Djdk.xml.totalEntitySizeLimit=0 -Djdk.xml.entityExpansionLimit=0
-      run: mvn -B -U -Dheadless=true verify
-    - name: Archive surefire reports (always)
-      if: always()
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7
-      with:
-        name: surefire-reports
-        path: |
-          **/target/surefire-reports/*.xml
-          **/target/surefire-reports/*.txt
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Temurin JDK 21
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build and test the reactor
+        env:
+          MAVEN_OPTS: >-
+            -Djdk.xml.maxGeneralEntitySizeLimit=0
+            -Djdk.xml.totalEntitySizeLimit=0
+            -Djdk.xml.entityExpansionLimit=0
+        run: mise run test:java
+      - name: Archive Surefire reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: surefire-reports
+          path: |
+            **/target/surefire-reports/*.xml
+            **/target/surefire-reports/*.txt
 
   vscode-tests:
-    name: VS Code Mocha tests
+    name: VS Code tests
     runs-on: ubuntu-latest
     needs: java-tests
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Setup Temurin JDK 21 (for LS)
-      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6   # v6.0.1
-      with:
-        distribution: temurin
-        java-version: '21'
-    - name: Compile
-      run: ./bin/aubr -C tools/eclipse/udb-vscode --frozen-lockfile compile
-    - name: Run VS Code tests
-      run: xvfb-run -a ./bin/aubr -C tools/eclipse/udb-vscode --frozen-lockfile
-        test
-    - name: Archive VS Code test logs (always)
-      if: always()
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7
-      with:
-        name: vscode-test-logs
-        path: |
-          tools/eclipse/udb-vscode/.vscode-test/**/*
-          tools/eclipse/udb-vscode/out/test/**/*
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Set up Temurin JDK 21
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Compile and run VS Code tests
+        run: mise run test:vscode
+      - name: Archive VS Code test logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: vscode-test-logs
+          path: |
+            tools/eclipse/udb-vscode/.vscode-test/**/*
+            tools/eclipse/udb-vscode/out/test/**/*
 
-  create-gems:
-    name: Create the gems
-    runs-on: ubuntu-24.04
+  python-slow-idl:
+    name: Slow IDL (${{ matrix.config }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        gem: [idlc, udb, udb_helpers]
+        config: ['_', rv32, rv64, qc_iu]
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Copy the gem directory to resolve symlinks
-      run: cp -L -r tools/ruby-gems/${{ matrix.gem }} gem-build-dir
-    - name: Create the ${{ matrix.gem }} gem
-      run: |
-        cd gem-build-dir && \
-        gem build -o ${{ matrix.gem }}.gem ${{ matrix.gem }}.gemspec
-    - name: Upload the ${{ matrix.gem }} gem
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7
-      with:
-        name: ${{ matrix.gem }}.gem
-        path: gem-build-dir/${{ matrix.gem }}.gem
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Type-check real IDL bodies
+        run: mise run test:slow:idl -- --config "${{ matrix.config }}"
 
-  udb-gem-z3:
-    name: Test udb gem using z3 across several distros and platforms
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-        - ubuntu-24.04
-        - ubuntu-24.04-arm
-        container:
-        - almalinux:8
-        - ruby:3-slim
-    runs-on: ${{ matrix.platform }}
-    container: ${{ matrix.container }}
-    needs: create-gems
-    steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - if: matrix.container == 'almalinux:8'
-      name: Install ruby
-      run: |
-        dnf module enable -y ruby:3.3
-        dnf install -y ruby ruby-devel gcc-toolset-12
-        PRE="source scl_source enable gcc-toolset-12"
-        echo "PRE=$PRE" >> "$GITHUB_ENV"
-    - if: matrix.container == 'ruby:3-slim'
-      name: Install make
-      run: |
-        apt-get update -qq && \
-        apt-get install --no-install-recommends -y make
-    - name: download udb gem
-      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c   # v8
-      with:
-        name: udb.gem
-    - name: download idlc gem
-      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c   # v8
-      with:
-        name: idlc.gem
-    - name: download udb_helpers gem
-      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c   # v8
-      with:
-        name: udb_helpers.gem
-    - name: install gems
-      run: |
-        $PRE && \
-        gem install idlc.gem && \
-        gem install udb_helpers.gem && \
-        gem install udb.gem
-    - name: try z3
-      run: ruby -r 'udb' -e "Udb::Z3Loader.ensure_z3_loaded"
-  python-cpp-hart:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:python:cpp-hart
-      run: mise run test:python:cpp-hart
-  python-docs-headers:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Install the official external PDF renderer
-      run: gem install --no-document asciidoctor-pdf -v 2.3.19
-    - name: Install source acceptance tools
-      run: sudo apt-get update -qq && sudo apt-get install -y gcc verilator
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:python:extension-documents
-      run: mise run test:python:extension-documents
-    - name: Run test:python:config-headers
-      run: mise run test:python:config-headers
-    - name: Run test:python:profile-configs
-      run: mise run test:python:profile-configs
-  python-parity:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:python:conditions-parity
-      run: mise run test:python:conditions-parity
-    - name: Run test:python:configured-parity
-      run: mise run test:python:configured-parity
-    - name: Run test:python:configuration-parity
-      run: mise run test:python:configuration-parity
-    - name: Run test:python:domain-parity
-      run: mise run test:python:domain-parity
-    - name: Run test:python:versions-parity
-      run: mise run test:python:versions-parity
-    - name: Run test:python:resolution-parity
-      run: mise run test:python:resolution-parity
-  python-idl:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:python:idl-syntax-parity
-      run: mise run test:python:idl-syntax-parity
-    - name: Run test:python:idl-expression-parity
-      run: mise run test:python:idl-expression-parity
-    - name: Run test:python:idl-statement-parity
-      run: mise run test:python:idl-statement-parity
-    - name: Run test:python:idl-architecture
-      run: mise run test:python:idl-architecture
-    - name: Run test:python:idl-pass-parity
-      run: mise run test:python:idl-pass-parity
-    - name: Run test:python:idl-condition-parity
-      run: mise run test:python:idl-condition-parity
-  python-core:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:python:layout-drift
-      run: mise run test:python:layout-drift
-    - name: Run test:python:configured-prose-frozen
-      run: mise run test:python:configured-prose-frozen
-    - name: Run test:python:query-reports
-      run: mise run test:python:query-reports
-    - name: Run test:python:unit
-      run: mise run test:python:unit
-  ruby-tools:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:ruby:scripts-unit
-      run: mise run test:ruby:scripts-unit
-    - name: Run test:ruby:idlc-unit
-      run: mise run test:ruby:idlc-unit
-    - name: Upload idlc coverage reports to Codecov
-      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5   # v7.1.1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        disable_search: true
-        files: tools/ruby-gems/idlc/coverage/coverage.xml
-        flags: idlc
-
-    - name: Run test:ruby:udb-helpers-unit
-      run: mise run test:ruby:udb-helpers-unit
-    - name: Run test:ruby:udb-gen-unit
-      run: mise run test:ruby:udb-gen-unit
-    - name: Run test:ruby:udb-gen-integration
-      run: mise run test:ruby:udb-gen-integration
-    - name: Run test:ruby:udb-gen-fixtures
-      run: mise run test:ruby:udb-gen-fixtures
-    - name: Run test:ruby:sorbet
-      run: mise run test:ruby:sorbet
-  idl-typecheck-smoke:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:idl:typecheck:smoke
-      run: mise run test:idl:typecheck:smoke --cfg "${{ matrix.cfg }}"
-    strategy:
-      matrix:
-        cfg:
-        - rv64   # a simple standard config
-        - qc_iu   # a config with overlay
-  idl-typecheck-other:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:idl:typecheck:other
-      run: mise run test:idl:typecheck:other --cfg "${{ matrix.cfg }}"
-    strategy:
-      matrix:
-        cfg:
-        - _
-        - rv32
-  validation-generation:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:validation:instruction-encodings
-      run: mise run test:validation:instruction-encodings
-    - name: Run test:generation:extension-pdf
-      run: mise run test:generation:extension-pdf
-    - name: Run test:generation:profile-strict-configs
-      run: mise run test:generation:profile-strict-configs
-    - name: Run test:fixtures:config-headers
-      run: mise run test:fixtures:config-headers
-  udb-unit-test:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:ruby:udb-unit
-      run: mise run test:ruby:udb-unit --test "${{ matrix.test }}"
-    - name: Rename coverage file
-      run: mv tools/ruby-gems/udb/coverage/.resultset.json
-        tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
-    - name: Save coverage report
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7
-      with:
-        name: udb-${{ matrix.test }}-cov
-        path: tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
-
-    strategy:
-      matrix:
-        test:
-        - logic
-        - conditions
-        - database_obj_compare
-        - cli
-        - yaml_loader
-        - cfg_arch
-        - cfg
-        - csr
-        - mmr
-        - mmr_schema
-        - schema_versioning
-        - instruction
-        - z3
-        - z3_extensions
-        - z3_finite_array
-        - z3_parameter_constraints
-  generic-generators:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Install Go source acceptance tool
-      run: sudo apt-get update -qq && sudo apt-get install -y golang-go
-    - name: Install C source acceptance tool
-      run: sudo apt-get update -qq && sudo apt-get install -y gcc
-    - name: Install SystemVerilog source acceptance tool
-      run: sudo apt-get update -qq && sudo apt-get install -y verilator
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:generation:go
-      run: mise run test:generation:go
-    - name: Run test:generation:c-header
-      run: mise run test:generation:c-header
-    - name: Run test:generation:systemverilog
-      run: mise run test:generation:systemverilog
-  native-bits:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-      with:
-        toolchain: true
-    - name: Run test:ci:native-bits
-      run: mise run test:ci:native-bits
-  cpp-unit:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-      with:
-        toolchain: true
-    - name: Run test:cpp:unit
-      run: mise run test:cpp:unit
-  riscv-tests-32:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: check out riscv-tests
-      run: git submodule update --init ext/riscv-tests
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-      with:
-        toolchain: true
-    - name: Run test:isa:rv32
-      run: mise run test:isa:rv32
-  riscv-tests-64:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: check out riscv-tests
-      run: git submodule update --init ext/riscv-tests
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-      with:
-        toolchain: true
-    - name: Run test:isa:rv64
-      run: mise run test:isa:rv64
-  riscv-tests-vector:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: check out riscv-tests
-      run: git submodule update --init ext/riscv-tests
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-      with:
-        toolchain: true
-    - name: Run test:isa:vector
-      run: mise run test:isa:vector
-  build-udb-gem:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:ruby:build-udb-gem
-      run: mise run test:ruby:build-udb-gem
-  build-reuse-manifest:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push')
-      && (github.ref_name == 'main'))
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run artifact:reuse-manifest
-      run: mise run artifact:reuse-manifest
-    - name: Upload reuse-manifest
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7.0.1
-      with:
-        name: reuse-manifest
-        path: reuse_bom.txt
-      if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-  build-udb-api-docs:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push')
-      && (github.ref_name == 'main'))
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run artifact:ruby-api-docs
-      run: mise run artifact:ruby-api-docs
-    - name: Upload udb-api
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7.0.1
-      with:
-        name: udb-api
-        path: gen/udb_api_doc
-        include-hidden-files: true
-      if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-  resolve-unconfig:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push')
-      && (github.ref_name == 'main'))
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run artifact:resolved-unconfigured
-      run: mise run artifact:resolved-unconfigured
-    - name: Upload resolved-spec
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7.0.1
-      with:
-        name: resolved-spec
-        path: gen/resolved_spec/_
-        include-hidden-files: true
-      if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-  schema:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-      with:
-        fetch-depth: 0
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:schema:versions
-      run: mise run test:schema:versions
-    - name: Run test:schema:docs
-      run: mise run test:schema:docs
-    - name: Run test:ruby:gem-versions
-      run: mise run test:ruby:gem-versions
-  build-idl-doc:
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push')
-      && (github.ref_name == 'main'))
-    steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run artifact:idl-doc
-      run: mise run artifact:idl-doc
-    - name: Upload idl-doc
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7.0.1
-      with:
-        name: idl-doc
-        path: idl.html
-      if: ((github.event_name == 'push') && (github.ref_name == 'main'))
-  smoke-perf:
+  python-slow-idl-passes:
+    name: Slow IDL passes
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run test:performance:smoke
-      run: mise run test:performance:smoke
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Run real-spec IDL pass goldens
+        run: mise run test:slow:idl-passes
+
+  python-slow-idl-conditions:
+    name: Slow IDL conditions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Run real-spec IDL condition manifest
+        run: mise run test:slow:idl-conditions
+
+  python-slow-idl-environment:
+    name: Slow IDL environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Run real-spec IDL environment checks
+        run: mise run test:slow:idl-environment
+
+  python-slow-architecture:
+    name: Slow architecture
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Run full architecture checks
+        run: mise run test:slow:architecture
+
+  python-slow-prose:
+    name: Slow configured prose
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Run configured-prose goldens
+        run: mise run test:slow:prose
+
+  python-slow-generators:
+    name: Slow generated-source consumers
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install source acceptance tools
+        run: >-
+          sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends
+          gcc golang-go verilator
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compile and lint generated sources
+        run: mise run test:slow:generators
+
+  python-slow-extension-pdf:
+    name: Slow extension PDF
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Install the external PDF renderer
+        run: gem install --no-document asciidoctor-pdf -v 2.3.19
+      - name: Render and inspect extension PDFs
+        run: mise run test:slow:extension-pdf
+
+  python-slow-layouts:
+    name: Slow layouts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Check complete standard and custom layouts
+        run: mise run test:slow:layouts
+
+  python-package:
+    name: Python package acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Python and mise environment
+        uses: ./.github/actions/mise-setup
+        with:
+          python-version: '3.14'
+      - name: Build and test wheel and source distribution offline
+        run: mise run test:package
+
+  cpp-hart:
+    name: C++ hart
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise and the native toolchain
+        uses: ./.github/actions/mise-setup
+        with:
+          toolchain: 'true'
+      - name: Build and test the C++ hart
+        run: mise run test:cpp-hart -- -c rv64
+
+  native-bits:
+    name: Native Bits tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise and the native toolchain
+        uses: ./.github/actions/mise-setup
+        with:
+          toolchain: 'true'
+      - name: Run native Bits tests
+        run: mise run test:native-bits
+
+  softfloat:
+    name: SoftFloat tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise and the native toolchain
+        uses: ./.github/actions/mise-setup
+        with:
+          toolchain: 'true'
+      - name: Run SoftFloat tests
+        run: mise run test:softfloat
+
+  riscv-tests-32:
+    name: RISC-V architecture tests (RV32)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise and the native toolchain
+        uses: ./.github/actions/mise-setup
+        with:
+          toolchain: 'true'
+      - name: Run RV32 architecture tests
+        run: mise run test:riscv-tests -- -c rv32
+
+  riscv-tests-64:
+    name: RISC-V architecture tests (RV64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise and the native toolchain
+        uses: ./.github/actions/mise-setup
+        with:
+          toolchain: 'true'
+      - name: Run RV64 architecture tests
+        run: mise run test:riscv-tests -- -c rv64
+
+  riscv-tests-vector:
+    name: RISC-V vector architecture tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise and the native toolchain
+        uses: ./.github/actions/mise-setup
+        with:
+          toolchain: 'true'
+      - name: Run vector architecture tests
+        run: mise run test:riscv-vector-tests -- -c rv64
+
+  schema:
+    name: Schema publication checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Check published schema versions
+        run: mise run check:schema-versions
+      - name: Check schema documentation drift
+        run: mise run gen:schema-docs -- --check
+
+  build-reuse-manifest:
+    name: Build REUSE manifest
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'push' && github.ref_name == 'main')
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Build REUSE manifest
+        run: mise run artifact:reuse-manifest
+      - name: Upload REUSE manifest
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: reuse-manifest
+          path: reuse_bom.txt
+
+  resolve-unconfig:
+    name: Build unconfigured resolved database
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'push' && github.ref_name == 'main')
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Resolve the unconfigured database
+        run: mise run artifact:resolved-unconfigured
+      - name: Upload resolved database
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: resolved-spec
+          path: gen/resolved_spec/_
+          include-hidden-files: true
+
   build-docs-site:
+    name: Build documentation site
     runs-on: ubuntu-latest
-    if: (github.event_name == 'merge_group') || ((github.event_name == 'push')
-      && (github.ref_name == 'main'))
+    if: >-
+      github.event_name == 'merge_group' ||
+      (github.event_name == 'push' && github.ref_name == 'main')
     steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
-    - name: Set up mise environment
-      uses: ./.github/actions/mise-setup
-    - name: Run artifact:docs-site
-      run: mise run artifact:docs-site
-    - name: Upload docs-site
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a   # v7.0.1
-      with:
-        name: docs-site
-        path: doc/build
-      if: ((github.event_name == 'push') && (github.ref_name == 'main'))
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Build documentation site
+        run: mise run docs:build site
+      - name: Upload documentation site
+        if: github.event_name == 'push' && github.ref_name == 'main'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: docs-site
+          path: doc/build
+
   regress-complete:
+    name: CI complete
     runs-on: ubuntu-latest
-    needs:
-    - python-cpp-hart
-    - regress-python-package
-    - regress-pre-commit
-    - regress-llvm
-    - regress-udb-cov-report
-    - build-llvm
-    - java-tests
-    - vscode-tests
-    - create-gems
-    - udb-gem-z3
-    - python-docs-headers
-    - python-parity
-    - python-idl
-    - python-core
-    - ruby-tools
-    - idl-typecheck-smoke
-    - idl-typecheck-other
-    - validation-generation
-    - udb-unit-test
-    - generic-generators
-    - native-bits
-    - cpp-unit
-    - riscv-tests-32
-    - riscv-tests-64
-    - riscv-tests-vector
-    - build-udb-gem
-    - build-reuse-manifest
-    - build-udb-api-docs
-    - resolve-unconfig
-    - schema
-    - build-idl-doc
-    - smoke-perf
-    - build-docs-site
     if: always()
+    needs:
+      - python-fast
+      - pre-commit
+      - llvm
+      - java-tests
+      - vscode-tests
+      - python-slow-idl
+      - python-slow-idl-passes
+      - python-slow-idl-conditions
+      - python-slow-idl-environment
+      - python-slow-architecture
+      - python-slow-prose
+      - python-slow-generators
+      - python-slow-extension-pdf
+      - python-slow-layouts
+      - python-package
+      - cpp-hart
+      - native-bits
+      - softfloat
+      - riscv-tests-32
+      - riscv-tests-64
+      - riscv-tests-vector
+      - schema
+      - build-reuse-manifest
+      - resolve-unconfig
+      - build-docs-site
     steps:
-    - name: exit failure
-      if: contains(needs.*.result, 'failure') || contains(needs.*.result,
-        'cancelled')
-      run: exit 1
-    - name: exit success
-      if: "!contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')"
-      run: exit 0
+      - name: Fail if any required job failed or was cancelled
+        if: >-
+          contains(needs.*.result, 'failure') ||
+          contains(needs.*.result, 'cancelled')
+        run: exit 1
+      - name: Confirm all required jobs passed
+        if: >-
+          !contains(needs.*.result, 'failure') &&
+          !contains(needs.*.result, 'cancelled')
+        run: exit 0
