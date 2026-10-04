@@ -5288,10 +5288,20 @@ module Idl
               lhs.value(symtab) - rhs.value(symtab)
             when "*", "`*"
               lhs.value(symtab) * rhs.value(symtab)
-            when "/"
-              lhs.value(symtab) / rhs.value(symtab)
-            when "%"
-              lhs.value(symtab) % rhs.value(symtab)
+            when "/", "%"
+              dividend = lhs.value(symtab)
+              divisor = rhs.value(symtab)
+              value_error "Division by zero" if divisor.zero?
+
+              # Match RISC-V DIV/REM semantics (as used by div.yaml and rem.yaml): the quotient
+              # truncates toward zero and the remainder takes the sign of the dividend.
+              # Ruby's Integer#/ and #% round toward negative infinity instead.
+              if op == "/"
+                quotient = dividend.abs / divisor.abs
+                (dividend.negative? == divisor.negative?) ? quotient : -quotient
+              else
+                dividend.remainder(divisor)
+              end
             when "^"
               lhs.value(symtab) ^ rhs.value(symtab)
             when "|"
