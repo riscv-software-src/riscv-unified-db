@@ -3,6 +3,40 @@
 
 ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
 
+# ---------------------------------------------------------------------------
+# Usage / help
+# ---------------------------------------------------------------------------
+# Handled before anything else so `--help` works regardless of environment
+# and always exits without running any checks.
+
+usage() {
+  cat <<EOF
+bin/doctor — check that the development environment is correctly set up.
+
+Run this after \`bin/setup\` to verify that your toolchain, language
+ecosystems, and native dependencies are ready for development.
+
+Usage: bin/doctor [-h | --help]
+
+Options:
+  -h, --help   Show this help message and exit (no checks are run).
+
+With no options, all environment checks are run and a summary is printed.
+EOF
+}
+
+case "${1:-}" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  -*)
+    printf 'bin/doctor: unknown option: %s\n' "$1" >&2
+    usage >&2
+    exit 1
+    ;;
+esac
+
 # Load local toolchain preference (same as ./do)
 [ -f "${ROOT}/.toolchain-local" ] && source "${ROOT}/.toolchain-local"
 
