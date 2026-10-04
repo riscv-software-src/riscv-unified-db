@@ -23,6 +23,11 @@ description: |
   indexes 3-31.
   Index 3 in HPM_COUNTER_EN corresponds to mhpmcounter3.
   Index 31 in HPM_COUNTER_EN corresponds to mhpmcounter31.
+
+  Whether accessing an index where `HPM_COUNTER_EN[n]` is `false` causes an
+  `IllegalInstruction` exception or instead returns a constant (read-only zero)
+  value is *not* controlled by this parameter; that is governed by
+  `TRAP_ON_UNIMPLEMENTED_CSR`, which applies uniformly to every unimplemented CSR.
 long_name: TODO
 schema:
   type: array

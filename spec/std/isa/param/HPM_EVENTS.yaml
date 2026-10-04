@@ -6,7 +6,13 @@
 $schema: param_schema.json#
 kind: parameter
 name: HPM_EVENTS
-description: List of defined event numbers that can be written into mhpmeventN
+description: |
+  List of defined event numbers that can be written into mhpmeventN.
+
+  Writing an event number that is not in this list is not an error: the
+  `EVENT` field's `sw_write()` behavior legalizes it to
+  `UNDEFINED_LEGAL_DETERMINISTIC`, i.e., the counter is left free to return a
+  constant value for as long as it is misconfigured, without trapping.
 long_name: TODO
 schema:
   type: array
