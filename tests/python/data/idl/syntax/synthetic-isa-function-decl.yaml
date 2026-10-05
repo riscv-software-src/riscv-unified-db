@@ -1,0 +1,87 @@
+input: "%version: 1.0\nfunction my_function {\n  returns Boolean\n  arguments XReg x\n  description {\n    A test function.\n  }\n  body {\n    return x == 0;\n  }\n}\n"
+root: isa
+label: synthetic-isa-function-decl
+expected:
+  kind: isa
+  children:
+    - kind: function_decl
+      name: my_function
+      qualifier: normal
+      return_types:
+        - kind: builtin_type
+          type: Boolean
+          source:
+            file: synthetic-isa-function-decl
+            begin: 47
+            end: 54
+      arguments:
+        - kind: var_decl
+          type:
+            kind: builtin_type
+            type: XReg
+            source:
+              file: synthetic-isa-function-decl
+              begin: 67
+              end: 71
+          name:
+            kind: id
+            name: x
+            source:
+              file: synthetic-isa-function-decl
+              begin: 72
+              end: 73
+          source:
+            file: synthetic-isa-function-decl
+            begin: 67
+            end: 73
+      description: "A test function.\n  "
+      body:
+        kind: function_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: return_expr
+              exprs:
+                - kind: binary_operator_expr
+                  op: ==
+                  lhs:
+                    kind: id
+                    name: x
+                    source:
+                      file: synthetic-isa-function-decl
+                      begin: 135
+                      end: 136
+                  rhs:
+                    kind: bits_literal
+                    width: "1"
+                    value: 0
+                    signed: false
+                    radix: 10
+                    source:
+                      file: synthetic-isa-function-decl
+                      begin: 140
+                      end: 141
+                  source:
+                    file: synthetic-isa-function-decl
+                    begin: 135
+                    end: 141
+              source:
+                file: synthetic-isa-function-decl
+                begin: 128
+                end: 141
+            source:
+              file: synthetic-isa-function-decl
+              begin: 128
+              end: 142
+        source:
+          file: synthetic-isa-function-decl
+          begin: 128
+          end: 145
+      source:
+        file: synthetic-isa-function-decl
+        begin: 14
+        end: 148
+  source:
+    file: synthetic-isa-function-decl
+    begin: 0
+    end: 149

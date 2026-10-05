@@ -1,0 +1,117 @@
+input: "for (U32 i = 0; i < 4; i++) {\n  a = a + i;\n}\n"
+root: for_loop
+label: synthetic-for-loop-root
+expected:
+  kind: for_loop_stmt
+  init_expr:
+    kind: var_decl_init
+    type:
+      kind: builtin_type
+      type: U32
+      source:
+        file: synthetic-for-loop-root
+        begin: 5
+        end: 8
+    name:
+      kind: id
+      name: i
+      source:
+        file: synthetic-for-loop-root
+        begin: 9
+        end: 10
+    value:
+      kind: bits_literal
+      width: "1"
+      value: 0
+      signed: false
+      radix: 10
+      source:
+        file: synthetic-for-loop-root
+        begin: 13
+        end: 14
+    in_for_loop: true
+    source:
+      file: synthetic-for-loop-root
+      begin: 5
+      end: 14
+  condition_expr:
+    kind: binary_operator_expr
+    op: <
+    lhs:
+      kind: id
+      name: i
+      source:
+        file: synthetic-for-loop-root
+        begin: 16
+        end: 17
+    rhs:
+      kind: bits_literal
+      width: "3"
+      value: 4
+      signed: false
+      radix: 10
+      source:
+        file: synthetic-for-loop-root
+        begin: 20
+        end: 21
+    source:
+      file: synthetic-for-loop-root
+      begin: 16
+      end: 21
+  update_expr:
+    kind: post_increment_expr
+    expr:
+      kind: id
+      name: i
+      source:
+        file: synthetic-for-loop-root
+        begin: 23
+        end: 24
+    source:
+      file: synthetic-for-loop-root
+      begin: 23
+      end: 26
+  body:
+    - kind: stmt
+      expr:
+        kind: var_assignment
+        var:
+          kind: id
+          name: a
+          source:
+            file: synthetic-for-loop-root
+            begin: 32
+            end: 33
+        value:
+          kind: binary_operator_expr
+          op: +
+          lhs:
+            kind: id
+            name: a
+            source:
+              file: synthetic-for-loop-root
+              begin: 36
+              end: 37
+          rhs:
+            kind: id
+            name: i
+            source:
+              file: synthetic-for-loop-root
+              begin: 40
+              end: 41
+          source:
+            file: synthetic-for-loop-root
+            begin: 36
+            end: 41
+        source:
+          file: synthetic-for-loop-root
+          begin: 32
+          end: 41
+      source:
+        file: synthetic-for-loop-root
+        begin: 32
+        end: 42
+  source:
+    file: synthetic-for-loop-root
+    begin: 0
+    end: 45

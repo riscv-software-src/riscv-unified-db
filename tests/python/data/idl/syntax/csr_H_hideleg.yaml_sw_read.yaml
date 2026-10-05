@@ -1,0 +1,151 @@
+input: "XReg mask = CSR[mideleg].VSSI | CSR[mideleg].VSTI | CSR[mideleg].VSEI | CSR[mideleg].LCOFI;\nreturn $bits(CSR[hideleg]) & mask;\n"
+root: function_body
+label: csr/H/hideleg.yaml#sw_read()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: csr/H/hideleg.yaml#sw_read()
+            begin: 0
+            end: 4
+        name:
+          kind: id
+          name: mask
+          source:
+            file: csr/H/hideleg.yaml#sw_read()
+            begin: 5
+            end: 9
+        value:
+          kind: binary_operator_expr
+          op: "|"
+          lhs:
+            kind: binary_operator_expr
+            op: "|"
+            lhs:
+              kind: binary_operator_expr
+              op: "|"
+              lhs:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: mideleg
+                  source:
+                    file: csr/H/hideleg.yaml#sw_read()
+                    begin: 12
+                    end: 24
+                field_name: VSSI
+                source:
+                  file: csr/H/hideleg.yaml#sw_read()
+                  begin: 12
+                  end: 29
+              rhs:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: mideleg
+                  source:
+                    file: csr/H/hideleg.yaml#sw_read()
+                    begin: 32
+                    end: 44
+                field_name: VSTI
+                source:
+                  file: csr/H/hideleg.yaml#sw_read()
+                  begin: 32
+                  end: 49
+              source:
+                file: csr/H/hideleg.yaml#sw_read()
+                begin: 12
+                end: 49
+            rhs:
+              kind: csr_field_read_expr
+              csr:
+                kind: csr_read_expr
+                csr_name: mideleg
+                source:
+                  file: csr/H/hideleg.yaml#sw_read()
+                  begin: 52
+                  end: 64
+              field_name: VSEI
+              source:
+                file: csr/H/hideleg.yaml#sw_read()
+                begin: 52
+                end: 69
+            source:
+              file: csr/H/hideleg.yaml#sw_read()
+              begin: 12
+              end: 69
+          rhs:
+            kind: csr_field_read_expr
+            csr:
+              kind: csr_read_expr
+              csr_name: mideleg
+              source:
+                file: csr/H/hideleg.yaml#sw_read()
+                begin: 72
+                end: 84
+            field_name: LCOFI
+            source:
+              file: csr/H/hideleg.yaml#sw_read()
+              begin: 72
+              end: 90
+          source:
+            file: csr/H/hideleg.yaml#sw_read()
+            begin: 12
+            end: 90
+        in_for_loop: false
+        source:
+          file: csr/H/hideleg.yaml#sw_read()
+          begin: 0
+          end: 90
+      source:
+        file: csr/H/hideleg.yaml#sw_read()
+        begin: 0
+        end: 91
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: binary_operator_expr
+            op: "&"
+            lhs:
+              kind: bits_cast
+              expr:
+                kind: csr_read_expr
+                csr_name: hideleg
+                source:
+                  file: csr/H/hideleg.yaml#sw_read()
+                  begin: 105
+                  end: 117
+              source:
+                file: csr/H/hideleg.yaml#sw_read()
+                begin: 99
+                end: 118
+            rhs:
+              kind: id
+              name: mask
+              source:
+                file: csr/H/hideleg.yaml#sw_read()
+                begin: 121
+                end: 125
+            source:
+              file: csr/H/hideleg.yaml#sw_read()
+              begin: 99
+              end: 125
+        source:
+          file: csr/H/hideleg.yaml#sw_read()
+          begin: 92
+          end: 125
+      source:
+        file: csr/H/hideleg.yaml#sw_read()
+        begin: 92
+        end: 126
+  source:
+    file: csr/H/hideleg.yaml#sw_read()
+    begin: 0
+    end: 127

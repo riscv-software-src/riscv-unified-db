@@ -1,0 +1,87 @@
+input: "%version: 1.0\nbitfield (32) MyBitfield {\n  FIELD1 31-16\n  FIELD2 15-0\n}\n"
+root: isa
+label: synthetic-isa-bitfield-decl
+expected:
+  kind: isa
+  children:
+    - kind: bitfield_decl
+      name:
+        kind: user_type_reference
+        name: MyBitfield
+        source:
+          file: synthetic-isa-bitfield-decl
+          begin: 28
+          end: 38
+      size:
+        kind: bits_literal
+        width: "6"
+        value: 32
+        signed: false
+        radix: 10
+        source:
+          file: synthetic-isa-bitfield-decl
+          begin: 24
+          end: 26
+      fields:
+        - kind: bitfield_field_decl
+          name: FIELD1
+          range:
+            lsb:
+              kind: bits_literal
+              width: "5"
+              value: 16
+              signed: false
+              radix: 10
+              source:
+                file: synthetic-isa-bitfield-decl
+                begin: 53
+                end: 55
+            msb:
+              kind: bits_literal
+              width: "5"
+              value: 31
+              signed: false
+              radix: 10
+              source:
+                file: synthetic-isa-bitfield-decl
+                begin: 50
+                end: 52
+          source:
+            file: synthetic-isa-bitfield-decl
+            begin: 43
+            end: 58
+        - kind: bitfield_field_decl
+          name: FIELD2
+          range:
+            lsb:
+              kind: bits_literal
+              width: "1"
+              value: 0
+              signed: false
+              radix: 10
+              source:
+                file: synthetic-isa-bitfield-decl
+                begin: 68
+                end: 69
+            msb:
+              kind: bits_literal
+              width: "4"
+              value: 15
+              signed: false
+              radix: 10
+              source:
+                file: synthetic-isa-bitfield-decl
+                begin: 65
+                end: 67
+          source:
+            file: synthetic-isa-bitfield-decl
+            begin: 58
+            end: 70
+      source:
+        file: synthetic-isa-bitfield-decl
+        begin: 14
+        end: 71
+  source:
+    file: synthetic-isa-bitfield-decl
+    begin: 0
+    end: 72

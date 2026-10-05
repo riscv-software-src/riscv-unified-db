@@ -1,0 +1,120 @@
+input: "CSR[htimedelta].DELTA = {csr_value.DELTA, CSR[htimedelta].DELTA[31:0]};\nreturn csr_value.DELTA;\n"
+root: function_body
+label: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: csr_field_assignment
+        csr_field:
+          kind: csr_field_read_expr
+          csr:
+            kind: csr_read_expr
+            csr_name: htimedelta
+            source:
+              file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+              begin: 0
+              end: 15
+          field_name: DELTA
+          source:
+            file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+            begin: 0
+            end: 21
+        value:
+          kind: concat_expr
+          exprs:
+            - kind: field_access_expr
+              expr:
+                kind: id
+                name: csr_value
+                source:
+                  file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                  begin: 25
+                  end: 34
+              field_name: DELTA
+              source:
+                file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                begin: 25
+                end: 40
+            - kind: array_range_access
+              array:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: htimedelta
+                  source:
+                    file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                    begin: 42
+                    end: 57
+                field_name: DELTA
+                source:
+                  file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                  begin: 42
+                  end: 63
+              range:
+                lsb:
+                  kind: bits_literal
+                  width: "1"
+                  value: 0
+                  signed: false
+                  radix: 10
+                  source:
+                    file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                    begin: 67
+                    end: 68
+                msb:
+                  kind: bits_literal
+                  width: "5"
+                  value: 31
+                  signed: false
+                  radix: 10
+                  source:
+                    file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                    begin: 64
+                    end: 66
+              source:
+                file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                begin: 42
+                end: 69
+          source:
+            file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+            begin: 24
+            end: 70
+        source:
+          file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+          begin: 0
+          end: 70
+      source:
+        file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+        begin: 0
+        end: 71
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: field_access_expr
+            expr:
+              kind: id
+              name: csr_value
+              source:
+                file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+                begin: 79
+                end: 88
+            field_name: DELTA
+            source:
+              file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+              begin: 79
+              end: 94
+        source:
+          file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+          begin: 72
+          end: 94
+      source:
+        file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+        begin: 72
+        end: 95
+  source:
+    file: csr/H/htimedeltah.yaml#fields/DELTA/sw_write(csr_value)
+    begin: 0
+    end: 96

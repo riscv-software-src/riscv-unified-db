@@ -1,0 +1,150 @@
+input: "if (DCSR_STEPIE_TYPE == \"read-only-0\" || DCSR_STEPIE_TYPE == \"read-only-1\") {\n  return CsrFieldType::RO;\n}\nassert(DCSR_STEPIE_TYPE == \"rw\", \"Unhandled DCSR_STEPIE_TYPE value\");\nreturn CsrFieldType::RW;\n"
+root: function_body
+label: csr/dcsr.yaml#fields/STEPIE/type()
+expected:
+  kind: function_body
+  stmts:
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: "||"
+        lhs:
+          kind: binary_operator_expr
+          op: ==
+          lhs:
+            kind: id
+            name: DCSR_STEPIE_TYPE
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 4
+              end: 20
+          rhs:
+            kind: string_literal
+            text: read-only-0
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 24
+              end: 37
+          source:
+            file: csr/dcsr.yaml#fields/STEPIE/type()
+            begin: 4
+            end: 37
+        rhs:
+          kind: binary_operator_expr
+          op: ==
+          lhs:
+            kind: id
+            name: DCSR_STEPIE_TYPE
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 41
+              end: 57
+          rhs:
+            kind: string_literal
+            text: read-only-1
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 61
+              end: 74
+          source:
+            file: csr/dcsr.yaml#fields/STEPIE/type()
+            begin: 41
+            end: 74
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/type()
+          begin: 4
+          end: 74
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: return_expr
+              exprs:
+                - kind: enum_reference_expr
+                  enum_class: CsrFieldType
+                  member_name: RO
+                  source:
+                    file: csr/dcsr.yaml#fields/STEPIE/type()
+                    begin: 87
+                    end: 103
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/type()
+                begin: 80
+                end: 103
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 80
+              end: 104
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/type()
+          begin: 80
+          end: 105
+      else_ifs: []
+      else:
+      source:
+        file: csr/dcsr.yaml#fields/STEPIE/type()
+        begin: 0
+        end: 106
+    - kind: stmt
+      expr:
+        kind: funcall_expr
+        func: assert
+        args:
+          - kind: binary_operator_expr
+            op: ==
+            lhs:
+              kind: id
+              name: DCSR_STEPIE_TYPE
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/type()
+                begin: 114
+                end: 130
+            rhs:
+              kind: string_literal
+              text: rw
+              source:
+                file: csr/dcsr.yaml#fields/STEPIE/type()
+                begin: 134
+                end: 138
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 114
+              end: 138
+          - kind: string_literal
+            text: Unhandled DCSR_STEPIE_TYPE value
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 140
+              end: 174
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/type()
+          begin: 107
+          end: 175
+      source:
+        file: csr/dcsr.yaml#fields/STEPIE/type()
+        begin: 107
+        end: 176
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: enum_reference_expr
+            enum_class: CsrFieldType
+            member_name: RW
+            source:
+              file: csr/dcsr.yaml#fields/STEPIE/type()
+              begin: 184
+              end: 200
+        source:
+          file: csr/dcsr.yaml#fields/STEPIE/type()
+          begin: 177
+          end: 200
+      source:
+        file: csr/dcsr.yaml#fields/STEPIE/type()
+        begin: 177
+        end: 201
+  source:
+    file: csr/dcsr.yaml#fields/STEPIE/type()
+    begin: 0
+    end: 202
