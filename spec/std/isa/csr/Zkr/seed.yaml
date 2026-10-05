@@ -33,7 +33,9 @@ fields:
       * 1 - WAIT
       * 2 - ES16
       * 3 - DEAD
-    type: RO-H
+    type: RW-H
+    sw_write(csr_value): |
+      return CSR[seed].OPST;
     reset_value: 0
   ENTROPY:
     location: 15-0
