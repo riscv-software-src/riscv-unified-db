@@ -1,0 +1,4 @@
+RV32:
+  c.jal
+RV64:
+  c.addiw

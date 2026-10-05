@@ -1,0 +1,309 @@
+---
+- name: HPM_COUNTER_EN
+  exts: Sm>=0
+  description: |
+    Whether each HPM counter is implemented in hardware.
+
+    `HPM_COUNTER_EN[n]` being `false` means `hpmcounter<n>`/`mhpmcounter<n>` and the
+    corresponding `mhpmevent<n>` are not implemented and are hardwired read-only zero.
+    (It does *not* mean the counter is implemented but currently stopped from counting;
+    that is a separate, run-time concept controlled by `mcountinhibit`.)
+
+    There is one entry for each hpmcounter, indexed 0-31.
+
+    Indices 0-2 *must* be false: they are placeholders for the three counters
+    (`cycle`/`mcycle` (CY), `time` (TM), and `instret`/`minstret` (IR)) whose
+    implementation this parameter does not control. These counters are associated
+    with indexes 0, 1, and 2. The rest of the HPM counters logically follow at
+    indexes 3-31.
+    Index 3 in HPM_COUNTER_EN corresponds to mhpmcounter3.
+    Index 31 in HPM_COUNTER_EN corresponds to mhpmcounter31.
+- name: MARCHID_IMPLEMENTED
+  exts: Sm>=0
+  description: |
+    * false: `marchid` is not implemented, and must be read-only-0
+    * true: `marchid` is implemented, and the value is determined by `ARCH_ID_VALUE`
+- name: MCOUNTENABLE_EN
+  exts: Sm>=0
+  description: |
+    Indicates which counters can be delegated via `mcounteren`.
+
+    `MCOUNTENABLE_EN[n]` controls whether `mcounteren.HPM<n>` is writable. It does not
+    depend on whether `hpmcounter<n>`/`mhpmcounter<n>` is read-only zero.
+
+    MCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+    MCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
+- name: MCOUNTINHIBIT_IMPLEMENTED
+  exts: Sm>=0
+  description: |
+    Options:
+
+      true::
+        The `mcountinhibit` CSR is implemented and can be accessed in M-mode.
+
+      false::
+        The `mcountinhibit` CSR is not implemented.
+        Accessing the CSR will cause an IllegalInstruction trap or enter an unpredictable state,
+        depending on TRAP_ON_UNIMPLEMENTED_CSR.
+- name: MIMPID_IMPLEMENTED
+  exts: Sm>=0
+  description: |
+    * false: `mimpid` is not implemented, and must be read-only-0
+    * true: `mimpid` is implemented, and the value is determined by `IMP_ID_VALUE`
+- name: MISALIGNED_LDST
+  exts: Sm>=0
+  description: |
+    Does the implementation perform non-atomic misaligned loads and stores to main memory
+    (does *not* affect misaligned support to device memory)?
+    If not, the implementation always throws a misaligned exception.
+- name: MISALIGNED_LDST_EXCEPTION_PRIORITY
+  exts: Sm>=0
+  description: |
+    The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
+    or access-fault exceptions.
+
+    May be one of:
+
+    [separator="!"]
+    !===
+    ! low  ! Misaligned load/store/AMO exceptions are always lower priority than load/store/AMO page-fault and access-fault exceptions.
+    ! high ! Misaligned load/store/AMO exceptions are always higher priority than load/store/AMO page-fault and access-fault exceptions.
+    !===
+
+    MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+    is non-zero, since the atomicity of an access cannot be determined in that case until after
+    address translation.
+- name: MISA_CSR_IMPLEMENTED
+  exts: Sm>=0
+  description: |
+    Options:
+
+      true::
+        The `misa` CSR returns a non-zero value.
+
+      false::
+        The `misa` CSR is read-only-0.
+- name: MTVAL_WIDTH
+  exts: Sm>=0
+  description: |
+    The number of implemented bits in the `mtval` CSR.
+    This is the CSR that may be written when a trap is taken into M-mode with exception-specific information to
+    assist software in handling the trap (e.g., address associated with exception).
+
+    Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)
+- name: MTVEC_ACCESS
+  exts: Sm>=0
+  description: |
+    Options:
+
+      ro::
+        `mtvec` is read-only.
+
+      rw::
+        `mtvec` is read-write, but may not accept all values.
+- name: MTVEC_ILLEGAL_WRITE_BEHAVIOR
+  exts: Sm>=0
+  description: |
+    Options:
+
+      retain::
+        When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will retain its current value
+
+      custom::
+        When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will obtain an unpredictable value
+
+    Other values may be added over time once other common behaviors are identified.
+- name: MTVEC_MODES
+  exts: Sm>=0
+  description: |
+    Options:
+
+      0::
+        Direct; All traps set `pc` to `mtvec.BASE`
+      1::
+        Vectored; Asynchronous interrupts set `pc` to `mtvec.BASE` + 4 x cause.
+
+    If only one mode is given, `mtvec.MODE` is assumed to be read-only with that value.
+    Otherwise, `mtvec.MODE` is read-write.
+- name: MXLEN
+  exts: Sm>=0
+  description: XLEN in machine mode, specified in bits
+- name: M_MODE_ENDIANNESS
+  exts: Sm>=0
+  description: |
+    Options:
+
+    [separator="!"]
+    !===
+    h! little  ! M-mode data is always little endian
+    h! big     ! M-mode data is always big endian
+    h! dynamic ! M-mode data can be either little or big endian,
+                 depending on the CSR field `mstatus.MBE`
+    !===
+- name: NON_STANDARD_EXTENSION_IMPLEMENTED
+  exts: Sm>=0
+  description: |
+    If any non-standard extensions are implemented, this parameter must be true.
+    This parameter is used as the reset value for `misa.X`.
+- name: NUM_PMP_ENTRIES
+  exts: Sm>=0
+  description: |
+    Number of implemented PMP entries.
+
+    The architecture mandates that the number of implemented PMP registers
+    must appear to be 0, 16, or 64, so NUM_PMP_ENTRIES must be one of those values.
+    It directly determines which PMP registers exist: `pmpaddr0`-`pmpaddr<N-1>`
+    and their corresponding `pmpNcfg` fields are implemented, and the rest are
+    not. Accessing an unimplemented PMP register causes an `IllegalInstruction`
+    when TRAP_ON_UNIMPLEMENTED_CSR is true.
+
+    [NOTE]
+    `pmpcfgN` for an odd N never exists when XLEN == 64.
+
+    An implemented entry may still be read-only zero (but will never cause an exception).
+    The number of entries that are actually usable is given by
+    NUM_USABLE_PMP_ENTRIES.
+- name: PHYS_ADDR_WIDTH
+  exts: Sm>=0
+  description: 'Implementation-defined size of the physical address space.
+
+    '
+- name: PMA_GRANULARITY
+  exts: Sm>=0
+  description: |
+    Generally, for systems with an MMU, should not be smaller than 12,
+    as that would preclude caching PMA results in the TLB along with
+    virtual memory translations
+- name: PRECISE_SYNCHRONOUS_EXCEPTIONS
+  exts: Sm>=0
+  description: |
+    If false, any exception not otherwise mandated to precise (e.g., PMP violation)
+    will cause execution to enter an unpredictable state.
+- name: REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the encoding of an instruction causing an IllegalInstruction exception
+      * false: `mtval` is written with 0 when an instruction causes an IllegalInstruction exception.
+- name: REPORT_VA_IN_MTVAL_ON_BREAKPOINT
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the virtual PC of an EBREAK instruction (same information as `mepc`).
+      * false: `mtval` is written with 0 on an EBREAK instruction.
+
+    Regardless, `mtval` is always written with a virtual PC when an external breakpoint is generated
+- name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the virtual address of a fetch causing the access fault
+      * false: `mtval` is written with 0 when a fetch causes an access fault
+- name: REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the virtual address of a trapping misaligned fetch
+      * false: `mtval` is written with 0 when a misaligned fetch traps
+- name: REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the virtual address of a load causing the access fault
+      * false: `mtval` is written with 0 when a load causes an access fault
+- name: REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the virtual address of a trapping misaligned load.
+      * false: `mtval` is written with 0 when a misaligned load traps.
+- name: REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the virtual address of a store or AMO causing the access fault
+      * false: `mtval` is written with 0 when a store or AMO causes an access fault
+- name: REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true:  `mtval` is written with the virtual address of a trapping misaligned store or AMO.
+      * false: `mtval` is written with 0 when a misaligned store or AMO traps.
+- name: TRAP_ON_EBREAK
+  exts: Sm>=0
+  description: |
+    The spec states that implementations may handle EBREAKs transparently
+    without raising a trap, in which case the EEI must provide a builtin.
+- name: TRAP_ON_ECALL_FROM_M
+  exts: Sm>=0
+  description: |
+    The spec states that implementations may handle ECALLs transparently
+    without raising a trap, in which case the EEI must provide a builtin.
+- name: TRAP_ON_ILLEGAL_WLRL
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true: Writing an illegal value to a WLRL CSR field will cause an IllegalInstruction exception.
+      * false: Writing an illegal value to a WLRL CSR field causes unpredictable behavior.
+- name: TRAP_ON_RESERVED_INSTRUCTION
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true: Fetching an unimplemented and/or undefined instruction from the standard/reserved opcode space will cause an IllegalInstruction exception.
+      * false: Fetching an unimplemented and/or undefined instruction from the standard/reserved opcose space causes unpredictable behavior.
+
+    TRAP_ON_RESERVED_INSTRUCTION may be false while TRAP_ON_UNIMPLEMENTED_INSTRUCTION is true
+    when a custom instruction is implemented in the standard/reserved opcode space.
+- name: TRAP_ON_UNIMPLEMENTED_CSR
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true: Accessing an unimplemented CSR (via a `Zicsr` instruction) will cause an IllegalInstruction exception.
+      * false: Accessing an unimplemented CSR (via a `Zicsr` instruction) will cause unpredictable behavior.
+- name: TRAP_ON_UNIMPLEMENTED_INSTRUCTION
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true: Fetching an unimplemented instruction will cause an IllegalInstruction exception.
+      * false: Fetching an unimplemented instruction causes unpredictable behavior.
+
+    An unimplemented instruction is any instruction encoding that is not defined by the implementation.
+    Custom instructions are considered implemented.
+- name: VENDOR_ID_BANK
+  exts: Sm>=0
+  description: |
+    Encodes the number of one-byte continuation codes in the Bank field of `mvendorid`.
+
+    iN JEDEC’s parlance, the bank number is one greater than the number of continuation codes; hence, the mvendorid Bank field encodes a value that is one less than the JEDEC bank number.
+- name: VENDOR_ID_OFFSET
+  exts: Sm>=0
+  description: 'Encodes the final byte of a JEDEC manufactor ID, discarding the parity
+    bit.
+
+    '
+- name: WFI_FINITE
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true: WFI resumes execution after waiting for a finite amount of time
+      * false: WFI may continue waiting until another event causes execution to resume
+- name: WFI_U_MODE
+  exts: Sm>=0
+  description: |
+    Options:
+
+      * true: WFI can be executed in U mode
+      * false: Executing WFI in U mode raises an illegal instruction exception

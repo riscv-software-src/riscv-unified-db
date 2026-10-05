@@ -1,0 +1,127 @@
+[
+  {
+    "raw": true,
+    "text": "1",
+    "pretty": "true"
+  },
+  {
+    "raw": false,
+    "text": "0",
+    "pretty": "false"
+  },
+  {
+    "raw": {
+      "xlen": 32
+    },
+    "text": "xlen=32",
+    "pretty": "xlen=32"
+  },
+  {
+    "raw": {
+      "not": {
+        "xlen": 64
+      }
+    },
+    "text": "!xlen=64",
+    "pretty": "not xlen=64"
+  },
+  {
+    "raw": {
+      "extension": {
+        "name": "H",
+        "version": "~> 1.0"
+      }
+    },
+    "text": "H~>1.0",
+    "pretty": "Extension H, version 1.0"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "MXLEN",
+        "oneOf": [
+          32,
+          64
+        ]
+      }
+    },
+    "text": "(((MXLEN==32) && !(MXLEN==64)) || ((MXLEN==64) && !(MXLEN==32)))",
+    "pretty": "Paremeter  is one of the following values: [32, 64]"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "COUNTINHIBIT_EN",
+        "includes": true
+      }
+    },
+    "text": "$array_includes?(COUNTINHIBIT_EN, true)",
+    "pretty": "Paremeter  (an array) includes the value true"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "COUNTINHIBIT_EN",
+        "size": true,
+        "equal": 32
+      }
+    },
+    "text": "($array_size(COUNTINHIBIT_EN)==32)",
+    "pretty": "Paremeter  equals 32"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "COUNTINHIBIT_EN",
+        "index": 0,
+        "equal": true
+      }
+    },
+    "text": "(COUNTINHIBIT_EN[0]==true)",
+    "pretty": "The zeroth element of paremeter  equals true"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "COUNTINHIBIT_EN",
+        "index": 1,
+        "equal": true
+      }
+    },
+    "text": "(COUNTINHIBIT_EN[1]==true)",
+    "pretty": "The first element of paremeter  equals true"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "COUNTINHIBIT_EN",
+        "index": 21,
+        "equal": true
+      }
+    },
+    "text": "(COUNTINHIBIT_EN[21]==true)",
+    "pretty": "The twenty first element of paremeter  equals true"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "COUNTINHIBIT_EN",
+        "index": 31,
+        "equal": true
+      }
+    },
+    "text": "(COUNTINHIBIT_EN[31]==true)",
+    "pretty": "The thirty first element of paremeter  equals true"
+  },
+  {
+    "raw": {
+      "param": {
+        "name": "COUNTINHIBIT_EN",
+        "index": 104,
+        "equal": true
+      }
+    },
+    "text": "(COUNTINHIBIT_EN[104]==true)",
+    "pretty": "The one hundred fourth element of paremeter  equals true"
+  }
+]

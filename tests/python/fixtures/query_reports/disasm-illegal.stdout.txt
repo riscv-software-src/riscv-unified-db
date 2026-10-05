@@ -1,0 +1,4 @@
+RV32:
+  Illegal Instruction
+RV64:
+  Illegal Instruction

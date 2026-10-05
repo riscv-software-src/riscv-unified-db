@@ -65,6 +65,48 @@ def check_instruction_table(resolved: udb.ResolvedDatabase) -> None:
         assert b"cannot write instruction table" in rejected.stderr
 
 
+def check_query_reports(resolved: udb.ResolvedDatabase) -> None:
+    """Frozen native report hashes, not outputs derived from the Python implementation."""
+    from udb.query_reports import InstructionMatcher, ReportBuilder, render_names
+
+    builder = ReportBuilder(resolved.configure(udb.Configuration.builtin("_")))
+    artifacts = (
+        (
+            builder.extension("I").render(),
+            "842a3531707eb75eafff4de70bacaa69abdb88ca9a42d827487aa93d7e46cade",
+        ),
+        (
+            render_names(builder.extensions()),
+            "e9e3e81590273c929a25b4559ec7ccf3c7a8cdfa3f50028d2098cb03f33590fb",
+        ),
+        (
+            render_names(builder.csrs()),
+            "7b36f1f6cc1b6203422c2c9abeec5e8a93db386cebf99e449e5e08e9e29d6698",
+        ),
+        (
+            builder.parameters(["Sm"]).render("json"),
+            "a19ea8d55db8cb76dc9c426253b6df79b7f1e43a0d9c3554bed4cc4c907a4b6a",
+        ),
+    )
+    for artifact, expected in artifacts:
+        assert hashlib.sha256(artifact.encode("utf-8")).hexdigest() == expected
+    matcher = InstructionMatcher(builder.architecture)
+    assert hashlib.sha256(matcher.match("0001").render().encode()).hexdigest() == (
+        "e1bda092fdc70a5bd8f5280a15f2f39cde8fc2bea93ace68c16f64b05240d6ee"
+    )
+    assert hashlib.sha256(matcher.match("fff10093").render().encode()).hexdigest() == (
+        "e23309b1ff6668aa2adfe9db14079f9f6f3307389251a18148c588140ecf070a"
+    )
+    match = matcher.match("fff10093", width=32).results[0].matches[0]
+    assert [(field.name, field.value) for field in match.variables] == [
+        ("imm", -1),
+        ("xs1", 2),
+        ("xd", 1),
+    ]
+    assert matcher.match("0001", width=16).results[0].ambiguous
+    assert matcher.match("0001", width=32).results[0].illegal
+
+
 def check_config_headers(resolved: udb.ResolvedDatabase) -> None:
     """Use bundled ISA data and an explicit full config, never a checkout path."""
     from udb.generators.config_headers import generate_config_header
@@ -401,6 +443,7 @@ def check_install() -> None:
     check_config_headers(resolved)
     check_profile_configurations(resolved)
     check_instruction_table(resolved)
+    check_query_reports(resolved)
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()

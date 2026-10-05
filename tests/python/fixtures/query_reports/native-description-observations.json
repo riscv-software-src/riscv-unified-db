@@ -1,0 +1,47 @@
+{
+  "MUTABLE_MISA_C": {
+    "source_sha256": "f61565794b77483abf822b9bfb6fc7b81840006d32f058b7ddf163675a40745b",
+    "psych_source_description": "Indicates whether or not the `C` extension can be disabled with the `misa.C` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `C` extension can be disabled with the `misa.C` bit. "
+  },
+  "MUTABLE_MISA_D": {
+    "source_sha256": "1f2c85db24672c48b9fd447e09df4c757eeea860e0a8a9159f4edf82442c5606",
+    "psych_source_description": "Indicates whether or not the `D` extension can be disabled with the `misa.D` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `D` extension can be disabled with the `misa.D` bit. "
+  },
+  "MUTABLE_MISA_F": {
+    "source_sha256": "e2f76387e625ef1369a39edbe20451991de438a28c58214f457dca3a4d259e01",
+    "psych_source_description": "Indicates whether or not the `F` extension can be disabled with the `misa.F` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `F` extension can be disabled with the `misa.F` bit. "
+  },
+  "MUTABLE_MISA_H": {
+    "source_sha256": "cb126e8c95c2d0d92b6c151a013e43d84539b676b355e7aabb7669330fd9aeed",
+    "psych_source_description": "Indicates whether or not the `H` extension can be disabled with the `misa.H` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `H` extension can be disabled with the `misa.H` bit. "
+  },
+  "MUTABLE_MISA_M": {
+    "source_sha256": "c4deba415f5a632f6cff6f37a2684e50db828354202fe8debdd0fea27d3196af",
+    "psych_source_description": "Indicates whether or not the `M` extension can be disabled with the `misa.M` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `M` extension can be disabled with the `misa.M` bit. "
+  },
+  "MUTABLE_MISA_Q": {
+    "source_sha256": "fa640f77c1b28d2652e437ce7cfa9dcf8be1df047129c311d8fb0b90d37ccb00",
+    "psych_source_description": "Indicates whether or not the `Q` extension can be disabled with the `misa.Q` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `Q` extension can be disabled with the `misa.Q` bit. "
+  },
+  "MUTABLE_MISA_S": {
+    "source_sha256": "27eb0e032ed38e8436a7e859b457d75a0fe3614667241df15d57c856210f9f73",
+    "psych_source_description": "Indicates whether or not the `S` extension can be disabled with the `misa.S` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `S` extension can be disabled with the `misa.S` bit. "
+  },
+  "MUTABLE_MISA_U": {
+    "source_sha256": "02343970ee9f81503e757a7d870b245c4351971597232dff5811193e969c2b59",
+    "psych_source_description": "Indicates whether or not the `U` extension can be disabled with the `misa.U` bit.\n",
+    "psych_native_resolved_description": "Indicates whether or not the `U` extension can be disabled with the `misa.U` bit. "
+  },
+  "VMID_WIDTH": {
+    "source_sha256": "f97ecc5eaa3564f6a871813769aadf09eb00ada1d52f5fa29642494e7348772b",
+    "psych_source_description": "Number of bits supported in `hgatp.VMID` (i.e., the supported width of a virtual machine ID).\n",
+    "psych_native_resolved_description": "Number of bits supported in `hgatp.VMID` (i.e., the supported width of a virtual machine ID). "
+  }
+}

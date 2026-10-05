@@ -1,5 +1,38 @@
 #!/bin/bash
 ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
 EXEC_DIR=${PWD}
+
+case "${1:-} ${2:-}" in
+"show extension" | "show parameter" | "list extensions" | "list parameters" | "list csrs")
+	;;
+"disasm "*)
+	;;
+*)
+	cd "$ROOT" || exit 1
+	# shellcheck disable=SC2016 # Expanded by the nested bash process.
+	exec "${ROOT}/bin/mise" exec -- bash -c 'cd "$1" && exec bundle exec --gemfile "$2" udb "${@:3}"' _ "$EXEC_DIR" "$ROOT/Gemfile" "$@"
+	;;
+esac
+
+ARGS=("$@")
+HAS_ARCH=0
+HAS_SCHEMAS=0
+HAS_CONFIG_DIR=0
+HAS_ARCH_OVERLAY=0
+for ARG in "${ARGS[@]}"; do
+	case "$ARG" in
+	--arch | --arch=* | --path | --path=* | -a) HAS_ARCH=1 ;;
+	--schemas | --schemas=*) HAS_SCHEMAS=1 ;;
+	--config-dir | --config-dir=* | --config_dir | --config_dir=*) HAS_CONFIG_DIR=1 ;;
+	--arch-overlay | --arch-overlay=* | --arch_overlay | --arch_overlay=*) HAS_ARCH_OVERLAY=1 ;;
+	esac
+done
+((HAS_ARCH)) || ARGS+=(--arch "$ROOT/spec/std/isa")
+((HAS_SCHEMAS)) || ARGS+=(--schemas "$ROOT/spec/schemas")
+((HAS_CONFIG_DIR)) || ARGS+=(--config-dir "$ROOT/cfgs")
+((HAS_ARCH_OVERLAY)) || ARGS+=(--arch-overlay "$ROOT/spec/custom/isa")
+
 cd "$ROOT" || exit 1
-exec "${ROOT}/bin/mise" exec -- bash -c 'cd "$1" && exec bundle exec --gemfile "$2" udb "${@:3}"' _ "$EXEC_DIR" "$ROOT/Gemfile" "$@"
+cd "$EXEC_DIR" || exit 1
+exec "${ROOT}/bin/mise" exec --no-deps -- uv run --no-sync --project "$ROOT" \
+	python -m udb.query_reports "${ARGS[@]}"

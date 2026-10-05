@@ -14,3 +14,5 @@ tests/python/data/idl/passes.json
 tests/python/fixtures/configured_prose*.json
 # Preserve native schema-documentation captures and their hashed input schemas.
 tests/python/fixtures/schema_docs
+# Preserve native query/report bytes and exact hashed config inputs.
+tests/python/fixtures/query_reports

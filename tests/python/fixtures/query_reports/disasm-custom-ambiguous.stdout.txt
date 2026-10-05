@@ -1,0 +1,5 @@
+RV32:
+  addi
+RV64:
+  custom.addi
+  addi

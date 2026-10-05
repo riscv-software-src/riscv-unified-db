@@ -1,0 +1,4 @@
+RV32:
+  c.addi4spn
+RV64:
+  c.addi4spn

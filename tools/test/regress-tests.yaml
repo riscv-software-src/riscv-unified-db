@@ -245,6 +245,20 @@ tests:
       - name: Compare configured prose with frozen Ruby outputs and source inventory
         run: uv run --locked python -m pytest tests/python/test_configured_prose.py tests/python/test_configured_prose_oracle.py -n 8 --basetemp=gen/prose-tests
 
+  regress-python-query-reports:
+    ci_stage: pr
+    tags:
+      - integration
+      - smoke
+    test:
+      - name: Check native query reports and fixed-bit instruction matching
+        run: >-
+          uv run --locked python -m pytest -n 8
+          tests/python/test_query_matching.py
+          tests/python/test_query_reports_unit.py
+          tests/python/test_query_reports_cli.py
+          tests/python/test_query_reports_native.py
+
   regress-python-unit:
     ci_stage: pr
     tags:

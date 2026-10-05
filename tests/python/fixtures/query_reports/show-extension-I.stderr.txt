@@ -1,0 +1,3 @@
+ℹ info    Constructing ConfiguredArchiture for _
+[0m[2K[1Gℹ info    Compiling global IDL     
+[0m[2K[1G[0m[2K[1G[0m[2K[1G

@@ -1,0 +1,6 @@
+RV32:
+  c.addi
+  c.nop
+RV64:
+  c.addi
+  c.nop

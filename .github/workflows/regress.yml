@@ -597,6 +597,21 @@ jobs:
       - name: Compare configured prose with frozen Ruby outputs and source inventory
         run: uv run --locked python -m pytest tests/python/test_configured_prose.py tests/python/test_configured_prose_oracle.py -n 8 --basetemp=gen/prose-tests
 
+  regress-python-query-reports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Check native query reports and fixed-bit instruction matching
+        run: >-
+          uv run --locked python -m pytest -n 8
+          tests/python/test_query_matching.py
+          tests/python/test_query_reports_unit.py
+          tests/python/test_query_reports_cli.py
+          tests/python/test_query_reports_native.py
+
   regress-python-unit:
     runs-on: ubuntu-latest
     steps:
@@ -1101,6 +1116,7 @@ jobs:
       - regress-python-idl-condition-parity
       - regress-python-layout-drift
       - regress-python-configured-prose-frozen
+      - regress-python-query-reports
       - regress-python-unit
       - regress-scripts-unit
       - regress-idlc-unit

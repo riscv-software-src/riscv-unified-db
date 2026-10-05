@@ -1,0 +1,4 @@
+RV32:
+  addi
+RV64:
+  addi
