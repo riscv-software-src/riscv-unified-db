@@ -73,6 +73,7 @@ These are local branches until publication of the PR stack.
 | `migration/python-16-idl-architecture` | `migration/python-15-idl-statements` | Captured source providers, native architecture environments, and full-configuration type checking |
 | `migration/python-17-idl-passes` | `migration/python-16-idl-architecture` | Semantic analyses, AsciiDoc source generation, and hart/decode analyses |
 | `migration/python-18-idl-conditions` | `migration/python-17-idl-passes` | Symbolic IDL requirements, completed configured queries, and a small configuration-validation CLI |
+| `migration/python-19-cfg-diagnostics` | `migration/python-18-idl-conditions` | Captured-source explanations of configuration conflicts without changing solver results |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle

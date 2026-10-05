@@ -130,6 +130,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.command == "validate-cfg":
             from .architecture import ArchitectureCheckStatus
             from .configuration import Configuration
+            from .configuration_diagnostics import format_check_diagnostics
 
             assert isinstance(database, ResolvedDatabase)
             configuration = (
@@ -144,12 +145,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                     ),
                 )
             )
-            result = database.configure(configuration).check()
+            architecture = database.configure(configuration)
+            result = architecture.check()
             print(f"{configuration.name}: {result.status.value}")
-            for diagnostic in result.diagnostics:
-                location = diagnostic.source or diagnostic.label
-                prefix = f"{location}: " if location else ""
-                print(f"{prefix}{diagnostic.code}: {diagnostic.message}", file=sys.stderr)
+            for line in format_check_diagnostics(architecture, result):
+                print(line, file=sys.stderr)
             if result.status is ArchitectureCheckStatus.VALID:
                 return 0
             return 1 if result.status is ArchitectureCheckStatus.UNSAT else 2

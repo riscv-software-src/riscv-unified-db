@@ -27,6 +27,54 @@ def tree_digest(root: Path) -> dict[str, str]:
     }
 
 
+def check_configuration_diagnostics(resolved: udb.ResolvedDatabase) -> None:
+    from udb.configuration_diagnostics import explain_conflict, format_check_diagnostics
+
+    data = udb.Configuration.builtin("rv32").to_dict()
+    data["name"] = "installed-conflict"
+    data["requirements"] = {
+        "param": {
+            "name": "MXLEN",
+            "equal": 64,
+            "reason": "This fixture requires a different machine width.",
+        },
+    }
+    text = json.dumps(data)
+    configuration = udb.Configuration.from_yaml(text, source="installed-conflict.yaml")
+    architecture = resolved.configure(configuration)
+    result = architecture.check()
+    assert result.status is udb.ArchitectureCheckStatus.UNSAT
+    assert set(result.conflict) == {
+        "configuration parameter MXLEN=32",
+        "configuration requirements",
+    }
+    explanations = explain_conflict(architecture, result)
+    assert tuple(entry.label for entry in explanations) == result.conflict
+    assert all(entry.source is not None and not entry.raw for entry in explanations)
+    output = "\n".join(format_check_diagnostics(architecture, result))
+    for expected in (
+        "jointly inconsistent",
+        "Configuration supplies MXLEN = 32",
+        "requirement: MXLEN = 64",
+        "reason: This fixture requires a different machine width.",
+        "installed-conflict.yaml:1:",
+    ):
+        assert expected in output
+    with TemporaryDirectory(prefix="udb-installed-conflict-") as temporary:
+        path = Path(temporary) / "installed-conflict.yaml"
+        path.write_text(text, encoding="utf-8")
+        checked = subprocess.run(
+            [str(Path(sys.executable).with_name("udb")), "validate-cfg", str(path)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert checked.returncode == 1, checked
+        assert checked.stdout == "installed-conflict: unsat\n"
+        assert "jointly inconsistent" in checked.stderr
+        assert "reason: This fixture requires a different machine width." in checked.stderr
+
+
 def check_install() -> None:
     assert shutil.which("ruby") is None
     assert shutil.which("git") is None
@@ -114,6 +162,7 @@ def check_install() -> None:
     assert rv64_arch.extension_presence("I") is udb.QueryPresence.MANDATORY
     assert rv64_arch.check().status is udb.ArchitectureCheckStatus.VALID
     assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
+    check_configuration_diagnostics(resolved)
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()
