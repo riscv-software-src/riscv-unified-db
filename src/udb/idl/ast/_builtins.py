@@ -47,6 +47,9 @@ class WidthReveal(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.expression.type_check(symtab, strict=strict)
         e_type = self.expression.type(symtab)
@@ -88,6 +91,9 @@ class SignCast(Node):
         source, start, end = _source_and_span(data, sources)
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.expression.type_check(symtab, strict=strict)
@@ -131,6 +137,9 @@ class BitsCast(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(expr,))
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.expression.const_eval(symtab)
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.expression.type_check(symtab, strict=strict)
         etype = self.expression.type(symtab)
@@ -141,28 +150,24 @@ class BitsCast(Node):
         etype = self.expression.type(symtab)
         if etype.kind == TypeKind.BITS:
             return etype
-        if etype.kind == TypeKind.BITFIELD:
+        if etype.kind in (TypeKind.BITFIELD, TypeKind.CSR):
             return Type(TypeKind.BITS, width=etype.width, qualifiers=frozenset({Qualifier.KNOWN}))
         if etype.kind == TypeKind.ENUM_REF:
             assert isinstance(etype, Type)
             return Type(
                 TypeKind.BITS, width=etype.enum_class.width, qualifiers=frozenset({Qualifier.KNOWN})
             )
-        if etype.kind == TypeKind.CSR:
-            self.internal_error("not yet supported: $bits cast of CSR")
         self.type_error("$bits cast is only defined for CSRs and Enum references")
 
     def value(self, symtab: SymbolTable) -> Any:
         etype = self.expression.type(symtab)
-        if etype.kind in (TypeKind.BITS, TypeKind.BITFIELD):
+        if etype.kind in (TypeKind.BITS, TypeKind.BITFIELD, TypeKind.CSR):
             return self.expression.value(symtab)
         if etype.kind == TypeKind.ENUM_REF:
             if isinstance(self.expression, EnumRef):
                 return etype.enum_class.value(self.expression.member_name)
             # this is an expression with an EnumRef type
             return self.expression.value(symtab)
-        if etype.kind == TypeKind.CSR:
-            self.internal_error("not yet supported: $bits cast of CSR")
         self.type_error(f"TODO: Bits cast for {etype.kind}")
 
 
@@ -188,6 +193,9 @@ class ArraySize(Node):
         source, start, end = _source_and_span(data, sources)
         array = from_h(data["array"], sources)
         return cls(source=source, start=start, end=end, children=(array,))
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.array.type_check(symtab, strict=strict)
@@ -236,6 +244,9 @@ class EnumSize(Node):
         enum_class_name = from_h(data["enum_class_name"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name,))
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.enum_class_name.type_check(symtab, strict=strict)
 
@@ -274,6 +285,9 @@ class EnumElementSize(Node):
         enum_class_name = from_h(data["enum_class_name"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name,))
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.enum_class_name.type_check(symtab, strict=strict)
 
@@ -309,6 +323,9 @@ class EnumArrayCast(Node):
         source, start, end = _source_and_span(data, sources)
         enum_class_name = from_h(data["enum_class_name"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name,))
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.enum_class_name.type_check(symtab, strict=strict)
@@ -358,6 +375,9 @@ class EnumCast(Node):
         enum_class_name = from_h(data["enum_class_name"], sources)
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(enum_class_name, expr))
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.enum_class_name.type_check(symtab, strict=strict)
@@ -416,6 +436,9 @@ class ArrayIncludes(Node):
         expr = from_h(data["expr"], sources)
         return cls(source=source, start=start, end=end, children=(array, expr))
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return True
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.array.type_check(symtab, strict=strict)
         ary_type = self.array.type(symtab)
@@ -469,8 +492,23 @@ class ImplicationExpression(Node):
         consequent = from_h(data["consequent"], sources)
         return cls(source=source, start=start, end=end, children=(antecedent, consequent))
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.antecedent.const_eval(symtab) and self.consequent.const_eval(symtab)
+
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.antecedent.type_check(symtab, strict=strict)
+        self.consequent.type_check(symtab, strict=strict)
         if self.antecedent.type(symtab).kind != TypeKind.BOOLEAN:
             self.antecedent.type_error("Antecedent must a boolean")
         if self.consequent.type(symtab).kind != TypeKind.BOOLEAN:
             self.consequent.type_error("Consequent must a boolean")
+
+    def satisfied(self, symtab: SymbolTable) -> bool:
+        """Whether this implication holds given *symtab*'s current values.
+
+        Mirrors ``ImplicationExpressionAst#satisfied?``: vacuously true when
+        the antecedent is false, otherwise the consequent's value.
+        """
+        if self.antecedent.value(symtab) is False:
+            return True
+        return bool(self.consequent.value(symtab))
