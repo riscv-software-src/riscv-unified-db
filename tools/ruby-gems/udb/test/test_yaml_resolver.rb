@@ -468,7 +468,7 @@ class TestYamlResolver < Minitest::Test
     resolver = Udb::Yaml::Resolver.new(quiet: true, schemas_path: gem_schemas)
 
     # Bare ref should get the version prefix
-    assert_equal "v0.1/ext_schema.json#", resolver.versioned_schema_uri("ext_schema.json#")
+    assert_equal "v0.2/ext_schema.json#", resolver.versioned_schema_uri("ext_schema.json#")
     assert_equal "v0.3/csr_schema.json#", resolver.versioned_schema_uri("csr_schema.json#")
   end
 

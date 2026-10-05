@@ -103,11 +103,11 @@ class TestSchemaVersioning < Minitest::Test
       resolver = make_resolver(gen_path)
       resolver.resolve_schemas
 
-      out = gen_path / "schemas" / "ext_schema.json" / "v0.1" / "ext_schema.json"
+      out = gen_path / "schemas" / "ext_schema.json" / "v0.2" / "ext_schema.json"
       assert out.exist?
       resolved = JSON.parse(out.read)
       assert_equal(
-        "#{Udb::Resolver::SCHEMAS_BASE_URL}/ext_schema.json/v0.1/ext_schema.json",
+        "#{Udb::Resolver::SCHEMAS_BASE_URL}/ext_schema.json/v0.2/ext_schema.json",
         resolved["$id"]
       )
     end
@@ -156,7 +156,7 @@ class TestSchemaVersioning < Minitest::Test
       resolver.resolve_schemas
 
       src = JSON.parse((SCHEMAS_PATH / "ext_schema.json").read)
-      out = JSON.parse((gen_path / "schemas" / "ext_schema.json" / "v0.1" / "ext_schema.json").read)
+      out = JSON.parse((gen_path / "schemas" / "ext_schema.json" / "v0.2" / "ext_schema.json").read)
 
       # All keys except $id should be preserved
       (src.keys - ["$id"]).each do |key|

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Exercise an installed Stage 2 package outside the checkout, without Ruby/Git."""
+"""Exercise an installed Python package outside the checkout, without Ruby/Git."""
 
 from __future__ import annotations
 
@@ -37,6 +37,26 @@ def check_install() -> None:
     resolved = database.resolve(validate=True)
     assert len(raw_records) == len(resolved.documents) == 2306
     assert resolved.profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
+    sm_versions = database.extension("Sm").version_set
+    assert tuple(version.canonical for version in sm_versions) == (
+        "1.11.0",
+        "1.12.0",
+        "1.13.0",
+    )
+    assert udb.Version.parse("1.12").canonical == "1.12.0"
+    assert udb.VersionRequirement.parse(">= 1.11").matches("1.12")
+    synthetic = udb.ExtensionVersionSet.from_metadata(
+        "Xinstalled",
+        [
+            {"version": "1.0"},
+            {"version": "2.0", "breaking": True},
+            {"version": "3.0"},
+        ],
+    )
+    assert tuple(item.canonical for item in synthetic.compatible_versions("2.0")) == (
+        "2.0.0",
+        "3.0.0",
+    )
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()
@@ -128,7 +148,8 @@ def check_install() -> None:
 
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
-        f"{data_references} data / {schema_references} schema references, 532 layout outputs"
+        f"{data_references} data / {schema_references} schema references, "
+        f"{len(sm_versions)} Sm versions, 532 layout outputs"
     )
 
 
