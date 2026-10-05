@@ -31,7 +31,7 @@ fields:
       *State Dirty*
 
       Read-only bit that summarizes whether any of the
-      `vsstatus.FS`, <% if ext?(:V) %> `vsstatus.VS`, <% end %> or `vsstatus.XS`
+      `vsstatus.FS`, {% if extensions.V %} `vsstatus.VS`, {% endif %} or `vsstatus.XS`
       fields signal the presence of some dirty state
       (_i.e._, any of them hold the value `11`).
 

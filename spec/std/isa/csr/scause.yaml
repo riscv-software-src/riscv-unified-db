@@ -66,17 +66,17 @@ fields:
       Valid interrupt codes are:
       [separator="!"]
       !===
-      <%- implemented_interrupt_codes.sort_by { |code| code.num }.each do |code| -%>
-      ! <%= code.num %> ! <%= code.name %>
-      <%- end -%>
+      {%- for row in interrupt_code_rows -%}
+      {{ row }}
+      {%- endfor -%}
       !===
 
       Valid exception codes are:
       [separator="!"]
       !===
-      <%- implemented_exception_codes.sort_by { |code| code.num }.each do |code| -%>
-      ! <%= code.num %> ! <%= code.name %>
-      <%- end -%>
+      {%- for row in exception_code_rows -%}
+      {{ row }}
+      {%- endfor -%}
       !===
     type: RW-RH
     sw_write(csr_value): |

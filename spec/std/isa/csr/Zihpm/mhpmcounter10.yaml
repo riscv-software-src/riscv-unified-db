@@ -27,15 +27,15 @@ description: |
 
   The `hpmcounter10` CSR is a read-only shadow of this CSR. Access to `hpmcounter10`
   is controlled with `mcounteren.HPM10`
-  <%- if ext?(:S) -%>
+  {%- if extensions.S -%}
   , `scounteren.HPM10`
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   , and `hcounteren.HPM10`
-  <%- end -%>
-  <%- end -%>
+  {%- endif -%}
+  {%- endif -%}
   as follows:
 
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
   !===
   .2+h![.rotate]#`mcounteren.HPM10`# .2+h! [.rotate]#`scounteren.HPM10`# .2+h! [.rotate]#`hcounteren.HPM10`#
@@ -48,7 +48,7 @@ description: |
   ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction`
   ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
   !===
-  <%- elsif ext?(:S) -%>
+  {%- elif extensions.S -%}
   [%autowidth,cols="1,1,1,1",separator="!"]
   !===
   .2+h![.rotate]#`mcounteren.HPM10`# .2+h! [.rotate]#`scounteren.HPM10`#
@@ -59,7 +59,7 @@ description: |
   ! 1 ! 0 ! read-only ! `IllegalInstruction`
   ! 1 ! 1 ! read-only ! read-only
   !===
-  <%- else -%>
+  {%- else -%}
   [%autowidth,cols="1,1",separator="!"]
   !===
   .2+h![.rotate]#`mcounteren.HPM10`#
@@ -69,7 +69,7 @@ description: |
   ! 0 ! `IllegalInstruction`
   ! 1 ! read-only
   !===
-  <%- end -%>
+  {%- endif -%}
 fields:
   COUNT:
     location: 63-0
@@ -80,20 +80,20 @@ fields:
 
       Increments every time event occurs unless:
 
-        * `mcountinhibit.HPM10` <%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.HPM10`<%- end -%> is set
-        <%- if ext?(:Sscofpmf) -%>
+        * `mcountinhibit.HPM10` {%- if extensions.Smcdeleg -%}or its alias `scountinhibit.HPM10`{%- endif -%} is set
+        {%- if extensions.Sscofpmf -%}
         * `mhpmevent10.MINH` is set and the current privilege level is M
-        <%- if ext?(:S) -%>
-        * `mhpmevent10.SINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent10.SINH`<%- end -%> is set and the current privilege level is (H)S
-        <%- end -%>
-        <%- if ext?(:U) -%>
-        * `mhpmevent10.UINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent10.UINH`<%- end -%> is set and the current privilege level is U
-        <%- end -%>
-        <%- if ext?(:H) -%>
-        * `mhpmevent10.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent10.VSINH`<%- end -%> is set and the current privilege level is VS
-        * `mhpmevent10.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent10.VUINH`<%- end -%> is set and the current privilege level is VU
-        <%- end -%>
-        <%- end -%>
+        {%- if extensions.S -%}
+        * `mhpmevent10.SINH` {%- if extensions.Ssccfg -%}or its alias `hpmevent10.SINH`{%- endif -%} is set and the current privilege level is (H)S
+        {%- endif -%}
+        {%- if extensions.U -%}
+        * `mhpmevent10.UINH` {%- if extensions.Ssccfg -%}or its alias `hpmevent10.UINH`{%- endif -%} is set and the current privilege level is U
+        {%- endif -%}
+        {%- if extensions.H -%}
+        * `mhpmevent10.VSINH` {%- if extensions.Ssccfg -%}or its alias `hpmevent10.VSINH`{%- endif -%} is set and the current privilege level is VS
+        * `mhpmevent10.VUINH` {%- if extensions.Ssccfg -%}or its alias `hpmevent10.VUINH`{%- endif -%} is set and the current privilege level is VU
+        {%- endif -%}
+        {%- endif -%}
       --
 
       [when="HPM_COUNTER_EN[10] == false"]

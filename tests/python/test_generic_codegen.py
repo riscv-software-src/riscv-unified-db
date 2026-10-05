@@ -213,6 +213,10 @@ def test_shared_prose_provider_genuine_original_wrapper_rows(database, label):
 def test_shared_prose_provider_genuine_interpolation_capture(database, label):
     prose = prose_provider()
     mutation = json.loads((FIXTURES / label / "interpolation.json").read_text())
+    native_template = (
+        "{% if extensions.H %}Guest{% else %}Host{% endif %}/"
+        "{% if derived.has_xlen_32 %}32{% else %}64{% endif %}-fault"
+    )
     selected = prose.all_exception_records(database)
     changed = []
     for record in selected:
@@ -220,12 +224,12 @@ def test_shared_prose_provider_genuine_interpolation_capture(database, label):
             assert record.name_source is not None
             record = replace(
                 record,
-                name=mutation["template"],
+                name=native_template,
                 var=mutation["template"],
-                name_source=replace(record.name_source, text=mutation["template"]),
+                name_source=replace(record.name_source, text=native_template),
             )
         changed.append(record)
-    assert any(record.name == mutation["template"] for record in changed)
+    assert any(record.name == native_template for record in changed)
     source = configured(database, label)
     # The native capture changes code.name in memory, not its YAML filename
     # or the already-selected extension-major rows.

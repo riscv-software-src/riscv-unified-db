@@ -28,9 +28,9 @@ fields:
       Bit is read-only 0 when `menvcfg.CBZE` is clear.
 
       Enables the execution of the cache block zero instruction, `cbo.zero`,
-      in U-mode<% if ext?(:H) %> and (in conjunction with `henvcfg.CBZE`) VU-mode<% end %>.
+      in U-mode{% if extensions.H %} and (in conjunction with `henvcfg.CBZE`) VU-mode{% endif %}.
 
-        * `0`: The instruction raises an illegal instruction<% if ext?(:H) %> or virtual instruction exception<% end %>
+        * `0`: The instruction raises an illegal instruction{% if extensions.H %} or virtual instruction exception{% endif %}
         * `1`: The instruction is executed
 
       To summarize access:
@@ -57,13 +57,13 @@ fields:
 
       Enables the execution of the cache block clean instruction, `cbo.clean`, and the
       cache block flush instruction, `cbo.flush`,
-      <% if ext?(:S) %>
+      {%- if extensions.S -%}
       in S-mode
-      <% elsif ext?(:U) %>
+      {%- elif extensions.U -%}
       in U-mode
-      <% end %>.
+      {% endif %}.
 
-        * `0`: The instruction raises an illegal instruction <% if ext?(:H) %>or virtual instruction exception<% end %>
+        * `0`: The instruction raises an illegal instruction {% if extensions.H %}or virtual instruction exception{% endif %}
         * `1`: The instruction is executed
 
       To summarize access:
@@ -97,9 +97,9 @@ fields:
 
       Controls execution of the cache block invalidate instruction, `cbo.inval`,
       in U-mode
-      <% if ext?(:H) %>
+      {%- if extensions.H -%}
       and VU-mode (together with `henvcfg.CBIE`)
-      <% end %>
+      {%- endif -%}
       .
 
         * `00`: The instruction raises an illegal instruction or virtual instruction exception

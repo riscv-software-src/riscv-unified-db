@@ -38,11 +38,11 @@ description: |
   exist, and setting a bit `mideleg` will delegate the
   corresponding trap, when occurring in S-mode or U-mode, to the S-mode
   trap handler
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   (which could further be delegated to VS-mode through hideleg)
-  <%- end -%>
+  {%- endif -%}
   .
-  <%- if ext?(:S, "> 1.9.1") -%>
+  {%- if extension_queries.S_gt_1_9_1 -%}
   In harts without S-mode, the `mideleg` register should not exist.
 
   [NOTE]
@@ -52,9 +52,9 @@ description: |
   reason to require they return zero in those cases, as the `misa`
   register indicates whether they exist.
   ====
-  <%- else -%>
+  {%- else -%}
   In harts without S-mode, the `mideleg` register is read-only zero.
-  <%- end -%>
+  {%- endif -%}
 
   An implementation can choose to subset the delegatable traps, with the
   supported delegatable bits found by writing one to every bit location,

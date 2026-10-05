@@ -20,10 +20,9 @@ fields:
     location_rv32: 31-2
     location_rv64: 63-2
     description: |
-      <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 48 : 39) -%>
       Bits [SXLEN-1:2] of the virtual address of the exception vector for any trap taken into S-mode.
 
-      If the base address is written with a non-canonical address (_i.e._, bits [SXLEN-1:<%= va_size %>] do not match bit <%= va_size-1 %>),
+      If the base address is written with a non-canonical address (_i.e._, bits [SXLEN-1:{{ derived.va_size }}] do not match bit {{ derived.va_size - 1 }}),
       the write should be ignored.
 
     type: RW-R

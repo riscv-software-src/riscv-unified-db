@@ -13,9 +13,9 @@ description: |
   and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the
   addressed word.
 
-  <%- if MXLEN == 64 -%>
+  {{ "{%- if params.MXLEN == 64 -%}" }}
   The 32-bit load result is sign-extended to 64-bits.
-  <%- end -%>
+  {{ "{%- endif -%}" }}
 
   The address in xs1 must be naturally aligned to the size of the operand
   (_i.e._, eight-byte aligned for doublewords and four-byte aligned for words).

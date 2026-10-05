@@ -9,10 +9,11 @@ import hashlib
 import json
 import re
 from collections import Counter
+from functools import cache
 from pathlib import Path
 
 import pytest
-from regenerate_configured_prose import inventory
+from ruamel.yaml import YAML
 
 from udb import Configuration, Database, ResolvedDatabase
 from udb.architecture import ConfiguredArchitecture
@@ -23,7 +24,9 @@ from udb.prose import (
     ParameterState,
     ProseError,
     ProseInputs,
+    native_prose_values,
     render_legacy,
+    render_native,
     resolve_all_exception_records,
     resolve_exception_records,
     resolved_exception_names,
@@ -39,6 +42,10 @@ NAMES = json.loads((ROOT / "tests/python/fixtures/configured_prose_names.json").
 WHITESPACE = json.loads(
     (ROOT / "tests/python/fixtures/configured_prose_whitespace.json").read_text()
 )
+NATIVE_NAME_TEMPLATES = {
+    "Breakpoint": "{% if extensions.C %}Compressed{% else %}Base{% endif %}Breakpoint",
+    "InstructionGuestPageFault": ("{% if extensions.H %}Guest{% else %}Host{% endif %}Fault"),
+}
 
 
 def captured_inputs(name: str, corpus=CORPUS) -> ProseInputs:
@@ -98,27 +105,83 @@ def check_case(name: str, inputs: ProseInputs, corpus=CORPUS) -> tuple[int, int]
     return successes, errors
 
 
+@cache
+def native_templates() -> tuple[CapturedProse, ...]:
+    yaml = YAML(typ="safe")
+    documents: dict[str, object] = {}
+    result = []
+    for template in CORPUS["templates"]:
+        source = template["source"]
+        if source not in documents:
+            documents[source] = yaml.load((ROOT / source).read_text())
+        value = documents[source]
+        for item in template["path"]:
+            value = value[item]
+        assert isinstance(value, str), (source, template["path"])
+        result.append(CapturedProse(value, source, tuple(template["path"])))
+    return tuple(result)
+
+
+def check_native_case(name: str, inputs: ProseInputs, corpus=CORPUS) -> tuple[int, int]:
+    successes = errors = 0
+    for prose, expected in zip(
+        native_templates(), corpus["captures"][name]["expected"], strict=True
+    ):
+        if "error" in expected:
+            with pytest.raises(ProseError):
+                render_native(prose, native_prose_values(prose, inputs))
+            errors += 1
+        else:
+            assert render_native(prose, native_prose_values(prose, inputs)) == expected["value"], (
+                prose.label
+            )
+            successes += 1
+    return successes, errors
+
+
 def test_exact_source_inventory():
-    actual = inventory()
-    assert json.loads(json.dumps(actual)) == CORPUS["templates"]
-    paths = {template["source"] for template in actual}
+    frozen = CORPUS["templates"]
+    paths = {template["source"] for template in frozen}
     assert Counter(path.split("/")[3] for path in paths) == {"csr": 111, "inst": 17}
-    assert len(actual) == 255
+    assert len(frozen) == 255
     assert CORPUS["baseline"] == "d6b06ca3"
-    assert sum(template["template"].count("<%") for template in actual) == 1746
+    assert sum(template["template"].count("<%") for template in frozen) == 1746
     tags = Counter(
         body
-        for template in actual
+        for template in frozen
         for body in re.findall(r"<%(.*?)%>", template["template"], re.DOTALL)
     )
     assert len(tags) == 49
     assert tags == {entry["body"]: entry["occurrences"] for entry in CORPUS["tag_inventory"]}
+
+    current = native_templates()
+    assert len(current) == 255
+    assert all("<%" not in prose.text for prose in current)
+    assert all("{%" in prose.text or "{{" in prose.text for prose in current)
+    roots = (ROOT / "spec/std/isa", ROOT / "spec/custom/isa")
+    legacy_sources = [
+        path.relative_to(ROOT).as_posix()
+        for root in roots
+        for suffix in ("*.yaml", "*.layout")
+        for path in root.rglob(suffix)
+        if "<%" in path.read_text()
+    ]
+    assert legacy_sources == []
 
 
 @pytest.mark.parametrize("name", CONFIGURATIONS)
 def test_all_frozen_scalar_outputs_and_error_outcomes(name):
     expected_successes = 255 if name in ("cache-small", "cache-large", "h64-mixed-sv57") else 251
     assert check_case(name, captured_inputs(name)) == (expected_successes, 255 - expected_successes)
+
+
+@pytest.mark.parametrize("name", CONFIGURATIONS)
+def test_all_native_source_outputs_and_error_outcomes(name):
+    expected_successes = 255 if name in ("cache-small", "cache-large", "h64-mixed-sv57") else 251
+    assert check_native_case(name, captured_inputs(name)) == (
+        expected_successes,
+        255 - expected_successes,
+    )
 
 
 @pytest.mark.parametrize("name", CONFIGURATIONS)
@@ -224,6 +287,13 @@ def test_supplemental_real_ruby_scalar_captures(name, source_database):
     )
 
 
+@pytest.mark.parametrize("name", tuple(SUPPLEMENT["captures"]))
+def test_supplemental_native_source_outputs(name):
+    assert check_native_case(name, captured_inputs(name, SUPPLEMENT), SUPPLEMENT) == (
+        (251, 4) if name == "mc100-full" else (255, 0)
+    )
+
+
 @pytest.mark.parametrize("name", tuple(NAMES["captures"]))
 def test_templated_names_are_selected_from_database_not_rendered_captures(name, source_database):
     if name == "qc_iu":
@@ -233,15 +303,27 @@ def test_templated_names_are_selected_from_database_not_rendered_captures(name, 
     documents = {}
     for path, source in source_database.documents.items():
         data = dict(source)
-        if data.get("kind") == "exception_code" and data["name"] in NAMES["templates"]:
-            data["name"] = NAMES["templates"][data["name"]]
+        if data.get("kind") == "exception_code" and data["name"] in NATIVE_NAME_TEMPLATES:
+            data["name"] = NATIVE_NAME_TEMPLATES[data["name"]]
             path = f"exception_code/{data['name']}.yaml"
         documents[path] = data
     database = ResolvedDatabase(documents)
     raw = NAMES["captures"][name]["inputs"]["templated_structured_exception_records"]
     assert "value" in raw
-    assert resolve_all_exception_records(database, captured_inputs(name)) == tuple(raw["value"])
-    assert any("Fault" in row["name"] and "<%" in row["var"] for row in raw["value"])
+    native_by_legacy = {
+        NAMES["templates"][record]: template for record, template in NATIVE_NAME_TEMPLATES.items()
+    }
+    expected = tuple(
+        {**row, "var": native_by_legacy.get(row["var"], row["var"])} for row in raw["value"]
+    )
+
+    def sort_key(row):
+        return row["ext"], row["num"], row["var"], row["name"]
+
+    assert sorted(
+        resolve_all_exception_records(database, captured_inputs(name)), key=sort_key
+    ) == sorted(expected, key=sort_key)
+    assert any("Fault" in row["name"] and "{%" in row["var"] for row in expected)
     assert all("<%" not in row["name"] for row in raw["value"])
 
 

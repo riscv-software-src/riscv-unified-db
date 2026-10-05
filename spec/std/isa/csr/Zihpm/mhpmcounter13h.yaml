@@ -19,15 +19,15 @@ description: |
 
   The `hpmcounter13h` CSR is a read-only shadow of this CSR. Access to `hpmcounter13h`
   is controlled with `mcounteren.HPM13`
-  <%- if ext?(:S) -%>
+  {%- if extensions.S -%}
   , `scounteren.HPM13`
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   , and `hcounteren.HPM13`
-  <%- end -%>
-  <%- end -%>
+  {%- endif -%}
+  {%- endif -%}
   as follows:
 
-  <%- if ext?(:H) -%>
+  {%- if extensions.H -%}
   [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
   !===
   .2+h![.rotate]#`mcounteren.HPM13`# .2+h! [.rotate]#`scounteren.HPM13`# .2+h! [.rotate]#`hcounteren.HPM13`#
@@ -40,7 +40,7 @@ description: |
   ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction`
   ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
   !===
-  <%- elsif ext?(:S) -%>
+  {%- elif extensions.S -%}
   [%autowidth,cols="1,1,1,1",separator="!"]
   !===
   .2+h![.rotate]#`mcounteren.HPM13`# .2+h! [.rotate]#`scounteren.HPM13`#
@@ -51,7 +51,7 @@ description: |
   ! 1 ! 0 ! read-only ! `IllegalInstruction`
   ! 1 ! 1 ! read-only ! read-only
   !===
-  <%- else -%>
+  {%- else -%}
   [%autowidth,cols="1,1",separator="!"]
   !===
   .2+h![.rotate]#`mcounteren.HPM13`#
@@ -61,7 +61,7 @@ description: |
   ! 0 ! `IllegalInstruction`
   ! 1 ! read-only
   !===
-  <%- end -%>
+  {%- endif -%}
 definedBy:
   allOf:
     - extension:

@@ -16,6 +16,7 @@ from udb.prose import (
     ParameterState,
     ProseError,
     ProseInputs,
+    native_prose_values,
     render_legacy,
     render_native,
     resolve_all_exception_records,
@@ -129,7 +130,12 @@ def test_structured_exception_names_are_immutable_and_resolved():
         "test",
         extensions={"H": True},
         exception_codes=(
-            CodeRecord(9, "<% if ext?(:H) %>HS<% else %>S<% end %>call", "Scall", ("Sm",)),
+            CodeRecord(
+                9,
+                "{% if extensions.H %}HS{% else %}S{% endif %}call",
+                "Scall",
+                ("Sm",),
+            ),
             CodeRecord(2, "IllegalInstruction", extensions=("Sm",)),
         ),
     )
@@ -221,7 +227,7 @@ def test_all_code_database_names_render_offline_without_source_or_subprocess(tmp
         "kind: extension\nname: B\nversions: [{version: '1.0'}]\n"
         "requirements: {extension: {name: A}}\n"
     )
-    template = "Dynamic<%= MXLEN %>"
+    template = "Dynamic{{ params.MXLEN }}"
     (root / "exception_code" / f"{template}.yaml").write_text(
         f"kind: exception_code\nname: '{template}'\nnum: 3\ndefinedBy: {{extension: {{name: B}}}}\n"
     )
@@ -419,3 +425,64 @@ def test_layout_authoring_can_quote_native_configured_tags_without_a_second_rend
         )
         == "before\n64\nafter\n"
     )
+
+
+def test_native_prose_values_support_the_source_contract():
+    prose = CapturedProse(
+        "{% if extensions.H and extension_queries.S_gt_1_9_1 %}H:S{% endif %}:"
+        "{{ params.MXLEN }}:{{ derived.va_size }}:{{ derived.cache_block_size_log2 }}:"
+        "{{ derived.min_cache_granularity }}:"
+        "{% if derived.has_xlen_32 %}32{% else %}64{% endif %}\n"
+        "{% for row in interrupt_code_rows %}{{ row }}\n{% endfor %}"
+        "{% for row in exception_code_rows %}{{ row }}\n{% endfor %}"
+    )
+    inputs = ProseInputs(
+        "native",
+        {
+            "MXLEN": 64,
+            "CACHE_BLOCK_SIZE": 64,
+            "PMP_GRANULARITY": 5,
+            "PMA_GRANULARITY": 7,
+        },
+        {"H": True, "Sv48": True, "S@> 1.9.1": True},
+        possible_xlens=(32, 64),
+        interrupt_codes=(CodeRecord(7, "Timer"),),
+        exception_codes=(CodeRecord(2, "Illegal"),),
+    )
+    values = native_prose_values(prose, inputs)
+    assert set(values) == {
+        "extensions",
+        "extension_queries",
+        "params",
+        "derived",
+        "interrupt_code_rows",
+        "exception_code_rows",
+    }
+    assert render_native(prose, values) == "H:S:64:48:6:5:32\n! 7 ! Timer\n! 2 ! Illegal\n"
+
+
+def test_native_prose_inputs_are_lazy_and_keep_native_diagnostics():
+    inputs = ProseInputs(
+        "native",
+        {"CACHE_BLOCK_SIZE": "invalid"},
+        {"H": False},
+        possible_xlens=CapturedFailure("LegacyError", "width projection failed"),
+        exception_codes=CapturedFailure("LegacyError", "code projection failed"),
+    )
+    inactive = CapturedProse(
+        "{% if extensions.H %}{{ derived.cache_block_size_log2 }}"
+        "{% for row in exception_code_rows %}{{ row }}{% endfor %}"
+        "{{ derived.has_xlen_32 }}{% endif %}safe"
+    )
+    assert render_native(inactive, native_prose_values(inactive, inputs)) == "safe"
+
+    malformed = CapturedProse("{{ derived.cache_block_size_log2 }}", "cache.yaml")
+    with pytest.raises(ProseError, match="CACHE_BLOCK_SIZE must be an integer") as raised:
+        render_native(malformed, native_prose_values(malformed, inputs))
+    assert raised.value.diagnostic.legacy_error_class is None
+    assert raised.value.diagnostic.observed_inputs == {"CACHE_BLOCK_SIZE": "invalid"}
+
+    failed = CapturedProse("{% if derived.has_xlen_32 %}32{% endif %}", "width.yaml")
+    with pytest.raises(ProseError, match="width projection failed") as captured:
+        render_native(failed, native_prose_values(failed, inputs))
+    assert captured.value.diagnostic.legacy_error_class is None

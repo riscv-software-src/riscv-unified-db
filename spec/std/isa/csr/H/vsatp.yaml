@@ -51,15 +51,15 @@ fields:
       ! Value ! Name ! Description
 
       ! 0 ! Bare a! No translation -> virtual address == physical address
-      <%- if ext?(:Sv39) -%>
+      {%- if extensions.Sv39 -%}
       ! 8 ! Sv39 ! 39-bit virtual address translation
-      <%- end -%>
-      <%- if ext?(:Sv48) -%>
+      {%- endif -%}
+      {%- if extensions.Sv48 -%}
       ! 9 ! Sv48 ! 48-bit virtual address translation
-      <%- end -%>
-      <%- if ext?(:Sv57) -%>
+      {%- endif -%}
+      {%- if extensions.Sv57 -%}
       ! 10 ! Sv57 ! 57-bit virtual address translation
-      <%- end -%>
+      {%- endif -%}
       !===
 
       Any other value shall be ignored on a write.

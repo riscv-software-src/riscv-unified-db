@@ -174,11 +174,7 @@ def test_provider_binding_renders_native_syntax_from_captured_scalar(monkeypatch
     monkeypatch.setattr(
         ProseInputs,
         "from_architecture",
-        classmethod(
-            lambda cls, architecture: SimpleNamespace(
-                extensions={"H": True}, parameters={"MXLEN": 64}
-            )
-        ),
+        classmethod(lambda cls, architecture: ProseInputs("test", {"MXLEN": 64}, {"H": True})),
     )
     arch = SimpleNamespace(database=object())
     record = DatabaseObject(

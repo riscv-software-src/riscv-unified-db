@@ -39,26 +39,26 @@ fields:
     description: |
       Cycle counter.
 
-      <%- if ext?(:Zicntr) -%>
+      {%- if extensions.Zicntr -%}
       Aliased as `cycle.COUNT`.
-      <%- end -%>
+      {%- endif -%}
 
       Increments every cycle unless:
 
-        * `mcountinhibit.CY` <%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.CY`<%- end -%> is set
-        <%- if ext?(:Smcntrpmf) -%>
+        * `mcountinhibit.CY` {%- if extensions.Smcdeleg -%}or its alias `scountinhibit.CY`{%- endif -%} is set
+        {%- if extensions.Smcntrpmf -%}
         * `mcyclecfg.MINH` is set and the current privilege level is M
-        <%- if ext?(:S) -%>
-        * `mcyclecfg.SINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.SINH`<%- end -%> is set and the current privilege level is (H)S
-        <%- end -%>
-        <%- if ext?(:U) -%>
-        * `mcyclecfg.UINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.UINH`<%- end -%> is set and the current privilege level is U
-        <%- end -%>
-        <%- if ext?(:H) -%>
-        * `mcyclecfg.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.VSINH`<%- end -%> is set and the current privilege level is VS
-        * `mcyclecfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `cyclecfg.VUINH`<%- end -%> is set and the current privilege level is VU
-        <%- end -%>
-        <%- end -%>
+        {%- if extensions.S -%}
+        * `mcyclecfg.SINH` {%- if extensions.Ssccfg -%}or its alias `cyclecfg.SINH`{%- endif -%} is set and the current privilege level is (H)S
+        {%- endif -%}
+        {%- if extensions.U -%}
+        * `mcyclecfg.UINH` {%- if extensions.Ssccfg -%}or its alias `cyclecfg.UINH`{%- endif -%} is set and the current privilege level is U
+        {%- endif -%}
+        {%- if extensions.H -%}
+        * `mcyclecfg.VSINH` {%- if extensions.Ssccfg -%}or its alias `cyclecfg.VSINH`{%- endif -%} is set and the current privilege level is VS
+        * `mcyclecfg.VUINH` {%- if extensions.Ssccfg -%}or its alias `cyclecfg.VUINH`{%- endif -%} is set and the current privilege level is VU
+        {%- endif -%}
+        {%- endif -%}
     reset_value: UNDEFINED_LEGAL
     affectedBy: [Zicntr, Smcntrpmf, Smcdeleg, Ssccfg]
 sw_read(): |

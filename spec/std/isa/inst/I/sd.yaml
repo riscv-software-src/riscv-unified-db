@@ -10,9 +10,9 @@ long_name: Store doubleword
 description: |
   For RV64, store 64 bits of data from register `xs2` to an
   address formed by adding `xs1` to a signed offset.
-  <% if ext?(:Zilsd) %>
+  {%- if extensions.Zilsd -%}
   For RV32, store doubleword from even/odd register pair.
-  <% end %>
+  {%- endif -%}
 definedBy:
   anyOf:
     - allOf:
