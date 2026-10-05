@@ -349,8 +349,9 @@ def test_shipped_configuration_solver_construction_and_queries():
         )
         architecture = database.configure(config)
         result = architecture.check()
-        assert result.status is ArchitectureCheckStatus.DEFERRED
-        assert {diagnostic.code for diagnostic in result.diagnostics} == {"idl-deferred"}
+        assert result.status is ArchitectureCheckStatus.VALID
+        assert not result.diagnostics
+        assert all(not condition.has_unresolved for condition, _ in architecture._constraints)
         assert architecture.object_presence(database.instruction("add")) is expected
         if name == "qc_iu":
             assert architecture.extension_presence("H") is QueryPresence.ABSENT

@@ -9,8 +9,8 @@
 | Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
 | Stage 2b: schema validation | Complete locally; CI pending |
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
-| Stage 3: versions, configurations, conditions, and solving | Implemented locally; exact-array correction reviewed and committed; CI pending |
-| Stage 4: IDL compiler and semantic passes | In progress: syntax (branch 13) and expression semantics (branch 14) complete locally; statements (branch 15) implemented and under review |
+| Stage 3: versions, configurations, conditions, and solving | Complete locally, including IDL-backed queries; CI pending |
+| Stage 4: IDL compiler and semantic passes | Complete locally; corrected development-fork CI pending |
 | Stage 5: generators, templates, and document rendering | Pending |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
 
@@ -69,6 +69,10 @@ These are local branches until publication of the PR stack.
 | `migration/python-12-stage3-gates` | `migration/python-11-configured-queries` | Stage 3 integration and installed offline package acceptance gates |
 | `migration/python-13-idl-syntax` | `migration/python-12-stage3-gates` | Pure-Python IDL parser and syntax tree with full-database Ruby parity |
 | `migration/python-14-idl-expressions` | `migration/python-13-idl-syntax` | IDL type system, symbol table, and expression semantics with Ruby oracle parity |
+| `migration/python-15-idl-statements` | `migration/python-14-idl-expressions` | Statements, functions, execution, strictness, and unknown-value semantics |
+| `migration/python-16-idl-architecture` | `migration/python-15-idl-statements` | Captured source providers, native architecture environments, and full-configuration type checking |
+| `migration/python-17-idl-passes` | `migration/python-16-idl-architecture` | Semantic analyses, AsciiDoc source generation, and hart/decode analyses |
+| `migration/python-18-idl-conditions` | `migration/python-17-idl-passes` | Symbolic IDL requirements, completed configured queries, and a small configuration-validation CLI |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -968,4 +972,24 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   stale assignment-binding defects, preserving the raw corpus and every unaffected
   observation. The final genuine four-configuration pass matrix passes 90 cases with
   the 18 original Ruby-unavailable samples explicitly skipped; no unsupported Python
-  skips are introduced. Slice 17 is ready for its owning local commit.
+  skips are introduced. Slice 17 is committed as `266c7d1f` and pushed to the
+  development fork for manually dispatched CI; no pull request was opened.
+- Slice 18's symbolic IDL requirement translation and genuine configured instruction/
+  CSR hooks are integrated and reviewed. Exact solver guards remain intact, bundled
+  configurations now validate, and all seven previously excluded rv32 supervisor
+  extensions are proven absent. The Ruby environment oracle receives only an
+  expected-side catalog proof for unknown version predicates matching no declared
+  version, not weaker production answers or a new Ruby bug correction.
+  The standalone distribution gate covers translated requirements and real public
+  hooks. A small `udb validate-cfg` wrapper now exposes the same semantic check for
+  explicit YAML paths or bundled configuration names, with honest failure exits and
+  source-aware diagnostics. Final integrated Python acceptance passes 3,445 tests with
+  51 existing opt-in or Ruby-unavailable skips. Serial native acceptance also passes
+  the complete frozen four-configuration condition oracle and four genuine environment
+  callback cases. The existing canonical Prism highlighting definition is registered
+  with the documentation site and remains separate from the installed compiler.
+  Development-fork CI exposed older-Python regex portability, oracle setup noise,
+  canonical corpus formatting and a missing test-only C++ compiler; corrections are
+  committed on their owning layers. The older fork run is not green: deliberate
+  schema drift and legacy native backend failures remain explicit follow-up work,
+  not reasons to weaken compiler tests or revert the intended schemas.

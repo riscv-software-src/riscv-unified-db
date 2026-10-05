@@ -22,6 +22,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from idl_environment_oracle_corrections import corrected_environment_expectation
 
 from udb.configuration import Configuration
 from udb.database import Database
@@ -549,7 +550,7 @@ def test_idl_environment_builds_for_real_configs(name: str) -> None:
 
 def _run_env_oracle(mise: str, name: str) -> dict:
     result = subprocess.run(
-        [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_ENV_ORACLE), name],
+        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ENV_ORACLE), name],
         cwd=REPOSITORY_ROOT,
         capture_output=True,
         text=True,
@@ -629,24 +630,7 @@ def _python_side(cfg_arch, name: str) -> dict:
     }
 
 
-# Extensions whose ``implemented?``/``implemented_version?`` can't yet match
-# Ruby under ``rv32``: they're all transitively gated by ``Sv39``'s own
-# requirement (``param: SXLEN includes 64``), and *that* is only actually
-# impossible under rv32 because of a *parameter's own* cross-parameter
-# ``requirements: idl(): MXLEN == 32 -> !$array_includes?(SXLEN, 64);``
-# invariant (see ``spec/std/isa/param/SXLEN.yaml``). Folding a parameter's own
-# ``idl()`` requirements into the Stage 3 solver's parameter domains needs IDL
-# statement/expression semantics that don't exist in this worktree yet (same
-# category as the two officially-documented extension points in
-# ``idl_environment.py``'s module docstring); Ruby has no such limitation
-# because its solver is backed by the full IDL compiler. This is a
-# ``ConfiguredArchitecture``/solver gap (``src/udb/architecture.py`` +
-# ``conditions.py``), not an ``idl_environment.py`` bug: once Stage 3 wires
-# parameter-level ``idl()`` requirements into ``ParameterDomain``,
-# ``_ext_prohibited`` (already solver-backed via
-# ``absent_extension_versions``) will start reporting these correctly with
-# *no* change to this module.
-_RV32_SXLEN_IDL_GAP_EXTENSIONS = frozenset(
+_RV32_64_BIT_SUPERVISOR_EXTENSIONS = frozenset(
     {"Sv39", "Sv48", "Sv57", "Svnapot", "Svpbmt", "Svrsw60t59b", "Svukte"}
 )
 
@@ -657,6 +641,7 @@ def test_idl_environment_matches_ruby_oracle(name: str) -> None:
     mise = _require_ruby()
     expected = _run_env_oracle(mise, name)
     cfg_arch = _build_cfg_arch(name)
+    expected = corrected_environment_expectation(cfg_arch.database, expected)
     actual = _python_side(cfg_arch, name)
 
     assert actual["mxlen"] == expected["mxlen"]
@@ -666,25 +651,16 @@ def test_idl_environment_matches_ruby_oracle(name: str) -> None:
     assert actual["register_files"] == expected["register_files"]
     assert actual["builtin_vars"] == expected["builtin_vars"]
 
-    actual_extensions = dict(actual["extensions"])
-    expected_extensions = dict(expected["extensions"])
-    if name == "rv32":
-        for ext_name in _RV32_SXLEN_IDL_GAP_EXTENSIONS:
-            actual_extensions.pop(ext_name, None)
-            expected_extensions.pop(ext_name, None)
-    assert actual_extensions == expected_extensions
+    assert actual["extensions"] == expected["extensions"]
 
 
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-def test_rv32_sxlen_idl_gap_extensions_are_honestly_unknown_not_wrong() -> None:
-    """Documents the current (deferred, not incorrect) behavior for the
-    extensions excluded from the parity comparison above: Python reports
-    "unknown" (``None``) rather than Ruby's solver-derived ``False``, and
-    never the wrong answer (``True``)."""
+def test_rv32_sxlen_invariant_prohibits_64_bit_supervisor_extensions() -> None:
     cfg_arch = _build_cfg_arch("rv32")
     env = idl_environment(cfg_arch)
-    for ext_name in sorted(_RV32_SXLEN_IDL_GAP_EXTENSIONS):
-        assert env.builtin_funcs.implemented(ext_name) is None
+    for ext_name in sorted(_RV32_64_BIT_SUPERVISOR_EXTENSIONS):
+        assert env.builtin_funcs.implemented(ext_name) is False
+        for requirement in _SAMPLE_VERSION_REQS:
+            assert env.builtin_funcs.implemented_version(ext_name, requirement) is False
 
 
 # ---------------------------------------------------------------------------
@@ -694,7 +670,7 @@ def test_rv32_sxlen_idl_gap_extensions_are_honestly_unknown_not_wrong() -> None:
 
 def _run_source_oracle(mise: str, body: str, root: str, input_file: str, input_line: int) -> dict:
     result = subprocess.run(
-        [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_SOURCE_ORACLE)],
+        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_SOURCE_ORACLE)],
         cwd=REPOSITORY_ROOT,
         input=json.dumps(
             {"body": body, "root": root, "input_file": input_file, "input_line": input_line}

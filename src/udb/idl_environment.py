@@ -72,27 +72,13 @@ Deviations / explicit extension points (not silently wrong)
 4. ``implemented_csr`` **callback: Ruby bug, not mirrored.** See the
    module-level docstring of :func:`_implemented_csr_callback`.
 
-5. **Parameter-level ``requirements: idl(): ...`` invariants are not yet
-   solver-visible.** Extension callbacks query the requested condition through
-   :meth:`ConfiguredArchitecture.condition_presence`, but the Stage 3
-   solver it calls into can only fold in *structural* (schema/extension/xlen)
-   conditions today -- a parameter's own ``requirements: idl(): ...`` field
-   (e.g. ``spec/std/isa/param/SXLEN.yaml``'s
-   ``MXLEN == 32 -> !$array_includes?(SXLEN, 64);``) needs IDL
-   statement/expression evaluation to fold into that parameter's
-   :class:`~udb.domains.ParameterDomain`, which is out of scope here (same
-   "needs a later slice" category as points 1-2 above, just discovered while
-   verifying this module against the Ruby oracle rather than being a
-   documented extension point from the start). Concretely, this means
-   extensions that are *only* prohibited via such a cross-parameter
-   constraint (``Sv39``/``Sv48``/``Sv57``/``Svnapot``/``Svpbmt``/
-   ``Svrsw60t59b``/``Svukte`` under ``rv32``, all transitively gated by
-   ``Sv39``'s ``param: SXLEN includes 64`` requirement) report ``None``
-   ("unknown") where Ruby's IDL-backed solver reports ``False``
-   ("prohibited") -- never the wrong answer, just a currently-undecidable
-   one. No workaround is implemented here; fixing it belongs in
-   ``src/udb/architecture.py``/``domains.py`` once parameter ``idl()``
-   requirements can be evaluated.
+5. **Symbolic IDL requirements.** Architecture construction compiles parameter,
+   extension-version and configuration requirements before solver encoding.
+   Extension callbacks therefore see cross-parameter invariants such as
+   ``MXLEN == 32 -> !$array_includes?(SXLEN, 64);`` and prove the corresponding
+   64-bit supervisor extensions absent under ``rv32``. The translation-only
+   bootstrap stays independent of runtime CSR evaluation and does not query a
+   partly initialized architecture.
 """
 
 from __future__ import annotations
