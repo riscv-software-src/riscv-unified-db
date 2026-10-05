@@ -123,21 +123,6 @@ requirements:
         extension:
           name: H
       then:
-        param:
-          allOf:
-            - name: MIDELEG_DELEGATABLE
-              index: 2
-              equal: true
-            - name: MIDELEG_DELEGATABLE
-              index: 6
-              equal: true
-            - name: MIDELEG_DELEGATABLE
-              index: 10
-              equal: true
-    - if:
-        extension:
-          name: H
-      then:
         allOf:
           # VSSI, VSTI, and VSEI are always delegated to HS-mode when H is implemented
           - param:
