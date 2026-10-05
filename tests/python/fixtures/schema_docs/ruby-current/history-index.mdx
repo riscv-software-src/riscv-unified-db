@@ -1,0 +1,171 @@
+---
+title: Schema Reference
+sidebar_position: 1
+---
+
+
+# Schema Reference
+
+UDB uses JSON Schema to define and validate the structure of YAML files in `spec/`. Each schema is versioned independently — the version shown on each card is that schema's current version.
+
+
+## About Schema Versions
+
+Schemas are versioned independently of the UDB repository. Each schema file declares its version in the `$id` field. When a schema format changes, a new version is created to maintain backward compatibility with existing data files.
+
+
+## Schemas
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', marginBottom: '2rem'}}>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/config_schema">Config Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.2/csr_schema">Csr Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.2</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.3/csr_schema">Csr Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.3</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/exception_code_schema">Exception Code Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/ext_schema">Ext Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.2/ext_schema">Ext Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.2</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/inst_opcode_schema">Inst Opcode Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/inst_schema">Inst Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.2/inst_schema">Inst Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.2</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/inst_subtype_schema">Inst Subtype Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/inst_type_schema">Inst Type Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/inst_var_schema">Inst Var Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/inst_var_type_schema">Inst Var Type Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/inst_variable_metadatas">Inst Variable Metadatas</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/interrupt_code_schema">Interrupt Code Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/manual_schema">Manual Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/manual_version_schema">Manual Version Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/mmr_schema">Mmr Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/non_isa_schema">Non Isa Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/param_schema">Param Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/prm_schema">Prm Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/proc_cert_class_schema">Proc Cert Class Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/proc_cert_model_schema">Proc Cert Model Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/profile_family_schema">Profile Family Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/profile_release_schema">Profile Release Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/profile_schema">Profile Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/register_file_schema">Register File Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/schema_defs">Schema Defs</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.2/schema_defs">Schema Defs</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.2</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.4/schema_defs">Schema Defs</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.4</span>
+</div>
+
+</div>

@@ -1259,7 +1259,7 @@
     },
     {
       "id": "schema-mdx",
-      "status": "pending",
+      "status": "accepted locally: standalone Python API/CLI and repository wrapper; installed and Docusaurus gates passed",
       "legacy_commands": [
         "./bin/chore gen -f schema-docs",
         "schema-docs-all --schema-dir spec/schemas --output-dir doc/docs/schemas --generate-index"
@@ -1282,13 +1282,15 @@
         "Docusaurus schema reference",
         "schema-doc CI immutability"
       ],
-      "prospective_owner": "udb.docs.schema",
+      "prospective_owner": "udb.schema_docs",
       "python_cli": "udb generate schema-docs --schemas DIR --out DIR",
-      "fixtures": ["doc/docs/schemas/*/*.mdx"],
-      "comparison_policy": "byte equality existing-version files, links/anchors/MDX compilation",
+      "fixtures": [
+        "tests/python/fixtures/schema_docs: frozen native current/history/custom MDX, ordering and Psych examples"
+      ],
+      "comparison_policy": "exact native artifact bytes and sets; explicit located presentation limits, protected historical pages; legacy anchors retained, Docusaurus compilation",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: same-version immutability, Docusaurus build"
+        "installed_wheel_sdist_offline": "passed: rebuilt wheel resources/licenses, complete 28-artifact native digest, real API and machine-readable CLI",
+        "repository_ci": "wired: nonwriting schema drift and historical guard; local Docusaurus compiled; deliberate historical drift remains visible"
       }
     },
     {

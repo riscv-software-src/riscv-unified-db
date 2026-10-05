@@ -311,10 +311,13 @@ do_gen_schema_docs() {
     local sha_before
     sha_before=$(find "$UDB_ROOT"/doc/docs/schemas -type f -name "*.mdx" -exec sha256sum {} \; 2>/dev/null | sort | sha256sum)
   fi
-  "$UDB_ROOT/bin/ruby" "$UDB_ROOT/tools/internal-gems/schema_doc_gen/bin/schema-docs-all" \
-    --schema-dir "$UDB_ROOT/spec/schemas" \
-    --output-dir "$UDB_ROOT/doc/docs/schemas" \
-    --generate-index
+  if [ $fail_on_change -eq 1 ]; then
+    "$UDB_ROOT/bin/python" -m udb generate schema-docs \
+      --schemas "$UDB_ROOT/spec/schemas" --out "$UDB_ROOT/doc/docs/schemas" --check || exit $?
+  else
+    "$UDB_ROOT/bin/python" -m udb generate schema-docs \
+      --schemas "$UDB_ROOT/spec/schemas" --out "$UDB_ROOT/doc/docs/schemas" --replace-current || exit $?
+  fi
   if [ $fail_on_change -eq 1 ]; then
     local sha_after
     sha_after=$(find "$UDB_ROOT"/doc/docs/schemas -type f -name "*.mdx" -exec sha256sum {} \; 2>/dev/null | sort | sha256sum)

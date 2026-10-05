@@ -1,0 +1,82 @@
+---
+title: Schema for Non-ISA specification definitions (v0.1)
+sidebar_label: Schema for Non-ISA specification definitions
+custom_edit_url: null
+# This file is auto-generated from non_isa_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Schema for Non-ISA specification definitions
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`non_isa_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/non_isa_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `string` (const: `non_isa_schema.json#`) | ✓ |  |
+| `kind` | `string` (const: `non-isa specification`) | ✓ |  |
+| `name` | `string` | ✓ | Name of the non-ISA specification |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; | ✓ | AsciiDoc description of the specification |
+| `sections` | Array&lt;object&gt; [↓&nbsp;schema](#sections-schema) | ✓ | Organized sections of the specification |
+| `long_name` | `string` |  | Human-readable name for the specification |
+| `version` | `string` (pattern: `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`) |  | Version of this non-ISA specification |
+| `ratification_date` | A specific day in YYYY-MM-DD format |  | Date this specification was ratified or released |
+| `references` | Array&lt;\{`title`, `url`, `description`\}&gt; [↓&nbsp;schema](#references-schema) |  | External references and links |
+| `authors` | Array&lt;\{`name`, `email`, `organization`\}&gt; [↓&nbsp;schema](#authors-schema) |  | Authors of this specification |
+| `license` | License that applies to the textual documentation for this extension |  | License under which this specification is released |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="sections-schema"></a><code>sections</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `title` | `string` | ✓ | Section title |
+| `level` | `integer` |  | AsciiDoc heading level (1-6) |
+| `content` | `string` \| Array&lt;`object`&gt; | ✓ | AsciiDoc content for this section |
+| `when()` | `string` |  | IDL boolean expression. When true, this section applies |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="references-schema"></a><code>references</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `title` | `string` | ✓ |  |
+| `url` | `string` | ✓ |  |
+| `description` | `string` |  |  |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="authors-schema"></a><code>authors</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Author's full name |
+| `email` | `string` |  | Author's email address |
+| `organization` | `object` |  | Author's organization, which should be an RVI member (or individual) |
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

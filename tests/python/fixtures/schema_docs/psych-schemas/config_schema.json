@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "v0.1",
+  "title": "Psych Compatibility",
+  "type": "object",
+  "properties": {
+    "bound": {"$ref": "schema_defs.json#/$defs/bound"},
+    "constant": {"type": "number", "const": 1e20},
+    "choices": {"enum": [1e20, 1e-7, -3832926594478627.5]},
+    "text": {"type": "string", "examples": [{"body": "line1\n\n", "astral": "😀", "merge": "<<"}, "second"]}
+  },
+  "examples": [
+    {"_quick_start": 0, "_title": null, "number": 1e20, "body": "line1\n", "empty": {}, "nil": null},
+    {"_quick_start": "", "_title": false, "number": 1e-7, "sequence": [null, {}, [], true, false]},
+    {"_quick_start": [], "_title": 0, "date": "2024-1-1", "quantity": "1,000", "exponent": "1e3"},
+    {"_quick_start": {}, "_title": 1e20, "symbol": ":sym", "body": "😀", "Y": "y", "merge": "<<"},
+    {"_quick_start": false, "_title": null, "long": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word"},
+    {"_quick_start": null, "_title": false, "body": "first \nsecond", "numbers": [1e20, 1e-7]},
+    [null, ["line1\n\n", "1_", "-1", "line1\nline2"]],
+    1e20
+  ]
+}

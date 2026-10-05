@@ -1,5 +1,13 @@
 version = 1
 
+[[annotations]]
+path = ["tests/python/fixtures/schema_docs/**"]
+SPDX-FileCopyrightText = [
+    "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
+    "2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>",
+]
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
 # For original UDB code
 [[annotations]]
 path = [

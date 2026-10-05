@@ -1,0 +1,38 @@
+{
+  "capture": "real schema-docs-all --generate-index and schema-doc-gen --output",
+  "schemas": {
+    "config_schema.json": "20192f24ed4a627126b722e09e3fd5e3e32e74e05261b8167b75f0664a38846d",
+    "json-schema-draft-07.json": "2378b0b13c4009399e063c4cf16fec4974c4e0a8de66ddb09ea8c0fa99034fc1",
+    "peer_schema.json": "66535cb7bdb754a1be138f96a9998c9360597dd593a19ca887022dc9d5d2a855",
+    "schema_defs.json": "f5c6087a6c5a7cb87af4170542dfd882e59ceb9e1e268e4ca4d67f293535e5bb"
+  },
+  "ruby_sources": {
+    "bin/schema-doc-gen": "68502901bd64e9523648be4cb27e054496717fec4c0d697df8c94eb9d89565ce",
+    "bin/schema-docs-all": "beba424297e5b8a98047e21fc23a37b8d2f07a73d6f39225017c7825ba44a8ce",
+    "lib/schema_doc_gen/index_generator.rb": "07b5cf17330101c688dfb59f026dd0d0c8665b26272996d08ea34fc3292a9dff",
+    "lib/schema_doc_gen/version.rb": "80c471550f5dbaabc39235c78a941e877bab2dd4f20be2a5277703187e8ef85f",
+    "lib/schema_doc_gen.rb": "834ce2cd77edb11f8a2ec2b6b4dbc8e2c48159d7e3d9b41ba0c456456be50b02"
+  },
+  "artifacts": {
+    "index.mdx": "986fbd33175e82445c4f5b4055462e6ad08e1245668208d8189a44275cb84c89",
+    "v0.10/_category_.json": "41e2d9d3ef9699b129d4530bb9bb866da8c9da4db2c7d2f9e6239902b21cceb7",
+    "v0.10/peer_schema.mdx": "8d7115ba2b4c12dad52249c719e6e80fe82f506e446806a214020aef45e4a66c",
+    "v0.2/_category_.json": "cefff3c0223557978a3cc89df602c907ef58c8d2e7b3cfdbcf97e22c1a707734",
+    "v0.2/config_schema.mdx": "12cfa3e989a02288123093465ba9a0b465c93a097aa448c3222dcf286beb4485",
+    "v0.4/_category_.json": "b667a4ff85f16e0c8bfe40e37f22b514b3cb66229db55e8390683920bbda07d0",
+    "v0.4/schema_defs.mdx": "45f821754a92b94cd92ac6052f91fc6426109f6c10a2af7738017baaf6e0369f"
+  },
+  "historical_drift": {
+    "index.mdx": {
+      "tracked_sha256": "dd66746194388e86feefd9db5c86d777489df2bb516e23ac1e264d06ba000c66",
+      "ruby_sha256": "986fbd33175e82445c4f5b4055462e6ad08e1245668208d8189a44275cb84c89"
+    }
+  },
+  "historical_missing": [
+    "v0.10/_category_.json",
+    "v0.10/peer_schema.mdx",
+    "v0.2/config_schema.mdx",
+    "v0.4/_category_.json",
+    "v0.4/schema_defs.mdx"
+  ]
+}

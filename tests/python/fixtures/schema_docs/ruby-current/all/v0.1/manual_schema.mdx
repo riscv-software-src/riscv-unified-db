@@ -1,0 +1,44 @@
+---
+title: Manual Schema (v0.1)
+sidebar_label: Manual Schema
+custom_edit_url: null
+# This file is auto-generated from manual_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+# Manual Schema
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`manual_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/manual_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ |  |
+| `kind` | `any` | ✓ |  |
+| `name` | `string` | ✓ | Name (database key) of this manual |
+| `long_name` | `string` | ✓ | One line description of the manual |
+| `marketing_name` | `string` |  | The publicly displayed manual name |
+| `state` | Ratification state of a specification or extension version: `development` (actively being worked on), `frozen` (feature-complete, under review), `public-review` (open for public comment), `ratification-ready` (approved by the task group, awaiting board vote), `ratified` (officially approved by RISC-V International), or `nonstandard-released` (released but not part of the RISC-V standard). |  | State of this version |
+| `url` | `string` |  | URL to the repository |
+| `license` | License that applies to the textual documentation for this extension |  |  |
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

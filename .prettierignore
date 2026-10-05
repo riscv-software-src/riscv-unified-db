@@ -12,3 +12,5 @@ ext
 tests/python/data/idl/passes.json
 # Preserve frozen configured-prose templates, raw Ruby oracles and whitespace probes.
 tests/python/fixtures/configured_prose*.json
+# Preserve native schema-documentation captures and their hashed input schemas.
+tests/python/fixtures/schema_docs

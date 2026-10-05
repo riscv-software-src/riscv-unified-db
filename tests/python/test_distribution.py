@@ -45,6 +45,26 @@ def test_package_data_contains_raw_sources_and_schemas() -> None:
 
 def _wheel_data(wheel: Path) -> dict[str, str]:
     with zipfile.ZipFile(wheel) as archive:
+        for source in (
+            "src/udb/schema_docs/NOTICE",
+            "LICENSES/BSD-2-Clause.txt",
+            "LICENSE-MIT.txt",
+        ):
+            packaged = next(
+                (
+                    name
+                    for name in archive.namelist()
+                    if name.endswith(f".dist-info/licenses/{source}")
+                ),
+                None,
+            )
+            assert packaged is not None, f"{wheel.name}: missing license {source}"
+            assert archive.read(packaged) == (REPOSITORY_ROOT / source).read_bytes()
+        metadata = next(name for name in archive.namelist() if name.endswith(".dist-info/METADATA"))
+        assert (
+            b"License-Expression: BSD-3-Clause-Clear AND CC-BY-4.0 AND BSD-2-Clause AND MIT\n"
+            in archive.read(metadata)
+        )
         return {
             name: hashlib.sha256(archive.read(name)).hexdigest()
             for name in archive.namelist()
@@ -74,6 +94,12 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
     with tarfile.open(sdist) as archive:
         names = archive.getnames()
         assert any(name.endswith("/doc/stage5-configured-prose.md") for name in names)
+        for source in (
+            "src/udb/schema_docs/NOTICE",
+            "LICENSES/BSD-2-Clause.txt",
+            "LICENSE-MIT.txt",
+        ):
+            assert any(name.endswith(f"/{source}") for name in names), source
         assert any(name.endswith("amoadd.SIZE.AQRL.layout") for name in names)
         assert not any(name.endswith(".erb") for name in names)
         archive.extractall(extracted, filter="data")
