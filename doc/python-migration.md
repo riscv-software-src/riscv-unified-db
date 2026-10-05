@@ -9,8 +9,8 @@
 | Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
 | Stage 2b: schema validation | Complete locally; CI pending |
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
-| Stage 3: versions, configurations, conditions, and solving | Complete locally; CI pending |
-| Stage 4: IDL compiler and semantic passes | In progress: syntax (branch 13) and expression semantics (branch 14) complete locally |
+| Stage 3: versions, configurations, conditions, and solving | Implemented locally; exact-array correction reviewed and committed; CI pending |
+| Stage 4: IDL compiler and semantic passes | In progress: syntax (branch 13) and expression semantics (branch 14) complete locally; statements (branch 15) implemented and under review |
 | Stage 5: generators, templates, and document rendering | Pending |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
 
@@ -30,6 +30,12 @@ a configuration, and compile and analyze IDL. Documented extras provide every
 supported generator. It does not need a repository checkout, Ruby, Bundler,
 Rake, ERB, a network connection at runtime, or system-level installation of
 native libraries and executables used by UDB itself.
+
+AsciiDoc rendering is the sole exception to the Ruby restriction. Python
+generators produce `.adoc` files; an external step renders them using an
+already installed Asciidoctor toolchain, including its official PDF renderer.
+Do not reimplement Asciidoctor. Rendering need not work from a pip-only
+installation and is not part of the standalone installed-package guarantee.
 
 The migration preserves externally observable semantics and artifacts where
 they are intentional. It does not preserve Ruby class layouts, method names,
@@ -176,6 +182,14 @@ Compilers and linters used only to validate generated C++, Go, C, or
 SystemVerilog in project CI are not runtime dependencies of `udb`. Emitting
 those sources from an installed generator must not require such a compiler;
 downstream users may use their own toolchain to compile the result.
+
+Asciidoctor follows the same source-generation boundary. The Python package
+must generate AsciiDoc offline without Ruby. Optional rendering invokes an
+already installed `asciidoctor` or `asciidoctor-pdf` executable, or leaves that
+invocation to an external pipeline. Do not install or download the renderer
+on first use, bundle it into the Python distribution, or replace it with a
+Python renderer. Rendering checks run separately with the external toolchain
+available; pip-install gates require document source generation, not rendering.
 
 Every release candidate must be tested from built artifacts in a clean
 environment:
@@ -472,28 +486,28 @@ resolution, configuration, or IDL behind an extra.
 | Instruction table | Python structured table builder | Canonical table equality |
 | ISA Explorer CSR, extension, and instruction browsers | Python data/table generation and non-ERB templates | DOM/data assertions and browser smoke tests |
 | ISA Explorer XLSX workbook | Python workbook library | Sheet names, cell values/types, formulas, and links |
-| Extension documentation and PDF | `udb[docs]`: Python AsciiDoc generation plus chosen renderer | Semantic AsciiDoc diff and rendered smoke/golden checks |
-| ISA manual, including version/config variants | `udb[docs]`: Python generation and navigation templates | Link check, semantic content diff, and HTML smoke tests |
-| Configuration HTML documentation | `udb[docs]`: consolidate with manual document pipeline | Page set, links, anchors, and content comparison |
-| Processor Requirements Manual PDF | `udb[docs]`: Python document pipeline | Source-content and rendered PDF smoke/golden checks |
-| Instruction appendix AsciiDoc/PDF | `udb[docs]`: Python document pipeline | Existing golden plus rendered artifact check |
-| Profile documents and profile-config generation | `udb[docs]`: Python document/config pipeline | Current profile regression matrix |
-| Portfolio appendices/documents | `udb[docs]`: Python document pipeline | Page/section and content comparison |
+| Extension documentation and PDF | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor rendering | Semantic AsciiDoc diff and external rendered smoke/golden checks |
+| ISA manual, including version/config variants | `udb[docs]`: Python generation and navigation templates; external rendering | Link check, semantic content diff, and external HTML smoke tests |
+| Configuration HTML documentation | `udb[docs]`: consolidate with manual source pipeline; external rendering | Page set, links, anchors, and content comparison |
+| Processor Requirements Manual PDF | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor PDF | Source-content and external rendered PDF smoke/golden checks |
+| Instruction appendix AsciiDoc/PDF | `udb[docs]`: Python AsciiDoc generation; external Asciidoctor PDF | Existing golden plus external rendered artifact check |
+| Profile documents and profile-config generation | `udb[docs]`: Python document/config generation; external rendering | Current profile regression matrix |
+| Portfolio appendices/documents | `udb[docs]`: Python document generation; external rendering | Page/section and content comparison |
 | C++ hart model and decode tree | `udb[sim]`: Python semantic passes and source templates | Generated C++ build/unit tests and RV32/RV64/vector suites |
-| External documentation renderer and links | Python extension/preprocessing layer | Include/link/source mapping corpus |
+| External documentation renderer and links | Retain external Asciidoctor; port UDB-specific preprocessing to Python | Include/link/source mapping corpus |
 | Schema documentation | Replace internal Ruby gem with Python generator | Versioned MDX equality and immutability checks |
-| IDL language documentation/highlighting | Python-compatible highlighter and renderer path | HTML build and representative token classes |
+| IDL language documentation/highlighting | IDL syntax definitions and external document rendering | HTML build and representative token classes |
 | Indexer/Search ingestion | Keep JavaScript only where it is the deployed runtime; feed it Python-produced data | Index schema and query smoke tests |
 | UDB API documentation | Python API documentation | Installed-package import and docs link checks |
 
-The AsciiDoc renderer is a specific architectural decision, not a hidden Ruby
-dependency. Evaluate a Python-native renderer, invoking a distributable Java
-tool, or owning a limited renderer/preprocessor for the constructs UDB uses.
-The selected solution must cover diagrams, PDF/HTML attributes, includes,
-anchors, cross references, Rouge replacement/highlighting, themes, and current
-extensions. It must satisfy offline installation and no-system-install rules.
-Keeping `asciidoctor` as an undocumented Ruby subprocess does not complete this
-stage.
+Retain the official Asciidoctor rendering pipeline rather than choosing or
+implementing another renderer. Python owns document source, UDB-specific
+preprocessing, links, attributes, assets, and syntax definitions. External
+rendering preserves diagrams, PDF/HTML output, includes, anchors, cross
+references, highlighting, and themes. Any optional rendering command calls an
+already installed binary and explicitly reports a missing renderer; it does
+not install Ruby or gems. Producing the `.adoc` files is the installed Python
+capability; rendering them is a separately documented external capability.
 
 ### Acceptance criteria
 
@@ -510,9 +524,11 @@ stage.
   test suites for the configurations currently exercised in CI.
 - All generator CLIs run from offline-installed wheels with their documented
   extras outside the checkout. Core resolution, configuration, and IDL work
-  with the default install.
-- No generator, template, documentation renderer, or highlighter invokes Ruby,
-  Bundler, Rake, ERB, or a downloaded-at-runtime helper.
+  with the default install. Document generators emit AsciiDoc without an
+  installed renderer; rendered checks use a separate external-toolchain gate.
+- No generator, template, or UDB semantic/preprocessing code invokes Ruby,
+  Bundler, Rake, ERB, or a downloaded-at-runtime helper. Optional invocation of
+  the already installed Asciidoctor renderer is the sole Ruby exception.
 
 ## Stage 6: CLI, build, release, and Ruby removal
 
@@ -536,7 +552,8 @@ Implement and cut over:
 - wheel/sdist release preparation, versioning, provenance, supported-platform
   matrices, and an explicit package-index name/ownership decision before any
   publication;
-- contributor setup and documentation that install no Ruby toolchain;
+- contributor setup that needs no Ruby toolchain for UDB itself, with separate
+  documentation for optional external Asciidoctor rendering;
 - removal of gem release workflows, Gemfiles/lockfiles, Sorbet/Tapioca/YARD,
   Ruby coverage jobs, Rakefiles, gem sources, Treetop, ERB templates, and layout
   runtime requirements after their consumers have passed earlier gates.
@@ -551,17 +568,20 @@ not appear as normal imports.
 - A clean checkout can complete setup, smoke tests, schema validation, config
   resolution, IDL type checking, and representative generation using Python
   tooling only.
-- The full regression suite passes with Ruby absent from `PATH` and with no
-  Ruby/Bundler/Rake environment variables or caches.
+- UDB regression gates pass with Ruby absent from `PATH` and with no
+  Ruby/Bundler/Rake environment variables or caches; external Asciidoctor
+  rendering checks run separately with its installed toolchain available.
 - Offline wheel and sdist installation gates pass on every supported platform.
 - `pip install udb` provides bundled standard data and all documented default
   commands; installed-package tests never fall back to checkout files.
 - Repository searches find no first-party `.rb`, `.rake`, `.erb`, Treetop, gem
   metadata, or executable Ruby shebangs, except intentionally retained
   historical artifacts explicitly approved by maintainers.
-- Generated source and documents contain no requirement for Ruby or ERB.
+- Generated source and AsciiDoc require no UDB Ruby or ERB code. Rendering the
+  AsciiDoc may use the external Asciidoctor Ruby toolchain.
 - CI and release workflows contain no gem publication, Ruby setup, Sorbet,
-  Bundler, Rake, or Ruby Asciidoctor steps.
+  Bundler, or Rake for UDB itself. Document-rendering jobs may provision and
+  invoke the external Asciidoctor toolchain.
 - User and contributor documentation describes only the Python architecture
   and current commands.
 
@@ -582,8 +602,9 @@ behind private modules. Public claims and removal follow the gates:
 5. Stage 5 ports low-coupling structured generators first, then documents, then
    the C++ hart and other consumers of advanced IDL analysis. The decision list
    remains the completion checklist.
-6. Stage 6 removes Ruby only after every earlier acceptance gate runs through
-   installed Python artifacts.
+6. Stage 6 removes UDB's Ruby implementation only after every earlier
+   acceptance gate runs through installed Python artifacts; external
+   Asciidoctor rendering remains an explicitly separate gate.
 
 At each gate, record the Python command replacing the old command, the tests
 that establish parity, known intentional differences, and the remaining Ruby
@@ -598,8 +619,10 @@ generator extras with pip in an offline, clean environment and use the bundled
 standard data to perform every supported resolution, configuration, IDL,
 validation, and generation workflow; a repository contributor can regenerate
 and test all tracked sources; all generator decisions above are closed; and
-neither workflow requires Ruby, gem artifacts, Rake, ERB, runtime downloads, or
-system-installed native dependencies used by UDB itself.
+neither source-generation workflow requires Ruby, gem artifacts, Rake, ERB,
+runtime downloads, or system-installed native dependencies used by UDB itself.
+Rendering generated AsciiDoc with an already installed Asciidoctor toolchain
+is the sole permitted Ruby dependency and need not work from a pip-only install.
 
 ## Progress log
 
@@ -879,3 +902,61 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   are unchanged.
 - Statements and functions, whole-configuration type checking, passes, and closing the
   Stage 3 `idl()` deferrals remain for branches 15–18 as planned in `doc/stage4-idl.md`.
+
+### 2026-09-30: Stage 4 integration and prerequisite corrections
+
+- Statement and function semantics passed final cross-family review and are committed
+  locally on branch 15 as `e83cc45c` (original commit `3121ac08` before the local rebase).
+  The exact owning-only tree passes the focused semantic and offline rebuilt-sdist
+  installed-package gates. Architecture compiler, semantic passes, and condition
+  translation remain in isolated integration worktrees; Stage 4 closeout is not complete.
+- Independently reproduced a Python-only defect in branch 12's large-array solver:
+  contradictory membership constraints can return SAT, and a size-65 array model contains
+  only 64 items. Its prefix/tail approximation is not acceptable as exact solving.
+  Correction belongs on branch 12, with sound shared array constraints and explicit
+  concrete-model materialization errors rather than truncated models. Dependent
+  configuration results remain provisional until the corrected solver is integrated.
+- Captured original YAML, IDL, and configuration text now supplies diagnostics and custom
+  source loading without reopening original input directories. These core changes belong
+  to slice 16, not the pending slice 15 commit.
+- Layer-aware captured includes load all four intended configurations. All 50 live
+  conditions match each frozen configuration corpus through both symbolic bootstrap and
+  genuine full-runtime contexts. All four configurations are VALID, the seven rv32
+  supervisor exclusions hold, and actual addi/misa compiler hooks work. Public configured
+  loop-control translation still needs explicit rejection of parameter-dependent bounds
+  and updates; those reads must not bake known parameter values into the condition tree.
+- The standalone pass corpus matches, but independent semantic review found additional
+  pruning, reachability, scope, width, register-discovery and rendered-guard defects.
+  New oracles check evaluated results, reparsed scopes, Boolean truth tables and executed
+  C++ decoder selection; fixes remain on the owning slice 17 worktree.
+- The corrected indexed-array solver passed independent exactness probes and an Opus
+  soundness review. Review exposed a materializable-model selection defect; its follow-up
+  now retries bounded concrete models without capping SAT queries, uses deterministic
+  resource budgets, and reports architecture UNKNOWN results explicitly. Same-review
+  acceptance completed; the owning branch 12 correction is committed as `58f73e24`.
+  Its exact solver/guards are now supplied to every active Stage 4 consumer.
+- The original statement review blockers and two additional unknown-control-flow state
+  defects are corrected and accepted; all 32 affected frozen cases and 48 fields were
+  independently replayed against Ruby. Partially unknown array reads now propagate semantic
+  uncertainty, and immutable configuration tuples remain readable without mutation.
+  Architecture review fixes passed the unchanged public oracles and now support genuine
+  constructors for all four intended configurations, including all eight empty Zcmop bodies.
+  Pass follow-up review accepted lexical loop-index invalidation and partial-array
+  corrections without broad catches. Real-source pass acceptance exposed a CSR descriptor
+  protocol mismatch and qc_iu misa write-context gap; normal public-API oracles now cover
+  those prerequisites and impossible execution XLENs. Full ISA body acceptance, remaining
+  owning CI/install surfaces and final integrated Python validation remain.
+- Preserved all later-layer work before a local-only upstack rebase. Branches 13–15 now
+  descend from accepted exact-solver commit `58f73e24`; every stack layer is aligned.
+  Restored all pending source/test/doc files, including an independently verified
+  byte-for-byte untracked snapshot. No push or pull request was performed.
+- Architecture integration now passes every available body in the real matrix:
+  `_` checks 6,258 contexts, `rv32` 3,658, `rv64` 6,258, and `qc_iu` 884, with no type
+  diagnostics. Optional missing operations are explicitly unavailable in 22, 11, 22,
+  and zero execution-width contexts respectively, rather than fabricated successful
+  bodies. Only `qc_iu` has complete semantic coverage; standard configurations retain
+  the eleven source records without operations. The native CSR protocol, symbolic
+  structural-width reads, source mapping and standalone installed compiler are accepted.
+  Source-only local renames repair `rori`'s decode-name collision and `qc.cm.ilut`'s
+  incorrect compile-time-constant declaration without weakening compiler checks.
+  Slice 16 is ready for its owning local commit; pass and condition layers remain pending.

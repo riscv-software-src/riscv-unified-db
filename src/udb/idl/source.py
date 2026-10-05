@@ -56,6 +56,9 @@ class IdlSource:
             ``line_file_offsets[line]``. This lets diagnostics for IDL
             embedded in a larger (e.g. YAML) file point at real file offsets
             even though `text` was extracted and possibly reflowed.
+        line_start_columns: Optional one-based enclosing-file column for the first
+            character of each extracted line. YAML scalars use this to restore
+            stripped indentation in diagnostics without changing AST serialization.
     """
 
     text: str
@@ -63,6 +66,17 @@ class IdlSource:
     starting_line: int = 0
     starting_offset: int = 0
     line_file_offsets: tuple[int, ...] | None = None
+    line_start_columns: tuple[int, ...] | None = None
+
+    def __post_init__(self) -> None:
+        columns = self.line_start_columns
+        if columns is not None:
+            if not columns or any(
+                not isinstance(column, int) or isinstance(column, bool) or column < 1
+                for column in columns
+            ):
+                raise ValueError("line_start_columns must contain positive integer columns")
+            object.__setattr__(self, "line_start_columns", tuple(columns))
 
     def lineno(self, pos: int) -> int:
         """1-based line number of character offset *pos* in ``text``.
@@ -82,9 +96,14 @@ class IdlSource:
         return self.text.count("\n", 0, pos) + 1 + self.starting_line
 
     def column(self, pos: int) -> int:
-        """1-based column number of character offset *pos* in ``text``."""
+        """1-based source column, accounting for stripped YAML indentation."""
         line_start = self.text.rfind("\n", 0, pos) + 1
-        return pos - line_start + 1
+        if self.line_start_columns is None:
+            return pos - line_start + 1
+        line = self.text.count("\n", 0, pos)
+        columns = self.line_start_columns
+        start_column = columns[line] if line < len(columns) else columns[-1]
+        return start_column + pos - line_start
 
     def _pos_to_file_offset(self, pos: int) -> int:
         """Map a position in ``text`` to a file byte offset via ``line_file_offsets``.
