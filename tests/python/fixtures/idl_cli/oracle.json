@@ -1,0 +1,213 @@
+{
+  "ruby": "ruby 3.4.10 (2026-06-30 revision 2b0b7728dc) +YJIT +PRISM [aarch64-linux]",
+  "revision": "a67618c2cd25ec235ccaa35adfc523ed56ef83ea",
+  "sources": {
+    "tools/ruby-gems/idlc/lib/idlc/cli.rb": "915022fdef15049819f904025c8581d45353e19b5d0451b544ec3fcce9ca9f14",
+    "tools/ruby-gems/idlc/bin/idlc": "8fa609b69ef106003f49bfc5088a7328c09a1fbce30895df1e8db13999a0763d",
+    "tests/python/capture_idl_cli.py": "0ea87c660445d61ec108038a8e3c86880d23af4e10c690fdee8bbf5291a96283",
+    "tests/python/fixtures/idl_cli/functions.isa": "aa54e12ebcf34e06e2626b54af97eb64eb3f1301962d0a02fe544b1e1a338829",
+    "tests/python/fixtures/idl_cli/operation.idl": "f0a369a6a1351e009ef4eac4df8b3b6c328ce7cf80dfd63cc642cb19aa85bf1d",
+    "tests/python/fixtures/idl_cli/operation.yaml": "e17b6a9fb6cb6649cca653422981a38b586b38ed144deedc3a63a3b9c2521437"
+  },
+  "cases": [
+    {
+      "name": "integer",
+      "arguments": ["eval", "1 + 2"],
+      "stdin": null,
+      "status": 0,
+      "stdout": "3\n",
+      "stderr": ""
+    },
+    {
+      "name": "bits",
+      "arguments": ["eval", "8'hff + 8'1"],
+      "stdin": null,
+      "status": 0,
+      "stdout": "0\n",
+      "stderr": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '8'hff + 8'1' is truncated from 256 to 0 because the result is only 8 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+    },
+    {
+      "name": "boolean",
+      "arguments": ["eval", "true && !false"],
+      "stdin": null,
+      "status": 0,
+      "stdout": "true\n",
+      "stderr": ""
+    },
+    {
+      "name": "equality",
+      "arguments": ["eval", "1 == 1"],
+      "stdin": null,
+      "status": 0,
+      "stdout": "true\n",
+      "stderr": ""
+    },
+    {
+      "name": "string",
+      "arguments": ["eval", "\"hello\""],
+      "stdin": null,
+      "status": 0,
+      "stdout": "hello\n",
+      "stderr": ""
+    },
+    {
+      "name": "defines",
+      "arguments": ["eval", "-DA=5", "-DB=A+10", "A+B"],
+      "stdin": null,
+      "status": 0,
+      "stdout": "4\n",
+      "stderr": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of 'A+B' is truncated from 20 to 4 because the result is only 4 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+    },
+    {
+      "name": "define-equality",
+      "arguments": ["eval", "-DA=1==1", "A"],
+      "stdin": null,
+      "status": 0,
+      "stdout": "1\n",
+      "stderr": ""
+    },
+    {
+      "name": "unknown",
+      "arguments": ["eval", "unknown_name"],
+      "stdin": null,
+      "status": 1,
+      "stdout": "",
+      "stderr": "Compiling unknown_name\nIn file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> unknown_name << **HERE**\n\nA type error occurred\n  no symbol named 'unknown_name'\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/ast.rb:398:in 'Idl::AstNode#type_error'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/sorbet-runtime-0.6.13455/lib/types/private/methods/call_validation.rb:331:in 'UnboundMethod#bind_call'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/sorbet-runtime-0.6.13455/lib/types/private/methods/call_validation.rb:331:in 'T::Private::Methods::CallValidation.validate_call'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/sorbet-runtime-0.6.13455/lib/types/private/methods/_methods.rb:463:in 'block in Idl::AstNode#_on_method_added'\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/ast.rb:1099:in 'Idl::IdAst#type_check'\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc.rb:382:in 'Idl::Compiler#compile_expression'\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/cli.rb:63:in 'Idl::Cli#do_eval'\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/cli.rb:194:in 'block (2 levels) in Idl::Cli#run'\n/home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/command.rb:187:in 'Commander::Command#call'\n/home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/command.rb:157:in 'Commander::Command#run'\n/home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/runner.rb:444:in 'Commander::Runner#run_active_command'\n/home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/runner.rb:61:in 'Commander::Runner#run!'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/3.4.0/forwardable.rb:240:in 'Idl::Cli#run!'\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/cli.rb:238:in 'Idl::Cli#run'\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/bin/idlc:10:in '<top (required)>'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/bin/idlc:25:in 'Kernel#load'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/bin/idlc:25:in '<top (required)>'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli/exec.rb:61:in 'Kernel.load'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli/exec.rb:61:in 'Bundler::CLI::Exec#kernel_load'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli/exec.rb:24:in 'Bundler::CLI::Exec#run'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli.rb:509:in 'Bundler::CLI#exec'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor/command.rb:28:in 'Bundler::Thor::Command#run'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor/invocation.rb:127:in 'Bundler::Thor::Invocation#invoke_command'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor.rb:538:in 'Bundler::Thor.dispatch'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli.rb:35:in 'Bundler::CLI.dispatch'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor/base.rb:584:in 'Bundler::Thor::Base::ClassMethods#start'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli.rb:29:in 'Bundler::CLI.start'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/exe/bundle:28:in 'block in <top (required)>'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/friendly_errors.rb:118:in 'Bundler.with_friendly_errors'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/exe/bundle:20:in '<top (required)>'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/bin/bundle:25:in 'Kernel#load'\n/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/bin/bundle:25:in '<main>'\n"
+    },
+    {
+      "name": "bad-expression",
+      "arguments": ["eval", "1 +"],
+      "stdin": null,
+      "status": 1,
+      "stdout": "",
+      "stderr": "bundler: failed to load command: idlc (/home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/bin/idlc)\n/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc.rb:362:in 'Idl::Compiler#compile_expression': While parsing 1 +:1:4 (SyntaxError)\n\nExpected one of [ \\n], '#', 'true', 'false', '[', '$', '(', '{', [a-zA-Z], 'CSR', [1-9], '0b', '0', '0x', [0-9], 'MXLEN', \"'\", '\"', [A-Za-z], '~', '-', '!', 'Bits', [A-Z] at line 1, column 4 (byte 4) after  +\n\n\tfrom /home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/cli.rb:63:in 'Idl::Cli#do_eval'\n\tfrom /home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/cli.rb:194:in 'block (2 levels) in Idl::Cli#run'\n\tfrom /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/command.rb:187:in 'Commander::Command#call'\n\tfrom /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/command.rb:157:in 'Commander::Command#run'\n\tfrom /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/runner.rb:444:in 'Commander::Runner#run_active_command'\n\tfrom /home/jcarlin/.local/share/gem/ruby/3.4.0/gems/commander-5.0.0/lib/commander/runner.rb:61:in 'Commander::Runner#run!'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/3.4.0/forwardable.rb:240:in 'Idl::Cli#run!'\n\tfrom /home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/lib/idlc/cli.rb:238:in 'Idl::Cli#run'\n\tfrom /home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s34-idl-cli/tools/ruby-gems/idlc/bin/idlc:10:in '<top (required)>'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/bin/idlc:25:in 'Kernel#load'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/bin/idlc:25:in '<top (required)>'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli/exec.rb:61:in 'Kernel.load'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli/exec.rb:61:in 'Bundler::CLI::Exec#kernel_load'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli/exec.rb:24:in 'Bundler::CLI::Exec#run'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli.rb:509:in 'Bundler::CLI#exec'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor/command.rb:28:in 'Bundler::Thor::Command#run'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor/invocation.rb:127:in 'Bundler::Thor::Invocation#invoke_command'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor.rb:538:in 'Bundler::Thor.dispatch'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli.rb:35:in 'Bundler::CLI.dispatch'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/vendor/thor/lib/thor/base.rb:584:in 'Bundler::Thor::Base::ClassMethods#start'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/cli.rb:29:in 'Bundler::CLI.start'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/exe/bundle:28:in 'block in <top (required)>'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/lib/bundler/friendly_errors.rb:118:in 'Bundler.with_friendly_errors'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/lib/ruby/gems/3.4.0/gems/bundler-4.0.20/exe/bundle:20:in '<top (required)>'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/bin/bundle:25:in 'Kernel#load'\n\tfrom /home/jcarlin/.local/share/mise/installs/ruby/3.4.10/bin/bundle:25:in '<main>'\n"
+    },
+    {
+      "name": "compile-isa",
+      "arguments": ["compile", "tests/python/fixtures/idl_cli/functions.isa"],
+      "stdin": null,
+      "status": 0,
+      "stdout": "---\nkind: isa\nchildren:\n- kind: function_decl\n  name: increment\n  qualifier: normal\n  return_types:\n  - kind: bits_type\n    width_expr:\n      kind: bits_literal\n      width: '4'\n      value: 8\n      signed: false\n      radix: 10\n      source:\n        file: tests/python/fixtures/idl_cli/functions.isa\n        begin: 208\n        end: 209\n    source:\n      file: tests/python/fixtures/idl_cli/functions.isa\n      begin: 203\n      end: 210\n  arguments:\n  - kind: var_decl\n    type:\n      kind: bits_type\n      width_expr:\n        kind: bits_literal\n        width: '4'\n        value: 8\n        signed: false\n        radix: 10\n        source:\n          file: tests/python/fixtures/idl_cli/functions.isa\n          begin: 228\n          end: 229\n      source:\n        file: tests/python/fixtures/idl_cli/functions.isa\n        begin: 223\n        end: 230\n    name:\n      kind: id\n      name: value\n      source:\n        file: tests/python/fixtures/idl_cli/functions.isa\n        begin: 231\n        end: 236\n    source:\n      file: tests/python/fixtures/idl_cli/functions.isa\n      begin: 223\n      end: 236\n  description: 'Increment a value. '\n  body:\n    kind: function_body\n    stmts:\n    - kind: stmt\n      expr:\n        kind: return_expr\n        exprs:\n        - kind: binary_operator_expr\n          op: \"+\"\n          lhs:\n            kind: id\n            name: value\n            source:\n              file: tests/python/fixtures/idl_cli/functions.isa\n              begin: 290\n              end: 295\n          rhs:\n            kind: bits_literal\n            width: '1'\n            value: 1\n            signed: false\n            radix: 10\n            source:\n              file: tests/python/fixtures/idl_cli/functions.isa\n              begin: 298\n              end: 299\n          source:\n            file: tests/python/fixtures/idl_cli/functions.isa\n            begin: 290\n            end: 299\n        source:\n          file: tests/python/fixtures/idl_cli/functions.isa\n          begin: 283\n          end: 299\n      source:\n        file: tests/python/fixtures/idl_cli/functions.isa\n        begin: 283\n        end: 300\n    source:\n      file: tests/python/fixtures/idl_cli/functions.isa\n      begin: 283\n      end: 301\n  source:\n    file: tests/python/fixtures/idl_cli/functions.isa\n    begin: 172\n    end: 304\nsource:\n  file: tests/python/fixtures/idl_cli/functions.isa\n  begin: 0\n  end: 305\n",
+      "stderr": ""
+    },
+    {
+      "name": "compile-operation",
+      "arguments": [
+        "compile",
+        "--root",
+        "instruction_operation",
+        "tests/python/fixtures/idl_cli/operation.idl"
+      ],
+      "stdin": null,
+      "status": 0,
+      "stdout": "---\nkind: function_body\nstmts:\n- kind: stmt\n  expr:\n    kind: array_element_assignment\n    array:\n      kind: id\n      name: X\n      source:\n        file: tests/python/fixtures/idl_cli/operation.idl\n        begin: 158\n        end: 159\n    index:\n      kind: id\n      name: xd\n      source:\n        file: tests/python/fixtures/idl_cli/operation.idl\n        begin: 160\n        end: 162\n    value:\n      kind: binary_operator_expr\n      op: \"+\"\n      lhs:\n        kind: array_access\n        array:\n          kind: id\n          name: X\n          source:\n            file: tests/python/fixtures/idl_cli/operation.idl\n            begin: 166\n            end: 167\n        index:\n          kind: id\n          name: xs1\n          source:\n            file: tests/python/fixtures/idl_cli/operation.idl\n            begin: 168\n            end: 171\n        source:\n          file: tests/python/fixtures/idl_cli/operation.idl\n          begin: 166\n          end: 173\n      rhs:\n        kind: bits_literal\n        width: '1'\n        value: 1\n        signed: false\n        radix: 10\n        source:\n          file: tests/python/fixtures/idl_cli/operation.idl\n          begin: 175\n          end: 176\n      source:\n        file: tests/python/fixtures/idl_cli/operation.idl\n        begin: 166\n        end: 176\n    source:\n      file: tests/python/fixtures/idl_cli/operation.idl\n      begin: 158\n      end: 176\n  source:\n    file: tests/python/fixtures/idl_cli/operation.idl\n    begin: 158\n    end: 177\nsource:\n  file: tests/python/fixtures/idl_cli/operation.idl\n  begin: 0\n  end: 178\n",
+      "stderr": ""
+    },
+    {
+      "name": "check-stdin",
+      "arguments": ["tc", "inst", "-"],
+      "stdin": "X[2] = 15;\n",
+      "status": 1,
+      "stdout": "  \u001b[1mNAME\u001b[0m:\n\n    IDL Compiler\n\n  \u001b[1mDESCRIPTION\u001b[0m:\n\n    Command line for the IDL reference compiler\n\n  \u001b[1mCOMMANDS\u001b[0m:\n\t\n    compile Compile idl, and return the result\t\t\n    eval    Evaluate an IDL expression\t\t\n    help    Display global or [command] help documentation\t\t\n    tc inst Type check an instruction 'operation()' block. Exits 0 if type checking succeeds, 1 otherwise.\t\n\n  \u001b[1mGLOBAL OPTIONS\u001b[0m:\n\t\n    -h, --help\n        Display help documentation\n\t\n    -v, --version\n        Display version information\n\t\n    -t, --trace\n        Display backtrace when an error occurs\n\t\n",
+      "stderr": "Missing file to type check\n"
+    },
+    {
+      "name": "check-stdin-separated",
+      "arguments": ["tc", "inst", "--", "-"],
+      "stdin": "X[2] = 15;\n",
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "check-decodes",
+      "arguments": [
+        "tc",
+        "inst",
+        "-d",
+        "xd=5",
+        "-d",
+        "xs1=5",
+        "tests/python/fixtures/idl_cli/operation.idl"
+      ],
+      "stdin": null,
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "check-yaml",
+      "arguments": [
+        "tc",
+        "inst",
+        "-k",
+        "operation()",
+        "-d",
+        "xd=5",
+        "-d",
+        "xs1=5",
+        "tests/python/fixtures/idl_cli/operation.yaml"
+      ],
+      "stdin": null,
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "check-undefined",
+      "arguments": [
+        "tc",
+        "inst",
+        "tests/python/fixtures/idl_cli/operation.idl"
+      ],
+      "stdin": null,
+      "status": 1,
+      "stdout": "",
+      "stderr": "error: In file tests/python/fixtures/idl_cli/operation.idl\nOn line 4\nIn the code:\n\n  2: r\n  3: \n  4: X[**HERE** >> xd << **HERE**] = X[xs1] + 1;\n  \n\nA type error occurred\n  no symbol named 'xd'\n. Use --trace to view backtrace\n"
+    },
+    {
+      "name": "check-strict",
+      "arguments": ["tc", "inst", "--strict", "-"],
+      "stdin": "X[2] = 15;\n",
+      "status": 1,
+      "stdout": "  \u001b[1mNAME\u001b[0m:\n\n    IDL Compiler\n\n  \u001b[1mDESCRIPTION\u001b[0m:\n\n    Command line for the IDL reference compiler\n\n  \u001b[1mCOMMANDS\u001b[0m:\n\t\n    compile Compile idl, and return the result\t\t\n    eval    Evaluate an IDL expression\t\t\n    help    Display global or [command] help documentation\t\t\n    tc inst Type check an instruction 'operation()' block. Exits 0 if type checking succeeds, 1 otherwise.\t\n\n  \u001b[1mGLOBAL OPTIONS\u001b[0m:\n\t\n    -h, --help\n        Display help documentation\n\t\n    -v, --version\n        Display version information\n\t\n    -t, --trace\n        Display backtrace when an error occurs\n\t\n",
+      "stderr": "Missing file to type check\n"
+    },
+    {
+      "name": "check-strict-separated",
+      "arguments": ["tc", "inst", "--strict", "--", "-"],
+      "stdin": "X[2] = 15;\n",
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "check-missing-key",
+      "arguments": [
+        "tc",
+        "inst",
+        "-k",
+        "missing",
+        "tests/python/fixtures/idl_cli/operation.yaml"
+      ],
+      "stdin": null,
+      "status": 1,
+      "stdout": "",
+      "stderr": "error: tests/python/fixtures/idl_cli/operation.yaml has no key named 'missing'. Use --trace to view backtrace\n"
+    },
+    {
+      "name": "check-nonstring",
+      "arguments": [
+        "tc",
+        "inst",
+        "-k",
+        "invalid",
+        "tests/python/fixtures/idl_cli/operation.yaml"
+      ],
+      "stdin": null,
+      "status": 1,
+      "stdout": "",
+      "stderr": "error: undefined method 'length' for an instance of Integer. Use --trace to view backtrace\n"
+    }
+  ]
+}
