@@ -163,6 +163,15 @@ namespace udb {
 
   static mpz_class to_gmp(const mpz_class &val) { return val; }
 
+  template <typename T>
+  static uint64_t to_uint64(const T &val) {
+    if constexpr (std::is_integral_v<T>) {
+      return static_cast<uint64_t>(val);
+    } else {
+      return val.get_ui();
+    }
+  }
+
   template <unsigned ToN>
   static typename BitsStorageType<ToN>::type from_gmp(const mpz_class &val) {
     if constexpr (ToN <= 64) {

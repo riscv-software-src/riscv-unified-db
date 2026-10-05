@@ -48,6 +48,18 @@ production fixes, replay, toolchain linking and unchanged limitations.
 
 ## Inventory method and acceptance
 
+### Implemented C++ hart source-generation slice
+
+Layer 31 provides `udb generate cpp-hart`, the public `udb.cpp_hart` API and a
+Python-backed `./do gen:cpp_hart` repository wrapper. It emits the retained
+configuration-specific hart, instruction, CSR, decode and function products,
+shared metadata sources, and the declared static C/C++/GDB/Renode support tree.
+Installed wheels and sdists carry those resources without requiring Ruby, Git,
+a compiler or a network client during generation. Native CMake compilation is
+a separate acceptance boundary. The [C++ hart contract](stage5-cpp-hart.md)
+records exact captures, intentional closed-world selection differences and the
+remaining Renode/instruction-counter limitations.
+
 ### Accepted schema-documentation slice
 
 Layer 24 provides `udb generate schema-docs`, a public `udb.schema_docs` API

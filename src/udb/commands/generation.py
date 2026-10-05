@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import os
 from enum import Enum
 from pathlib import Path
 from typing import Annotated
@@ -198,6 +199,36 @@ def go_encoding(
         arch=arch,
         extension=extension,
         include_all=include_all,
+    )
+
+
+@generate_app.command("cpp-hart", help="Generate retained C++ hart and ISS sources.")
+def cpp_hart(
+    context: typer.Context,
+    output: Annotated[Path, typer.Option("-o", "--output")],
+    config: Annotated[list[str] | None, typer.Option("-c", "--config")] = None,
+    all_configs: Annotated[bool, typer.Option("--all-configs")] = False,
+    config_dir: Annotated[Path | None, typer.Option("--config-dir")] = None,
+    runtime_root: Annotated[Path | None, typer.Option("--runtime-root")] = None,
+    build_name: Annotated[str | None, typer.Option("--build-name")] = None,
+    build_type: Annotated[str, typer.Option("--build-type")] = "RelWithDebInfo",
+    jobs: Annotated[int, typer.Option("-j", "--jobs", min=1)] = min(3, os.cpu_count() or 1),
+    progress: Annotated[bool, typer.Option("--progress")] = False,
+    check: Annotated[bool, typer.Option("--check")] = False,
+) -> None:
+    _run(
+        context,
+        "cpp-hart",
+        output=output,
+        config=list(config or ()),
+        all_configs=all_configs,
+        config_dir=config_dir,
+        runtime_root=runtime_root,
+        build_name=build_name,
+        build_type=build_type,
+        jobs=jobs,
+        show_progress=progress,
+        check=check,
     )
 
 

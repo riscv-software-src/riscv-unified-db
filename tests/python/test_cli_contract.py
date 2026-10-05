@@ -48,6 +48,7 @@ LEAF_HELP = (
     ("generate", "c-encoding"),
     ("generate", "sv-decode"),
     ("generate", "go-encoding"),
+    ("generate", "cpp-hart"),
     ("generate", "instruction-table"),
     ("generate", "extension-document"),
     ("generate", "schema-docs"),

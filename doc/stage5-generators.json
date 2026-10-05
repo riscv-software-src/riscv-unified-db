@@ -302,7 +302,7 @@
     },
     {
       "id": "cpp-hart-source",
-      "status": "pending; Stage4 Python decode/analysis passes exist, ERB/orchestration do not",
+      "status": "implemented locally: standalone Python API/CLI, packaged runtime tree and repository wrapper; installed/native acceptance recorded separately",
       "legacy_commands": [
         "./do gen:cpp_hart CONFIG=rv64 [BUILD_NAME=...] [BUILD_TYPE=debug]"
       ],
@@ -327,13 +327,15 @@
         "ISS/softfloat/Catch2 tests",
         "riscv-tests"
       ],
-      "prospective_owner": "udb.sim.hart",
+      "prospective_owner": "udb.cpp_hart",
       "python_cli": "udb generate cpp-hart --config CFG --build-name NAME --out DIR",
-      "fixtures": ["new generated file manifest/golden pending"],
-      "comparison_policy": "generated C++ symbol and decode semantic comparison; compile & unit/rv32/rv64/vector suites",
+      "fixtures": [
+        "tests/python/fixtures/cpp_hart: frozen native Ruby metadata, small full configuration and C++ semantic probes"
+      ],
+      "comparison_policy": "exact retained product set and resource bytes; native class/decode metadata, whole-header parsing, factory/width/run-loop probes; classified closed-world instruction-selection differences",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: C++23/CMake native tests separately; wheel generation no toolchain/network"
+        "installed_wheel_sdist_offline": "wired: wheel/sdist/rebuilt-wheel resource equality and installed small-config API/CLI generation; native standalone CMake remains a separate gate",
+        "repository_ci": "wired: focused Python generator/emitter suite; retained C++ build/test tasks consume Python-generated sources; broader ISS suites remain separate"
       }
     },
     {

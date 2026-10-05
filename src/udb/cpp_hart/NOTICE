@@ -1,0 +1,10 @@
+The Python C++ hart source generator ports the retained interfaces and rendering
+behavior of backends/cpp_hart_gen, including its templates, gen_cpp.rb and
+template helpers.
+
+The original generator is Copyright (c) Qualcomm Technologies, Inc. and/or its
+subsidiaries, licensed under BSD-3-Clause-Clear. The applicable source notices
+and original runtime asset bytes are retained. The generated tree carries the
+project license texts and NOTICE.
+
+Python port Copyright (c) 2026 Contributors to the RISCV UnifiedDB.

@@ -721,3 +721,41 @@ Ruby oracles and deliberately retained historical drift.
 See [Stage 5 query/report API](stage5-query-reports.md) for `udb.query_reports`,
 immutable outputs, native catalog/configuration selection, encoding-field decoding,
 and the testing module CLI. Permanent installed command naming remains separate.
+
+## C++ hart source generation
+
+Retained C++ hart/ISS source trees are generated offline from configured
+architectures:
+
+```python
+from pathlib import Path
+from udb import Configuration, Database
+from udb.cpp_hart import CppHartGenerator
+
+resolved = Database.bundled().resolve()
+architecture = resolved.configure(Configuration.builtin("rv32"))
+generator = CppHartGenerator([architecture])
+generator.generate(Path("generated-hart"))
+```
+
+`CppHartGenerator.plan()` exposes deterministic output bytes, modes, ownership,
+input hashes and unavailable instruction-operation contexts before writing.
+Multiple configurations share one output tree when `build_name` is supplied.
+`RuntimeResources.from_path(ROOT)` selects an explicit checkout/resource root;
+the default reads the installed package's declared C/C++/GDB/Renode assets.
+Generation itself does not invoke Ruby, Git, CMake, a compiler, a formatter,
+dependency installation or the network.
+
+The CLI is:
+
+```sh
+udb generate cpp-hart -c rv32 -o generated-hart
+udb generate cpp-hart -c rv32 -c rv64 --build-name both -o generated-both
+```
+
+Use global `--database`, `--schema-dir`, and repeatable `--overlay` options for
+explicit caller-owned inputs. Configuration overlays are never discovered implicitly.
+`--config-dir` resolves named YAML selectors used with `--all-configs`.
+`--build-type` accepts `Debug`, `RelWithDebInfo`, `Release` or `Asan`; `--check`
+reports drift without writing. See [the precise C++ source contract](stage5-cpp-hart.md)
+for retained files, native comparison evidence and separate compilation limits.

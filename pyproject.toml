@@ -12,7 +12,7 @@ description = "Python access to the RISC-V Unified Database"
 readme = "doc/python-api.md"
 requires-python = ">=3.12"
 license = "BSD-3-Clause-Clear AND CC-BY-4.0 AND BSD-2-Clause AND MIT AND OFL-1.1 AND mplus"
-license-files = ["LICENSE-BSD-3-Clause-Clear.txt", "LICENSE-CC-BY.txt", "LICENSES/BSD-2-Clause.txt", "LICENSES/OFL-1.1.txt", "LICENSES/mplus.txt", "LICENSE-MIT.txt", "NOTICE", "REUSE.toml", "src/udb/schema_docs/NOTICE", "src/udb/extension_docs/assets/NOTICE.txt", "src/udb/extension_docs/assets/fonts/OFL-M.txt", "src/udb/extension_docs/assets/fonts/OFL-P.txt", "src/udb/extension_docs/assets/fonts/LICENSE-mplus.txt"]
+license-files = ["LICENSE-BSD-3-Clause-Clear.txt", "LICENSE-CC-BY.txt", "LICENSES/BSD-2-Clause.txt", "LICENSES/OFL-1.1.txt", "LICENSES/mplus.txt", "LICENSE-MIT.txt", "NOTICE", "REUSE.toml", "src/udb/schema_docs/NOTICE", "src/udb/cpp_hart/NOTICE", "src/udb/extension_docs/assets/NOTICE.txt", "src/udb/extension_docs/assets/fonts/OFL-M.txt", "src/udb/extension_docs/assets/fonts/OFL-P.txt", "src/udb/extension_docs/assets/fonts/LICENSE-mplus.txt"]
 authors = [{ name = "RISC-V UnifiedDB contributors" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -59,9 +59,23 @@ packages = ["src/udb"]
 
 [tool.hatch.build.targets.sdist]
 include = [
+    "/.toolchain/check_cxx.cmake",
+    "/.toolchain/.build-elfutils.sh",
+    "/backends/cpp_hart_gen/CMakeLists.txt",
+    "/backends/cpp_hart_gen/c/include/udb/*.h",
+    "/backends/cpp_hart_gen/cpp/include/udb/*.hpp",
+    "/backends/cpp_hart_gen/cpp/src/*.cpp",
+    "/backends/cpp_hart_gen/cpp/test/*.cmake",
+    "/backends/cpp_hart_gen/cpp/test/*.cpp",
+    "/backends/cpp_hart_gen/cpp/test/*.hpp",
+    "/backends/cpp_hart_gen/gdb/*.xml",
+    "/backends/cpp_hart_gen/renode/*.cs",
+    "/backends/cpp_hart_gen/renode/*.repl",
+    "/backends/cpp_hart_gen/renode/*.resc",
     "/cfgs/_.yaml",
     "/cfgs/rv32.yaml",
     "/cfgs/rv64.yaml",
+    "/cfgs/rv64-riscv-tests.yaml",
     "/LICENSE-BSD-3-Clause-Clear.txt",
     "/LICENSE-CC-BY.txt",
     "/LICENSES/BSD-2-Clause.txt",
@@ -95,6 +109,7 @@ include = [
     "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicilvl3[01].yaml",
     "/spec/custom/isa/qc_iu/csr/Xqci/qc.mwpstartaddr[0-3].yaml",
     "/spec/custom/isa/qc_iu/csr/Xqci/qc.mwpendaddr[0-3].yaml",
+    "/tests/data/fp/directed/f32_fpgen_expanded.jsonl",
 ]
 
 [tool.ruff]

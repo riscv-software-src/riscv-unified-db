@@ -125,6 +125,9 @@ class ConfiguredArchitecture:
         init=False, repr=False, compare=False
     )
     _condition_binding: IdlConditionBinding = field(init=False, repr=False, compare=False)
+    _condition_presence_cache: dict[Condition, QueryPresence] = field(
+        init=False, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         if not isinstance(self.database, ResolvedDatabase):
@@ -134,6 +137,7 @@ class ConfiguredArchitecture:
         object.__setattr__(
             self, "_condition_binding", IdlConditionBinding(self.database, self.configuration)
         )
+        object.__setattr__(self, "_condition_presence_cache", {})
 
         diagnostics: list[ArchitectureDiagnostic] = []
         catalog = {extension.name: extension.version_set for extension in self.database.extensions}
@@ -225,16 +229,23 @@ class ConfiguredArchitecture:
 
         self._ensure_queryable()
         parsed = self._resolve_condition(parse_condition(condition))
+        cached = self._condition_presence_cache.get(parsed)
+        if cached is not None:
+            return cached
         solver = self._require_solver()
         possible = solver.check((parsed,))
         if possible is SolverStatus.UNSAT:
-            return QueryPresence.ABSENT
-        mandatory = solver.check((negate(parsed),))
-        if mandatory is SolverStatus.UNSAT:
-            return QueryPresence.MANDATORY
-        if possible is SolverStatus.UNKNOWN or mandatory is SolverStatus.UNKNOWN:
-            return QueryPresence.DEFERRED
-        return QueryPresence.POSSIBLE
+            result = QueryPresence.ABSENT
+        else:
+            mandatory = solver.check((negate(parsed),))
+            if mandatory is SolverStatus.UNSAT:
+                result = QueryPresence.MANDATORY
+            elif possible is SolverStatus.UNKNOWN or mandatory is SolverStatus.UNKNOWN:
+                result = QueryPresence.DEFERRED
+            else:
+                result = QueryPresence.POSSIBLE
+        self._condition_presence_cache[parsed] = result
+        return result
 
     def extension_presence(
         self,

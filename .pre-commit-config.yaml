@@ -14,15 +14,15 @@ repos:
       - id: end-of-file-fixer
         priority: 10
         # Exclude reference and generated files
-        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml|hpmcounter.*\.yaml|mhpmevent.*\.yaml|pmp.*\.yaml|mop.*\.yaml|mcountinhibit\.yaml|[smh]counteren\.yaml|scountovf\.yaml|spec/std/isa/inst/Zalrsc/.*\.yaml|spec/std/isa/inst/Zalasr/.*\.yaml|spec/custom/isa/qc_iu/csr/Xqci/qc\.(mclic(ip|ie)[0-7]|mclicilvl(0[0-9]|[12][0-9]|3[01])|mwp(start|end)addr[0-3])\.yaml$|\.github/workflows/regress\.yml|tests/data/golden/.*|^tests/python/fixtures/(schema_docs|query_reports|generic_codegen|extension_docs)/|^src/udb/extension_docs/(assets|templates)/|^tests/python/fixtures/configured_prose[^/]*\.json$)
+        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml|hpmcounter.*\.yaml|mhpmevent.*\.yaml|pmp.*\.yaml|mop.*\.yaml|mcountinhibit\.yaml|[smh]counteren\.yaml|scountovf\.yaml|spec/std/isa/inst/Zalrsc/.*\.yaml|spec/std/isa/inst/Zalasr/.*\.yaml|spec/custom/isa/qc_iu/csr/Xqci/qc\.(mclic(ip|ie)[0-7]|mclicilvl(0[0-9]|[12][0-9]|3[01])|mwp(start|end)addr[0-3])\.yaml$|\.github/workflows/regress\.yml|tests/data/golden/.*|^tests/python/fixtures/(cpp_hart|schema_docs|query_reports|generic_codegen|extension_docs)/|^src/udb/extension_docs/(assets|templates)/|^tests/python/fixtures/configured_prose[^/]*\.json$)
       - id: trailing-whitespace
         priority: 11
         args: [--markdown-linebreak-ext=md]
-        exclude: \.svg$|cfgs/profile/.*\.yaml$|tests/data/golden/.*|^tests/python/fixtures/(schema_docs|query_reports|generic_codegen|extension_docs)/|^src/udb/extension_docs/(assets|templates)/|^tests/python/fixtures/configured_prose[^/]*\.json$
+        exclude: \.svg$|cfgs/profile/.*\.yaml$|tests/data/golden/.*|^tests/python/fixtures/(cpp_hart|schema_docs|query_reports|generic_codegen|extension_docs)/|^src/udb/extension_docs/(assets|templates)/|^tests/python/fixtures/configured_prose[^/]*\.json$
       - id: mixed-line-ending
         priority: 12
         args: ["--fix=lf"]
-        exclude: ^.*\.bat$|^tests/python/fixtures/(schema_docs|query_reports|generic_codegen|extension_docs)/|^src/udb/extension_docs/(assets|templates)/|^tests/python/fixtures/configured_prose[^/]*\.json$
+        exclude: ^.*\.bat$|^tests/python/fixtures/(cpp_hart|schema_docs|query_reports|generic_codegen|extension_docs)/|^src/udb/extension_docs/(assets|templates)/|^tests/python/fixtures/configured_prose[^/]*\.json$
       # Validators (parallel).
       - id: check-case-conflict
         priority: 30
@@ -56,7 +56,7 @@ repos:
         files: \.(hpp|cpp)$
         # TEMPORARILY DISABLE CLANG-FORMAT IN LIBHART
         # WIll RE-ENABLE WHEN NEXT PATCH COMES THROUGH
-        exclude: backends/cpp_hart_gen
+        exclude: backends/cpp_hart_gen|^tests/python/fixtures/cpp_hart/
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.9

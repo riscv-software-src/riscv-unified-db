@@ -413,6 +413,73 @@ def test_global_clone_has_independent_global_bindings() -> None:
     assert "original_only" not in clone
 
 
+def test_frozen_globals_are_copied_on_access_per_clone() -> None:
+    from udb.idl.parser import parse_isa
+
+    symtab = SymbolTable()
+    symtab.add("g", Var("g", BITS8, [1, 2]))
+    symtab.add("h", Var("h", BITS8, 5))
+    parse_isa(
+        "%version: 1.0\nfunction f { returns Bits<8> description { f } body { return h; } }"
+    ).type_check(symtab)
+    symtab.freeze_globals()
+    first = symtab.global_clone()
+    second = first.global_clone()
+
+    first.get("g").value.append(3)
+    first.get("h").value = 6
+    third = first.global_clone()
+    assert symtab.get("g").value == [1, 2]
+    assert second.get("g").value == [1, 2]
+    assert second.get("h").value == 5
+    assert third.get("g").value == [1, 2, 3]
+    assert third.get("h").value == 6
+    assert third.get("g") is not first.get("g")
+
+    assert first.get("f")._symtab is first
+    assert third.get("f")._symtab is third
+    assert symtab.get("f")._symtab is symtab
+    assert first.get("f").func_def_ast is symtab.get("f").func_def_ast
+
+    del first._scopes[0]["h"]
+    assert "h" not in first
+    assert "h" in second
+    assert "h" not in first.global_clone()
+    assert list(first._scopes[0].keys()) == [k for k in symtab._scopes[0] if k != "h"]
+
+
+def _var_state(binding: object) -> object:
+    return binding.value if isinstance(binding, Var) else "other"
+
+
+def test_global_state_keys_compare_logical_global_state() -> None:
+    symtab = SymbolTable()
+    symtab.add("a", Var("a", BITS8, 1))
+    symtab.add("b", Var("b", BITS8, 2))
+    symtab.freeze_globals()
+    first = symtab.global_clone()
+    second = symtab.global_clone()
+    assert first.touched_global_names() == []
+    assert first.get("a").value == 1
+    assert first.touched_global_names() == ["a"]
+    assert first.global_state_key(_var_state) == second.global_state_key(_var_state)
+
+    first.get("b").value = 3
+    assert first.global_state_key(_var_state) != second.global_state_key(_var_state)
+    second.get("b").value = 3
+    assert first.global_state_key(_var_state) == second.global_state_key(_var_state)
+    first.get("b").value = 2
+    assert first.global_state_key(_var_state) == symtab.global_clone().global_state_key(_var_state)
+
+    del second._scopes[0]["a"]
+    assert second.global_state_key(_var_state) != first.global_state_key(_var_state)
+    other = SymbolTable()
+    other.add("a", Var("a", BITS8, 1))
+    other.add("b", Var("b", BITS8, 2))
+    other.freeze_globals()
+    assert other.global_state_key(_var_state) != symtab.global_state_key(_var_state)
+
+
 def test_deep_clone_default_has_independent_var_objects() -> None:
     symtab = SymbolTable()
     symtab.add("global_x", Var("global_x", BITS8, 7))

@@ -457,3 +457,138 @@ def test_explicit_isa_check_rejects_registered_incompatible_global_rhs(text):
 def test_duplicate_source_global_constants_are_rejected():
     with pytest.raises(IdlTypeError, match="already declared in this scope"):
         parse_isa("%version: 1.0\nBits<8> K = 1;\nBits<8> K = 2;").add_global_symbols(SymbolTable())
+
+
+@pytest.mark.parametrize("freeze", [False, True])
+def test_unknown_calls_invalidate_transitive_and_opaque_global_writes(freeze):
+    table = SymbolTable()
+    table.add("b", Var("b", BOOL_TYPE))
+    table.add("counter", Var("counter", BITS8, 5))
+    table.add("other", Var("other", BITS8, 6))
+    table.add("P", Var("P", BITS8, 7, param=True))
+    table.add("C", Var("C", Type(TypeKind.BITS, width=8, qualifiers=(Qualifier.CONST,)), 8))
+    parse_isa(
+        "%version: 1.0\n"
+        "builtin function opaque { description { runtime } }\n"
+        "function inner { description { inner } body { counter = 1; } }\n"
+        "function outer { description { outer } body { inner(); } }\n"
+        "function hidden { description { hidden } body { opaque(); } }"
+    ).type_check(table)
+    if freeze:
+        table.freeze_globals()
+        table = table.global_clone()
+    table.push(None)
+    table.add("__expected_return_type", BITS8)
+
+    for call, cleared in (("outer", {"counter"}), ("hidden", {"counter", "other"})):
+        caller = table.deep_clone()
+        caller.get_global("counter").value = 5
+        node = parse_function_body(f"{call}() if (b); return 4;")
+        node.type_check(caller)
+        with pytest.raises(IdlValueUnknown):
+            node.return_value(caller)
+        for name, value in (("counter", 5), ("other", 6), ("P", 7), ("C", 8)):
+            expected = None if name in cleared else value
+            assert caller.get_global(name).value == expected
+        assert table.get_global("counter").value == 5
+
+
+@pytest.mark.parametrize("freeze", [False, True])
+def test_function_return_values_are_reused_only_for_equal_globals_and_arguments(freeze):
+    table = SymbolTable()
+    table.add("g", Var("g", BITS8, 3))
+    table.add("u", Var("u", BITS8))
+    parse_isa(
+        "%version: 1.0\n"
+        "function scaled { returns Bits<8> arguments Bits<8> x description { scaled } "
+        "body { return x + g; } }\n"
+        "function guarded { returns Bits<8> description { guarded } body { "
+        "if (u == 0) { return 1; } return 2; } }"
+    ).type_check(table)
+    if freeze:
+        table.freeze_globals()
+        table = table.global_clone()
+    table.push(None)
+    table.add("__expected_return_type", BITS8)
+    definition = table.get("scaled").func_def_ast
+    calls = []
+    original = type(definition.body).return_value
+
+    def counting(body, symtab):
+        calls.append(body)
+        return original(body, symtab)
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(type(definition.body), "return_value", counting)
+        assert parse_expression("scaled(1)").value(table) == 4
+        assert parse_expression("scaled(1)").value(table.deep_clone()) == 4
+        assert len(calls) == 1
+        assert parse_expression("scaled(2)").value(table) == 5
+        assert len(calls) == 2
+        changed = table.deep_clone()
+        changed.get_global("g").value = 10
+        assert parse_expression("scaled(1)").value(changed) == 11
+        assert len(calls) == 3
+        unknown = table.deep_clone()
+        unknown.get_global("g").value = None
+        for _ in range(2):
+            with pytest.raises(IdlValueUnknown):
+                parse_expression("scaled(1)").value(unknown)
+        assert len(calls) == 4
+        for _ in range(2):
+            with pytest.raises(IdlValueUnknown):
+                parse_expression("guarded()").value(table)
+        assert len(calls) == 5
+        known = table.deep_clone()
+        known.get_global("u").value = 0
+        assert parse_expression("guarded()").value(known) == 1
+
+
+@pytest.mark.parametrize(
+    ("definitions", "dtype_name", "initial", "expected", "function"),
+    [
+        (
+            (
+                "struct S { Bits<8> x; }\n"
+                "function mutate { returns Bits<8> arguments S s description { mutate } "
+                "body { s.x = 1; return 2; } }\n"
+                "function wrapper { returns Bits<8> arguments S s description { wrapper } "
+                "body { return mutate(s); } }"
+            ),
+            "S",
+            {"x": 0},
+            {"x": 1},
+            "wrapper",
+        ),
+        (
+            (
+                "function mutate { returns Bits<8> arguments Bits<8> a[2] "
+                "description { mutate } body { a[0] = 1; return 2; } }"
+            ),
+            None,
+            [0, 0],
+            [1, 0],
+            "mutate",
+        ),
+    ],
+)
+def test_return_value_cache_does_not_skip_parameter_mutations(
+    definitions, dtype_name, initial, expected, function
+):
+    table = SymbolTable()
+    parse_isa("%version: 1.0\n" + definitions).type_check(table)
+    dtype = (
+        table.get(dtype_name)
+        if dtype_name is not None
+        else Type(TypeKind.ARRAY, width=2, sub_type=BITS8)
+    )
+    table.push(None)
+    table.add("__expected_return_type", BITS8)
+    first, second = initial.copy(), initial.copy()
+    table.add("first", Var("first", dtype, first))
+    table.add("second", Var("second", dtype, second))
+
+    assert parse_expression(f"{function}(first)").value(table) == 2
+    assert parse_expression(f"{function}(second)").value(table) == 2
+    assert first == expected
+    assert second == expected
