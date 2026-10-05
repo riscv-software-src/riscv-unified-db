@@ -49,6 +49,9 @@ packages = ["src/udb"]
 
 [tool.hatch.build.targets.sdist]
 include = [
+    "/cfgs/_.yaml",
+    "/cfgs/rv32.yaml",
+    "/cfgs/rv64.yaml",
     "/LICENSE-BSD-3-Clause-Clear.txt",
     "/LICENSE-CC-BY.txt",
     "/NOTICE",
