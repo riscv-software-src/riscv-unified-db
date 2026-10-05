@@ -49,11 +49,11 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1   # v7.0.1
     - name: Install Python package and test dependencies
       run: >-
-        python -m pip install --only-binary=:all: . pytest build hatchling
+        python -m pip install --only-binary=:all: . pytest pytest-xdist build hatchling
     - name: Install compiler for generated C++ tests
       run: apt-get update -qq && apt-get install -y --no-install-recommends g++
     - name: Verify the package without Ruby or repository setup
-      run: python -m pytest tests/python
+      run: python -m pytest -n auto tests/python
     - name: Build a wheelhouse including runtime dependencies
       run: |
         python -m pip wheel --only-binary=:all: . hatchling --wheel-dir /tmp/udb-wheels
@@ -65,11 +65,14 @@ jobs:
         cp tools/test/check_python_install.py /tmp/check_python_install.py
         cp tools/test/check_python_install_qc_layouts.py /tmp/check_python_install_qc_layouts.py
         cp tests/data/qc_layouts/oracle.json /tmp/qc-layouts-oracle.json
+        cp tests/python/query_reports_installed_acceptance.py /tmp/query_reports_installed_acceptance.py
+        cp -r tests/python/fixtures/query_reports /tmp/query-reports-fixtures
         cd /tmp
         export PATH=/tmp/udb-install/bin
         unset UDB_ROOT PYTHONPATH
         python -I /tmp/check_python_install.py
         python -I /tmp/check_python_install_qc_layouts.py --root /tmp/qc-wheel-acceptance --oracle /tmp/qc-layouts-oracle.json
+        python -I /tmp/query_reports_installed_acceptance.py /tmp/query-reports-fixtures
     - name: Install the source archive offline with build isolation
       run: |
         python -m venv /tmp/udb-sdist-install
@@ -79,6 +82,7 @@ jobs:
         unset UDB_ROOT PYTHONPATH
         python -I /tmp/check_python_install.py
         python -I /tmp/check_python_install_qc_layouts.py --root /tmp/qc-sdist-acceptance --oracle /tmp/qc-layouts-oracle.json
+        python -I /tmp/query_reports_installed_acceptance.py /tmp/query-reports-fixtures
 
   regress-pre-commit:
     runs-on: ubuntu-latest

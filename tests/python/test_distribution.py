@@ -6,7 +6,6 @@ import importlib.util
 import os
 import subprocess
 import sys
-import sysconfig
 import tarfile
 import zipfile
 from pathlib import Path
@@ -224,76 +223,5 @@ for job in qc.jobs:
         [sys.executable, "-c", check_script],
         cwd=tmp_path,
         env=environment,
-        check=True,
-    )
-
-    # Run the CI installed-package gate against the rebuilt wheel so drift in
-    # that script fails locally instead of only in the package workflow.
-    venv = tmp_path / "venv"
-    subprocess.run(
-        [sys.executable, "-m", "venv", str(venv)],
-        check=True,
-    )
-    venv_python = venv / "bin" / "python"
-    purelib = subprocess.run(
-        [str(venv_python), "-c", "import sysconfig; print(sysconfig.get_path('purelib'))"],
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout.strip()
-    subprocess.run(
-        [
-            str(venv_python),
-            "-m",
-            "pip",
-            "install",
-            "--quiet",
-            "--no-deps",
-            "--no-index",
-            "--no-cache-dir",
-            str(rebuilt_wheel),
-        ],
-        check=True,
-    )
-    # Reuse this environment's runtime dependencies after the installed wheel.
-    # A plain path entry does not process the editable-install .pth files there.
-    (Path(purelib) / "udb_test_dependencies.pth").write_text(
-        sysconfig.get_path("purelib") + "\n", encoding="utf-8"
-    )
-    gate_environment = {
-        key: value
-        for key, value in os.environ.items()
-        if key not in {"PYTHONPATH", "UDB_ROOT", "VIRTUAL_ENV"}
-    }
-    gate_environment["PATH"] = str(venv / "bin")
-    subprocess.run(
-        [str(venv_python), "-I", str(REPOSITORY_ROOT / "tools/test/check_python_install.py")],
-        cwd=tmp_path,
-        env=gate_environment,
-        check=True,
-    )
-    subprocess.run(
-        [
-            str(venv_python),
-            "-I",
-            str(sdist_root / "tests/python/query_reports_installed_acceptance.py"),
-            str(sdist_root / "tests/python/fixtures/query_reports"),
-        ],
-        cwd=tmp_path,
-        env=gate_environment,
-        check=True,
-    )
-    subprocess.run(
-        [
-            str(venv_python),
-            "-I",
-            str(REPOSITORY_ROOT / "tools/test/check_python_install_qc_layouts.py"),
-            "--root",
-            str(tmp_path / "qc-installed"),
-            "--oracle",
-            str(REPOSITORY_ROOT / "tests/data/qc_layouts/oracle.json"),
-        ],
-        cwd=tmp_path,
-        env=gate_environment,
         check=True,
     )
