@@ -28,10 +28,12 @@ That said, the following data has been validated against third-party sources:
 ** xref:doc/schemas.adoc[Schema documentation]
 ** xref:doc/idl.adoc[ISA Description Language (IDL)]
 ** xref:doc/ruby.adoc[Ruby database interface]
+** link:doc/python-api.md[Python database package (alpha)]
 * How-to/recipes
 ** xref:CONTRIBUTING.adoc[Contribution guidelines]
 ** xref:doc/data-templates.adoc[Data templates]
 ** xref:doc/riscv-opcodes-migration.adoc[`riscv-opcodes` migration]
+** link:doc/python-migration.md[Ruby-to-Python migration plan]
 
 == Overview
 
@@ -60,9 +62,25 @@ Additionally, developers will be interested in the following:
 
 * `backends`: Tools to generate artifacts (documents, simulators, etc.) from UDB data
 * `tools/ruby-gems`: Ruby gem libraries for interacting with UDB / IDL
+* `src/udb`: Python package for reading the bundled standard ISA source data
 * `bin`: Wrapper scripts to run commands in the development environment
 
 == Getting Started
+
+=== Python library (alpha)
+
+To query the bundled standard ISA source data, install the Python package from this checkout:
+
+[source,bash]
+----
+python -m pip install .
+udb show instruction add
+----
+
+This package needs Python 3.12 or newer and installs its Python dependencies automatically.
+It runs without Ruby or repository setup. It currently exposes raw records; inheritance,
+configuration resolution, IDL compilation, and generators are covered by the ongoing
+link:doc/python-migration.md[migration plan]. See the link:doc/python-api.md[Python API guide].
 
 === Prerequisites
 

@@ -31,6 +31,55 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  regress-python-package:
+    name: Python package (${{ matrix.python }})
+    runs-on: ubuntu-latest
+    container: python:${{ matrix.python }}-slim
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.12", "3.14"]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install Python package and test dependencies
+        run: python -m pip install . pytest build hatchling
+      - name: Verify the package without Ruby or repository setup
+        run: python -m pytest tests/python
+      - name: Build a wheelhouse including runtime dependencies
+        run: |
+          python -m pip wheel . hatchling --wheel-dir /tmp/udb-wheels
+          python -m build --sdist --outdir /tmp/udb-sdist
+      - name: Install offline and query outside the checkout
+        run: |
+          python -m venv /tmp/udb-install
+          /tmp/udb-install/bin/python -m pip install --no-index --find-links /tmp/udb-wheels udb
+          cd /tmp
+          export PATH=/tmp/udb-install/bin
+          unset UDB_ROOT PYTHONPATH
+          python -I - <<'PY'
+          from udb import Database
+          database = Database.bundled()
+          assert database.extension("I").name == "I"
+          assert database.instruction("add")["encoding"]["match"].endswith("0110011")
+          assert database.csr("mhpmcounter3").name == "mhpmcounter3"
+          assert len(database.objects()) > 2000
+          PY
+          udb show instruction add
+      - name: Install the source archive offline with build isolation
+        run: |
+          python -m venv /tmp/udb-sdist-install
+          /tmp/udb-sdist-install/bin/python -m pip install --no-index --find-links /tmp/udb-wheels /tmp/udb-sdist/udb-*.tar.gz
+          cd /tmp
+          export PATH=/tmp/udb-sdist-install/bin
+          unset UDB_ROOT PYTHONPATH
+          python -I - <<'PY'
+          from udb import Database
+          database = Database.bundled()
+          assert database.extension("Zvkg").name == "Zvkg"
+          assert database.csr("mhpmcounter3").name == "mhpmcounter3"
+          assert len(database.objects()) > 2000
+          PY
+
   never-runs:
     # this just exists so that renovate can keep action version pointers up-to-date
     runs-on: ubuntu-latest
