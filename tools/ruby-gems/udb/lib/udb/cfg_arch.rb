@@ -945,6 +945,85 @@ module Udb
     # @deprecated in favor of implemented_extension_versions
     def transitive_implemented_extension_versions = implemented_extension_versions
 
+    # Canonical single-letter RISC-V ISA ordering per RISC-V Unprivileged Spec Ch. 37
+    SINGLE_LETTER_ISA_ORDER = ["I", "E", "M", "A", "F", "D", "G", "Q", "C", "B", "K", "J", "P", "V", "H"].freeze
+
+    # Non-ISA container/privilege extensions that should be excluded from toolchain -march strings by default
+    NON_ISA_EXTENSION_PREFIXES = ["Sm", "Ss", "Sd", "Su", "Sha", "Shc", "Shg", "Sht", "Shv"].freeze
+
+    # Generates a canonical RISC-V -march ISA string per RISC-V Unprivileged ISA Specification Ch. 37
+    sig {
+      params(
+        include_versions: T::Boolean,
+        include_non_isa: T::Boolean
+      ).returns(String)
+    }
+    def march_string(include_versions: false, include_non_isa: false)
+      ext_vers =
+        if fully_configured?
+          implemented_extension_versions
+        else
+          mandatory_extension_reqs.map { |req| req.satisfying_versions.first }.compact.uniq
+        end
+
+      filtered_ext_vers = ext_vers.reject do |ext_ver|
+        !include_non_isa && NON_ISA_EXTENSION_PREFIXES.any? { |prefix| ext_ver.name.start_with?(prefix) }
+      end
+
+      xlen = param_values["MXLEN"] || 64
+
+      base_arch = "rv#{xlen}"
+
+      single_letters = []
+      multi_letters = []
+
+      filtered_ext_vers.each do |ext_ver|
+        if ext_ver.name.length == 1
+          single_letters << ext_ver
+        else
+          multi_letters << ext_ver
+        end
+      end
+
+      sorted_single = single_letters.sort_by do |ev|
+        idx = SINGLE_LETTER_ISA_ORDER.index(ev.name)
+        idx.nil? ? 999 : idx
+      end
+
+      single_str = ""
+      sorted_single.each do |ev|
+        single_str += ev.name.downcase
+        if include_versions
+          single_str += ev.version_str.tr(".", "p")
+        end
+      end
+
+      sorted_multi = multi_letters.sort_by do |ev|
+        prefix_order = case ev.name
+                       when /^Z/i then 1
+                       when /^S/i then 2
+                       when /^X/i then 3
+                       else 4
+                       end
+        [prefix_order, ev.name.downcase]
+      end
+
+      multi_strs = sorted_multi.map do |ev|
+        m_str = ev.name.downcase
+        if include_versions
+          m_str += ev.version_str.tr(".", "p")
+        end
+        m_str
+      end
+
+      result = base_arch + single_str
+      unless multi_strs.empty?
+        result += "_" + multi_strs.join("_")
+      end
+
+      result
+    end
+
     sig { params(name: String, requirements: T.any(String, T::Array[String], RequirementSpec, T::Array[RequirementSpec])).returns(ExtensionRequirement) }
     def extension_requirement(name, requirements)
       requirement_specs =

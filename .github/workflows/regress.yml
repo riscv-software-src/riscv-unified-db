@@ -526,6 +526,7 @@ jobs:
           - z3_extensions
           - z3_finite_array
           - z3_parameter_constraints
+          - march_string
   regress-gen-go:
     runs-on: ubuntu-latest
     steps:

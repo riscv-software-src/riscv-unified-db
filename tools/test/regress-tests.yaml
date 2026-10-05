@@ -181,6 +181,7 @@ tests:
           - z3_extensions
           - z3_finite_array
           - z3_parameter_constraints
+          - march_string
     test:
       - name: Run udb gem ${{ matrix.test }} unit tests
         run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
