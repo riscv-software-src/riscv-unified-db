@@ -22,6 +22,7 @@ class GeneratedFile:
     owner: str
     dependencies: tuple[PurePosixPath, ...]
     mode: int = 0o444
+    overwrite_prefixes: tuple[bytes, ...] = ()
 
 
 class AuthoringPlan:
@@ -35,6 +36,7 @@ class AuthoringPlan:
                 owner=output.owner,
                 dependencies=tuple(PurePosixPath(path) for path in output.dependencies),
                 mode=output.mode,
+                overwrite_prefixes=tuple(output.overwrite_prefixes),
             )
             for output in outputs
         )
@@ -51,6 +53,10 @@ class AuthoringPlan:
                 raise AuthoringError(
                     f"{output.path}: invalid generated output mode {output.mode:#o}"
                 )
+            if any(
+                not isinstance(prefix, bytes) or not prefix for prefix in output.overwrite_prefixes
+            ):
+                raise AuthoringError(f"{output.path}: overwrite prefixes must be nonempty bytes")
             previous = owners.get(output.path)
             if previous is not None:
                 raise AuthoringError(
@@ -132,6 +138,14 @@ class AuthoringPlan:
                 raise AuthoringError(
                     f"cannot inspect generated output {target}: {error}"
                 ) from error
+            if (
+                actual is not None
+                and output.overwrite_prefixes
+                and not actual.startswith(output.overwrite_prefixes)
+            ):
+                raise AuthoringError(
+                    f"{output.path}: refusing to overwrite a file without an allowed generated header"
+                )
             if actual == output.content:
                 if not check and target.is_file():
                     try:
