@@ -427,8 +427,9 @@ do_gen_profile_cfgs() {
 do_gen_xqci_golden() {
   echo "Generating Xqci golden adoc"
   local xqci_version
-  xqci_version=$("${UDB_ROOT}"/bin/bundle exec ruby -e "require 'yaml'; puts YAML.load_file('spec/custom/isa/qc_iu/ext/Xqci.yaml')['versions'].last['version']" | tr -d '\r\n')
-  "${UDB_ROOT}"/bin/bundle exec ruby tools/scripts/gen_xqci.rb
+  xqci_version=$("${UDB_ROOT}"/python -c \
+    "from ruamel.yaml import YAML; print(YAML(typ='safe').load(open('spec/custom/isa/qc_iu/ext/Xqci.yaml'))['versions'][-1]['version'])")
+  "${UDB_ROOT}"/python tools/scripts/gen_xqci.py --format adoc
   mkdir -p tests/data/golden
   # Remove any stale golden files from previous versions
   rm -f tests/data/golden/Xqci@*.adoc

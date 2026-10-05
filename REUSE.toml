@@ -132,3 +132,87 @@ SPDX-License-Identifier = "CC0-1.0"
 path = ["tests/python/data/idl/**"]
 SPDX-FileCopyrightText = "2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>"
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+[[annotations]]
+path = ["tests/python/fixtures/extension_docs/**"]
+precedence = "override"
+SPDX-FileCopyrightText = [
+    "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
+    "2017-2026 Contributors to the RISCV ISA Manual <https://github.com/riscv/riscv-isa-manual>",
+    "2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>",
+]
+SPDX-License-Identifier = "BSD-3-Clause-Clear AND CC-BY-4.0"
+
+[[annotations]]
+path = ["src/udb/extension_docs/templates/**"]
+precedence = "override"
+SPDX-FileCopyrightText = [
+    "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
+    "2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>",
+]
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/fonts/JetBrainsMono-*.ttf"]
+precedence = "override"
+SPDX-FileCopyrightText = "2020 The JetBrains Mono Project Authors"
+SPDX-License-Identifier = "OFL-1.1"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/fonts/Montserrat-*.ttf"]
+precedence = "override"
+SPDX-FileCopyrightText = "2011 The Montserrat Project Authors"
+SPDX-License-Identifier = "OFL-1.1"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/fonts/Petrona*.ttf"]
+precedence = "override"
+SPDX-FileCopyrightText = "2019 The Petrona Project Authors"
+SPDX-License-Identifier = "OFL-1.1"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/fonts/cmunbt*.ttf"]
+precedence = "override"
+SPDX-FileCopyrightText = "Andrey V. Panov"
+SPDX-License-Identifier = "OFL-1.1"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/fonts/mplus*.ttf"]
+precedence = "override"
+SPDX-FileCopyrightText = "2012 M+ FONTS PROJECT"
+SPDX-License-Identifier = "mplus"
+
+[[annotations]]
+path = [
+    "src/udb/extension_docs/assets/LICENSE",
+    "src/udb/extension_docs/assets/fonts/OFL1.txt",
+    "src/udb/extension_docs/assets/images/**",
+    "src/udb/extension_docs/assets/themes/riscv-pdf.yml",
+]
+precedence = "override"
+SPDX-FileCopyrightText = "RISC-V International and contributors"
+SPDX-License-Identifier = "CC-BY-4.0"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/themes/qc-pdf.yml"]
+precedence = "override"
+SPDX-FileCopyrightText = "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries."
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/fonts/OFL-M.txt", "src/udb/extension_docs/assets/fonts/OFL-P.txt"]
+precedence = "override"
+SPDX-FileCopyrightText = "The Montserrat and Petrona Project Authors"
+SPDX-License-Identifier = "OFL-1.1"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/fonts/LICENSE-mplus.txt"]
+precedence = "override"
+SPDX-FileCopyrightText = "2002-2019 M+ FONTS PROJECT"
+SPDX-License-Identifier = "mplus"
+
+[[annotations]]
+path = ["src/udb/extension_docs/assets/manifest.json", "src/udb/extension_docs/assets/NOTICE.txt"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>"
+SPDX-License-Identifier = "BSD-3-Clause-Clear"

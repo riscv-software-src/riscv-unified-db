@@ -23,6 +23,7 @@ doc/build
 # doc/package-lock.json is intentionally absent — the root package-lock.json is the lockfile
 _site
 images
+!src/udb/extension_docs/assets/images/
 __pycache__/
 *.pyc
 .pytest_cache/

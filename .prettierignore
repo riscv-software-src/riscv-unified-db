@@ -18,3 +18,7 @@ tests/python/fixtures/schema_docs
 tests/python/fixtures/query_reports
 # Preserve native generic-generator source and artifact captures byte-for-byte.
 tests/python/fixtures/generic_codegen
+# Preserve native extension-document captures and packaged renderer resources byte-for-byte.
+tests/python/fixtures/extension_docs
+src/udb/extension_docs/assets
+src/udb/extension_docs/templates

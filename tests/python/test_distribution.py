@@ -40,6 +40,10 @@ def test_package_data_contains_raw_sources_and_schemas() -> None:
     assert "udb/_data/isa/prose/interrupts.adoc" in destinations
     assert "udb/_data/schemas/inst_schema.json" in destinations
     assert "udb/_data/layouts/inst/Zaamo/amoadd.SIZE.AQRL.layout" in destinations
+    assert "udb/extension_docs/assets/manifest.json" in destinations
+    assert "udb/extension_docs/assets/fonts/JetBrainsMono-Regular.ttf" in destinations
+    assert "udb/extension_docs/assets/images/wavedrom/float-csr.adoc" in destinations
+    assert "udb/extension_docs/templates/header.adoc" in destinations
     assert not any(destination.endswith(".erb") for destination in destinations)
 
 
@@ -47,7 +51,13 @@ def _wheel_data(wheel: Path) -> dict[str, str]:
     with zipfile.ZipFile(wheel) as archive:
         for source in (
             "src/udb/schema_docs/NOTICE",
+            "src/udb/extension_docs/assets/NOTICE.txt",
+            "src/udb/extension_docs/assets/fonts/OFL-M.txt",
+            "src/udb/extension_docs/assets/fonts/OFL-P.txt",
+            "src/udb/extension_docs/assets/fonts/LICENSE-mplus.txt",
             "LICENSES/BSD-2-Clause.txt",
+            "LICENSES/OFL-1.1.txt",
+            "LICENSES/mplus.txt",
             "LICENSE-MIT.txt",
         ):
             packaged = next(
@@ -62,14 +72,16 @@ def _wheel_data(wheel: Path) -> dict[str, str]:
             assert archive.read(packaged) == (REPOSITORY_ROOT / source).read_bytes()
         metadata = next(name for name in archive.namelist() if name.endswith(".dist-info/METADATA"))
         assert (
-            b"License-Expression: BSD-3-Clause-Clear AND CC-BY-4.0 AND BSD-2-Clause AND MIT\n"
+            b"License-Expression: BSD-3-Clause-Clear AND CC-BY-4.0 AND BSD-2-Clause AND MIT AND OFL-1.1 AND mplus\n"
             in archive.read(metadata)
         )
         assert any(name.endswith("udb/query_reports/matching.py") for name in archive.namelist())
         return {
             name: hashlib.sha256(archive.read(name)).hexdigest()
             for name in archive.namelist()
-            if name.startswith("udb/_data/")
+            if name.startswith(
+                ("udb/_data/", "udb/extension_docs/assets/", "udb/extension_docs/templates/")
+            )
         }
 
 
@@ -97,7 +109,13 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
         assert any(name.endswith("/doc/stage5-configured-prose.md") for name in names)
         for source in (
             "src/udb/schema_docs/NOTICE",
+            "src/udb/extension_docs/assets/NOTICE.txt",
+            "src/udb/extension_docs/assets/fonts/OFL-M.txt",
+            "src/udb/extension_docs/assets/fonts/OFL-P.txt",
+            "src/udb/extension_docs/assets/fonts/LICENSE-mplus.txt",
             "LICENSES/BSD-2-Clause.txt",
+            "LICENSES/OFL-1.1.txt",
+            "LICENSES/mplus.txt",
             "LICENSE-MIT.txt",
         ):
             assert any(name.endswith(f"/{source}") for name in names), source
@@ -165,6 +183,8 @@ assert '.whl/udb/' in udb.__file__
 assert (files('udb') / '_data' / 'isa' / 'ext' / 'Zvkg.yaml').is_file()
 assert (files('udb') / '_data' / 'schemas' / 'inst_schema.json').is_file()
 assert (files('udb') / '_data' / 'layouts' / 'inst' / 'Zaamo' / 'amoadd.SIZE.AQRL.layout').is_file()
+assert (files('udb') / 'extension_docs' / 'assets' / 'fonts' / 'JetBrainsMono-Regular.ttf').is_file()
+assert (files('udb') / 'extension_docs' / 'templates' / 'header.adoc').is_file()
 assert udb.Database.bundled().extension('Zvkg').name == 'Zvkg'
 resolved = udb.Database.bundled().resolve(validate=True)
 assert resolved.profile('RVI20U64')['extensions']['I']['presence'] == 'mandatory'

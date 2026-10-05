@@ -1,0 +1,208 @@
+{
+  "root": "/home/jcarlin/riscv-projects/riscv-unified-db",
+  "head": "a67618c2cd25ec235ccaa35adfc523ed56ef83ea",
+  "outcomes": [
+    {
+      "id": "zba-all",
+      "cfg": "_",
+      "selectors": [
+        "Zba"
+      ],
+      "argv": [
+        "-c",
+        "_",
+        "-o",
+        "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s33-extension-documents/tests/python/fixtures/extension_docs/zba-all",
+        "-b",
+        "zba-all",
+        "Zba"
+      ],
+      "ok": true,
+      "artifact": "zba-all/zba-all.adoc",
+      "sha256": "41cd28cd94e9df430d85e402d2e4abfd2e8a4fcdd3fedd449c15dc4d3aa27b44",
+      "bytes": 39430
+    },
+    {
+      "id": "zba-latest",
+      "cfg": "rv64",
+      "selectors": [
+        "Zba@latest"
+      ],
+      "argv": [
+        "-c",
+        "rv64",
+        "-o",
+        "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s33-extension-documents/tests/python/fixtures/extension_docs/zba-latest",
+        "-b",
+        "zba-latest",
+        "Zba@latest"
+      ],
+      "ok": false,
+      "error": {
+        "class": "NoMethodError",
+        "message": "undefined method 'each' for nil",
+        "backtrace": [
+          "/home/jcarlin/riscv-projects/riscv-unified-db/tools/ruby-gems/udb-gen/lib/udb-gen/generators/ext_doc/generator.rb:136:in 'UdbGen::GenExtPdfOptions#gen_adoc'",
+          "tests/python/ruby_extension_documents_oracle.rb:31:in 'block in <main>'",
+          "tests/python/ruby_extension_documents_oracle.rb:24:in 'Array#each'",
+          "tests/python/ruby_extension_documents_oracle.rb:24:in '<main>'"
+        ]
+      }
+    },
+    {
+      "id": "zicsr-all",
+      "cfg": "_",
+      "selectors": [
+        "Zicsr"
+      ],
+      "argv": [
+        "-c",
+        "_",
+        "-o",
+        "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s33-extension-documents/tests/python/fixtures/extension_docs/zicsr-all",
+        "-b",
+        "zicsr-all",
+        "Zicsr"
+      ],
+      "ok": true,
+      "artifact": "zicsr-all/zicsr-all.adoc",
+      "sha256": "365f648d65c22b6333bfbaad551b77e19503d625643b244152f927b96a0cd6ba",
+      "bytes": 781422
+    },
+    {
+      "id": "zicsr-full",
+      "cfg": "/home/jcarlin/riscv-projects/riscv-unified-db/cfgs/mc100-32-full-example.yaml",
+      "selectors": [
+        "Zicsr"
+      ],
+      "argv": [
+        "-c",
+        "/home/jcarlin/riscv-projects/riscv-unified-db/cfgs/mc100-32-full-example.yaml",
+        "-o",
+        "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s33-extension-documents/tests/python/fixtures/extension_docs/zicsr-full",
+        "-b",
+        "zicsr-full",
+        "Zicsr"
+      ],
+      "ok": true,
+      "artifact": "zicsr-full/zicsr-full.adoc",
+      "sha256": "7e4c675bb557184a920e7a26d27769498cf2aa75cfa5a447b625809e02c17f10",
+      "bytes": 710020
+    },
+    {
+      "id": "qcicsr",
+      "cfg": "qc_iu",
+      "selectors": [
+        "Xqcicsr"
+      ],
+      "argv": [
+        "-c",
+        "qc_iu",
+        "-o",
+        "/home/jcarlin/.copilot/session-state/15e2e858-193b-489f-9456-82143fc6a663/files/worktrees/s33-extension-documents/tests/python/fixtures/extension_docs/qcicsr",
+        "-b",
+        "qcicsr",
+        "-i",
+        "--no-csr-field-desc",
+        "Xqcicsr"
+      ],
+      "ok": true,
+      "artifact": "qcicsr/qcicsr.adoc",
+      "sha256": "6e40d46ec4d9881fdf5114cfe994f40307adaac9503ec9a3f720f8a8586d79be",
+      "bytes": 9348
+    },
+    {
+      "id": "xqci-original-script",
+      "cfg": "qc_iu",
+      "command": "/home/jcarlin/riscv-projects/riscv-unified-db/bin/udb-gen ext-doc --theme=/home/jcarlin/riscv-projects/riscv-unified-db/tools/ruby-gems/udb-gen/themes/qc-pdf.yml --images=/home/jcarlin/riscv-projects/riscv-unified-db/tools/ruby-gems/udb-gen/assets/img -o gen/ext-doc/pdf/Xqci-0.13.0.pdf -c qc_iu -d info -i --no-csr-field-desc Xqci@0.13.0 Xqcia@0.7.0 Xqciac@0.3.0 Xqcibi@0.2.0 Xqcibm@0.8.0 Xqcicli@0.3.0 Xqcicm@0.2.0 Xqcics@0.2.0 Xqcicsr@0.4.0 Xqciint@0.10.0 Xqciio@0.1.0 Xqcilb@0.2.0 Xqcili@0.2.0 Xqcilia@0.2.0 Xqcilo@0.3.0 Xqcilsm@0.6.0 Xqcisim@0.2.0 Xqcisls@0.2.0 Xqcisync@0.3.0",
+      "script_sha256": "3eead96db5039d783e3a827e832ae599cfa5e65ae768dc552a4ae6c5a50c32af",
+      "argv": [
+        "--theme=/home/jcarlin/riscv-projects/riscv-unified-db/tools/ruby-gems/udb-gen/themes/qc-pdf.yml",
+        "--images=/home/jcarlin/riscv-projects/riscv-unified-db/tools/ruby-gems/udb-gen/assets/img",
+        "-o",
+        "gen/ext-doc/pdf/Xqci-0.13.0.pdf",
+        "-c",
+        "qc_iu",
+        "-d",
+        "info",
+        "-i",
+        "--no-csr-field-desc",
+        "Xqci@0.13.0",
+        "Xqcia@0.7.0",
+        "Xqciac@0.3.0",
+        "Xqcibi@0.2.0",
+        "Xqcibm@0.8.0",
+        "Xqcicli@0.3.0",
+        "Xqcicm@0.2.0",
+        "Xqcics@0.2.0",
+        "Xqcicsr@0.4.0",
+        "Xqciint@0.10.0",
+        "Xqciio@0.1.0",
+        "Xqcilb@0.2.0",
+        "Xqcili@0.2.0",
+        "Xqcilia@0.2.0",
+        "Xqcilo@0.3.0",
+        "Xqcilsm@0.6.0",
+        "Xqcisim@0.2.0",
+        "Xqcisls@0.2.0",
+        "Xqcisync@0.3.0"
+      ],
+      "ok": true,
+      "artifact": "xqci-original/Xqci@0.13.0.adoc",
+      "sha256": "8c1d2e338ecc1ad5fe541d7623fea476ef449024608efaf4f5ecd483e76ce82d",
+      "bytes": 622827
+    }
+  ],
+  "original_golden": {
+    "path": "original-Xqci@0.13.0.adoc",
+    "source": "tests/data/golden/Xqci@0.13.0.adoc",
+    "sha256": "55cef3aa4f6f92efde1c0026195fe649894846903935f0f53fdf98be17626a3f",
+    "bytes": 622673
+  },
+  "sources": [
+    {
+      "path": "tools/ruby-gems/udb-gen/lib/udb-gen/generators/ext_doc/generator.rb",
+      "sha256": "5add0b352830a88749468fff8fd206bcadb9bbe79eaa108ed73944640ddcebe4"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/lib/udb-gen/generators/ext_doc/helpers.rb",
+      "sha256": "cffb17782462dda7c6f019e369339152e6cee2a313ad53dcc26d82b03d172eb2"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/common/csr.adoc.erb",
+      "sha256": "4ee863c039f18b9fec1470a252349efd2dafff9e857b00da599a083ced95b6e8"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/common/inst.adoc.erb",
+      "sha256": "9803595ed5cf2c1bc4eb0b265542dfae453387ae52c3d61b371bb958b432727e"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/ext_doc/_csr_list.adoc.erb",
+      "sha256": "6bfc2341bd1d0bdb820b9186643079163870f975ff47b512e55ec99363d91663"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/ext_doc/_header.adoc.erb",
+      "sha256": "dce75052262e5a0fc26bfdb9ffaa5fa78da93c59c3fd676c6db540319c64ff7b"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/ext_doc/_idl_functions.adoc.erb",
+      "sha256": "0e2ea633b2be97b9b4014fa809aeb1f8a0246b3cb07765930dd1be9fc8d0744c"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/ext_doc/_instruction_list.adoc.erb",
+      "sha256": "60fd917450b2965cd627647ed0bf880ee0bf631db6b16ac95baf9fdf1bb35863"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/ext_doc/_preamble.adoc.erb",
+      "sha256": "0ae1c76af6f1816a5e903c181ceb6407205e357d8fcce002c924b66028e6e143"
+    },
+    {
+      "path": "tools/ruby-gems/udb-gen/templates/ext_doc/ext_pdf.adoc.erb",
+      "sha256": "4f94549ddc7e802a8f0e4df5e394f3bba528d0f87a973f466d5e97e95ca4efd1"
+    },
+    {
+      "path": "tools/scripts/gen_xqci.rb",
+      "sha256": "3eead96db5039d783e3a827e832ae599cfa5e65ae768dc552a4ae6c5a50c32af"
+    }
+  ]
+}

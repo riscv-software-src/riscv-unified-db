@@ -216,6 +216,24 @@ callers with pre-rendered rows may supply typed
 selection retains the legacy name-only extension filter and `RV32`, `RV64`, or
 `BOTH` encoding projection rather than configuration-presence filtering.
 
+Generate retained extension documentation as standalone AsciiDoc:
+
+```shell
+udb generate ext-doc --out build/Zba Zba@latest
+udb generate ext-doc --config rv64 --out build/Zicsr --include-implied Zicsr
+udb generate ext-doc --out build/Zba --format pdf Zba
+udb render pdf build/Zba/Zba.adoc --out build/Zba/Zba.pdf
+```
+
+Source generation is offline and uses the configured architecture, installed
+`udb.prose` service, packaged templates, and explicit revision/date metadata.
+It never invokes Git, Ruby, or a renderer. PDF output is an explicit boundary
+that invokes an installed official `asciidoctor-pdf`; themes, fonts, images,
+timeouts, and output paths can be supplied explicitly. The public source API is
+`udb.extension_docs.generate_extension_document()` with `DocumentOptions`;
+`udb.extension_docs.pdf.render_extension_pdf()` owns the external renderer
+boundary. See [the extension-document contract](stage5-extension-documents.md).
+
 Fully configured C and SystemVerilog headers can be generated without Ruby or a
 native toolchain:
 

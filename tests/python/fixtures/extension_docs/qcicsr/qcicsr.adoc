@@ -1,0 +1,453 @@
+[[header]]
+:description: Qualcomm CSR instructions (Xqcicsr)
+:revdate: 2026-10-01
+:revnumber: 0.4.0
+:revmark: This document is in the http://riscv.org/spec-state[Frozen state]. + \
++ \
+Change is extremely unlikely. + \
+A high threshold will be used, and a change will only occur because of some truly + \
+critical issue being identified during the public review cycle. + \
+Any other desired or needed changes can be the subject of a follow-on new extension. + \
+
+:company: Qualcomm Technologies, Inc.
+:url-riscv: https://riscv.org
+:doctype: book
+:preface-title: Licensing and Acknowledgements
+:colophon:
+:appendix-caption: Appendix
+// Settings
+:experimental:
+:reproducible:
+// needs to be changed
+:imagesoutdir: images
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:sectnums:
+:toc: left
+:toclevels: 2
+:source-highlighter: pygments
+ifdef::backend-pdf[]
+:source-highlighter: rouge
+endif::[]
+:data-uri:
+:hide-uri-scheme:
+:stem:
+:footnote:
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+
+= Qualcomm CSR instructions
+
+// Preamble
+[WARNING]
+This document is in the http://riscv.org/spec-state[Frozen state].
+====
+Change is extremely unlikely.
+A high threshold will be used, and a change will only occur because of some truly
+critical issue being identified during the public review cycle.
+Any other desired or needed changes can be the subject of a follow-on new extension.
+====
+
+
+[preface]
+== Copyright and license information
+This document is released under the https://creativecommons.org/licenses/by/4.0/[Creative Commons Attribution 4.0 International License].
+
+Copyright unknown by Qualcomm Technologies, Inc..
+
+This document was created using the http://github.org/riscv/riscv-unified-db[RISC-V Unified Database] at commit a67618c2cd25ec235ccaa35adfc523ed56ef83ea.
+
+[preface]
+== Acknowledgements
+
+Contributors to version 0.1.0 of the Xqcicsr specification (in alphabetical order) include: +
+
+  * Derek Hower <dhower@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+  * Albert Yosher <ayosher@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+Contributors to version 0.2.0 of the Xqcicsr specification (in alphabetical order) include: +
+
+  * Derek Hower <dhower@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+  * Albert Yosher <ayosher@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+Contributors to version 0.3.0 of the Xqcicsr specification (in alphabetical order) include: +
+
+  * Derek Hower <dhower@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+  * Albert Yosher <ayosher@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+Contributors to version 0.4.0 of the Xqcicsr specification (in alphabetical order) include: +
+
+  * Derek Hower <dhower@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+  * Albert Yosher <ayosher@qti.qualcomm.com> (Qualcomm Technologies, Inc.)
+
+
+We express our gratitude to everyone that contributed to, reviewed or
+improved this specification through their comments and questions.
+
+[preface]
+== Versions
+
+
+This specification documents the following extension versions:
+
+* Xqcicsr@0.1.0
+* Xqcicsr@0.2.0
+* Xqcicsr@0.3.0
+* Xqcicsr@0.4.0
+
+
+=== Version History
+
+[frame="none",grid="none",cols="1,4"]
+|===
+2+^| Xqcicsr
+
+h| 0.4.0
+a|
+
+[frame="none",grid="none",cols="1,4"]
+!===
+
+h! State ! frozen
+h! Changes a!
+
+    * Fix description and IDL code of qc.csrrwr instruction to allow just read CSR
+
+
+!===
+h| 0.3.0
+a|
+
+[frame="none",grid="none",cols="1,4"]
+!===
+
+h! State ! frozen
+h! Changes a!
+
+    * Remove qc.flags CSR
+
+
+!===
+h| 0.2.0
+a|
+
+[frame="none",grid="none",cols="1,4"]
+!===
+
+h! State ! frozen
+h! Changes a!
+
+    * Add information about instruction formats of each instruction
+
+
+!===
+h| 0.1.0
+a|
+
+[frame="none",grid="none",cols="1,4"]
+!===
+
+h! State ! development
+
+!===
+
+|===
+
+
+
+<<<
+== Conventions
+
+Version requirements are specified as conditions using the following operators:
+
+[cols="1,2"]
+|===
+| Operator | Meaning
+
+| `~> VERSION` | Accepts any version that is _compatible_ with `VERSION`. By default, a version A is compatible with a version B if A's version number is greater than or equal to version B. If that default assumption is ever broken, it will be noted in the list of extension versions.
+| `= VERSION` | Accepts only version `VERSION`.
+| `>= VERSION` | Accepts any version greater than or equal to `VERSION`.
+| `\<= VERSION` | Accepts any version less than or equal to `VERSION`.
+| `> VERSION` | Accepts any version greater than `VERSION`.
+| `< VERSION` | Accepts any version less than `VERSION`.
+|===
+
+<<<
+== Extension description
+
+
+:leveloffset: +2
+The Xqcicsr extension contains two instructions to read/write CSR which index is in register and not immediate.
+
+:leveloffset: -2
+
+
+
+
+
+
+
+
+<<<
+== Instruction list
+
+
+
+
+
+
+
+
+
+
+
+
+[.portrait]
+<<<
+[#insns,reftext="Instructions (in alphabetical order)"]
+== Instructions (in alphabetical order)
+
+:leveloffset: +2
+
+
+[#udb:doc:inst:qc_csrrwr]
+= qc.csrrwr
+
+Synopsis::
+Atomic Read/Write CSR (Register)
+
+Mnemonic::
+----
+qc.csrrwr xd, xs1, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "rs2 != 0","type":4},{"bits":7,"name": 0x46,"type":2}]}
+....
+
+Description::
+Atomically swap values in the CSRs and integer registers.
+Read the old value of the CSR, zero-extends the value to `XLEN` bits,
+and then write it to integer register `rd`.
+The CSR number is in `rs2` register.
+The initial value in `rs1` is written to the CSR.
+If `rd`=`x0`, then the instruction shall not read the CSR and shall not
+cause any of the side effects that might occur on a CSR read.
+If `rs1`=`x0`, then the instruction shall not write to the CSR and shall not
+cause any of the side effects that might occur on a CSR write.
+Instruction encoded in R instruction format.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> rs2 = $encoding[24:20];
+Bits<5> rs1 = $encoding[19:15];
+Bits<5> rd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+XReg csr_addr = X[rs2];
+Csr csr = xref:#udb-function-direct_csr_lookup[direct_csr_lookup]pass:[(]csr_addr);
+if pass:[(]rd != 0) {
+  X[rd] = xref:#udb-function-csr_sw_read[csr_sw_read]pass:[(]csr);
+}
+if pass:[(]rs1 != 0) {
+  xref:#udb-function-csr_sw_write[csr_sw_write]pass:[(]csr, X[rs1]);
+}
+----
+
+
+Included in::
+--
+xref:#udb-insn-qc_csrrwr[`qc.csrrwr`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+| *Xqcicsr*
+| any
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+:leveloffset: +2
+
+
+[#udb:doc:inst:qc_csrrwri]
+= qc.csrrwri
+
+Synopsis::
+Atomic Read/Write CSR (Register) Immediate
+
+Mnemonic::
+----
+qc.csrrwri xd, imm, xs2
+----
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "rs2 != 0","type":4},{"bits":7,"name": 0x47,"type":2}]}
+....
+
+Description::
+Atomically write CSR using a 5-bit immediate `imm`, and load the previous value into `rd`.
+Read the old value of the CSR, zero-extends the value to `XLEN` bits,
+and then write it to integer register `rd`.
+The CSR number is in `rs2` register.
+The 5-bit uimm field is zero-extended and written to the CSR.
+If `rd`=`x0`, then the instruction shall not read the CSR and shall not
+cause any of the side effects that might occur on a CSR read.
+Instruction encoded in R instruction format.
+
+
+
+Decode Variables::
+
+[source,idl,subs="specialchars,macros"]
+----
+Bits<5> rs2 = $encoding[24:20];
+Bits<5> imm = $encoding[19:15];
+Bits<5> rd = $encoding[11:7];
+----
+
+
+Operation::
+[source,idl,subs="specialchars,macros"]
+----
+XReg csr_addr = X[rs2];
+Csr csr = xref:#udb-function-direct_csr_lookup[direct_csr_lookup]pass:[(]csr_addr);
+if pass:[(]rd != 0) {
+  X[rd] = xref:#udb-function-csr_sw_read[csr_sw_read]pass:[(]csr);
+}
+xref:#udb-function-csr_sw_write[csr_sw_write]pass:[(]csr, {{MXLEN - 5{1'b0}}, imm});
+----
+
+
+Included in::
+--
+xref:#udb-insn-qc_csrrwri[`qc.csrrwri`] is unconditionally defined by the following:
+
+|===
+| Extension | Version
+
+| *Xqcicsr*
+| any
+
+|===
+
+--
+
+:leveloffset: -2
+
+<<<
+
+<<<
+== IDL Functions
+
+[#udb-function-csr_sw_read]
+=== csr_sw_read (generated)
+Returns the result of CSR[csr].sw_read(); i.e., the software view of the register
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Bits<64>`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `Csr`
+! csr
+!===
+
+|===
+
+
+[#udb-function-csr_sw_write]
+=== csr_sw_write (generated)
+Writes +value+ to +csr+, applying an WARL transformations first.
+
+Uses the sw_write(...) functions of CSR field definitions.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `void`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `Csr`
+! csr
+! 1
+h! `Bits<MXLEN>`
+! value
+!===
+
+|===
+
+
+[#udb-function-direct_csr_lookup]
+=== direct_csr_lookup (generated)
+Return CSR info for a CSR with direct address +csr_addr+.
+
+If no CSR exists, <return_value>.valid == false
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Csr`
+h| Arguments
+a|
+
+[cols="1,4,4"]
+!===
+! Idx ! Type ! Name
+
+! 0
+h! `Bits<12>`
+! csr_addr
+!===
+
+|===
+
+
+

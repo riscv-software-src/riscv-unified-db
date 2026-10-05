@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from pathlib import Path, PurePosixPath
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
@@ -64,6 +66,22 @@ def package_data(source_root: Path) -> dict[Path, PurePosixPath]:
                 raise RuntimeError(f"required QC layout data is missing: {path}")
             kind = "custom_layouts" if path.suffix == ".layout" else "custom_isa"
             mappings[path] = PurePosixPath(f"udb/_data/{kind}/qc_iu") / relative
+    resources = source_root / "src/udb/extension_docs"
+    manifest_path = resources / "assets/manifest.json"
+    entries = json.loads(manifest_path.read_text(encoding="utf-8"))
+    declared = [("assets/manifest.json", None)]
+    declared += [("assets/" + entry["path"], entry["sha256"]) for entry in entries]
+    declared += [("templates/" + name, None) for name in ("header.adoc", "conventions.adoc")]
+    for name, expected in declared:
+        relative = PurePosixPath(name)
+        if relative.is_absolute() or ".." in relative.parts:
+            raise RuntimeError(f"unsafe extension-document resource: {name}")
+        path = resources / name
+        if path.is_symlink() or not path.is_file():
+            raise RuntimeError(f"missing/nonregular extension-document resource: {path}")
+        if expected and hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            raise RuntimeError(f"extension-document resource integrity failed: {path}")
+        mappings[path] = PurePosixPath("udb/extension_docs") / relative
     return mappings
 
 
