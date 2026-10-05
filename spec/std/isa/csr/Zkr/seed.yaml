@@ -35,6 +35,7 @@ fields:
       * 3 - DEAD
     type: RW-H
     sw_write(csr_value): |
+      write_seed();
       return CSR[seed].OPST;
     reset_value: 0
   ENTROPY:

@@ -96,6 +96,7 @@ LINKAGE typedef struct {
   // returns 0 otherwise
   uint8_t (*pma_applies_Q_)(PmaAttributeValueType pma, uint64_t paddr, uint32_t len);
   uint32_t (*read_seed)();
+  void (*write_seed)();
 } FnPointerSocModel;
 
 LINKAGE int32_t tlib_init(char *cpu_name);

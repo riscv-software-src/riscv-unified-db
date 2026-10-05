@@ -696,3 +696,11 @@ builtin function read_seed {
    it returns describe the same state of the source.
  }
 }
+builtin function write_seed {
+ description {
+   Signal a write to the seed CSR.
+   The written value is ignored; the write exists to signal polling and
+   flushing, so an implementation may use this to advance the state of its
+   entropy source.
+ }
+}

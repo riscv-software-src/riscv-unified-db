@@ -110,6 +110,8 @@ struct RenodeSocModel {
     static std::mt19937 gen{0x5EEDu};
     return (0b10u << 30) | (gen() & 0xffffu);
   }
+
+  void write_seed() {}
 };
 
 static RenodeSocModel callbacks;

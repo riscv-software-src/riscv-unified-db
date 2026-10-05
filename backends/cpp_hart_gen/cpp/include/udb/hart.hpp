@@ -254,6 +254,8 @@ namespace udb {
       return Bits<32>{m_soc.read_seed()};
     }
 
+    void write_seed() { m_soc.write_seed(); }
+
     // external interrupt interface
     virtual void set_mmode_ext_int() = 0;
     virtual void clear_mmode_ext_int() = 0;

@@ -364,6 +364,8 @@ namespace udb {
       return (0b10u << 30) | (gen() & 0xffffu);
     }
 
+    void write_seed() {}
+
    private:
     DenseMemory m_memory;
 
