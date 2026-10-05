@@ -422,6 +422,12 @@ class ResolvedDatabase(Database):
         for path, document in self._resolved_documents.items():
             store.validate(document, source=path)
 
+    def write(self, output_dir: str | Path) -> tuple[Path, ...]:
+        """Write this database as a deterministic, version-stamped YAML tree."""
+        from .serialization import write_resolved_database
+
+        return write_resolved_database(self, output_dir)
+
     def _load_kind(self, kind: str) -> None:
         directory = _KIND_DIRECTORIES[kind]
         records: list[DatabaseObject] = []

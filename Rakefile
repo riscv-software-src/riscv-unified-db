@@ -98,7 +98,9 @@ namespace :gen do
 
   desc "Resolve schema files and write them to gen/schemas/VERSION/SCHEMA with full $id URLs"
   task :schemas do
-    $resolver.resolve_schemas
+    sh "uv", "run", "--locked", "udb",
+      "--schemas", ($root / "spec" / "schemas").to_s,
+      "schemas", ($root / "gen" / "schemas").to_s
     puts "Resolved schema files written to gen/schemas/"
   end
 end

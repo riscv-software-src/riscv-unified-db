@@ -62,13 +62,25 @@ jobs:
           export PATH=/tmp/udb-install/bin
           unset UDB_ROOT PYTHONPATH
           python -I - <<'PY'
-          from udb import Database
+          import json
+          from pathlib import Path
+
+          from udb import Database, SchemaStore, write_resolved_schemas
+
           database = Database.bundled()
           assert database.extension("I").name == "I"
           assert database.instruction("add")["encoding"]["match"].endswith("0110011")
           assert database.csr("mhpmcounter3").name == "mhpmcounter3"
           assert len(database.objects()) > 2000
-          assert database.resolve(validate=True).profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
+          resolved = database.resolve(validate=True)
+          assert resolved.profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
+          resolved.write("/tmp/udb-resolved-wheel")
+          index = json.loads(Path("/tmp/udb-resolved-wheel/index.json").read_text())
+          assert "ext/I.yaml" in index
+          written_schemas = write_resolved_schemas(
+              SchemaStore(database.schemas_root), "/tmp/udb-schemas-wheel"
+          )
+          assert written_schemas
           PY
           udb show instruction add
       - name: Install the source archive offline with build isolation
@@ -79,12 +91,20 @@ jobs:
           export PATH=/tmp/udb-sdist-install/bin
           unset UDB_ROOT PYTHONPATH
           python -I - <<'PY'
+          import json
+          from pathlib import Path
+
           from udb import Database
+
           database = Database.bundled()
           assert database.extension("Zvkg").name == "Zvkg"
           assert database.csr("mhpmcounter3").name == "mhpmcounter3"
           assert len(database.objects()) > 2000
-          assert database.resolve(validate=True).profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
+          resolved = database.resolve(validate=True)
+          assert resolved.profile("RVI20U64")["extensions"]["I"]["presence"] == "mandatory"
+          resolved.write("/tmp/udb-resolved-sdist")
+          index = json.loads(Path("/tmp/udb-resolved-sdist/index.json").read_text())
+          assert "profile/RVI20U64.yaml" in index
           PY
 
   never-runs:
@@ -934,7 +954,7 @@ jobs:
       - name: Set up mise environment
         uses: ./.github/actions/mise-setup
       - name: Check schema versions against published URLs
-        run: ./do gen:schemas && ./bin/python tools/scripts/check_schema_versions.py
+        run: uv run --locked udb --schemas spec/schemas schemas gen/schemas && ./bin/python tools/scripts/check_schema_versions.py
 
   regress-schema-docs:
     runs-on: ubuntu-latest
