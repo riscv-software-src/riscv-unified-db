@@ -256,12 +256,59 @@ ERB:
 ```shell
 udb generate-layouts --root .
 udb generate-layouts --root . --check
+udb generate-layouts --root . --collection qc_iu --check
+udb generate-layouts --root generated --collection standard --collection qc_iu
 ```
 
 The layout renderer is intentionally limited to interpolation, conditionals, and bounded loops.
 Generation owns the 532 tracked YAML outputs associated with the 31 layout sources, adds a stable
 source warning, writes replacements atomically, and marks generated files read-only. `--check`
 reports drift and exits with status 1 without modifying files.
+
+Standard layouts remain the default. `--collection qc_iu` selects the five QC
+CSR layouts and all 56 generated files; repeating `--collection` selects multiple
+collections (standard plus QC owns 588 files). Input errors use exit status 2.
+QC authoring has replaced the removed `gen_mcliciX.rb`; there is no separate QC
+authoring command. See [the QC layout contract](stage5-qc-layouts.md).
+
+`--source-root DIR` reads templates from an explicit independent source tree,
+without falling back to packaged resources. Without it, a complete local source
+set takes precedence over bundled templates; partial source sets are errors.
+When no source templates exist at the output root, installed generation uses
+bundled layouts offline. The public API also supports immutable caller-defined
+collections whose source/output roots need not be under the standard ISA:
+
+```python
+from pathlib import Path, PurePosixPath
+from udb import LayoutCollection, LayoutJob, generate_layouts, get_layout_collection
+
+generate_layouts(
+    Path("generated"),
+    collections=(get_layout_collection("qc_iu"),),
+    source_root=Path("explicit-source-tree"),
+)
+vendor = LayoutCollection(
+    name="vendor",
+    source_root=PurePosixPath("templates"),
+    output_root=PurePosixPath("custom/csrs"),
+    jobs=(
+        LayoutJob(
+            PurePosixPath("example.layout"),
+            PurePosixPath("example.yaml"),
+            {"number": 1},
+        ),
+    ),
+)
+generate_layouts(Path("generated"), collections=(vendor,), source_root=Path("vendor-data"))
+```
+
+Collection job paths are relative to the collection's logical source/output
+roots. `source_root=` chooses the physical input tree and the first positional
+root chooses the physical output tree. An optional collection `resource_root`
+is relative to packaged `udb/_data`; it is never a checkout lookup. Job inputs
+are recursively immutable snapshots. Plans record template and recipe-code
+dependencies, reject duplicate ownership/source aliases, and write only their
+owned outputs.
 
 For other generators, `udb.authoring.GeneratedFile` describes output bytes, ownership,
 dependencies, and permissions. `AuthoringPlan(outputs).apply(root, check=True)` reports drift;
@@ -313,6 +360,7 @@ from importlib.resources import files
 isa_data = files("udb") / "_data" / "isa"
 schemas = files("udb") / "_data" / "schemas"
 layouts = files("udb") / "_data" / "layouts"
+qc_layouts = files("udb") / "_data" / "custom_layouts" / "qc_iu"
 ```
 
 The Python source code is licensed under BSD-3-Clause-Clear. The bundled database snapshot contains
