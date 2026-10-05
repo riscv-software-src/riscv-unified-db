@@ -13,7 +13,7 @@ description: |
 
   true::
     Machine-level timer interrupts are implemented.
-    `mie.MTIE`, `mideleg.MTI`, and `mtimecmp` are writable.
+    `mie.MTIE` and `mtimecmp` are writable, and `mideleg.MTI` is writable if `MIDELEG_DELEGATABLE[7]` is true.
 
   false::
     Machine-level timer interrupts are not implemented.
