@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.1",
+  "$id": "v0.2",
   "title": "Instruction Variable Schema",
   "description": "Schema for instruction decode variable definitions",
   "$defs": {
@@ -88,6 +88,11 @@
           "$ref": "#/$defs/polymorphic_data"
         }
       ]
+    },
+    "$source": {
+      "type": "string",
+      "description": "Path to the source file containing this object"
     }
-  }
+  },
+  "additionalProperties": false
 }
