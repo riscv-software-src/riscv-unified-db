@@ -63,6 +63,7 @@ include = [
     "/NOTICE",
     "/REUSE.toml",
     "/doc/python-api.md",
+    "/doc/stage5-configured-prose.md",
     "/hatch_build.py",
     "/pyproject.toml",
     "/src/udb",

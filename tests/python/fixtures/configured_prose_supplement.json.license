@@ -1,0 +1,8 @@
+SPDX-FileCopyrightText: Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+SPDX-FileCopyrightText: 2024-2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV ISA Manual <https://github.com/riscv/riscv-isa-manual>
+SPDX-License-Identifier: BSD-3-Clause-Clear AND CC-BY-4.0
+
+Additional unmodified Ruby captures of the configured_prose.json scalar
+inventory, with explicit cache-boundary declarations and the existing MC100
+full-example configuration. Includes ISA-manual-derived specification prose.

@@ -1,0 +1,7 @@
+SPDX-FileCopyrightText: Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+SPDX-FileCopyrightText: 2024-2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+SPDX-License-Identifier: BSD-3-Clause-Clear
+
+Captured Ruby wrapper rows and configuration facts from in-repository data
+with controlled, synthetic templated-name mutations. No specification prose
+or third-party implementation is embedded.
