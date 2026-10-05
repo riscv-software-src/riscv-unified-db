@@ -44,7 +44,9 @@ fields:
 
       This field is valid only when `OPST` is ES16. When `OPST` is not ES16,
       `ENTROPY` must be zero.
-    type: RO-H
+    type: RW-H
+    sw_write(csr_value): |
+      return CSR[seed].ENTROPY;
     reset_value: 0
 sw_read(): |
   # CSRRS/CSRRC/CSRRSI/CSRRCI are the CSR instructions with funct3[1] set.
