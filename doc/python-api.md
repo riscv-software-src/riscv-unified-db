@@ -174,6 +174,29 @@ udb --path spec/std/isa --schemas spec/schemas --overlay spec/custom/isa/qc_iu v
 
 The same commands are available through `python -m udb`.
 
+Generate the complete instruction table from bundled or explicitly supplied data:
+
+```shell
+udb generate instruction-table
+udb generate instruction-table --cfg rv32 --out instructions.txt
+udb --path my-isa --schemas my-schemas --overlay my-overlay generate instruction-table
+```
+
+`--config`/`--cfg` accepts the bundled `_`, `rv32`, and `rv64` configurations or an
+explicit YAML path. As in the legacy generator, configuration does not filter
+instructions or pin their structural RV32/RV64 encodings. File output overwrites
+an existing file but does not create missing parent directories. Stdout and files
+use UTF-8/LF bytes; stdout contains only the artifact. Input/output errors exit 2.
+The legacy command prelude is preserved verbatim, including the file basename.
+See [the instruction-table contract](stage5-instruction-table.md).
+
+The pure source API is `udb.instruction_table.render_instruction_table(source=None,
+file_name=None)`. `source` accepts a raw/resolved database or configured architecture,
+and defaults to bundled data. `generate_instruction_table(source=None, output=None,
+stdout=None)` writes and returns that text. `udb.instruction_fields.InstructionFieldBuilder`
+provides validated immutable descriptors with ordered opcode/decode ranges,
+sign extension, shifts, exclusions, and captured source locations.
+
 Fully configured C and SystemVerilog headers can be generated without Ruby or a
 native toolchain:
 
