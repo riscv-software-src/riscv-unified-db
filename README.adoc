@@ -127,7 +127,7 @@ The doctor script checks that the required tools, dependencies, and development 
 ----
 ./bin/regress -h             # get help on running regression tests
 
-./bin/generate -h            # get help on generating content from UDB
+udb --help                   # get help on installed UDB commands
 
 ./bin/chore -h               # get help on running repository development chores
 ----

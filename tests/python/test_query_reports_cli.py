@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import io
-import os
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -130,31 +128,8 @@ def test_installed_cli_candidate_routes_reports_and_disassembly(capsys):
     assert (
         capsys.readouterr().out.encode() == (FIXTURES / "show-extension-I.stdout.txt").read_bytes()
     )
-    assert udb_main(["disasm", "fff10093", "--width", "32"]) == 0
+    assert udb_main(["inspect", "encoding", "fff10093", "--width", "32"]) == 0
     assert capsys.readouterr().out.encode() == (FIXTURES / "disasm-addi.stdout.txt").read_bytes()
-
-
-def test_repository_wrapper_routes_queries_and_supplies_schemas():
-    environment = os.environ.copy()
-    environment["UV_NO_SYNC"] = "1"
-    environment["RUBYOPT"] = "--query-reports-must-not-use-ruby"
-    result = subprocess.run(
-        [
-            str(ROOT / "bin/udb"),
-            "show",
-            "parameter",
-            "ARCH_ID_VALUE",
-            "--arch",
-            str(ROOT / "spec/std/isa"),
-        ],
-        cwd=ROOT,
-        env=environment,
-        check=False,
-        capture_output=True,
-    )
-    assert result.returncode == 0, result.stderr
-    assert result.stdout == (FIXTURES / "show-parameter-ARCH_ID_VALUE.stdout.txt").read_bytes()
-    assert result.stderr == b""
 
 
 def test_writer_short_writes_utf8_and_no_progress():

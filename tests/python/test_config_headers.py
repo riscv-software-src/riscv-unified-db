@@ -250,10 +250,10 @@ def test_invalid_and_incomplete_configuration_are_errors(full_architecture):
 
 
 def test_cli_stdout_and_file_are_identical(tmp_path, capsys):
-    assert main(["generate", "cfg-c-header", "--config", str(CONFIG)]) == 0
+    assert main(["generate", "config-c-header", "--config", str(CONFIG)]) == 0
     assert capsys.readouterr().out.encode() == Path(f"{GOLDEN}.h").read_bytes()
     output = tmp_path / "nested/config.svh"
-    assert main(["generate", "cfg-svh-header", "--cfg", str(CONFIG), "-o", str(output)]) == 0
+    assert main(["generate", "config-sv-header", "--config", str(CONFIG), "-o", str(output)]) == 0
     captured = capsys.readouterr()
     assert captured.out == captured.err == ""
     assert output.read_bytes() == Path(f"{GOLDEN}.svh").read_bytes()
@@ -281,7 +281,8 @@ def test_cli_utf8_lf_bytes_ignore_ascii_stdout_and_text_newlines(
     buffer = io.BytesIO()
     stdout = io.TextIOWrapper(buffer, encoding="ascii", newline="\r\n")
     monkeypatch.setattr(sys, "stdout", stdout)
-    args = ["--path", str(source), "generate", f"cfg-{language}-header", "--cfg", str(config)]
+    generator = "config-c-header" if language == "c" else "config-sv-header"
+    args = ["--database", str(source), "generate", generator, "--config", str(config)]
     assert main(args) == 0
     assert buffer.getvalue() == expected
     output = tmp_path / "nested" / f"unicode.{language}"
@@ -300,10 +301,10 @@ def test_cli_utf8_subprocess_succeeds_with_pythonioencoding_ascii(
         sys.executable,
         "-m",
         "udb",
-        "--path",
+        "--database",
         str(source),
         "generate",
-        f"cfg-{language}-header",
+        "config-c-header" if language == "c" else "config-sv-header",
         "--config",
         str(config),
     ]
@@ -331,9 +332,7 @@ def test_cli_stdout_io_error_has_explicit_exit_two(
             raise failure("intentional stdout failure")
 
     monkeypatch.setattr(sys, "stdout", SimpleNamespace(buffer=FailedStream()))
-    with pytest.raises(SystemExit) as error:
-        main(["--path", str(source), "generate", "cfg-c-header", "-c", str(config)])
-    assert error.value.code == 2
+    assert main(["--database", str(source), "generate", "config-c-header", "-c", str(config)]) == 2
     assert "stdout: cannot write header: intentional stdout failure" in capsys.readouterr().err
 
 
@@ -346,7 +345,7 @@ def test_cli_stdout_short_binary_writes_preserve_complete_utf8(encoding_cli_inpu
 
     stream = ShortStream()
     monkeypatch.setattr(sys, "stdout", SimpleNamespace(buffer=stream))
-    assert main(["--path", str(source), "generate", "cfg-c-header", "-c", str(config)]) == 0
+    assert main(["--database", str(source), "generate", "config-c-header", "-c", str(config)]) == 0
     assert stream.getvalue() == generate_config_header(architecture, "c").encode("utf-8")
 
 
@@ -356,9 +355,7 @@ def test_cli_stdout_incomplete_binary_write_is_an_explicit_error(
     _, source, config = encoding_cli_inputs
     stream = SimpleNamespace(write=lambda data: 0)
     monkeypatch.setattr(sys, "stdout", SimpleNamespace(buffer=stream))
-    with pytest.raises(SystemExit) as error:
-        main(["--path", str(source), "generate", "cfg-c-header", "-c", str(config)])
-    assert error.value.code == 2
+    assert main(["--database", str(source), "generate", "config-c-header", "-c", str(config)]) == 2
     assert "stdout did not accept the complete header" in capsys.readouterr().err
 
 
@@ -372,10 +369,10 @@ def test_cli_closed_pipe_does_not_retry_at_shutdown(encoding_cli_inputs):
                 sys.executable,
                 "-m",
                 "udb",
-                "--path",
+                "--database",
                 str(source),
                 "generate",
-                "cfg-c-header",
+                "config-c-header",
                 "-c",
                 str(config),
             ],
@@ -394,18 +391,12 @@ def test_cli_closed_pipe_does_not_retry_at_shutdown(encoding_cli_inputs):
 
 def test_cli_failure_does_not_write_or_implicitly_lookup_repository(tmp_path, capsys):
     output = tmp_path / "nested/config.h"
-    with pytest.raises(SystemExit) as error:
-        main(["generate", "cfg-c-header", "-o", str(output)])
-    assert error.value.code == 2
+    assert main(["generate", "config-c-header", "-o", str(output)]) == 2
     assert "not fully configured" in capsys.readouterr().err
     assert not output.parent.exists()
-    with pytest.raises(SystemExit) as error:
-        main(["generate", "cfg-c-header", "-c", "mc100-32-full-example"])
-    assert error.value.code == 2
+    assert main(["generate", "config-c-header", "-c", "mc100-32-full-example"]) == 2
     assert "cannot read configuration" in capsys.readouterr().err
-    with pytest.raises(SystemExit) as error:
-        main(["generate", "cfg-c-header", "-c", "cfgs/nonexistent.yaml"])
-    assert error.value.code == 2
+    assert main(["generate", "config-c-header", "-c", "cfgs/nonexistent.yaml"]) == 2
     assert capsys.readouterr().out == ""
 
 
@@ -419,16 +410,24 @@ def test_explicit_custom_database_has_no_bundled_fallback(tmp_path, capsys):
     config = tmp_path / "custom.yaml"
     config.write_text(json.dumps(architecture.configuration.to_dict()))
     expected = generate_config_header(architecture, "c")
-    assert main(["--path", str(source), "generate", "cfg-c-header", "-c", str(config)]) == 0
+    assert main(["--database", str(source), "generate", "config-c-header", "-c", str(config)]) == 0
     assert capsys.readouterr().out == expected
-    with pytest.raises(SystemExit) as error:
-        main(["generate", "cfg-c-header", "-c", str(config)])
-    assert error.value.code == 2
+    assert main(["generate", "config-c-header", "-c", str(config)]) == 2
     assert "unknown extension" in capsys.readouterr().err
-    with pytest.raises(SystemExit) as error:
-        main(["--path", str(tmp_path / "missing"), "generate", "cfg-c-header", "-c", str(config)])
-    assert error.value.code == 2
-    assert "error" in capsys.readouterr().err
+    assert (
+        main(
+            [
+                "--database",
+                str(tmp_path / "missing"),
+                "generate",
+                "config-c-header",
+                "-c",
+                str(config),
+            ]
+        )
+        == 2
+    )
+    assert "Error:" in capsys.readouterr().err
 
 
 def test_cli_overlay_and_output_errors_are_explicit(tmp_path, capsys):
@@ -443,35 +442,37 @@ def test_cli_overlay_and_output_errors_are_explicit(tmp_path, capsys):
     (overlay / "ext/Xdemo.yaml").write_text(json.dumps({"requirements": False}))
     config = tmp_path / "custom.yaml"
     config.write_text(json.dumps(architecture.configuration.to_dict()))
-    with pytest.raises(SystemExit) as error:
+    assert (
         main(
             [
-                "--path",
+                "--database",
                 str(source),
                 "--overlay",
                 str(overlay),
                 "generate",
-                "cfg-c-header",
+                "config-c-header",
                 "-c",
                 str(config),
             ]
         )
-    assert error.value.code == 2
+        == 2
+    )
     assert "unsat" in capsys.readouterr().err
-    with pytest.raises(SystemExit) as error:
+    assert (
         main(
             [
-                "--path",
+                "--database",
                 str(source),
                 "generate",
-                "cfg-c-header",
+                "config-c-header",
                 "-c",
                 str(config),
                 "-o",
                 str(source),
             ]
         )
-    assert error.value.code == 2
+        == 2
+    )
     assert "cannot write header" in capsys.readouterr().err
 
 

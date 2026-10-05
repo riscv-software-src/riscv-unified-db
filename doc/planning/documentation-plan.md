@@ -4,6 +4,10 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 -->
 # UDB Documentation Site Plan
 
+> [!NOTE]
+> This planning snapshot predates the unified `udb` command and mise developer
+> tasks. Command names below are historical design inputs, not current usage.
+
 This site will document the entire riscv-unified-db monorepo. It will include at least the following (not necessarily in this order):
 
 - What is UDB?
@@ -230,7 +234,6 @@ Generators produce artifacts from UDB data. They are invoked via `bin/generate` 
 
 | Generator | `bin/generate` subcommand | What it produces |
 |---|---|---|
-| `cfg_html_doc` | `bin/generate cfg-html-doc` | HTML documentation for a specific configuration |
 | `cpp_hart_gen` | `bin/generate cpp-hart-gen` | C++ ISS (Instruction Set Simulator) hart implementation |
 | `c_header` | `bin/generate c-header` | C encoding header (used by Spike, ACTs, Sail) |
 | `go` | `bin/generate go` | Go instruction/CSR definitions |

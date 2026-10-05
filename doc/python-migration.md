@@ -741,7 +741,7 @@ is the sole permitted Ruby dependency and need not work from a pip-only install.
 - Schema publication preserves the Ruby path and public `$id` contract while
   producing byte-identical JSON for the current schema versions. The existing
   `./do gen:schemas` entry point and schema-version CI check now invoke the
-  Python `udb schemas` command; `udb resolve` exposes resolved trees without
+  Python `udb generate schema-bundle` command; `udb resolve` exposes resolved trees without
   Ruby or repository-relative execution.
 - Fine-grained YAML source spans and provenance propagation through overlays and
   inheritance were the next integration step, completed in the Stage 2c follow-up
@@ -750,7 +750,7 @@ is the sole permitted Ruby dependency and need not work from a pip-only install.
 ### 2026-09-29: Stage 2c authoring and provenance
 
 - Converted all 31 layouts to restricted Python expressions and explicit
-  generation recipes. `udb generate-layouts --root . [--check]` replaces ERB
+  generation recipes. `udb author layouts [--root .] [--check]` replaces ERB
   expansion, and the existing `./do gen:arch` wrapper delegates to it. All 532
   tracked YAML outputs retain their exact bytes. `AuthoringPlan` exposes output
   ownership, dependencies, drift checking, and individual atomic replacements.
@@ -1001,7 +1001,7 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   expected-side catalog proof for unknown version predicates matching no declared
   version, not weaker production answers or a new Ruby bug correction.
   The standalone distribution gate covers translated requirements and real public
-  hooks. A small `udb validate-cfg` wrapper now exposes the same semantic check for
+  hooks. `udb validate cfg -c CFG` now exposes the same semantic check for
   explicit YAML paths or bundled configuration names, with honest failure exits and
   source-aware diagnostics. Final integrated Python acceptance passes 3,445 tests with
   51 existing opt-in or Ruby-unavailable skips. Serial native acceptance also passes

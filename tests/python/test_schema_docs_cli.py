@@ -25,13 +25,13 @@ def test_schema_cli_uses_custom_schemas_without_loading_isa(
     def no_isa(*args, **kwargs):
         pytest.fail("schema documentation must not load an ISA database")
 
-    monkeypatch.setattr(cli.Database, "bundled", no_isa)
+    monkeypatch.setattr("udb.database.Database.bundled", no_isa)
     args = [
+        "--schema-dir",
+        str(FIXTURES / "custom-schemas"),
         "generate",
         "schema-docs",
-        "--schemas",
-        str(FIXTURES / "custom-schemas"),
-        "--out",
+        "--output",
         str(tmp_path),
         "--schema",
         "config_schema.json",
@@ -58,7 +58,7 @@ def test_schema_cli_forwards_current_replacement_and_nonwriting_check(
     args = [
         "generate",
         "schema-docs",
-        "--out",
+        "--output",
         str(tmp_path),
         "--schema",
         "config_schema.json",
@@ -84,16 +84,15 @@ def test_schema_cli_forwards_current_replacement_and_nonwriting_check(
 
 
 @pytest.mark.parametrize(
-    "global_args", [["--path", "missing"], ["--resolved"], ["--overlay", "missing"], ["--validate"]]
+    "global_args",
+    [["--database", "missing"], ["--view", "raw"], ["--overlay", "missing"]],
 )
 def test_schema_cli_rejects_isa_options_before_writing(
     tmp_path: Path, global_args: list[str], capsys: pytest.CaptureFixture[str]
 ) -> None:
     output = tmp_path / "output"
-    with pytest.raises(SystemExit) as error:
-        cli.main([*global_args, "generate", "schema-docs", "--out", str(output)])
-    assert error.value.code == 2
-    assert "not ISA options" in capsys.readouterr().err
+    assert cli.main([*global_args, "generate", "schema-docs", "--output", str(output)]) == 2
+    assert "does not accept ISA database options" in capsys.readouterr().err
     assert not output.exists()
 
 
@@ -102,7 +101,7 @@ def test_schema_cli_io_failure_is_machine_readable(
 ) -> None:
     output = tmp_path / "not-directory"
     output.write_text("keep")
-    assert cli.main(["generate", "schema-docs", "--out", str(output), "--diagnostics"]) == 2
+    assert cli.main(["generate", "schema-docs", "--output", str(output), "--diagnostics"]) == 2
     result = json.loads(capsys.readouterr().out)
     assert result["status"] == "error"
     assert output.read_text() == "keep"

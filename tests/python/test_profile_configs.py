@@ -319,7 +319,7 @@ def test_cli_writes_selected_profiles_and_checks_without_changes(cli_database, t
 
     output = tmp_path / "output"
     args = [
-        "--path",
+        "--database",
         str(cli_database),
         "generate",
         "profile-configs",
@@ -342,10 +342,10 @@ def test_cli_reports_bad_selection_without_partial_output(cli_database, tmp_path
     from udb.cli import main
 
     output = tmp_path / "output"
-    with pytest.raises(SystemExit) as error:
+    assert (
         main(
             [
-                "--path",
+                "--database",
                 str(cli_database),
                 "generate",
                 "profile-configs",
@@ -357,7 +357,8 @@ def test_cli_reports_bad_selection_without_partial_output(cli_database, tmp_path
                 "missing",
             ]
         )
-    assert error.value.code == 2
+        == 2
+    )
     assert "missing" in capsys.readouterr().err
     assert not output.exists()
 

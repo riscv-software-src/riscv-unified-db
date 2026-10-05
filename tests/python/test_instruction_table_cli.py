@@ -29,17 +29,17 @@ def table_inputs(tmp_path):
         "encoding": {"match": "1--0", "variables": [{"name": "x", "location": "2-1"}]},
     }
     inst.write_text(json.dumps(data), encoding="utf-8")
-    args = ["--path", str(source), "generate", "instruction-table"]
+    args = ["--database", str(source), "generate", "instruction-table"]
     return inst, data, args
 
 
 def test_cli_complete_rv32_table_matches_unfiltered_ruby(capsys, tmp_path):
-    assert main(["generate", "instruction-table", "--cfg", "rv32"]) == 0
+    assert main(["generate", "instruction-table", "--config", "rv32"]) == 0
     captured = capsys.readouterr()
     assert captured.out.encode() == (FIXTURES / "native-rv32-stdout.txt").read_bytes()
     assert captured.err == ""
     output = tmp_path / "test_table.txt"
-    assert main(["generate", "instruction-table", "--out", str(output)]) == 0
+    assert main(["generate", "instruction-table", "--output", str(output)]) == 0
     captured = capsys.readouterr()
     assert captured.out == captured.err == ""
     assert output.read_bytes() == (FIXTURES / "legacy-all-file.txt").read_bytes()
@@ -62,31 +62,30 @@ def test_cli_validates_before_overwriting_output(table_inputs, tmp_path, capsys)
     output.write_bytes(b"existing output\n")
     data["encoding"]["variables"][0]["location"] = "9-1"
     inst.write_text(json.dumps(data), encoding="utf-8")
-    with pytest.raises(SystemExit) as error:
-        main([*args, "-o", str(output)])
-    assert error.value.code == 2
+    assert main([*args, "-o", str(output)]) == 2
     captured = capsys.readouterr()
     assert captured.out == ""
     assert "inst/demo.yaml" in captured.err and "location" in captured.err
     assert output.read_bytes() == b"existing output\n"
 
 
-@pytest.mark.parametrize("destination", ["missing/table.txt", "."])
-def test_cli_output_errors_do_not_create_parent(table_inputs, tmp_path, capsys, destination):
+def test_cli_output_creates_missing_parent(table_inputs, tmp_path):
     _, _, args = table_inputs
-    with pytest.raises(SystemExit) as error:
-        main([*args, "-o", str(tmp_path / destination)])
-    assert error.value.code == 2
+    output = tmp_path / "missing/table.txt"
+    assert main([*args, "-o", str(output)]) == 0
+    assert output.is_file()
+
+
+def test_cli_directory_output_error_is_explicit(table_inputs, tmp_path, capsys):
+    _, _, args = table_inputs
+    assert main([*args, "-o", str(tmp_path)]) == 2
     captured = capsys.readouterr()
     assert captured.out == "" and "cannot write instruction table" in captured.err
-    assert not (tmp_path / "missing").exists()
 
 
 def test_cli_configuration_errors_are_explicit(table_inputs, tmp_path, capsys):
     _, _, args = table_inputs
-    with pytest.raises(SystemExit) as error:
-        main([*args, "--config", str(tmp_path / "missing.yaml")])
-    assert error.value.code == 2
+    assert main([*args, "--config", str(tmp_path / "missing.yaml")]) == 2
     captured = capsys.readouterr()
     assert captured.out == "" and "cannot read configuration" in captured.err
 
@@ -101,9 +100,7 @@ def test_cli_stdout_failures_exit_two(table_inputs, result, monkeypatch, capsys)
         return result
 
     monkeypatch.setattr(sys, "stdout", SimpleNamespace(buffer=SimpleNamespace(write=write)))
-    with pytest.raises(SystemExit) as error:
-        main(args)
-    assert error.value.code == 2
+    assert main(args) == 2
     assert "stdout: cannot write instruction table" in capsys.readouterr().err
 
 

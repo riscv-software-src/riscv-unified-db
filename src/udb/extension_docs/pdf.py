@@ -17,6 +17,7 @@ from importlib.resources import files
 from pathlib import Path
 from uuid import uuid4
 
+from ..progress import ProgressCallback, report_progress
 from .model import ExtensionDocumentError
 from .render_assets import HIGHLIGHT_ROLES, prepare_render_source
 from .source_assets import expand_render_includes
@@ -97,7 +98,11 @@ def _run_renderer(args, *, timeout, **kwargs):
 
 
 def render_extension_pdf(
-    source: str | Path, output: str | Path, *, options: PdfOptions | None = None
+    source: str | Path,
+    output: str | Path,
+    *,
+    options: PdfOptions | None = None,
+    progress: ProgressCallback | None = None,
 ) -> Path:
     """Render only on explicit request; existing output survives all failures.
 
@@ -132,6 +137,7 @@ def render_extension_pdf(
     scratch = target.parent / (".udb-pdf-" + uuid4().hex)
     scratch.mkdir()
     try:
+        report_progress(progress, "pdf", "Preparing PDF resources", completed=0, total=2)
         resources = scratch / "resources"
         copy_resources(resources)
         theme = _explicit_resource(
@@ -175,6 +181,7 @@ def render_extension_pdf(
         )
         environment = dict(os.environ)
         environment["TMPDIR"] = str(scratch)
+        report_progress(progress, "pdf", "Running PDF renderer", completed=1, total=2)
         try:
             completed = _run_renderer(
                 args,
@@ -195,6 +202,14 @@ def render_extension_pdf(
         if not result.is_file() or not result.read_bytes().startswith(b"%PDF-"):
             raise PdfRenderError("Official renderer did not produce a valid PDF artifact")
         result.replace(target)
+        report_progress(
+            progress,
+            "pdf",
+            "Rendering PDF",
+            completed=2,
+            total=2,
+            finished=True,
+        )
         return target
     finally:
         shutil.rmtree(scratch)

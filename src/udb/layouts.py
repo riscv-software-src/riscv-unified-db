@@ -23,6 +23,7 @@ from typing import Any
 from .authoring import AuthoringPlan, GeneratedFile
 from .errors import LayoutError
 from .layout_collections import LayoutCollection, LayoutJob, _relative_path, get_layout_collection
+from .progress import ProgressCallback, report_progress
 from .resources import package_data_root
 
 _OPENING_TAG = re.compile(r"{{|{%|{#")
@@ -788,13 +789,24 @@ def generate_layouts(
     check: bool = False,
     collections: Sequence[LayoutCollection] | None = None,
     source_root: Path | None = None,
+    progress: ProgressCallback | None = None,
 ) -> tuple[PurePosixPath, ...]:
     """Generate every layout output, or return drift without writing in check mode."""
 
     resolved_root = root.resolve()
-    return layout_plan(resolved_root, collections=collections, source_root=source_root).apply(
-        resolved_root, check=check
+    report_progress(progress, "layouts", "Planning layout outputs", completed=0, total=2)
+    plan = layout_plan(resolved_root, collections=collections, source_root=source_root)
+    report_progress(progress, "layouts", "Generating layout outputs", completed=1, total=2)
+    result = plan.apply(resolved_root, check=check)
+    report_progress(
+        progress,
+        "layouts",
+        "Generating layouts",
+        completed=2,
+        total=2,
+        finished=True,
     )
+    return result
 
 
 def layout_sources(

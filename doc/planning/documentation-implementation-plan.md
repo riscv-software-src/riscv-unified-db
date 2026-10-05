@@ -4,6 +4,10 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 -->
 # UDB Documentation Site — Implementation Plan
 
+> [!NOTE]
+> This planning snapshot predates the unified `udb` command and mise developer
+> tasks. Command names below are historical design inputs, not current usage.
+
 This file tracks the detailed implementation plan for the new UDB Docusaurus documentation site.
 Status is tracked inline so we can resume work across sessions.
 
@@ -481,7 +485,7 @@ For each gem with a CLI, auto-generate reference docs from `--help` output or in
 ### 8.1 — Overview page (`docs/generators/overview.md`)
 
 - [ ] **8.1.1** Write an overview explaining what generators are, how they work (`ConfiguredArchitecture`, ERB templates, `udb_helpers`), and how to invoke them via `bin/generate` or `udb-gen`.
-- [ ] **8.1.2** Include the full generators table. **Note on current state**: `bin/generate` currently dispatches only three subcommands (`ext-doc`, `isa-explorer`, `manual`) — all via `udb-gen`. Other generators (prm-pdf, cfg-html-doc, cpp-hart-gen, etc.) are invoked via Rake tasks, not `bin/generate`. Document the actual invocation method for each generator; update once Q8 (generator migration) is resolved.
+- [ ] **8.1.2** Include the full generators table. **Note on current state**: `bin/generate` currently dispatches only three subcommands (`ext-doc`, `isa-explorer`, `manual`) — all via `udb-gen`. Other generators (prm-pdf, cpp-hart-gen, etc.) are invoked via Rake tasks, not `bin/generate`. Document the actual invocation method for each generator; update once Q8 (generator migration) is resolved.
 - [ ] **8.1.3** Explain the relationship between `bin/generate` (language-agnostic wrapper), `udb-gen` (Ruby interface), and Rake-based generators.
 
 ### 8.2 — Per-generator pages (`docs/generators/`)
@@ -497,7 +501,6 @@ For each generator: description, what it produces, how to invoke it, example out
 **Generators currently invoked via Rake (update invocation docs once Q8 is resolved):**
 
 - [ ] **8.2.4** `prm-pdf.md` — PRM PDF.
-- [ ] **8.2.5** `cfg-html-doc.md` — HTML config documentation.
 - [ ] **8.2.6** `cpp-hart-gen.md` — C++ ISS hart.
 - [ ] **8.2.7** `c-header.md` — C encoding header.
 - [ ] **8.2.8** `go.md` — Go definitions.

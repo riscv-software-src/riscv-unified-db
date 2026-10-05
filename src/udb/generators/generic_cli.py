@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Literal
 
 from udb import Configuration, Database, UdbError
-from udb.cli import _write_generated_source
+from udb.cli_output import write_generated_source
 
 from .c_encoding import generate_c_encoding
 from .encoding_inputs import GO_EXTENSIONS, EncodingGeneratorError, ExceptionRecord
@@ -129,7 +129,7 @@ def main(generator: GeneratorName, argv: Sequence[str] | None = None) -> int:
         parser.error("--schemas requires --path")
     try:
         text = load_and_render(args, generator)
-        _write_generated_source(text, args.output, artifact=generator, create_parents=True)
+        write_generated_source(text, args.output, artifact=generator, create_parents=True)
         return 0
     except (UdbError, OSError, UnicodeError) as error:
         print(str(error), file=sys.stderr)

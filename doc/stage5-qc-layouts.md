@@ -105,9 +105,9 @@ function chooses a separate physical source tree, not a different output tree.
 `standard` and `qc_iu`:
 
 ```shell
-udb generate-layouts --root . --collection qc_iu --check
-udb generate-layouts --root generated --collection qc_iu --source-root source-data
-udb generate-layouts --root generated --collection standard --collection qc_iu
+udb author layouts --root . --collection qc-iu --check
+udb author layouts --root generated --collection qc-iu --source-root source-data
+udb author layouts --root generated --collection standard --collection qc-iu
 ```
 
 QC resources reside at `udb/_data/custom_layouts/qc_iu/csr/Xqci/*.layout`;

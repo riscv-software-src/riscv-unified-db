@@ -167,9 +167,9 @@ class InstructionMatcher:
     """Reusable descriptor-backed matcher with explicit selection/width policies.
 
     With no width, matching deliberately ignores high bits outside each mask,
-    just like ``udb disasm``. Explicit width requires exactly that descriptor
-    length and rejects overflowing integers. Decode exclusions are reported,
-    not silently used to remove legacy fixed-bit matches.
+    just like ``udb inspect encoding``. Explicit width requires exactly that
+    descriptor length and rejects overflowing integers. Decode exclusions are
+    reported, not silently used to remove legacy fixed-bit matches.
     """
 
     def __init__(self, source: Database | ConfiguredArchitecture) -> None:

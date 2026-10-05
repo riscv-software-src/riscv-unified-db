@@ -311,11 +311,11 @@ do_gen_schema_docs() {
     sha_before=$(find "$UDB_ROOT"/doc/docs/schemas -type f -name "*.mdx" -exec sha256sum {} \; 2>/dev/null | sort | sha256sum)
   fi
   if [ $fail_on_change -eq 1 ]; then
-    "$UDB_ROOT/bin/python" -m udb generate schema-docs \
-      --schemas "$UDB_ROOT/spec/schemas" --out "$UDB_ROOT/doc/docs/schemas" --check || exit $?
+    "$UDB_ROOT/bin/python" -m udb --schema-dir "$UDB_ROOT/spec/schemas" \
+      generate schema-docs --output "$UDB_ROOT/doc/docs/schemas" --check || exit $?
   else
-    "$UDB_ROOT/bin/python" -m udb generate schema-docs \
-      --schemas "$UDB_ROOT/spec/schemas" --out "$UDB_ROOT/doc/docs/schemas" --replace-current || exit $?
+    "$UDB_ROOT/bin/python" -m udb --schema-dir "$UDB_ROOT/spec/schemas" \
+      generate schema-docs --output "$UDB_ROOT/doc/docs/schemas" --replace-current || exit $?
   fi
   if [ $fail_on_change -eq 1 ]; then
     local sha_after
@@ -404,7 +404,7 @@ do_gen_profile_cfgs() {
   fi
 
   "${UDB_ROOT}"/bin/python -m udb \
-    --path "${UDB_ROOT}/spec/std/isa" --schemas "${UDB_ROOT}/spec/schemas" \
+    --database "${UDB_ROOT}/spec/std/isa" --schema-dir "${UDB_ROOT}/spec/schemas" \
     generate profile-configs -o "$cfgs_dir"
 
   if [ $fail_on_change -eq 1 ]; then

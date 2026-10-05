@@ -111,20 +111,26 @@ def test_cli_validation_contract_and_custom_schema_root(tmp_path: Path, capsys) 
     write_extension(source, valid_extension())
     write_extension_schema(schemas)
 
-    with pytest.raises(SystemExit) as error:
-        main(["--validate", "list", "extension"])
-    assert error.value.code == 2
-    assert "--validate requires --resolved" in capsys.readouterr().err
-
     assert (
         main(
             [
-                "--path",
+                "--database",
                 str(source),
-                "--schemas",
+                "--schema-dir",
                 str(schemas),
-                "--resolved",
-                "--validate",
+                "validate",
+                "data",
+            ]
+        )
+        == 0
+    )
+    assert (
+        main(
+            [
+                "--database",
+                str(source),
+                "--schema-dir",
+                str(schemas),
                 "show",
                 "extension",
                 "Demo",
@@ -139,10 +145,7 @@ def test_cli_custom_validation_without_schemas_is_a_clear_error(tmp_path: Path, 
     source = tmp_path / "source"
     write_extension(source, valid_extension())
 
-    with pytest.raises(SystemExit) as error:
-        main(["--path", str(source), "--resolved", "--validate", "list", "extension"])
-
-    assert error.value.code == 2
+    assert main(["--database", str(source), "validate", "data"]) == 2
     stderr = capsys.readouterr().err
     assert "no schema directory" in stderr
     assert "Traceback" not in stderr

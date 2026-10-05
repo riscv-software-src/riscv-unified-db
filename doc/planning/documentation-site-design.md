@@ -4,6 +4,10 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 -->
 # UDB Documentation Site Design
 
+> [!NOTE]
+> This planning snapshot predates the unified `udb` command and mise developer
+> tasks. Command names below are historical design inputs, not current usage.
+
 This file captures the design decisions for the UDB Docusaurus documentation site,
 including the landing page layout, navigation structure, and audience targeting.
 
@@ -60,7 +64,6 @@ screenshot or code snippet and links to the relevant backend documentation page.
 
 Suggested items:
 - Programmer's Reference Manual PDF (prm_pdf)
-- HTML configuration documentation (cfg_html_doc)
 - C encoding header snippet (generators/c_header)
 - SystemVerilog decode package snippet (generators/sverilog)
 - Profile documentation (profile)
@@ -195,7 +198,6 @@ Tools
 Generators
   Overview
   PRM PDF (prm_pdf)
-  HTML Config Docs (cfg_html_doc)
   C++ ISS (cpp_hart_gen)
   C Header (c_header)
   Go (go)

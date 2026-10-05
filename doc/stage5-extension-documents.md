@@ -99,8 +99,8 @@ source = generate_extension_document(
 render_extension_pdf(source, source.with_suffix(".pdf"))
 ```
 
-The parent-owned CLI patch adds `udb generate ext-doc` (source-only by default,
-`--format pdf` explicitly renders) and `udb render pdf INPUT.adoc --out FILE`.
+The installed CLI provides `udb generate extension-document` for source-only
+generation and `udb render pdf INPUT.adoc --output FILE` for explicit rendering.
 The repository adapter explicitly receives its input root and preserves
 `./bin/generate ext-doc`'s PDF default. The new Xqci wrapper preserves the original
 exact selectors, literal output directory and basename; custom QC data must be

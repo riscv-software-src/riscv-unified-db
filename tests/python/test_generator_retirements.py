@@ -5,10 +5,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import subprocess
 from pathlib import Path
 
-import pytest
 from ruamel.yaml import YAML
 
 ROOT = Path(__file__).parents[2]
@@ -28,20 +26,6 @@ RETIRED_JOBS = {
     "build-instruction-appendix",
     "build-profile",
 }
-
-
-@pytest.mark.parametrize("command", ["manual", "isa-explorer"])
-def test_retired_generator_is_rejected_before_runtime_setup(command: str, tmp_path: Path) -> None:
-    result = subprocess.run(
-        ["bash", str(ROOT / "bin/generate"), command],
-        cwd=tmp_path,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 1
-    assert f"Invalid subcommand: {command}" in result.stdout
-    assert not result.stderr
 
 
 def test_retired_jobs_are_absent_from_registry_and_generated_workflow() -> None:

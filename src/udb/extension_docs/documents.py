@@ -17,6 +17,7 @@ from ..architecture import ConfiguredArchitecture
 from ..conditions import ConstantCondition
 from ..idl.ast import FunctionDef
 from ..idl.passes import to_adoc
+from ..progress import ProgressCallback, report_progress
 from .compiler import DocumentCompiler
 from .instructions import InstructionSections, instruction_summary
 from .links import LinkResolver, anchor, anchors
@@ -319,6 +320,7 @@ def render_extension_document(
     selectors: Sequence[str],
     *,
     options: DocumentOptions | None = None,
+    progress: ProgressCallback | None = None,
 ) -> str:
     """Generate complete AsciiDoc in Python; renderer/source checkout not needed."""
     from .csrs import CsrSections, csr_summary
@@ -329,6 +331,15 @@ def render_extension_document(
     queries = SelectionQueries(architecture)
     instructions = queries.records("instruction", selections)
     csrs = queries.records("csr", selections)
+    total = len(instructions) + len(csrs) + 1
+    completed = 0
+    report_progress(
+        progress,
+        "extension-document-content",
+        "Preparing extension document",
+        completed=completed,
+        total=total,
+    )
     if options.prose is None and any(
         needs_configured_prose(record.data)
         for record in (
@@ -359,6 +370,14 @@ def render_extension_document(
         )
         for csr in csrs:
             parts.extend(("<<<\n:leveloffset: +2", csr_sections.render(csr), ":leveloffset: -2"))
+            completed += 1
+            report_progress(
+                progress,
+                "extension-document-content",
+                "Rendering CSRs",
+                completed=completed,
+                total=total,
+            )
     if instructions:
         parts.append(
             '[.portrait]\n<<<\n[#insns,reftext="Instructions (in alphabetical order)"]\n'
@@ -368,13 +387,30 @@ def render_extension_document(
             parts.extend(
                 (":leveloffset: +2", inst_sections.render(instruction), ":leveloffset: -2\n\n<<<")
             )
+            completed += 1
+            report_progress(
+                progress,
+                "extension-document-content",
+                "Rendering instructions",
+                completed=completed,
+                total=total,
+            )
     reachable = {
         **compiler.source_functions,
         **inst_sections.functions,
         **csr_sections.functions,
     }
     parts.append(functions(compiler.source_function_closure(reachable)))
-    return LinkResolver(architecture).resolve("\n\n".join(parts).rstrip() + "\n")
+    result = LinkResolver(architecture).resolve("\n\n".join(parts).rstrip() + "\n")
+    report_progress(
+        progress,
+        "extension-document-content",
+        "Rendering extension document",
+        completed=total,
+        total=total,
+        finished=True,
+    )
+    return result
 
 
 def generate_extension_document(
@@ -383,12 +419,18 @@ def generate_extension_document(
     output_dir: str | Path,
     *,
     options: DocumentOptions | None = None,
+    progress: ProgressCallback | None = None,
 ) -> Path:
     """Validate and assemble before writing; default basename preserves selector."""
     options = options or DocumentOptions()
     selections = select_extensions(architecture, selectors)
     basename = basename_for(selections, options)
-    text = render_extension_document(architecture, selectors, options=options)
+    text = render_extension_document(
+        architecture,
+        selectors,
+        options=options,
+        progress=progress,
+    )
     assets = source_asset_closure(text, supplied=options.source_assets)
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=True)

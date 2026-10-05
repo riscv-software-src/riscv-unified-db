@@ -145,7 +145,7 @@ retirement is a separately reviewed Stage 6 artifact transition, not a parity
 fix or a reason to rewrite historical MDX now.
 
 The unified command is
-`udb generate schema-docs [--schemas DIR] --out DIR [--check]`, with bundled
+`udb [--schema-dir DIR] generate schema-docs --output DIR [--check]`, with bundled
 schemas by default. The standalone module entry point and API remain usable.
 The wrapper and CI preserve generator exit statuses, including non-writing
 drift and invalid input. Release/versioning policy is unchanged.
@@ -168,12 +168,12 @@ custom.plan("custom-docs").apply("custom-docs")
 drift = generate_schema_docs("generated-schema-docs", check=True)
 ```
 
-Equivalent standalone module commands:
+Equivalent installed commands:
 
 ```sh
-python -m udb.schema_docs --out generated-schema-docs
-python -m udb.schema_docs --schemas my-schemas --out custom-docs --check
-python -m udb.schema_docs --out pages --schema config_schema.json --output-file config.md
+udb generate schema-docs --output generated-schema-docs
+udb --schema-dir my-schemas generate schema-docs --output custom-docs --check
+udb generate schema-docs --output pages --schema config_schema.json --output-file config.md
 ```
 
 Exit codes are 0 for successful generation or clean checks, 1 for check

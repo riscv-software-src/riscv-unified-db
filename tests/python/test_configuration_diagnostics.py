@@ -427,7 +427,7 @@ def test_cli_explains_real_core_without_changing_stdout_or_exit(reduced, capsys)
     _, root = reduced
     source, config = root / "isa", root / "cfg.yaml"
     before = config.read_bytes()
-    assert main(["--path", str(source), "validate-cfg", str(config)]) == 1
+    assert main(["--database", str(source), "validate", "cfg", "-c", str(config)]) == 1
     output = capsys.readouterr()
     assert output.out == "small-example: unsat\n"
     assert "unsatisfiable: configuration constraints are mutually unsatisfiable" in output.err
@@ -446,7 +446,7 @@ def test_cli_valid_output_is_unchanged(reduced, capsys):
     data = json.loads(config.read_text(encoding="utf-8"))
     data["params"]["WRITABLE"][7] = True
     config.write_text(json.dumps(data), encoding="utf-8")
-    assert main(["--path", str(root / "isa"), "validate-cfg", str(config)]) == 0
+    assert main(["--database", str(root / "isa"), "validate", "cfg", "-c", str(config)]) == 0
     output = capsys.readouterr()
     assert output.out == "small-example: valid\n"
     assert output.err == ""
@@ -481,7 +481,7 @@ def test_real_standard_local_extension_requirement(tmp_path, capsys):
     assert "ext/Zve32x.yaml:" in text
     assert tuple(entry.label for entry in explain_conflict(architecture, result)) == result.conflict
     assert architecture.check().conflict == result.conflict
-    assert main(["--path", str(tmp_path / "isa"), "validate-cfg", str(config)]) == 1
+    assert main(["--database", str(tmp_path / "isa"), "validate", "cfg", "-c", str(config)]) == 1
     output = capsys.readouterr()
     assert output.out == "local-extension-example: unsat\n"
     assert "requirement: (extension Zicsr AND extension Zvl32b)" in output.err
@@ -632,7 +632,7 @@ def test_real_unsat_preserves_literal_whitespace_in_values_and_rules(tmp_path, i
     )
     assert assignment.summary == "Configuration supplies MODE = 'two words'"
     assert architecture.check().conflict == result.conflict
-    assert main(["--path", str(tmp_path / "isa"), "validate-cfg", str(config)]) == 1
+    assert main(["--database", str(tmp_path / "isa"), "validate", "cfg", "-c", str(config)]) == 1
     output = capsys.readouterr()
     assert output.out == "whitespace-example: unsat\n"
     assert "Configuration supplies MODE = 'two words'" in output.err

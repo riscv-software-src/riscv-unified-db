@@ -62,7 +62,7 @@ returns a complete string, using an ordinary `ConfiguredArchitecture` built by
 `Database.resolve().configure(Configuration(...))`. `language` is `"c"` or `"svh"`.
 It reads immutable public configuration, database, and version APIs only.
 
-`udb generate cfg-c-header|cfg-svh-header --config CONFIG [-o FILE]` defaults to
+`udb generate config-c-header|config-sv-header --config CONFIG [-o FILE]` defaults to
 stdout and the bundled `_` configuration (therefore an explicit unsupported
 configuration error without `--config`). `-c` and `--cfg` are compatibility aliases.
 Only `_`, `rv32`, and `rv64` are bundled names; custom configurations require an
@@ -113,10 +113,10 @@ C/SV acceptance. The existing package matrix invokes
 it uses explicit fixture values and bundled ISA data, checks exact artifact
 hashes, and exercises actual installed stdout/file CLI paths offline.
 
-Repository shell wrappers remain legacy: `bin/generate` dispatches header
-commands to `bin/udb-gen`; `bin/chore`'s `do_gen_cfg_headers_golden()` dispatches
-through `bin/bundle exec udb-gen`. Their named-config lookup and bootstrapping
-policy are not part of the installed Python API. No Ruby fallback is introduced
-into Python. The precise CI consumer is cut over instead of silently changing
-wrapper name resolution or introducing another installation bootstrap.
+The unified CLI cutover removes the `bin/udb-gen` wrapper. The remaining
+repository-only `bin/chore` path still dispatches through
+`bin/bundle exec udb-gen` until developer tasks replace it. Its named-config
+lookup and bootstrapping policy are not part of the installed Python API. No
+Ruby fallback is introduced into Python. The precise CI consumer is cut over
+instead of introducing another installation bootstrap.
 Exact commands and results are recorded in `gen/handoff/headers-report.md`.

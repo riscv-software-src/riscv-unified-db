@@ -45,6 +45,7 @@ from .versions import ExtensionVersion, ExtensionVersionSet, VersionLike
 if TYPE_CHECKING:
     from .architecture import ConfiguredArchitecture
     from .configuration import Configuration
+    from .progress import ProgressCallback
 
 _KIND_DIRECTORIES = {
     "csr": "csr",
@@ -276,6 +277,11 @@ class Database:
         return self._schemas_root
 
     @property
+    def isa_root(self) -> Any:
+        """The source/resource root backing this database."""
+        return self._isa_root
+
+    @property
     def is_resolved(self) -> bool:
         """Whether this database has completed YAML inheritance resolution."""
         return False
@@ -333,7 +339,11 @@ class Database:
         return self.get("profile", name)  # type: ignore[return-value]
 
     def resolve(
-        self, *, overlays: Sequence[str | Path] = (), validate: bool = False
+        self,
+        *,
+        overlays: Sequence[str | Path] = (),
+        validate: bool = False,
+        progress: ProgressCallback | None = None,
     ) -> ResolvedDatabase:
         """Resolve inheritance after applying overlay trees in order.
 
@@ -342,6 +352,17 @@ class Database:
         Schema validation is optional and never inserts defaults or rewrites
         declared schema URIs.
         """
+        from .progress import report_progress
+
+        total = len(overlays) + 3
+        completed = 0
+        report_progress(
+            progress,
+            "database-resolution",
+            "Reading database documents",
+            completed=completed,
+            total=total,
+        )
         source_texts: dict[tuple[str, str], str] = {}
         documents, source_maps = self._load_documents(self._isa_root, source_texts=source_texts)
         idl_sources = self._load_idl_sources(self._isa_root, layer="source")
@@ -382,7 +403,23 @@ class Database:
                     )
                 documents[path] = dict(merged)
                 source_maps[path] = merged_sources
+            completed += 1
+            report_progress(
+                progress,
+                "database-resolution",
+                "Applying database overlays",
+                completed=completed,
+                total=total,
+            )
 
+        completed += 1
+        report_progress(
+            progress,
+            "database-resolution",
+            "Resolving database inheritance",
+            completed=completed,
+            total=total,
+        )
         result = YamlResolver(documents, sources=source_maps).resolve_with_sources()
         resolved = ResolvedDatabase(
             result.documents,
@@ -394,8 +431,17 @@ class Database:
             idl_source_roots=idl_source_roots,
         )
         resolved._validate_duplicate_identities()
+        completed += 1
         if validate:
-            resolved.validate()
+            resolved.validate(progress=progress)
+        report_progress(
+            progress,
+            "database-resolution",
+            "Resolving database",
+            completed=total,
+            total=total,
+            finished=True,
+        )
         return resolved
 
     def _canonical_kind(self, kind: str) -> str:
@@ -693,21 +739,36 @@ class ResolvedDatabase(Database):
         return value
 
     def resolve(
-        self, *, overlays: Sequence[str | Path] = (), validate: bool = False
+        self,
+        *,
+        overlays: Sequence[str | Path] = (),
+        validate: bool = False,
+        progress: ProgressCallback | None = None,
     ) -> ResolvedDatabase:
         if overlays:
             raise ResolutionError("Cannot apply source overlays to an already resolved database")
         if validate:
-            self.validate()
+            self.validate(progress=progress)
         return self
 
-    def validate(self) -> None:
+    def validate(self, *, progress: ProgressCallback | None = None) -> None:
         """Validate every resolved document against its declared schema."""
+        from .progress import report_progress
+
         if self._schemas_root is None:
             raise SchemaError("Resolved database has no schema directory")
         store = SchemaStore(self._schemas_root)
-        for path, document in self._resolved_documents.items():
+        total = len(self._resolved_documents)
+        for completed, (path, document) in enumerate(self._resolved_documents.items(), 1):
             store.validate(document, source=self._resolved_sources[path])
+            report_progress(
+                progress,
+                "database-validation",
+                "Validating database documents",
+                completed=completed,
+                total=total,
+                finished=completed == total,
+            )
 
     def configure(self, configuration: Configuration) -> ConfiguredArchitecture:
         """Create an immutable configured view from an explicit declaration."""
