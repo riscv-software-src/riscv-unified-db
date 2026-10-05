@@ -444,12 +444,17 @@ def write_resolved_schemas(
 ) -> tuple[Path, ...]:
     """Publish schemas using the versioned path and identifier contract."""
     root = Path(output_dir)
-    written: list[Path] = []
-    for relative_path, schema in store.resolved_schemas(base_url=base_url).items():
-        output_path = _output_path(root, relative_path)
-        _write_atomic(
-            output_path,
+    rendered = [
+        (
+            relative_path,
+            _output_path(root, relative_path),
             dumps_json(schema, source=relative_path.as_posix(), sort_keys=False),
         )
+        for relative_path, schema in store.resolved_schemas(base_url=base_url).items()
+    ]
+    _preflight_output_targets(root, [relative for relative, _, _ in rendered], [])
+    written: list[Path] = []
+    for _relative_path, output_path, contents in rendered:
+        _write_atomic(output_path, contents)
         written.append(output_path)
     return tuple(written)

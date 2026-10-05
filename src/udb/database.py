@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
-from importlib import metadata, resources
+from importlib import metadata
 from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 from typing import Any, Self
@@ -23,6 +23,7 @@ from ruamel.yaml.error import YAMLError
 
 from .errors import DataError, ObjectNotFoundError, ResolutionError, UnknownKindError
 from .resolver import YamlResolver, merge_patch
+from .resources import package_data_root
 from .schema import SchemaError, SchemaStore
 
 _KIND_DIRECTORIES = {
@@ -171,12 +172,10 @@ class Database:
     @classmethod
     def bundled(cls) -> Self:
         """Open the standard ISA and schemas bundled in the installed package."""
-        data_root = resources.files("udb").joinpath("_data")
-        if not data_root.joinpath("isa").is_dir():
-            try:
-                data_root = metadata.distribution("udb").locate_file("udb/_data")
-            except metadata.PackageNotFoundError as error:
-                raise DataError("The installed udb distribution could not be located") from error
+        try:
+            data_root = package_data_root()
+        except metadata.PackageNotFoundError as error:
+            raise DataError("The installed udb distribution could not be located") from error
         isa_root = data_root.joinpath("isa")
         if not isa_root.is_dir():
             raise DataError(f"Bundled ISA data directory is missing: {isa_root}")

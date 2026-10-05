@@ -35,7 +35,8 @@ def test_package_data_contains_raw_sources_and_schemas() -> None:
     assert "udb/_data/isa/isa/globals.isa" in destinations
     assert "udb/_data/isa/prose/interrupts.adoc" in destinations
     assert "udb/_data/schemas/inst_schema.json" in destinations
-    assert not any(destination.endswith((".erb", ".layout")) for destination in destinations)
+    assert "udb/_data/layouts/inst/Zaamo/amoadd.SIZE.AQRL.layout" in destinations
+    assert not any(destination.endswith(".erb") for destination in destinations)
 
 
 def _wheel_data(wheel: Path) -> dict[str, str]:
@@ -68,7 +69,8 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
     extracted = tmp_path / "extracted"
     with tarfile.open(sdist) as archive:
         names = archive.getnames()
-        assert not any(name.endswith((".erb", ".layout")) for name in names)
+        assert any(name.endswith("amoadd.SIZE.AQRL.layout") for name in names)
+        assert not any(name.endswith(".erb") for name in names)
         archive.extractall(extracted, filter="data")
 
     sdist_root = next(extracted.iterdir())
@@ -92,7 +94,8 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
     direct_data = _wheel_data(direct_wheel)
     assert direct_data == _wheel_data(rebuilt_wheel)
     assert len(direct_data) == len(package_data(REPOSITORY_ROOT))
-    assert not any(name.endswith((".erb", ".layout")) for name in direct_data)
+    assert any(name.endswith("amoadd.SIZE.AQRL.layout") for name in direct_data)
+    assert not any(name.endswith(".erb") for name in direct_data)
     isa_root = REPOSITORY_ROOT / "spec" / "std" / "isa"
     expected_yaml = {
         f"udb/_data/isa/{path.relative_to(isa_root).as_posix()}": hashlib.sha256(
@@ -108,15 +111,23 @@ def test_wheel_rebuilt_from_sdist_is_standalone(tmp_path: Path) -> None:
 
     check_script = """
 from importlib.resources import files
+from pathlib import Path
 import udb
 
 assert '.whl/udb/' in udb.__file__
 assert (files('udb') / '_data' / 'isa' / 'ext' / 'Zvkg.yaml').is_file()
 assert (files('udb') / '_data' / 'schemas' / 'inst_schema.json').is_file()
+assert (files('udb') / '_data' / 'layouts' / 'inst' / 'Zaamo' / 'amoadd.SIZE.AQRL.layout').is_file()
 assert udb.Database.bundled().extension('Zvkg').name == 'Zvkg'
 resolved = udb.Database.bundled().resolve(validate=True)
 assert resolved.profile('RVI20U64')['extensions']['I']['presence'] == 'mandatory'
 assert '$inherits' not in resolved.profile('RVI20U64')
+authoring_root = Path('authoring')
+assert len(udb.generate_layouts(authoring_root)) == 532
+generated = authoring_root / 'spec/std/isa/inst/Zaamo/amoadd.w.yaml'
+bundled = files('udb') / '_data/isa/inst/Zaamo/amoadd.w.yaml'
+assert generated.read_bytes() == bundled.read_bytes()
+assert udb.generate_layouts(authoring_root, check=True) == ()
 """
     environment = os.environ.copy()
     environment["PYTHONPATH"] = str(rebuilt_wheel)
