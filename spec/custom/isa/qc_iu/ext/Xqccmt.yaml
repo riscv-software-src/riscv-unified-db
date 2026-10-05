@@ -105,7 +105,6 @@ type: unprivileged
 versions:
 - version: "0.1.0"
   state: development
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
