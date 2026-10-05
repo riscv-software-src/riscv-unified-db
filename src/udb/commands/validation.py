@@ -28,7 +28,7 @@ validate_app = typer.Typer(
 
 
 def register(app: typer.Typer) -> None:
-    app.add_typer(validate_app, name="validate", rich_help_panel="Validation")
+    app.add_typer(validate_app, name="validate")
     app.command(
         "resolve",
         help="Write a deterministic resolved YAML database tree.",

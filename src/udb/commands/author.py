@@ -23,7 +23,7 @@ author_app = typer.Typer(help="Author database source files.", no_args_is_help=T
 
 
 def register(app: typer.Typer) -> None:
-    app.add_typer(author_app, name="author", rich_help_panel="Authoring")
+    app.add_typer(author_app, name="author")
 
 
 @author_app.command(

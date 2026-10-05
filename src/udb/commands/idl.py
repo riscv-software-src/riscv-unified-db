@@ -38,7 +38,7 @@ check_app = typer.Typer(help="Type-check standalone IDL.", no_args_is_help=True)
 
 def register(app: typer.Typer) -> None:
     idl_app.add_typer(check_app, name="check")
-    app.add_typer(idl_app, name="idl", rich_help_panel="IDL")
+    app.add_typer(idl_app, name="idl")
 
 
 def _run(context: typer.Context, command: str, **options: object) -> None:

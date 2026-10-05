@@ -16,7 +16,7 @@ render_app = typer.Typer(help="Render generated source artifacts.", no_args_is_h
 
 
 def register(app: typer.Typer) -> None:
-    app.add_typer(render_app, name="render", rich_help_panel="Rendering")
+    app.add_typer(render_app, name="render")
 
 
 @render_app.command(

@@ -28,7 +28,7 @@ generate_app = typer.Typer(
 
 
 def register(app: typer.Typer) -> None:
-    app.add_typer(generate_app, name="generate", rich_help_panel="Generation")
+    app.add_typer(generate_app, name="generate")
 
 
 def _run(context: typer.Context, generator: str, **options: object) -> None:

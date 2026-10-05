@@ -77,7 +77,7 @@ def register(app: typer.Typer) -> None:
         help="Show one complete database record.",
         epilog="Example: [bold]udb show extension Zvkg -f yaml[/bold]",
     )(show_record)
-    app.add_typer(inspect_app, name="inspect", rich_help_panel="Architecture")
+    app.add_typer(inspect_app, name="inspect")
 
 
 def list_records(
