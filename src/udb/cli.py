@@ -68,6 +68,23 @@ def build_parser() -> argparse.ArgumentParser:
         "configuration", help="configuration YAML path or bundled name (_, rv32, rv64)"
     )
 
+    generate_parser = subparsers.add_parser("generate", help="generate source artifacts")
+    generators = generate_parser.add_subparsers(dest="generator", required=True)
+    for language, description in (("c", "C"), ("svh", "SystemVerilog")):
+        header_parser = generators.add_parser(
+            f"cfg-{language}-header", help=f"generate a fully configured {description} header"
+        )
+        header_parser.add_argument(
+            "-c",
+            "--config",
+            "--cfg",
+            default="_",
+            help="explicit configuration YAML path or bundled name (_, rv32, rv64)",
+        )
+        header_parser.add_argument(
+            "-o", "--output", type=Path, help="output file (default: stdout)"
+        )
+
     schemas_parser = subparsers.add_parser(
         "schemas", help="write versioned schemas for publication"
     )
@@ -91,7 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    resolves_database = args.resolved or args.command in ("resolve", "validate-cfg")
+    resolves_database = args.resolved or args.command in ("resolve", "validate-cfg", "generate")
     if args.overlay and not resolves_database:
         parser.error("--overlay requires --resolved")
     if args.validate and not resolves_database:
@@ -127,6 +144,48 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         if resolves_database:
             database = database.resolve(overlays=args.overlay, validate=args.validate)
+        if args.command == "generate":
+            from .configuration import Configuration
+            from .generators.config_headers import ConfigHeaderError, generate_config_header
+
+            assert isinstance(database, ResolvedDatabase)
+            configuration = (
+                Configuration.builtin(args.config)
+                if args.config in ("_", "rv32", "rv64")
+                else Configuration.from_file(
+                    args.config,
+                    schema_store=(
+                        SchemaStore(database.schemas_root)
+                        if database.schemas_root is not None
+                        else None
+                    ),
+                )
+            )
+            language = "c" if args.generator == "cfg-c-header" else "svh"
+            header = generate_config_header(database.configure(configuration), language)
+            destination = "stdout" if args.output is None else str(args.output)
+            try:
+                encoded = header.encode("utf-8")
+                if args.output is None:
+                    stream = getattr(sys.stdout, "buffer", None)
+                    if stream is None:
+                        raise OSError("stdout has no binary stream for UTF-8 output")
+                    # Raw writes avoid locale/newline translation and buffered
+                    # retries at shutdown after a broken pipe.
+                    stream = getattr(stream, "raw", stream)
+                    remaining = memoryview(encoded)
+                    while remaining:
+                        written = stream.write(remaining)
+                        if written is None or written <= 0:
+                            raise OSError("stdout did not accept the complete header")
+                        remaining = remaining[written:]
+                    stream.flush()
+                else:
+                    args.output.parent.mkdir(parents=True, exist_ok=True)
+                    args.output.write_bytes(encoded)
+            except (OSError, UnicodeError) as error:
+                raise ConfigHeaderError(f"{destination}: cannot write header: {error}") from error
+            return 0
         if args.command == "validate-cfg":
             from .architecture import ArchitectureCheckStatus
             from .configuration import Configuration

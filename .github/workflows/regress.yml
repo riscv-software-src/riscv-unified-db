@@ -336,6 +336,26 @@ jobs:
           gem install udb.gem
       - name: try z3
         run: ruby -r 'udb' -e "Udb::Z3Loader.ensure_z3_loaded"
+  regress-python-config-headers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Install source acceptance tools
+        run: sudo apt-get update -qq && sudo apt-get install -y gcc verilator
+      - name: Generate configuration header artifacts with installed Python CLI
+        run: |
+          uv run --locked udb generate cfg-c-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.h
+          uv run --locked udb generate cfg-svh-header -c cfgs/mc100-32-full-example.yaml -o gen/config-headers/config.svh
+          cmp gen/config-headers/config.h tests/golden/mc100-32-full-example.golden.h
+          cmp gen/config-headers/config.svh tests/golden/mc100-32-full-example.golden.svh
+      - name: Check configuration header bytes and C/SystemVerilog consumers
+        run: UDB_TEST_HEADER_TOOLS=1 uv run --locked python -m pytest -n 8 --basetemp=gen/config-headers/pytest tests/python/test_config_headers.py -k "not live_ruby"
+      - name: Compare complete configuration header artifacts with Ruby
+        run: UDB_TEST_RUBY=1 uv run --locked python -m pytest -n 0 --basetemp=gen/config-headers/pytest-ruby tests/python/test_config_headers.py -k live_ruby
+
   regress-python-conditions-parity:
     runs-on: ubuntu-latest
     steps:
@@ -1229,6 +1249,7 @@ jobs:
   regress-complete:
     runs-on: ubuntu-latest
     needs:
+      - regress-python-config-headers
       - regress-python-conditions-parity
       - regress-python-configured-parity
       - regress-python-configuration-parity
