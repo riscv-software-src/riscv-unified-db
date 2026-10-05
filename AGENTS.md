@@ -46,9 +46,8 @@ bin/doctor   # verify the environment is correctly set up (run after bin/setup)
 ./do gen:resolved_arch CFG=_  # resolve a configuration (default: "_" = unconfigured)
 ./do gen:schemas              # resolve schema files to gen/schemas/
 
-./bin/generate manual -v all -f html          # generate HTML ISA manual
 ./bin/generate ext-doc -h                     # generate extension documentation
-./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer  # ISA explorer
+./bin/generate inst-table -h                  # generate an instruction table
 
 ./bin/pre-commit              # run pre-commit checks manually
 ```
@@ -111,10 +110,11 @@ IDL is compiled by the `idlc` gem. The compiler performs type checking and can g
 ### Backends (`backends/`)
 
 Each backend has a `tasks.rake` file that registers Rake tasks. Key backends:
-- `cfg_html_doc` — HTML documentation for a specific config
+- `cfg_html_doc` — Temporary function-documentation dependency of the MCP server; standalone config documents are retired
 - `cpp_hart_gen` — C++ ISS (Instruction Set Simulator) hart model
-- `prm_pdf` — Processor Requirements Manual PDF
-- `instructions_appendix` — Instruction appendix AsciiDoc/PDF
+- `generators` — Generic C, SystemVerilog, and Go outputs
+
+See `doc/stage5-retirements.md` for the approved document and Explorer retirements.
 
 ### CI / Pre-commit
 

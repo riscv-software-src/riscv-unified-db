@@ -30,7 +30,6 @@ require "yard"
 require "minitest/test_task"
 
 require "udb/architecture"
-require "udb/portfolio_design"
 
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
 $logger.level = Logger::INFO
@@ -56,14 +55,6 @@ file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
   #sh "bundle exec yard config --gem-install-yri"
   sh "bundle exec yard gem"
   FileUtils.touch t.name
-end
-
-namespace :chore do
-  desc "Update golden instruction appendix"
-  task :update_golden_appendix do
-    Rake::Task["gen:instruction_appendix_adoc"].invoke
-    sh "mv #{$root}/gen/instructions_appendix/all_instructions.adoc #{$root}/tests/golden/all_instructions.golden.adoc"
-  end
 end
 
 namespace :gen do
@@ -281,43 +272,6 @@ namespace :gen do
     exit(1)
   end
 
-  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t xlsx -o gen/isa_explorer` instead")
-  task :isa_explorer_spreadsheet do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t xlsx -o gen/isa_explorer` instead"
-    exit(1)
-  end
-
-  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t ext-browser -o gen/isa_explorer` instead")
-  task :isa_explorer_browser_ext do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t ext-browser -o gen/isa_explorer` instead"
-    exit(1)
-  end
-
-  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t inst-browser -o gen/isa_explorer` instead")
-  task :isa_explorer_browser_inst do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t inst-browser -o gen/isa_explorer` instead"
-    exit(1)
-  end
-
-  desc("DEPRECATED -- Run `./bin/udb-gen isa-explorer -t csr-browser -o gen/isa_explorer` instead")
-  task :isa_explorer_browser_csr do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t csr-browser -o gen/isa_explorer` instead"
-    exit(1)
-  end
-
-  desc("DEPRECATED")
-  task :isa_explorer_browser do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t csr-browser -o gen/isa_explorer` instead"
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t inst-browser -o gen/isa_explorer` instead"
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate isa-explorer -t ext-browser -o gen/isa_explorer` instead"
-    exit(1)
-  end
-
-  task :html_manual do
-    Udb.logger.warn "DEPRECATED -- Run `./bin/generate manual -h` for help"
-    exit(1)
-  end
-
   desc "Generate strict config files for profiles"
   task :cfg do
     sh ($root / "bin/python").to_s, "-m", "udb",
@@ -352,38 +306,3 @@ namespace :test do
     end
   end
 end
-
-desc <<~DESC
-  Generate all portfolio-based PDF artifacts (profiles)
-DESC
-task :portfolios do
-  portfolio_start_msg("MockProfileRelease")
-  Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
-  portfolio_start_msg("RVI20ProfileRelease")
-  Rake::Task["#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"].invoke
-  portfolio_start_msg("RVA20ProfileRelease")
-  Rake::Task["#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"].invoke
-  portfolio_start_msg("RVA22ProfileRelease")
-  Rake::Task["#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"].invoke
-  portfolio_start_msg("RVA23ProfileRelease")
-  Rake::Task["#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"].invoke
-  portfolio_start_msg("RVB23ProfileRelease")
-  Rake::Task["#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"].invoke
-end
-
-def portfolio_start_msg(name)
-  puts ""
-  puts "================================================================================================="
-  puts "#{name}"
-  puts "================================================================================================="
-  puts ""
-end
-
-# Shortcut targets for building Profile Releases.
-task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
-task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
-task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
-task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
-task "RVA22": "#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"
-task "RVA23": "#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"
-task "RVB23": "#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"

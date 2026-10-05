@@ -287,16 +287,16 @@ tests:
 [source,yaml]
 ----
 tests:
-  build-html-isa-manual:
+  build-idl-doc:
     ci_stage: merge_queue
     gh_save_artifact:
-      - artifact_name: isa-html-manual
-        path: gen/manual/isa/top/all/html
+      - artifact_name: idl-doc
+        path: idl.html
     tags:
       - artifacts
     test:
-      - name: Generate HTML ISA manual
-        run: ./bin/generate manual -v all -f html
+      - name: Build IDL doc
+        run: ./bin/bundle exec asciidoctor -r idl_highlighter -a toc=left -a source-highlighter=rouge -o idl.html doc/idl.adoc
 ----
 
 ==== Test with Pre-steps and Environment Variables

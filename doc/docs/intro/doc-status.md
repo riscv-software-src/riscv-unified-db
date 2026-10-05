@@ -91,14 +91,10 @@ title: Documentation Status
 | Section | Status | Notes |
 |---------|--------|-------|
 | Overview | 📋 Planned | What generators produce |
-| PRM PDF | 📋 Planned | Programmer's Reference Manual |
-| HTML Config Docs | 📋 Planned | Configuration documentation |
 | C++ ISS | 📋 Planned | Instruction Set Simulator |
 | C Header | 📋 Planned | Encoding headers |
 | Go | 📋 Planned | Go definitions |
 | SystemVerilog | 📋 Planned | Decode packages |
-| Profile Docs | 📋 Planned | RISC-V profile documentation |
-| Instructions Appendix | 📋 Planned | AsciiDoc instruction appendix |
 
 ## Contributing
 
