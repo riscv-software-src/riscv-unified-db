@@ -7,7 +7,7 @@
 //
 // Usage:
 //   node tools/node/idl-grammar-gen/index.js
-//   bin/chore gen idl-grammar
+//   mise run gen:idl-grammar
 
 const path = require('path');
 const fs   = require('fs');

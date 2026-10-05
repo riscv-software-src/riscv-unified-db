@@ -1,8 +1,0 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
-name: child
-derived_item:
-  $inherits: "parent.yaml#/base_item"
-  value: 200
-  extra_field: "Added in child"

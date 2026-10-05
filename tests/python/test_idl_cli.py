@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-import hashlib
 import json
 import os
 import subprocess
@@ -24,7 +23,7 @@ CORRECTED = {
 
 
 def _run(arguments, *, stdin=None, cwd=ROOT, environment=None):
-    env = os.environ | {"PYTHONPATH": str(ROOT / "src")}
+    env = os.environ.copy()
     if environment:
         env.update(environment)
     return subprocess.run(
@@ -59,11 +58,6 @@ def test_standalone_cli_matches_native_contract(case):
     else:
         assert result.stderr
         assert result.stdout == b""
-
-
-def test_native_capture_sources_are_unchanged():
-    for path, digest in ORACLE["sources"].items():
-        assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest, path
 
 
 def test_compile_json_and_yaml_have_identical_complete_trees(tmp_path):

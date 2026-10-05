@@ -53,7 +53,7 @@ _setup_toolchain_run() {
     selinux_label=":z"
     user_flags="--userns=keep-id"
   else
-    # For docker: copy /etc/passwd and /etc/group for user resolution (same pattern as bin/setup)
+    # For docker: copy /etc/passwd and /etc/group for user resolution.
     mkdir -p "${ROOT}/.cache"
     getent passwd > "${ROOT}/.cache/passwd"
     getent group > "${ROOT}/.cache/group"
@@ -90,7 +90,7 @@ _setup_toolchain_run() {
 _prompt_toolchain_selection() {
   if [ ! -t 0 ]; then
     echo "ERROR: Toolchain is required but not configured (UDB_TOOLCHAIN_NONE=1)." >&2
-    echo "  Run bin/setup in an interactive terminal to choose a toolchain." >&2
+    echo "  Run 'mise run setup' in an interactive terminal to choose a toolchain." >&2
     exit 1
   fi
 
@@ -114,7 +114,7 @@ _prompt_toolchain_selection() {
   done
 
   printf "UDB_TOOLCHAIN_CONTAINER=%s\n" "$UDB_TOOLCHAIN_CONTAINER" > "${ROOT}/.toolchain-local"
-  printf "  Saved to .toolchain-local. Run bin/setup to change this later.\n\n"
+  printf "  Saved to .toolchain-local. Run 'mise run setup' to change this later.\n\n"
 }
 
 # Pull or build the toolchain container image.

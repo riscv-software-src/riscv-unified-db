@@ -18,7 +18,7 @@ from udb.authoring import AuthoringPlan, GeneratedFile
 from . import c_api, csrs, functions, hart, instructions, shared
 from .catalog import Catalog
 from .context import Context
-from .resources import RuntimeResources, standalone_cmake
+from .resources import RuntimeResources, renode_repl, standalone_cmake
 from .types import CppGenerationError, identifier
 
 OWNER = "cpp-hart-source"
@@ -180,6 +180,8 @@ class CppHartGenerator:
             input_hashes["runtime/" + str(origin)] = _hash(content)
             if str(path) == "CMakeLists.txt":
                 content = standalone_cmake(content, self.names, self.build_type)
+            elif str(path) == "renode/udb.repl":
+                content = renode_repl(content, self.names[0])
             add(str(path), content, mode)
         notice = package_files("udb.cpp_hart").joinpath("NOTICE").read_bytes()
         input_hashes["implementation/udb/cpp_hart/NOTICE"] = _hash(notice)

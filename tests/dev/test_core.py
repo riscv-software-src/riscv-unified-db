@@ -93,7 +93,7 @@ def test_doctor_json_and_failure_status(monkeypatch, capsys) -> None:
     assert [check["name"] for check in payload["checks"]] == ["ok", "optional", "bad"]
 
 
-def test_doctor_checks_non_ruby_mise_tools(monkeypatch, tmp_path: Path) -> None:
+def test_doctor_checks_all_mise_tools(monkeypatch, tmp_path: Path) -> None:
     (tmp_path / ".mise.toml").write_text(
         '[tools]\nruby = "3.4.10"\nuv = "0.12.10"\n"github-cli" = "2.100.0"\n',
         encoding="utf-8",
@@ -110,10 +110,14 @@ def test_doctor_checks_non_ruby_mise_tools(monkeypatch, tmp_path: Path) -> None:
 
     checks = doctor._mise_tool_checks(tmp_path)
 
-    assert [check.name for check in checks] == ["mise-tool:uv", "mise-tool:github-cli"]
+    assert [check.name for check in checks] == [
+        "mise-tool:ruby",
+        "mise-tool:uv",
+        "mise-tool:github-cli",
+    ]
+    assert ("mise", "which", "ruby") in calls
     assert ("mise", "which", "uv") in calls
     assert ("mise", "which", "gh") in calls
-    assert all("ruby" not in command for command in calls)
 
 
 def test_doctor_compiles_cxx_requirements_with_shared_check(monkeypatch, tmp_path: Path) -> None:

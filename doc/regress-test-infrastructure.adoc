@@ -10,31 +10,29 @@ Regression commands are mise tasks so the same commands run locally and in GitHu
 [source,bash]
 ----
 mise tasks                   # list tasks
-mise run check:smoke         # fast subset
-mise run check:unit          # unit tests
-mise run check:integration   # integration tests
-mise run check:artifacts     # generated artifacts
+mise run test                # default Python unit and specification tests
+mise run check               # retained data, IDL, layout, fixture, and quality checks
 mise run check:all           # complete suite
-mise run test:ruby:sorbet    # one named test
-mise run test:ruby:udb-unit --test conditions # one matrix variant
+mise run test:slow:idl -- --config rv64 # one slow matrix variant
+mise run test:cpp-hart -- --config rv64 # one native test
 ----
 
-The aggregate tasks are defined in `tools/dev/regression-aggregates.toml`.
-Individual regression tasks are executable file tasks under
-`tools/dev/regression-tasks/`.
+Task declarations are in `tools/dev/tasks.toml`; reusable implementation lives
+in Python modules under `tools/dev/`.
 
 == Adding a regression
 
-1. Add an executable mise file task under `tools/dev/regression-tasks/`.
-2. Give it a descriptive namespaced task name through its path.
-3. Add it to the applicable `check:*` aggregates in
-   `tools/dev/regression-aggregates.toml`.
-4. Add it to `.github/workflows/regress.yml` when CI should run it.
-5. Run `mise tasks validate` and the new task locally.
+1. Add a descriptive namespaced task to `tools/dev/tasks.toml`.
+2. Put non-trivial reusable logic in an appropriate Python module under
+   `tools/dev/`.
+3. Add it to the applicable aggregate task.
+4. Add a readable job or step to `.github/workflows/regress.yml` when CI should
+   run it independently.
+5. Confirm the task appears in `mise tasks`, then run it locally.
 
-File tasks use mise `usage` declarations for matrix-like arguments. Keep setup or
-artifact-upload steps that only make sense in GitHub Actions in the workflow; keep
-the reusable test command in the mise task.
+Tasks use mise `usage` declarations for arguments. Keep setup or artifact-upload
+steps that only make sense in GitHub Actions in the workflow; keep reusable test
+and generation commands in mise tasks.
 
 == Continuous integration
 

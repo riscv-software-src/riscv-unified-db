@@ -1,29 +1,20 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Non-Ruby checked-in corpus tests for :mod:`udb.idl`.
+"""Checked-in corpus tests for :mod:`udb.idl`.
 
-Two independent corpora are exercised here, neither of which requires the
-live Ruby oracle at test time (unlike ``test_idl_parity.py``):
+Two independent corpora are exercised here without an external implementation:
 
 * ``tests/python/data/idl/syntax/*.yaml`` -- a small, representative corpus
   (~50 cases spanning almost every AST node kind) whose expected ``to_h()``
-  output was *generated* from the live Ruby oracle (see
-  ``generate_corpus.py`` mentioned in the migration report) but is checked
-  in so this test can run offline.
-* ``tools/ruby-gems/idlc/test/idl/{literals,expressions,constraints,
-  constraint_errors}.yaml`` -- the idlc gem's own hand-written test data.
-  Their ``=``/``r`` fields describe *semantic* results (evaluated
-  ``to_idl()`` normal forms, constraint satisfiability) that are out of
-  scope for this syntax-only slice, so only parse *acceptance* is checked:
-  every ``e``/``c`` input must parse successfully as the appropriate root
-  (``constraint_errors.yaml``'s inputs are syntactically valid implication
-  statements that fail *type checking*, a later slice, so they must parse
-  too).
+  output is frozen so this test can run offline.
+* ``tests/python/data/idl/{expressions.json,constraints.yaml}`` -- reviewed
+  frozen expression, literal, and constraint inputs retained from the migration.
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -33,18 +24,16 @@ from ruamel.yaml import YAML
 from udb import idl
 from udb.idl import IdlSyntaxError, parse
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 SYNTAX_CORPUS_DIR = Path(__file__).with_name("data") / "idl" / "syntax"
-IDLC_TEST_DATA_DIR = REPOSITORY_ROOT / "tools/ruby-gems/idlc/test/idl"
+IDL_DATA_DIR = Path(__file__).with_name("data") / "idl"
 
 _yaml = YAML(typ="safe")
 
 
 def _dump(node: idl.Node) -> dict[str, Any]:
-    """Mirror ``ruby_idl_oracle.rb``'s ``dump`` special-casing (see
-    ``test_idl_parity.py``'s identical helper): ``IncludeStatementAst#to_h``
-    raises in Ruby, so the oracle special-cases it to ``{"kind": "include",
-    "filename": ...}``, and ``IsaAst`` is dumped via its own
+    """Mirror the frozen capture serializer's special-casing:
+    ``IncludeStatementAst#to_h`` did not support includes, so the capture uses
+    ``{"kind": "include", "filename": ...}``, and ``IsaAst`` is dumped via its own
     ``source_yaml``-derived source rather than ``to_h()``'s default."""
     if isinstance(node, idl.IncludeStatement):
         return {"kind": "include", "filename": node.filename}
@@ -78,33 +67,33 @@ def test_checked_in_syntax_corpus(case_id: str, doc: dict[str, Any]) -> None:
     assert _dump(node) == doc["expected"]
 
 
-def _idlc_expression_inputs(filename: str) -> list[str]:
-    data = _yaml.load((IDLC_TEST_DATA_DIR / filename).read_text(encoding="utf-8"))
-    return [test["e"] for test in data["tests"]]
+def _expression_inputs(prefix: str) -> list[str]:
+    data = json.loads((IDL_DATA_DIR / "expressions.json").read_text(encoding="utf-8"))
+    return [case["text"] for case in data["cases"] if case["id"].startswith(f"{prefix}:")]
 
 
-def _idlc_constraint_inputs(filename: str) -> list[str]:
-    data = _yaml.load((IDLC_TEST_DATA_DIR / filename).read_text(encoding="utf-8"))
-    return [test["c"] for test in data["tests"]]
+def _constraint_inputs(key: str) -> list[str]:
+    data = _yaml.load((IDL_DATA_DIR / "constraints.yaml").read_text(encoding="utf-8"))
+    return [test["c"] for test in data[key]]
 
 
-@pytest.mark.parametrize("expression", _idlc_expression_inputs("literals.yaml"))
-def test_idlc_literals_data_file_parses(expression: str) -> None:
+@pytest.mark.parametrize("expression", _expression_inputs("literals"))
+def test_frozen_literals_parse(expression: str) -> None:
     parse(expression, "expression")
 
 
-@pytest.mark.parametrize("expression", _idlc_expression_inputs("expressions.yaml"))
-def test_idlc_expressions_data_file_parses(expression: str) -> None:
+@pytest.mark.parametrize("expression", _expression_inputs("expressions"))
+def test_frozen_expressions_parse(expression: str) -> None:
     parse(expression, "expression")
 
 
-@pytest.mark.parametrize("constraint", _idlc_constraint_inputs("constraints.yaml"))
-def test_idlc_constraints_data_file_parses(constraint: str) -> None:
+@pytest.mark.parametrize("constraint", _constraint_inputs("tests"))
+def test_frozen_constraints_parse(constraint: str) -> None:
     parse(constraint, "constraint_body")
 
 
-@pytest.mark.parametrize("constraint", _idlc_constraint_inputs("constraint_errors.yaml"))
-def test_idlc_constraint_errors_data_file_parses(constraint: str) -> None:
+@pytest.mark.parametrize("constraint", _constraint_inputs("error_tests"))
+def test_frozen_constraint_errors_parse(constraint: str) -> None:
     # These are syntactically valid implication statements that fail *type
     # checking* (a later migration slice) -- they must still parse cleanly.
     parse(constraint, "constraint_body")

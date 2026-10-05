@@ -35,7 +35,7 @@ jobs:
         env:
           DOCUSAURUS_URL: https://dhower-qc.github.io
           DOCUSAURUS_BASE_URL: /riscv-unified-db/
-        run: ./bin/aubr -C doc build
+        run: mise run docs:build site
 
       - name: Setup Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0

@@ -3,10 +3,6 @@
 
 from __future__ import annotations
 
-import json
-import os
-import shutil
-import subprocess
 from itertools import product
 from pathlib import Path
 
@@ -43,8 +39,6 @@ from udb.schema import SchemaStore
 from udb.versions import ExtensionVersionSet, parse_version_requirements
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-RUBY_ORACLE = Path(__file__).with_name("ruby_condition_oracle.rb")
-RUBY_DEFECTS = Path(__file__).with_name("ruby_condition_defects.rb")
 
 
 def _condition_documents(value: object):
@@ -775,72 +769,3 @@ def test_top_level_package_exports_condition_and_solver_api() -> None:
         assert getattr(udb, name) is getattr(solver_api, name)
     for name in udb.__all__:
         assert hasattr(udb, name)
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to compare conditions with the Ruby implementation",
-)
-def test_condition_evaluation_and_sat_match_ruby_oracle() -> None:
-    mise = shutil.which("mise")
-    if mise is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
-    data = [
-        {"xlen": 32},
-        {"xlen": 64},
-        {"param": {"name": "LITTLE_IS_BETTER", "equal": True}},
-        {"param": {"name": "LITTLE_IS_BETTER", "equal": False}},
-    ]
-    result = subprocess.run(
-        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
-        cwd=REPOSITORY_ROOT,
-        input=json.dumps({"config": "little_is_better", "conditions": data}),
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        pytest.fail(f"Ruby condition oracle failed:\n{result.stdout}\n{result.stderr}")
-    expected = json.loads(result.stdout)
-    context = EvaluationContext(
-        xlen=32,
-        parameters={"LITTLE_IS_BETTER": True},
-        closed_world_extensions=True,
-        closed_world_parameters=True,
-    )
-    evaluation_names = {
-        TruthValue.TRUE: "yes",
-        TruthValue.FALSE: "no",
-        TruthValue.UNKNOWN: "maybe",
-    }
-    solver_api = _solver_module()
-
-    for raw, oracle in zip(data, expected, strict=True):
-        condition = parse_condition(raw)
-        assert condition.to_data() == oracle["data"]
-        assert evaluation_names[condition.evaluate(context)] == oracle["evaluation"]
-        assert solver_api.is_satisfiable(condition) is oracle["satisfiable"]
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to reproduce corrected Ruby condition behavior",
-)
-def test_legacy_ruby_condition_defects_are_reproducible() -> None:
-    mise = shutil.which("mise")
-    if mise is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
-    result = subprocess.run(
-        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_DEFECTS)],
-        cwd=REPOSITORY_ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        pytest.fail(f"Ruby condition defect reproduction failed:\n{result.stdout}\n{result.stderr}")
-    assert json.loads(result.stdout) == {
-        "empty_conjunction": False,
-        "one_way_equivalence": True,
-        "bit_range_three": "no",
-    }

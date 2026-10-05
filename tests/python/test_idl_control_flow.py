@@ -8,24 +8,18 @@ from pathlib import Path
 
 import pytest
 from idl_semantics_helpers import assert_case_matches, run_semantic_case
-from ruamel.yaml import YAML
 
-ROOT = Path(__file__).resolve().parents[2]
-FIXTURE = ROOT / "tools/ruby-gems/idlc/test/data/control_flow_tests.yaml"
 CORPUS = json.loads((Path(__file__).parent / "data/idl/statements.json").read_text())["cases"]
-BY_ID = {case["id"]: case for case in CORPUS}
-FLOW_DATA = YAML(typ="safe").load(FIXTURE.read_text())
-FLOW_ENTRIES = [(category, entry) for category, entries in FLOW_DATA.items() for entry in entries]
+FLOW_CASES = [case for case in CORPUS if case["id"].startswith("ruby_flow__")]
 
 
 @pytest.mark.parametrize(
-    ("category", "entry"),
-    FLOW_ENTRIES,
-    ids=[f"{category}__{entry['name']}" for category, entry in FLOW_ENTRIES],
+    "case",
+    FLOW_CASES,
+    ids=[case["id"].removeprefix("ruby_flow__") for case in FLOW_CASES],
 )
-def test_ruby_control_flow_fixture(category, entry):
-    case = BY_ID[f"ruby_flow__{category}__{entry['name']}"]
-    assert case["source"]["should_pass"] == entry["should_pass"]
+def test_frozen_control_flow_case(case):
+    assert "should_pass" in case["source"]
     assert_case_matches(case)
 
 

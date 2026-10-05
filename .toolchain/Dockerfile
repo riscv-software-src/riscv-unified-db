@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 #
 # Toolchain container for riscv-unified-db.
-# Based on AlmaLinux 8 + gcc-toolset-14 (same base as build_z3_with_docker.sh).
+# Based on AlmaLinux 8 + gcc-toolset-14.
 # The RISC-V GNU toolchain is built from source to ensure compatibility with
 # AlmaLinux 8's glibc 2.28 (pre-built tarballs from riscv-collab require glibc >= 2.31).
 #

@@ -5,9 +5,6 @@
 
 from __future__ import annotations
 
-import json
-import os
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -543,28 +540,3 @@ def test_real_csr_structural_regressions(name):
         assert semantics["mstatus"]["fields"]["SXL"]["exists"] is False
     if name == "rv64":
         assert semantics["tselect"]["dynamic"] is False
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-@pytest.mark.parametrize("name", ["_", "rv32", "rv64", "qc_iu"])
-def test_relevant_csr_semantics_match_actual_ruby_methods(name):
-    root = Path(__file__).resolve().parents[2]
-    output = subprocess.run(
-        [
-            "mise",
-            "exec",
-            "--",
-            "bundle",
-            "exec",
-            "ruby",
-            str(Path(__file__).with_name("ruby_idl_environment_oracle.rb")),
-            name,
-        ],
-        cwd=root,
-        text=True,
-        capture_output=True,
-        check=True,
-    )
-    expected = json.loads(output.stdout)["csr_semantics"]
-    actual = _csr_semantics(idl_environment(_real_architecture(name)))
-    assert actual == expected

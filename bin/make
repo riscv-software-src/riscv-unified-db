@@ -2,6 +2,6 @@
 ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
 EXEC_DIR=${PWD}
 cd "$ROOT" || exit 1
-# Strip bin/ from PATH to avoid wrapper recursion (same pattern as bin/doctor)
+# Strip bin/ from PATH to avoid wrapper recursion.
 PATH="${PATH//"${ROOT}/bin:"/}"
 exec "${ROOT}/bin/mise" exec -- bash -c 'cd "$1" && shift && exec "$@"' _ "$EXEC_DIR" make "$@"

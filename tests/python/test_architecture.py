@@ -3,9 +3,6 @@
 
 from __future__ import annotations
 
-import json
-import os
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -405,44 +402,3 @@ def test_csr_direct_virtual_and_indirect_conflict_keys(database):
         item.key.space == "indirect" and {item.left.name, item.right.name} == {"one", "other_mode"}
         for item in overlaps
     )
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-def test_generic_and_custom_mock_config_queries_match_ruby():
-    names = ["_", "little_is_better", "little_is_not_better"]
-    result = subprocess.run(
-        [
-            "bundle",
-            "exec",
-            "ruby",
-            f"-I{ROOT / 'tools/ruby-gems/udb/lib'}",
-            str(Path(__file__).with_name("ruby_architecture_oracle.rb")),
-            str(ROOT),
-        ],
-        input=json.dumps(names),
-        text=True,
-        capture_output=True,
-        check=True,
-        cwd=ROOT,
-    )
-    expected = json.loads(result.stdout)
-    database = Database.from_path(
-        ROOT / "tools/ruby-gems/udb/test/mock_spec/isa", schemas_path=ROOT / "spec/schemas"
-    ).resolve()
-    actual = {}
-    for name in names:
-        architecture = database.configure(
-            Configuration.from_file(ROOT / "tools/ruby-gems/udb/test/mock_cfgs" / f"{name}.yaml")
-        )
-        actual[name] = {
-            "possible_versions": sorted(
-                str(version)
-                for extension in database.extensions
-                for version in architecture.possible_extension_versions(extension.name)
-            ),
-            "params_with_value": sorted(item.name for item in architecture.parameters_with_values),
-            "params_without_value": sorted(
-                item.name for item in architecture.parameters_without_values
-            ),
-        }
-    assert actual == expected

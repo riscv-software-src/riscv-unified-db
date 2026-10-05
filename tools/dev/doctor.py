@@ -46,8 +46,6 @@ def _mise_tool_checks(root: Path = ROOT) -> list[Check]:
     tools = config.get("tools", {})
     checks = []
     for tool, pin in tools.items():
-        if tool == "ruby":
-            continue
         binary = "gh" if tool == "github-cli" else tool
         try:
             resolved = subprocess.run(
@@ -153,7 +151,6 @@ def collect_checks(root: Path = ROOT) -> list[Check]:
             [
                 "uv",
                 "sync",
-                "--locked",
                 "--check",
             ],
             cwd=root,

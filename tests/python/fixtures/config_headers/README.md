@@ -24,17 +24,6 @@ the accepted `f5a2099a` baseline. SHA-256:
 | `cfg_c_header/generator.rb` | `6ed2824d0d2e2414c248f67999845e88bd3f97eb9ddab8ff1c29820049bec1fc` |
 | `cfg_svh_header/generator.rb` | `40f38ca6f7d48f01f7b2450432dcd0769daed8e540dfcee2b40b3a9a333ec632` |
 
-Reproduce from the repository root (serialize local invocations using the
-coordinator's Ruby lock):
-
-```shell
-mise exec --no-deps -- bundle exec ruby \
-  -Itools/ruby-gems/udb/lib -Itools/ruby-gems/udb-gen/lib \
-  tests/python/ruby_config_headers_oracle.rb "$PWD" c \
-  tests/python/fixtures/config_headers/values.json
-```
-
-Replace `c` with `svh` for SV, or omit the last argument for the full-config
-golden. `UDB_TEST_RUBY=1` enables exact live comparisons in
-`tests/python/test_config_headers.py`. No normalization, truncation, or ignored
-stdout prefixes are allowed.
+These are reviewed, immutable legacy captures. The retired implementation and
+capture utility are no longer present, so there is no refresh command. No
+normalization, truncation, or ignored stdout prefixes were applied.

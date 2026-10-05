@@ -4,9 +4,6 @@
 from __future__ import annotations
 
 import json
-import os
-import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -25,7 +22,6 @@ from udb import (
 from udb.cli import main
 
 REPOSITORY_ROOT = Path(__file__).parents[2]
-RUBY_SCHEMA_ORACLE = Path(__file__).with_name("ruby_schema_serialization_oracle.rb")
 
 
 def _write_schema(root: Path) -> None:
@@ -257,7 +253,7 @@ def test_resolved_database_preflights_file_directory_transitions(tmp_path: Path)
     assert (nested_output / "a.yaml" / "child.yaml").read_bytes() == nested_original
 
 
-def test_schema_publication_matches_versioned_ruby_contract(tmp_path: Path) -> None:
+def test_schema_publication_matches_versioned_contract(tmp_path: Path) -> None:
     schemas = tmp_path / "schemas"
     output = tmp_path / "published"
     _write_schema(schemas)
@@ -312,47 +308,6 @@ def test_bundled_database_serializes_every_document(tmp_path: Path) -> None:
         if "$schema" in expected:
             expected["$schema"] = schemas.versioned_uri(expected["$schema"])
         assert yaml.load(tmp_path / relative_path) == expected
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to compare schema bytes with Ruby",
-)
-def test_all_published_schemas_match_ruby_bytes(tmp_path: Path) -> None:
-    bundle = shutil.which("bundle")
-    if bundle is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires the repository Ruby toolchain")
-    python_output = tmp_path / "python"
-    ruby_output = tmp_path / "ruby"
-    write_resolved_schemas(SchemaStore(REPOSITORY_ROOT / "spec" / "schemas"), python_output)
-    result = subprocess.run(
-        [
-            bundle,
-            "exec",
-            "ruby",
-            str(RUBY_SCHEMA_ORACLE),
-            str(REPOSITORY_ROOT / "spec" / "schemas"),
-            str(ruby_output),
-        ],
-        cwd=REPOSITORY_ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        pytest.fail(f"Ruby schema oracle failed:\n{result.stdout}\n{result.stderr}")
-
-    python_files = sorted(
-        path.relative_to(python_output) for path in python_output.rglob("*.json") if path.is_file()
-    )
-    ruby_files = sorted(
-        path.relative_to(ruby_output) for path in ruby_output.rglob("*.json") if path.is_file()
-    )
-    assert python_files == ruby_files
-    for relative_path in python_files:
-        assert (python_output / relative_path).read_bytes() == (
-            ruby_output / relative_path
-        ).read_bytes()
 
 
 def test_serialization_cli_commands(tmp_path: Path) -> None:

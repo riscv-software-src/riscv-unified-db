@@ -4,15 +4,10 @@
 from __future__ import annotations
 
 import json
-import os
-import shlex
-import shutil
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
-from test_schema_docs import ROOT
+from test_schema_docs import ROOT, native_expected
 
 from udb import cli
 
@@ -44,9 +39,9 @@ def test_schema_cli_uses_custom_schemas_without_loading_isa(
     result = json.loads(capsys.readouterr().out)
     assert result["status"] == "generated"
     assert result["paths"] == ["reference/config.mdx"]
-    assert (tmp_path / "reference/config.mdx").read_bytes() == (
-        FIXTURES / "ruby-custom/single.mdx"
-    ).read_bytes()
+    assert (tmp_path / "reference/config.mdx").read_bytes() == native_expected(
+        (FIXTURES / "ruby-custom/single.mdx").read_bytes()
+    )
     assert cli.main([*args, "--check"]) == 0
     assert json.loads(capsys.readouterr().out)["status"] == "unchanged"
     assert not (tmp_path / "index.mdx").exists()
@@ -105,46 +100,3 @@ def test_schema_cli_io_failure_is_machine_readable(
     result = json.loads(capsys.readouterr().out)
     assert result["status"] == "error"
     assert output.read_text() == "keep"
-
-
-@pytest.mark.parametrize("check", [False, True])
-@pytest.mark.parametrize("state", ["clean", "drift", "invalid"])
-def test_repository_chore_preserves_generator_exit_and_check_behavior(
-    tmp_path: Path, check: bool, state: str
-) -> None:
-    (tmp_path / "bin").mkdir()
-    shutil.copyfile(ROOT / "bin/chore", tmp_path / "bin/chore")
-    python = tmp_path / "bin/python"
-    python.write_text(f'#!/bin/sh\nexec {shlex.quote(sys.executable)} "$@"\n')
-    python.chmod(0o755)
-    shutil.copytree(FIXTURES / "custom-schemas", tmp_path / "spec/schemas")
-    output = tmp_path / "doc/docs/schemas"
-    shutil.copytree(FIXTURES / "ruby-custom/all", output)
-    page = output / "v0.2/config_schema.mdx"
-    native = page.read_bytes()
-    if state == "drift":
-        page.write_bytes(b"drift\n")
-    elif state == "invalid":
-        (tmp_path / "spec/schemas/config_schema.json").write_text("{invalid")
-    before = {
-        path.relative_to(output): path.read_bytes() for path in output.rglob("*") if path.is_file()
-    }
-    command = ["bash", str(tmp_path / "bin/chore"), "gen"]
-    if check:
-        command.append("-f")
-    command.append("schema-docs")
-    environment = os.environ.copy()
-    environment["PYTHONPATH"] = str(ROOT / "src")
-    result = subprocess.run(
-        command, cwd=tmp_path, env=environment, capture_output=True, text=True, check=False
-    )
-    expected = 2 if state == "invalid" else 1 if check and state == "drift" else 0
-    assert result.returncode == expected, result.stdout + result.stderr
-    if check or state == "invalid":
-        assert {
-            path.relative_to(output): path.read_bytes()
-            for path in output.rglob("*")
-            if path.is_file()
-        } == before
-    else:
-        assert page.read_bytes() == native

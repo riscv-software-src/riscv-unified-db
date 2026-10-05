@@ -6,7 +6,7 @@ from pathlib import Path
 from ruamel.yaml import YAML
 
 ROOT = Path(__file__).parents[2]
-BACKEND = ROOT / "backends/cpp_hart_gen"
+BACKEND = ROOT / "src/udb/cpp_hart/runtime"
 
 
 def test_native_bits_no_longer_authors_test_source() -> None:

@@ -27,13 +27,13 @@ That said, the following data has been validated against third-party sources:
 * UDB Documentation
 ** xref:doc/schemas.adoc[Schema documentation]
 ** xref:doc/idl.adoc[ISA Description Language (IDL)]
-** xref:doc/ruby.adoc[Ruby database interface]
-** link:doc/python-api.md[Python database package (alpha)]
+** link:doc/python-api.md[Python database package]
 * How-to/recipes
 ** xref:CONTRIBUTING.adoc[Contribution guidelines]
 ** xref:doc/data-templates.adoc[Data templates]
 ** xref:doc/riscv-opcodes-migration.adoc[`riscv-opcodes` migration]
-** link:doc/python-migration.md[Ruby-to-Python migration plan]
+** link:doc/python-migration-command-map.md[Migration command map]
+** link:doc/python-migration.md[Ruby-to-Python migration history]
 ** link:doc/python-migration-bugfixes.md[Ruby defects corrected in the Python migration]
 
 == Overview
@@ -61,37 +61,41 @@ The following directories contain information relevant to most users of UnifiedD
 
 Additionally, developers will be interested in the following:
 
-* `backends`: Tools to generate artifacts (documents, simulators, etc.) from UDB data
-* `tools/ruby-gems`: Ruby gem libraries for interacting with UDB / IDL
-* `src/udb`: Python package for reading the bundled standard ISA source data
-* `bin`: Wrapper scripts to run commands in the development environment
+* `src/udb`: Python package, command-line interface, IDL compiler, and generators
+* `backends`: Retained templates and native support files used by generators
+* `tools/dev`: Implementation of repository development tasks
+* `tests`: Python, native, package, editor, and integration tests
 
 == Getting Started
 
-=== Python library (alpha)
+=== Use UDB
 
-To query the bundled standard ISA source data, install the Python package from this checkout:
+The Python package provides the `udb` command and API. From a checkout, `uv run`
+uses the project environment without requiring manual activation:
 
 [source,bash]
 ----
-python -m pip install .
-udb show instruction add
+uv run udb show instruction add
+uv run udb --help
 ----
 
-This package needs Python 3.12 or newer and installs its Python dependencies automatically.
-It runs without Ruby or repository setup. It exposes raw records, resolves YAML inheritance
-and overlays, and validates against bundled or local schemas. Configuration resolution, IDL
-compilation, and generators are covered by the ongoing
-link:doc/python-migration.md[migration plan]. See the link:doc/python-api.md[Python API guide].
+An installed wheel exposes the same command directly as `udb`. It can query and
+resolve data, validate configured architectures, compile IDL, and generate retained
+artifacts without Ruby or a repository checkout. See the
+link:doc/python-api.md[Python API guide] and run `uv run udb --help` for the current
+command tree.
 
 === Prerequisites
 
-UnifiedDB tooling is designed to run natively on your host using https://mise.jdx.dev[mise].
+Repository development uses https://mise.jdx.dev[mise]. Install `mise`, clone this
+repository, and run the setup task from the repository root.
 
 A container runtime (Docker or Podman) is optional. It is only required for building generated
 C++ ISS code when a suitable native C++ toolchain and/or RISC-V cross-compiler is unavailable natively.
 
-All core workflows—Ruby, Python, npm, and all other UDB generators—run natively (via mise) without a container.
+Core Python, documentation, and editor workflows run natively. The external
+Asciidoctor toolchain is used only when rendering generated AsciiDoc. A container
+runtime is optional for native C++ and cross-toolchain work.
 
 === Native Setup (mise)
 
@@ -99,39 +103,36 @@ From the repo root, run:
 
 [source,bash]
 ----
-bin/setup
+mise run setup
 ----
 
-That's it. `bin/setup` installs https://mise.jdx.dev[mise] if needed, uses it to install all
-tool versions (Ruby, Python, Node.js, CMake, etc.), installs all dependencies (Ruby gems,
-Python packages, npm packages, native binaries), sets up git hooks, and walks you through
-choosing a C++ toolchain. It is safe to re-run at any time.
-
-When it finishes, it will tell you how to activate mise in your shell profile so that
-mise-managed tools are available in future terminal sessions, and remind you to use the
-wrappers in `bin/` when invoking any tool.
+The setup task installs configured tools and dependencies, installs the repository
+hooks, and selects an available native or container C++ toolchain. It is safe to
+run again. Use `mise run setup -- --toolchain none` when native builds are not
+needed.
 
 === Verify the installation
 
-After `bin/setup` completes, verify that the development environment has been configured successfully by running:
+Verify the configured development environment with:
 
 [source,bash]
 ----
-./bin/doctor
+mise run doctor
 ----
 
-The doctor script checks that the required tools, dependencies, and development environment are configured correctly. If it reports any issues, follow the suggested fixes or re-run `bin/setup` and ensure that `mise` has been activated in your shell as instructed by the setup script.
+If the doctor reports a problem, follow its diagnostic and rerun `mise run setup`
+after correcting the environment.
 === Tasks
 
 [source,bash]
 ----
-mise tasks                   # list developer and regression tasks
-
-mise run check:smoke         # run the fast regression subset
-
-mise run check:all           # run the full regression suite
-
-udb --help                   # get help on installed UDB commands
-
-./bin/chore -h               # get help on running repository development chores
+mise tasks                   # list repository development tasks
+mise run test                # run the default Python tests
+mise run check               # run retained validation and quality checks
+mise run check:all           # run every check exercised by CI
+mise run gen:all             # regenerate retained developer artifacts
+uv run udb --help            # show the installed UDB command tree
 ----
+
+The link:doc/python-migration-command-map.md[migration command map] records the
+replacement for common commands removed with the Ruby toolchain.

@@ -3,10 +3,6 @@
 
 from __future__ import annotations
 
-import json
-import os
-import shutil
-import subprocess
 from dataclasses import FrozenInstanceError
 from pathlib import Path
 
@@ -27,7 +23,6 @@ from udb import (
 )
 
 REPO_ROOT = Path(__file__).parents[2]
-RUBY_ORACLE = Path(__file__).with_name("ruby_versions_oracle.rb")
 
 VALID_VERSIONS = {
     "0": ("0.0.0", "0", (0, 0, 0, False)),
@@ -275,111 +270,3 @@ def test_invalid_extension_version_metadata_is_rejected() -> None:
         record = Database.bundled().extension("I")
         bad = type(record)(record.name, record.kind, record.path, {**record.data, "versions": [{}]})
         _ = bad.versions
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to run the transitional Ruby parity oracle",
-)
-def test_version_semantics_match_live_ruby_except_confirmed_corrections() -> None:
-    ruby = shutil.which("ruby")
-    if ruby is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires the repository Ruby toolchain")
-
-    standard_versions = sorted(
-        {
-            metadata["version"]
-            for extension in Database.bundled().extensions
-            for metadata in extension["versions"]
-        }
-    )
-    versions = list(dict.fromkeys([*standard_versions, *VALID_VERSIONS, *INVALID_VERSIONS]))
-    comparison_pairs = [
-        (left, right)
-        for left in ("0", "1.0.0-pre", "1", "1.0.1", "2")
-        for right in ("0", "1.0.0-pre", "1", "1.0.1", "2")
-    ]
-    requirements = [
-        {"requirement": f"{operator} 1.2", "candidate": candidate}
-        for operator in ("=", "!=", "<", "<=", ">", ">=")
-        for candidate in ("1.1.9999", "1.2", "1.2.1-pre")
-    ]
-    requirements.append(
-        {
-            "requirement": "~> 99.0",
-            "candidate": "1.0",
-            "versions": [
-                {"version": "1.0"},
-                {"version": "2.0", "breaking": True},
-                {"version": "3.0"},
-            ],
-        }
-    )
-    payload = {
-        "versions": versions,
-        "comparisons": comparison_pairs,
-        "requirements": requirements,
-    }
-    result = subprocess.run(
-        [ruby, str(RUBY_ORACLE)],
-        cwd=REPO_ROOT,
-        input=json.dumps(payload),
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        pytest.fail(f"Ruby version oracle failed:\n{result.stdout}\n{result.stderr}")
-    oracle = json.loads(result.stdout)
-
-    for source, expected in oracle["versions"].items():
-        if expected["accepted"]:
-            parsed = Version.parse(source)
-            assert expected == {
-                "accepted": True,
-                "canonical": parsed.canonical,
-                "rvi": parsed.to_rvi(),
-                "components": [
-                    parsed.major,
-                    parsed.minor,
-                    parsed.patch,
-                    parsed.prerelease,
-                ],
-            }
-        else:
-            with pytest.raises(ValueError):
-                Version.parse(source)
-
-    python_comparisons = []
-    for left, right in comparison_pairs:
-        left_version, right_version = Version.parse(left), Version.parse(right)
-        python_comparisons.append((left_version > right_version) - (left_version < right_version))
-    prerelease_pairs = {
-        index
-        for index, (left, right) in enumerate(comparison_pairs)
-        if {left, right} == {"1.0.0-pre", "1"}
-    }
-    for index, (python_result, ruby_result) in enumerate(
-        zip(python_comparisons, oracle["comparisons"], strict=True)
-    ):
-        if index in prerelease_pairs:
-            assert python_result == -ruby_result
-        else:
-            assert python_result == ruby_result
-
-    python_requirements = [
-        VersionRequirement.parse(entry["requirement"]).matches(entry["candidate"])
-        for entry in requirements[:-1]
-    ]
-    assert python_requirements == oracle["requirements"][:-1]
-
-    # Confirmed Ruby defects deliberately corrected by the Python API.
-    assert oracle["requirements"][-1] is True
-    series = ExtensionVersionSet.from_metadata("X", requirements[-1]["versions"])
-    assert not VersionRequirement.parse("~> 99.0").matches("1.0", versions=series)
-    assert oracle["mutation_boundaries"] == {
-        "increment": ["1.2.3", "1.2.4", True],
-        "decrement": ["1.2.3", "1.2.2", True],
-    }
-    assert Version.parse("1.2.3").next_patch() != Version.parse("1.2.3")
-    assert Version.parse("1.2.3").previous_patch() != Version.parse("1.2.3")

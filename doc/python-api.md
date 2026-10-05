@@ -5,21 +5,23 @@ SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # UDB Python API
 
-`udb` is the alpha Python interface to the RISC-V Unified Database. From a checkout, install it with:
+`udb` is the Python interface to the RISC-V Unified Database. From a checkout,
+run commands and scripts in the managed project environment with:
 
 ```shell
-python -m pip install .
+uv run udb --help
+uv run python your_script.py
 ```
 
-The distribution name is `udb`, so a future published release can be installed with
-`python -m pip install udb`. This project has not yet established that the name is published or
-available from the Python Package Index.
+The distribution name is `udb`. Package-index publication is deferred, so do not
+assume that `pip install udb` obtains this project.
 
-The package supports querying the bundled, raw standard ISA records and schemas. The raw data
-is the unconfigured source database: it has not been resolved for an XLEN, extension set, or named
-configuration. To analyze full architecture semantics or evaluation rules, pass a resolved database
-and configuration to `database.resolve().configure(configuration)`. Full compilation and proof of
-IDL logic are still being ported in Stage 4.
+The package supports querying and resolving the bundled standard ISA records,
+validating schemas and configured architectures, compiling IDL, and generating
+retained artifacts. The raw data is the unconfigured source database: it has not
+been resolved for an XLEN, extension set, or named configuration. To analyze full
+architecture semantics or evaluation rules, pass a resolved database and
+configuration to `database.resolve().configure(configuration)`.
 
 ```python
 from udb import Database
@@ -267,7 +269,7 @@ c_header = generate_config_header(architecture, "c")
 sv_header = generate_config_header(architecture, "svh")
 ```
 
-`validate-cfg` accepts a YAML configuration path or a bundled name (`_`, `rv32`, or `rv64`).
+`udb validate cfg` accepts a YAML configuration path or a bundled name (`_`, `rv32`, or `rv64`).
 It resolves the selected database and explicit overlays, then checks configuration consistency,
 including IDL requirements. It prints `<name>: valid`, `unsat`, or `deferred`; diagnostics go to
 standard error. Exit status is 0 only for `valid`, 1 for inconsistent configurations, and 2 for
@@ -275,7 +277,7 @@ configuration input errors or an undecided check. `--validate` additionally vali
 against their schemas; it is not needed for configuration checking. This command does not
 type-check every instruction or CSR body, and it does not implicitly follow a configuration's
 `arch_overlay` declaration. Overlays with checkout-relative IDL includes, such as `qc_iu`, need
-the checkout source database (`--path`) as shown above rather than the bundled snapshot.
+the checkout source database (`--database`) as shown above rather than the bundled snapshot.
 
 Proved configuration conflicts are shown as separate entries with captured requirement reasons,
 rules, and original source locations when available. Array assignments summarize repeated values

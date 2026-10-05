@@ -1,6 +1,3 @@
-.bundle
-!.bundle/config
-vendor/bundle
 .python
 .antora
 .home
@@ -29,22 +26,9 @@ __pycache__/
 .pytest_cache/
 *.bak
 *.log
-sorbet
-!/sorbet
-!tools/ruby-gems/idlc/sorbet
-!tools/ruby-gems/udb/sorbet
-!tools/ruby-gems/udb/lib/sorbet
-!tools/ruby-gems/udb-gen/sorbet
-!tools/ruby-gems/udb-gen/lib/sorbet
 coverage
-.sorbet-cache
 .project
 .docker-home
-
-# Z3 binaries — downloaded at gem install time, not stored in git
-tools/ruby-gems/udb/ext/z3/**/*.so
-tools/ruby-gems/udb/ext/z3/VERSION
-tools/ruby-gems/udb/ext/udb_download/Makefile
 
 # emacs backup files
 *~

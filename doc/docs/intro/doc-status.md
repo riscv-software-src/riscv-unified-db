@@ -17,87 +17,87 @@ title: Documentation Status
 
 ## Introduction
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| What is UDB? | ✅ Complete | Core overview complete |
-| Current State | 📋 Planned | Maturity and use case coverage |
+| Section       | Status      | Notes                          |
+| ------------- | ----------- | ------------------------------ |
+| What is UDB?  | ✅ Complete | Core overview complete         |
+| Current State | 📋 Planned  | Maturity and use case coverage |
 
 ## Getting Started
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| For Users | 📋 Planned | CLI, Ruby gem, Python bindings |
-| For Specification Writers | 📋 Planned | Adding extensions, instructions, CSRs |
-| For Developers | 📋 Planned | Contributing code, writing generators |
-| FAQ / How-Do-I | 📋 Planned | Common questions and solutions |
+| Section                   | Status     | Notes                                  |
+| ------------------------- | ---------- | -------------------------------------- |
+| For Users                 | 📋 Planned | Installed `udb` command and Python API |
+| For Specification Writers | 📋 Planned | Adding extensions, instructions, CSRs  |
+| For Developers            | 📋 Planned | Contributing code, writing generators  |
+| FAQ / How-Do-I            | 📋 Planned | Common questions and solutions         |
 
 ## Concepts
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| Configurations | 🚧 In Progress | Overview exists, details pending |
-| Data Pipeline | 📋 Planned | Overlay merge, resolution, inheritance |
-| Conditions System | 📋 Planned | How conditions work in the database |
+| Section           | Status         | Notes                                  |
+| ----------------- | -------------- | -------------------------------------- |
+| Configurations    | 🚧 In Progress | Overview exists, details pending       |
+| Data Pipeline     | 📋 Planned     | Overlay merge, resolution, inheritance |
+| Conditions System | 📋 Planned     | How conditions work in the database    |
 
 ## The Database (spec/)
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| Overview | 📋 Planned | Database structure and organization |
-| Table Reference | 📋 Planned | Documentation for each table |
-| Custom Overlays | 📋 Planned | How to customize the database |
-| Schema Reference | 🚧 In Progress | Auto-generated from JSON Schema |
+| Section          | Status         | Notes                               |
+| ---------------- | -------------- | ----------------------------------- |
+| Overview         | 📋 Planned     | Database structure and organization |
+| Table Reference  | 📋 Planned     | Documentation for each table        |
+| Custom Overlays  | 📋 Planned     | How to customize the database       |
+| Schema Reference | 🚧 In Progress | Auto-generated from JSON Schema     |
 
 ## IDL Language
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| Overview | ✅ Complete | Core concepts and use cases |
-| Data Types | ✅ Complete | Bits, Boolean, structs, enums |
-| Literals | ✅ Complete | Integer, array, string literals |
-| Operators | ✅ Complete | Full precedence table |
-| Variables & Constants | ✅ Complete | Declaration and usage |
-| Type Conversions | ✅ Complete | Casting and implicit conversions |
-| Builtins | ✅ Complete | Built-in functions reference |
-| Control Flow | ✅ Complete | if/else, loops, switch |
-| Functions | ✅ Complete | Declaration, calls, generated functions |
-| Scope Rules | ✅ Complete | Variable and function scoping |
-| In Instructions | ✅ Complete | How IDL appears in instruction definitions |
-| In CSRs | ✅ Complete | CSR-specific IDL usage |
-| For Spec Writers | ✅ Complete | Guide for writing IDL specs |
-| For C Users | ✅ Complete | IDL from a C perspective |
-| For Verilog Users | ✅ Complete | IDL from a hardware perspective |
-| Common Misunderstandings | ✅ Complete | FAQ and gotchas |
-| Quick Reference | ✅ Complete | Cheat sheet |
-| Standard Library | ✅ Complete | Standard library functions |
-| idlc Compiler | 🚧 In Progress | Compiler tool documentation |
+| Section                  | Status         | Notes                                      |
+| ------------------------ | -------------- | ------------------------------------------ |
+| Overview                 | ✅ Complete    | Core concepts and use cases                |
+| Data Types               | ✅ Complete    | Bits, Boolean, structs, enums              |
+| Literals                 | ✅ Complete    | Integer, array, string literals            |
+| Operators                | ✅ Complete    | Full precedence table                      |
+| Variables & Constants    | ✅ Complete    | Declaration and usage                      |
+| Type Conversions         | ✅ Complete    | Casting and implicit conversions           |
+| Builtins                 | ✅ Complete    | Built-in functions reference               |
+| Control Flow             | ✅ Complete    | if/else, loops, switch                     |
+| Functions                | ✅ Complete    | Declaration, calls, generated functions    |
+| Scope Rules              | ✅ Complete    | Variable and function scoping              |
+| In Instructions          | ✅ Complete    | How IDL appears in instruction definitions |
+| In CSRs                  | ✅ Complete    | CSR-specific IDL usage                     |
+| For Spec Writers         | ✅ Complete    | Guide for writing IDL specs                |
+| For C Users              | ✅ Complete    | IDL from a C perspective                   |
+| For Verilog Users        | ✅ Complete    | IDL from a hardware perspective            |
+| Common Misunderstandings | ✅ Complete    | FAQ and gotchas                            |
+| Quick Reference          | ✅ Complete    | Cheat sheet                                |
+| Standard Library         | ✅ Complete    | Standard library functions                 |
+| idlc Compiler            | 🚧 In Progress | Compiler tool documentation                |
 
 ## Tools
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| Overview | 📋 Planned | Tool ecosystem overview |
+| Section       | Status         | Notes                                                                  |
+| ------------- | -------------- | ---------------------------------------------------------------------- |
+| Overview      | 📋 Planned     | Tool ecosystem overview                                                |
 | `udb` command | 🚧 In Progress | Installed query, validation, IDL, generation, authoring, and rendering |
-| mise tasks | 🚧 In Progress | Repository setup, generation, validation, testing, and maintenance |
+| mise tasks    | 🚧 In Progress | Repository setup, generation, validation, testing, and maintenance     |
 
 ## Generators
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| Overview | 📋 Planned | What generators produce |
-| C++ ISS | 📋 Planned | Instruction Set Simulator |
-| C Header | 📋 Planned | Encoding headers |
-| Go | 📋 Planned | Go definitions |
-| SystemVerilog | 📋 Planned | Decode packages |
+| Section       | Status     | Notes                     |
+| ------------- | ---------- | ------------------------- |
+| Overview      | 📋 Planned | What generators produce   |
+| C++ ISS       | 📋 Planned | Instruction Set Simulator |
+| C Header      | 📋 Planned | Encoding headers          |
+| Go            | 📋 Planned | Go definitions            |
+| SystemVerilog | 📋 Planned | Decode packages           |
 
 ## Contributing
 
-| Section | Status | Notes |
-|---------|--------|-------|
-| Code Contributions | 📋 Planned | How to contribute code |
-| Data Contributions | 📋 Planned | Adding spec data |
-| Commit Conventions | 📋 Planned | Commit message format |
-| Code Review | 📋 Planned | Review process |
+| Section                | Status     | Notes                  |
+| ---------------------- | ---------- | ---------------------- |
+| Code Contributions     | 📋 Planned | How to contribute code |
+| Data Contributions     | 📋 Planned | Adding spec data       |
+| Commit Conventions     | 📋 Planned | Commit message format  |
+| Code Review            | 📋 Planned | Review process         |
 | Docs Site Architecture | 📋 Planned | How this site is built |
 
 ---
@@ -107,6 +107,7 @@ title: Documentation Status
 This documentation is being written incrementally as the site is built. The IDL language documentation is mostly complete (converted from existing AsciiDoc sources), while other sections are being written from scratch.
 
 **Priority order:**
+
 1. Introduction and Getting Started (enabling new users)
 2. Concepts (understanding the architecture)
 3. Tools and Generators (practical usage)

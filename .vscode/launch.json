@@ -5,7 +5,7 @@
       "name": "ISS debug Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/gen/cpp_hart_gen/rv64_Debug/build/iss",
+      "program": "${workspaceFolder}/gen/cpp-hart/rv64_fast-debug/build/iss",
       "args": ["-m", "rv64", "-c", "${workspaceFolder}/cfgs/rv64-riscv-tests.yaml", "--mm", "${workspaceFolder}/cfgs/memmap.json", "-g", "${workspaceFolder}/ext/riscv-tests/isa/rv64ui-p-add"],
       "stopAtEntry": true,
       "cwd": "${workspaceFolder}",
@@ -57,7 +57,7 @@
       "name": "Vector rv32 Debug Launch",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/gen/cpp_hart_gen/rv32_Debug/build/iss",
+      "program": "${workspaceFolder}/gen/cpp-hart/rv32_fast-debug/build/iss",
       "args": [
         "-m", "rv32",
         "-c", "${workspaceFolder}/cfgs/rv32-vector.yaml",
@@ -82,28 +82,10 @@
       ]
     },
     {
-      "type": "rdbg",
-      "name": "Smoke test",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "test:smoke",
-      "args": [],
-      "askParameters": false
-    },
-    {
-      "type": "rdbg",
-      "name": "Regression test",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "test:regress",
-      "args": [],
-      "askParameters": false
-    },
-    {
       "type": "cppdbg",
       "name": "Run MC100-32 iss",
       "request": "launch",
-      "program": "${workspaceFolder}/gen/cpp_hart_gen/MC100-32_Debug/build/iss",
+      "program": "${workspaceFolder}/gen/cpp-hart/mc100-32-full-example_fast-debug/build/iss",
       "setupCommands": [
         {
           "text": "set output-radix 16",
@@ -125,7 +107,7 @@
       "type": "cppdbg",
       "name": "Run MC100-32 coremark",
       "request": "launch",
-      "program": "${workspaceFolder}/gen/cpp_hart_gen/MC100-32_Debug/build/iss",
+      "program": "${workspaceFolder}/gen/cpp-hart/mc100-32-full-example_fast-debug/build/iss",
       "setupCommands": [
         {
           "text": "set output-radix 16",

@@ -5,31 +5,21 @@
 
 Includes:
 
-- direct ports of the non-parsing assertions from
-  ``tools/ruby-gems/idlc/test/test_type_to_idl.rb``;
+- retained non-parsing assertions from the retired IDL implementation;
 - property-style coverage of the immutability/value-semantics deviation
   (qualifier mutators return a *new* ``Type``; ``_replace``/``copy.copy``
   independence; ``EnumerationType.ref_type`` self-reference survives a
   copy);
-- regression tests for the three confirmed Ruby bugs (B1/B2/B3), see the
-  ``udb.idl.types`` module docstring;
+- regression tests for the three confirmed legacy bugs (B1/B2/B3), see the
+  ``udb.idl.types`` module docstring; and
 - general coverage of ``to_s``/``to_idl``/``comparable_to``/``equal_to``/
   ``convertable_to``/``default``/JSON-schema conversion across
-  representative kinds; and
-- a Ruby-oracle differential test (gated by ``UDB_TEST_RUBY=1``) that
-  builds the same types directly in Ruby via ``Idl::Type.new`` and
-  compares results, using ``tests/python/ruby_idl_type_oracle.rb``.
+  representative kinds.
 """
 
 from __future__ import annotations
 
 import copy
-import json
-import os
-import shutil
-import subprocess
-from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -48,9 +38,6 @@ from udb.idl.types import (
     Type,
     TypeKind,
 )
-
-REPOSITORY_ROOT = Path(__file__).parents[2]
-RUBY_ORACLE = Path(__file__).with_name("ruby_idl_type_oracle.rb")
 
 
 class _FakeCsr:
@@ -84,7 +71,7 @@ class _FakeCsr:
 
 
 # ---------------------------------------------------------------------------
-# Ported from tools/ruby-gems/idlc/test/test_type_to_idl.rb
+# Retained migration coverage for type-to-IDL behavior
 # ---------------------------------------------------------------------------
 
 
@@ -529,297 +516,3 @@ def test_from_json_schema_array_unbounded_width_is_unknown() -> None:
     )
     assert result is not None
     assert result.width == WIDTH_UNKNOWN
-
-
-# ---------------------------------------------------------------------------
-# Ruby oracle differential test
-# ---------------------------------------------------------------------------
-
-
-def _bits(width: int, *quals: str) -> dict[str, Any]:
-    return {"kind": "bits", "width": width, "qualifiers": list(quals)}
-
-
-_MATRIX_SPECS: list[dict[str, Any]] = [
-    _bits(1),
-    _bits(8),
-    _bits(32),
-    _bits(64),
-    _bits(8, "const"),
-    _bits(8, "signed"),
-    _bits(8, "const", "signed"),
-    {"kind": "boolean"},
-    {"kind": "string", "width": 8},
-    {"kind": "void"},
-    {"kind": "array", "width": 3, "sub_type": _bits(8)},
-    {"kind": "tuple", "tuple_types": [_bits(8), {"kind": "boolean"}]},
-    {
-        "kind": "enum",
-        "name": "Color",
-        "element_names": ["RED", "GREEN"],
-        "element_values": [0, 1],
-    },
-    {
-        "kind": "enum_ref",
-        "name": "Color",
-        "element_names": ["RED", "GREEN"],
-        "element_values": [0, 1],
-    },
-    {
-        "kind": "bitfield",
-        "name": "MyBits",
-        "width": 8,
-        "field_names": ["a", "b"],
-        "field_ranges": [[0, 4], [4, 8]],
-    },
-    {
-        "kind": "struct",
-        "name": "Point",
-        "member_types": [_bits(8), _bits(8)],
-        "member_names": ["x", "y"],
-    },
-    {"kind": "csr", "csr_name": "mstatus", "max_length": 64},
-]
-
-_JSON_SCHEMAS: list[dict[str, Any]] = [
-    {"const": 0},
-    {"const": 100},
-    {"type": "boolean"},
-    {"type": "integer", "maximum": 300},
-    {"type": "integer", "enum": [1, 2, 4, 8]},
-    {"type": "string", "enum": ["a", "bb", "ccc"]},
-    {"allOf": [{"const": 1}, {"type": "integer", "maximum": 300}]},
-    {"$ref": "schema_defs.json#/$defs/uint32"},
-    {"$ref": "schema_defs.json#/$defs/uint64"},
-    {
-        "type": "array",
-        "items": [{"const": 0}],
-        "additionalItems": {"type": "integer", "enum": [7, 16]},
-        "minItems": 1,
-        "maxItems": 3,
-        "uniqueItems": True,
-    },
-]
-
-
-def _build_python_type_from_spec(spec: dict[str, Any]) -> Type:
-    kind = spec["kind"]
-    qualifiers = tuple(Qualifier(q) for q in spec.get("qualifiers", []))
-    if kind == "bits":
-        return Type(TypeKind.BITS, width=spec["width"], qualifiers=qualifiers)
-    if kind == "boolean":
-        return Type(TypeKind.BOOLEAN, qualifiers=qualifiers)
-    if kind == "string":
-        return Type(TypeKind.STRING, width=spec.get("width"), qualifiers=qualifiers)
-    if kind == "void":
-        return Type(TypeKind.VOID, qualifiers=qualifiers)
-    if kind == "array":
-        return Type(
-            TypeKind.ARRAY,
-            width=spec["width"],
-            sub_type=_build_python_type_from_spec(spec["sub_type"]),
-            qualifiers=qualifiers,
-        )
-    if kind == "tuple":
-        return Type(
-            TypeKind.TUPLE,
-            tuple_types=tuple(_build_python_type_from_spec(s) for s in spec["tuple_types"]),
-            qualifiers=qualifiers,
-        )
-    if kind == "enum":
-        return EnumerationType(spec["name"], spec["element_names"], spec["element_values"])
-    if kind == "enum_ref":
-        return EnumerationType(spec["name"], spec["element_names"], spec["element_values"]).ref_type
-    if kind == "bitfield":
-        return BitfieldType(
-            spec["name"],
-            spec["width"],
-            spec["field_names"],
-            [range(a, b) for a, b in spec["field_ranges"]],
-        )
-    if kind == "struct":
-        return StructType(
-            spec["name"],
-            [_build_python_type_from_spec(s) for s in spec["member_types"]],
-            spec["member_names"],
-        )
-    if kind == "csr":
-        return CsrType(_FakeCsr(spec["csr_name"], spec["max_length"]), qualifiers=qualifiers)
-    raise ValueError(f"unhandled spec kind {kind!r}")
-
-
-def _python_type_props(t: Type) -> dict[str, Any]:
-    props: dict[str, Any] = {"kind": t.kind.value}
-    try:
-        props["to_s"] = str(t)
-    except IdlInternalError as e:
-        props["to_s_error"] = str(e)
-    try:
-        props["to_idl"] = t.to_idl()
-    except IdlInternalError as e:
-        props["to_idl_error"] = str(e)
-    try:
-        props["width"] = t.width
-    except IdlInternalError:
-        # Only assert *some* error is raised, not the exact message: Ruby's
-        # `width` accessor is `T.must(@width)` and raises Sorbet's generic
-        # "Passed `nil` into T.must" for kinds with no width, while Python's
-        # accessor raises a purpose-built `IdlInternalError` message. Same
-        # observable behavior (raises when width is unset), different text.
-        props["width_error"] = True
-    props["qualifiers"] = sorted(q.value for q in t.qualifiers)
-    try:
-        props["name"] = t.name
-    except IdlInternalError as e:
-        props["name_error"] = str(e)
-    try:
-        props["default"] = t.default()
-    except IdlInternalError as e:
-        props["default_error"] = str(e)
-    return props
-
-
-def _run_ruby_oracle(commands: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    mise = shutil.which("mise")
-    if mise is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
-    result = subprocess.run(
-        [mise, "exec", "--", "bundle", "exec", "ruby", str(RUBY_ORACLE)],
-        cwd=REPOSITORY_ROOT,
-        input=json.dumps({"commands": commands}),
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        pytest.fail(f"Ruby IDL type oracle failed:\n{result.stdout}\n{result.stderr}")
-    return json.loads(result.stdout)
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to compare against the Ruby Idl::Type oracle",
-)
-def test_ruby_oracle_matrix_props_match() -> None:
-    commands = [{"op": "props", "type": spec} for spec in _MATRIX_SPECS]
-    ruby_results = _run_ruby_oracle(commands)
-    for spec, ruby_props in zip(_MATRIX_SPECS, ruby_results, strict=True):
-        python_props = _python_type_props(_build_python_type_from_spec(spec))
-        assert python_props == ruby_props, f"mismatch for spec {spec}"
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to compare against the Ruby Idl::Type oracle",
-)
-def test_ruby_oracle_json_schema_matches() -> None:
-    commands = [{"op": "json_schema", "schema": schema} for schema in _JSON_SCHEMAS]
-    ruby_results = _run_ruby_oracle(commands)
-    for schema, ruby_result in zip(_JSON_SCHEMAS, ruby_results, strict=True):
-        python_type = Type.from_json_schema(schema)
-        if python_type is None:
-            assert ruby_result == {"type": None}, f"mismatch for schema {schema}"
-            continue
-        assert ruby_result["type"] == _python_type_props(python_type), (
-            f"mismatch for schema {schema}"
-        )
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to compare against the Ruby Idl::Type oracle",
-)
-def test_ruby_oracle_convertable_to_matrix_matches() -> None:
-    pairs = [
-        (_bits(8), _bits(16)),
-        (_bits(16), _bits(8)),
-        (_bits(8), {"kind": "boolean"}),
-        ({"kind": "boolean"}, {"kind": "boolean"}),
-        ({"kind": "string", "width": 8}, {"kind": "string", "width": 4}),
-        (
-            {
-                "kind": "bitfield",
-                "name": "MyBits",
-                "width": 8,
-                "field_names": ["a"],
-                "field_ranges": [[0, 8]],
-            },
-            _bits(8),
-        ),
-    ]
-    commands = [
-        {"op": "compare", "lhs": lhs, "rhs": rhs, "method": "convertable_to"} for lhs, rhs in pairs
-    ]
-    ruby_results = _run_ruby_oracle(commands)
-    for (lhs, rhs), ruby_result in zip(pairs, ruby_results, strict=True):
-        python_result = _build_python_type_from_spec(lhs).convertable_to(
-            _build_python_type_from_spec(rhs)
-        )
-        assert ruby_result == {"result": python_result}, f"mismatch for {lhs} convertable_to {rhs}"
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to reproduce the confirmed Ruby bugs",
-)
-def test_ruby_oracle_reproduces_b1_equal_to_crash() -> None:
-    commands = [
-        {"op": "bug_b1_equal_to_symbol", "type": _bits(8), "other_kind": "bits"},
-        {"op": "bug_b1_convertable_to_symbol", "type": _bits(8), "other_kind": "bits"},
-    ]
-    ruby_results = _run_ruby_oracle(commands)
-    assert ruby_results[0]["error"] == "NoMethodError: undefined method 'kind' for nil"
-    assert ruby_results[1]["error"] == "NoMethodError: undefined method 'kind' for nil"
-    # Python does not crash for the same inputs.
-    assert Type(TypeKind.BITS, width=8).equal_to(TypeKind.BITS) is False
-    assert Type(TypeKind.BITS, width=8).convertable_to(TypeKind.BITS) is True
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to reproduce the confirmed Ruby bugs",
-)
-def test_ruby_oracle_reproduces_b2_comparable_to_csr_crash() -> None:
-    commands = [
-        {
-            "op": "bug_b2_comparable_to_csr",
-            "lhs": {"kind": "csr", "csr_name": "mstatus", "max_length": 64},
-            "rhs": {"kind": "csr", "csr_name": "mtvec", "max_length": 64},
-        }
-    ]
-    ruby_results = _run_ruby_oracle(commands)
-    assert "undefined method 'width'" in ruby_results[0]["error"]
-    # Python does not crash for the same inputs.
-    lhs = CsrType(_FakeCsr("mstatus", 64))
-    rhs = CsrType(_FakeCsr("mtvec", 64))
-    assert lhs.comparable_to(rhs) is True
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to reproduce the confirmed Ruby bugs",
-)
-def test_ruby_oracle_reproduces_b3_array_default_aliasing() -> None:
-    spec = {
-        "kind": "array",
-        "width": 2,
-        "sub_type": {
-            "kind": "struct",
-            "name": "Point",
-            "member_types": [_bits(8)],
-            "member_names": ["x"],
-        },
-    }
-    commands = [
-        {"op": "bug_b3_array_default_aliasing", "type": spec, "member_name": "x", "new_value": 42}
-    ]
-    ruby_results = _run_ruby_oracle(commands)
-    # Ruby's Array.new(width, sub_type.default) aliases the same Hash: mutating
-    # element 0 is visible in element 1 too.
-    assert ruby_results[0]["second_element"] == {"x": 42}
-    # Python's default() builds independent elements.
-    struct_type = StructType("Point", (Type(TypeKind.BITS, width=8),), ("x",))
-    array_type = Type(TypeKind.ARRAY, width=2, sub_type=struct_type)
-    default = array_type.default()
-    default[0]["x"] = 42
-    assert default[1]["x"] == 0

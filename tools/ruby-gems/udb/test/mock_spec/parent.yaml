@@ -1,7 +1,0 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-# SPDX-License-Identifier: BSD-3-Clause-Clear
-
-name: parent
-base_item:
-  value: 100
-  description: "Base item from parent"

@@ -42,8 +42,8 @@ def check_resources() -> None:
         "_data/schemas/inst_schema.json",
         "_data/layouts/inst/Zaamo/amoadd.SIZE.AQRL.layout",
         "_data/custom_layouts/qc_iu/csr/Xqci/qc.mclicipN.layout",
-        "_data/cpp_hart/backends/cpp_hart_gen/CMakeLists.txt",
-        "_data/cpp_hart/backends/cpp_hart_gen/cpp/include/udb/bits.hpp",
+        "_data/cpp_hart/runtime/CMakeLists.txt",
+        "_data/cpp_hart/runtime/cpp/include/udb/bits.hpp",
         "extension_docs/templates/header.adoc",
         "extension_docs/assets/fonts/JetBrainsMono-Regular.ttf",
     )

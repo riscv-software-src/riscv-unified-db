@@ -4,25 +4,16 @@
 """Tests for ``udb.idl_environment`` (the architecture-environment adapter)
 and ``udb.idl_yaml_source`` (YAML->IDL source mapping).
 
-Offline tests exercise the adapters' pure logic directly (schema/parameter
-conversion, the structural register-width evaluator, extension-selection
-matching, and YAML source mapping against real ``spec/`` files). The
-``UDB_TEST_RUBY=1``-gated tests build real ``ConfiguredArchitecture``\\s for
-every ``cfgs/*.yaml`` config this slice targets and diff the resulting
-``IdlEnvironment`` against ``ruby_idl_environment_oracle.rb`` (same gating
-convention as ``test_conditions.py``/``test_idl_types.py``).
+Tests exercise the adapters' pure logic directly: schema/parameter conversion,
+the structural register-width evaluator, extension-selection matching, real
+configuration construction, and YAML source mapping against ``spec/`` files.
 """
 
 from __future__ import annotations
 
-import json
-import os
-import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
-from idl_environment_oracle_corrections import corrected_environment_expectation
 
 from udb.configuration import Configuration
 from udb.database import Database
@@ -47,16 +38,6 @@ from udb.idl_yaml_source import UnsupportedYamlIdlStyle, idl_field_source
 from udb.source import parse_yaml
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-RUBY_ENV_ORACLE = Path(__file__).with_name("ruby_idl_environment_oracle.rb")
-RUBY_SOURCE_ORACLE = Path(__file__).with_name("ruby_idl_yaml_source_oracle.rb")
-
-
-def _require_ruby() -> str:
-    mise = shutil.which("mise")
-    if mise is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
-    return mise
-
 
 # ---------------------------------------------------------------------------
 # _SchemaAdapter / _ParameterAdapter
@@ -127,7 +108,7 @@ def test_parameter_adapter_with_value() -> None:
 
 
 # ---------------------------------------------------------------------------
-# udb.idl.value_bounds -- ported from tools/ruby-gems/idlc/test/test_values.rb
+# udb.idl.value_bounds -- retained migration coverage
 # (TestTernaryMaxMinValue)
 # ---------------------------------------------------------------------------
 
@@ -517,8 +498,7 @@ def test_selection_matches_no_version_query_ignores_version() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Real ConfiguredArchitecture construction helper (shared by offline smoke +
-# UDB_TEST_RUBY parity tests)
+# Real ConfiguredArchitecture construction helper
 # ---------------------------------------------------------------------------
 
 
@@ -543,115 +523,10 @@ def test_idl_environment_builds_for_real_configs(name: str) -> None:
     assert symbol_table(cfg_arch) is not None
 
 
-# ---------------------------------------------------------------------------
-# UDB_TEST_RUBY=1 parity against ruby_idl_environment_oracle.rb
-# ---------------------------------------------------------------------------
-
-
-def _run_env_oracle(mise: str, name: str) -> dict:
-    result = subprocess.run(
-        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_ENV_ORACLE), name],
-        cwd=REPOSITORY_ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode != 0:
-        pytest.fail(
-            f"Ruby IDL environment oracle failed for {name!r}:\n{result.stdout}\n{result.stderr}"
-        )
-    return json.loads(result.stdout)
-
-
-_SAMPLE_VERSION_REQS = ["= 1.0.0", ">= 2.0.0", "= 0.1.0", "> 1.9.1", "<= 1.9.1"]
-
-
-def _json_safe(value: object) -> object:
-    """Recursively convert tuples (used for array-valued params) to lists so
-    the result matches the shape ``json.loads`` produces for the Ruby oracle's
-    output -- a tuple vs. list difference is not a real parity mismatch."""
-    if isinstance(value, tuple | list):
-        return [_json_safe(item) for item in value]
-    return value
-
-
-def _python_side(cfg_arch, name: str) -> dict:
-    env = idl_environment(cfg_arch)
-
-    builtin_vars = sorted(
-        (
-            {
-                "name": var.name,
-                "type": str(var.type),
-                "const": var.type.is_const,
-                "value": "unknown" if var.value is None else _json_safe(var.value),
-            }
-            for var in env.builtin_global_vars
-        ),
-        key=lambda item: item["name"],
-    )
-    enums = {
-        enum.name: dict(zip(enum.element_names, enum.element_values, strict=True))
-        for enum in env.builtin_enums
-    }
-    csr_names = sorted(csr.name for csr in env.csrs)
-    register_files = sorted(
-        (
-            {
-                "name": rf.name,
-                "register_length_expr": rf.register_length,
-                "max_register_length": env.register_file_max_widths[rf.name],
-            }
-            for rf in env.register_files
-        ),
-        key=lambda item: item["name"],
-    )
-    extensions = {}
-    for extension in cfg_arch.database.extensions:
-        implemented = env.builtin_funcs.implemented(extension.name)
-        implemented_version = {
-            req: env.builtin_funcs.implemented_version(extension.name, req)
-            for req in _SAMPLE_VERSION_REQS
-        }
-        extensions[extension.name] = {
-            "implemented": implemented,
-            "implemented_version": implemented_version,
-        }
-
-    return {
-        "config": name,
-        "mxlen": env.mxlen,
-        "possible_xlens": list(env.possible_xlens_cb()),
-        "builtin_vars": builtin_vars,
-        "enums": enums,
-        "csr_names": csr_names,
-        "register_files": register_files,
-        "extensions": extensions,
-    }
-
-
+_SAMPLE_VERSION_REQS = ("= 1.0.0", ">= 2.0.0", "= 0.1.0", "> 1.9.1", "<= 1.9.1")
 _RV32_64_BIT_SUPERVISOR_EXTENSIONS = frozenset(
     {"Sv39", "Sv48", "Sv57", "Svnapot", "Svpbmt", "Svrsw60t59b", "Svukte"}
 )
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-@pytest.mark.parametrize("name", ["_", "rv32", "rv64", "qc_iu"])
-def test_idl_environment_matches_ruby_oracle(name: str) -> None:
-    mise = _require_ruby()
-    expected = _run_env_oracle(mise, name)
-    cfg_arch = _build_cfg_arch(name)
-    expected = corrected_environment_expectation(cfg_arch.database, expected)
-    actual = _python_side(cfg_arch, name)
-
-    assert actual["mxlen"] == expected["mxlen"]
-    assert actual["possible_xlens"] == expected["possible_xlens"]
-    assert actual["csr_names"] == expected["csr_names"]
-    assert actual["enums"] == expected["enums"]
-    assert actual["register_files"] == expected["register_files"]
-    assert actual["builtin_vars"] == expected["builtin_vars"]
-
-    assert actual["extensions"] == expected["extensions"]
 
 
 def test_rv32_sxlen_invariant_prohibits_64_bit_supervisor_extensions() -> None:
@@ -661,64 +536,3 @@ def test_rv32_sxlen_invariant_prohibits_64_bit_supervisor_extensions() -> None:
         assert env.builtin_funcs.implemented(ext_name) is False
         for requirement in _SAMPLE_VERSION_REQS:
             assert env.builtin_funcs.implemented_version(ext_name, requirement) is False
-
-
-# ---------------------------------------------------------------------------
-# UDB_TEST_RUBY=1 parity for YAML source-mapping error locations
-# ---------------------------------------------------------------------------
-
-
-def _run_source_oracle(mise: str, body: str, root: str, input_file: str, input_line: int) -> dict:
-    result = subprocess.run(
-        [mise, "exec", "--no-deps", "--", "bundle", "exec", "ruby", str(RUBY_SOURCE_ORACLE)],
-        cwd=REPOSITORY_ROOT,
-        input=json.dumps(
-            {"body": body, "root": root, "input_file": input_file, "input_line": input_line}
-        ),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode != 0:
-        pytest.fail(f"Ruby YAML-source oracle failed:\n{result.stdout}\n{result.stderr}")
-    return json.loads(result.stdout)
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-def test_source_mapping_error_line_matches_ruby_for_plain_scalar() -> None:
-    mise = _require_ruby()
-    path = REPOSITORY_ROOT / "spec/std/isa/inst/I/addi.yaml"
-    text = path.read_text()
-    parsed = parse_yaml(text, source=str(path))
-    span = parsed.sources.at("operation()")
-    assert span is not None
-    value = parsed.value["operation()"]
-    broken = value.rstrip("\n; ") + " +\n"  # dangling operator -> guaranteed syntax error
-
-    source = idl_field_source(text, span, broken, label=str(path))
-    with pytest.raises(IdlSyntaxError) as excinfo:
-        parse_function_body(broken, source=source)
-
-    expected = _run_source_oracle(mise, broken, "function_body", str(path), span.start_line - 1)
-    assert not expected["ok"]
-    assert excinfo.value.line == expected["line"]
-
-
-@pytest.mark.skipif(os.environ.get("UDB_TEST_RUBY") != "1", reason="live Ruby oracle is opt-in")
-def test_source_mapping_error_line_matches_ruby_for_literal_block_scalar() -> None:
-    mise = _require_ruby()
-    path = REPOSITORY_ROOT / "spec/std/isa/csr/instret.yaml"
-    text = path.read_text()
-    parsed = parse_yaml(text, source=str(path))
-    span = parsed.sources.at("sw_read()")
-    assert span is not None
-    value = parsed.value["sw_read()"]
-    broken, _target = _corrupt_first_semicolon_line(value)
-
-    source = idl_field_source(text, span, broken, label=str(path))
-    with pytest.raises(IdlSyntaxError) as excinfo:
-        parse_function_body(broken, source=source)
-
-    expected = _run_source_oracle(mise, broken, "function_body", str(path), span.start_line)
-    assert not expected["ok"]
-    assert excinfo.value.line == expected["line"]

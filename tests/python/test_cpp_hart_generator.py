@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 import pytest
-from capture_cpp_hart_metadata import interface
 
 from udb import Configuration, Database
 from udb.commands.common import CliError
@@ -25,11 +24,32 @@ from udb.cpp_hart.catalog import Catalog
 from udb.cpp_hart.context import Context
 from udb.cpp_hart.csrs import _reset_order
 from udb.cpp_hart.generator import _unavailable, build_type
-from udb.cpp_hart.resources import package_mapping, standalone_cmake
+from udb.cpp_hart.resources import package_mapping, renode_repl, standalone_cmake
 from udb.idl_csr_environment import _CsrFieldAdapter
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = Path(__file__).parent / "fixtures" / "cpp_hart"
+CLASS = re.compile(r"(?:class|struct)\s+(\w+)\s*(?::[^;{}]+)?\{")
+INST = re.compile(r"class\s+(\w+_Inst)\s*:")
+FIELD = re.compile(r"Bits\s*<\s*(\d+)\s*>\s+(\w+)\s*\([^)]*\)\s*const")
+
+
+def interface(text, *, prefix):
+    classes = sorted(
+        {
+            name
+            for name in CLASS.findall(text)
+            if name.startswith(prefix) or name.endswith("_Parameter")
+        }
+    )
+    locations = list(INST.finditer(text))
+    fields = {}
+    for index, match in enumerate(locations):
+        end = locations[index + 1].start() if index + 1 < len(locations) else len(text)
+        fields[match.group(1)] = sorted(
+            {(name, int(width)) for width, name in FIELD.findall(text[match.end() : end])}
+        )
+    return {"classes": classes, "decode_fields": fields}
 
 
 @pytest.fixture(scope="module")
@@ -52,8 +72,8 @@ def _contents(plan):
 
 
 def _native_resource_sources():
-    backend = ROOT / "backends/cpp_hart_gen"
-    sources = {Path("backends/cpp_hart_gen/CMakeLists.txt")}
+    backend = ROOT / "src/udb/cpp_hart/runtime"
+    sources = {Path("src/udb/cpp_hart/runtime/CMakeLists.txt")}
     for directory, suffixes in (
         ("cpp/include/udb", {".hpp"}),
         ("c/include/udb", {".h"}),
@@ -141,7 +161,7 @@ def test_safe_repeatable_writer(plan, tmp_path):
 def test_explicit_resources_are_byte_exact(plan):
     contents = _contents(plan)
     for output, original, _, _ in RuntimeResources.from_path(ROOT).files():
-        if str(output) != "CMakeLists.txt":
+        if str(output) not in {"CMakeLists.txt", "renode/udb.repl"}:
             assert contents[str(output)] == original
 
 
@@ -183,13 +203,13 @@ def test_source_generation_is_offline(architecture, monkeypatch):
 
 
 def test_standalone_cmake_preserves_explicit_repository_override():
-    original = (ROOT / "backends/cpp_hart_gen/CMakeLists.txt").read_bytes()
+    original = (ROOT / "src/udb/cpp_hart/runtime/CMakeLists.txt").read_bytes()
     text = standalone_cmake(original, ("rv32", "rv64")).decode()
     assert 'set(CONFIG_LIST "rv32;rv64")' in text
     assert 'if(NOT DEFINED UDB_ROOT OR UDB_ROOT STREQUAL "")' in text
     assert 'set(UDB_ROOT "${CMAKE_CURRENT_LIST_DIR}")' in text
     assert 'get_filename_component(UDB_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)' in text
-    assert (ROOT / "backends/cpp_hart_gen/CMakeLists.txt").read_bytes() == original
+    assert (ROOT / "src/udb/cpp_hart/runtime/CMakeLists.txt").read_bytes() == original
     debug = standalone_cmake(original, ("rv32",), "Debug").decode()
     assert "SET(CMAKE_BUILD_TYPE Debug" in debug
     assert "IF(NOT CMAKE_BUILD_TYPE)" in debug
@@ -203,9 +223,24 @@ def test_standalone_cmake_preserves_explicit_repository_override():
         standalone_cmake(original, ("rv32",), "../../escape")
 
 
+def test_renode_example_is_bound_without_checkout_paths(plan):
+    contents = _contents(plan)
+    repl = contents["renode/udb.repl"].decode()
+    script = contents["renode/udb.resc"].decode()
+    assert 'modelType: "cpp-smoke"' in repl
+    assert 'configFile: "cfgs/cpp-smoke.json"' in repl
+    assert 'sharedLibrary: "build/libhart_renode.so"' in repl
+    assert "worktrees/" not in repl
+    assert "@$ORIGIN/UdbCpu.cs" in script
+    assert "@$ORIGIN/udb.repl" in script
+    assert "$bin?=$ORIGIN/program.elf" in script
+    with pytest.raises(CppGenerationError, match="exactly one"):
+        renode_repl(b'configFile: "cfgs/@UDB_CONFIG@.json"\n', "rv64")
+
+
 def test_package_mapping_does_not_duplicate_static_sources():
     mapping = package_mapping(ROOT)
-    assert ROOT / "backends/cpp_hart_gen/cpp/include/udb/bits.hpp" in mapping
+    assert ROOT / "src/udb/cpp_hart/runtime/cpp/include/udb/bits.hpp" in mapping
     assert all(
         str(destination).startswith("udb/_data/cpp_hart/")
         or str(destination) == "udb/cpp_hart/NOTICE"
@@ -224,7 +259,7 @@ spec = importlib.util.spec_from_file_location("cpp_assets", root / "src/udb/cpp_
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 mapping = module.package_mapping(root)
-test_root = root / "backends/cpp_hart_gen/cpp/test"
+test_root = root / "src/udb/cpp_hart/runtime/cpp/test"
 expected_tests = {
     path for path in test_root.iterdir()
     if path.is_file() and path.suffix in {".cmake", ".cpp", ".hpp"}

@@ -17,112 +17,10 @@ from udb.prose import (
     ProseError,
     ProseInputs,
     native_prose_values,
-    render_legacy,
     render_native,
     resolve_all_exception_records,
     resolved_exception_names,
 )
-
-
-def render(text: str, **kwargs) -> str:
-    return render_legacy(CapturedProse(text), ProseInputs("test", **kwargs))
-
-
-def test_conditionals_assignments_and_ruby_truth():
-    assert (
-        render(
-            "x<% if ext?(:H) %>H<% elsif ext?(:S) %>S<% else %>M<% end %>", extensions={"S": True}
-        )
-        == "xS"
-    )
-    assert render("<% unless ext?(:C) %>u<% end %>") == "u"
-    assert render("<%= ext?(:C) ? 2 : 1 %>", extensions={"C": True}) == "2"
-    assert (
-        render(
-            "<%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 48 : 39) -%>\n"
-            "<%= va_size %>:<%= va_size-1 %>",
-            extensions={"Sv48": True},
-        )
-        == "48:47"
-    )
-    assert (
-        render(
-            "<% if MXLEN == 64 %>yes<% else %>no<% end %>",
-            parameters={"MXLEN": ParameterState.UNKNOWN},
-        )
-        == "no"
-    )
-    assert render("<%= MXLEN %>", parameters={"MXLEN": ParameterState.UNKNOWN}) == "unknown"
-    assert render("<% if MXLEN %>yes<% end %>", parameters={"MXLEN": 0}) == "yes"
-
-
-@pytest.mark.parametrize("widths,expected", [((32,), "32"), ((64,), "64"), ((32, 64), "32")])
-def test_captured_generator_name_width_selector(widths, expected):
-    assert render("<%= possible_xlens.include?(32) ? 32 : 64 %>", possible_xlens=widths) == expected
-
-
-def test_boundaries_and_whitespace_are_not_normalized():
-    assert render("a\n<% if ext?(:H) %>\nh\n<% end %>\nz") == "a\nz"
-    assert render("a<% if ext?(:H) %> h <% end %>\nz") == "a\nz"
-    assert render("a\n  <%- if ext?(:H) -%>\nh\n  <%- end -%>\nz") == "a\nz"
-    assert render("a\n<%= MXLEN %>\nz", parameters={"MXLEN": 64}) == "a\n64\nz"
-
-
-@pytest.mark.parametrize(
-    "source",
-    [
-        "<% system('touch forbidden') %>",
-        "<% if ext?(:H) %><%= __import__('os') %><% end %>",
-        "<% if ext?(:H) %><%= MXLEN.__class__ %><% end %>",
-        "<% while true %>x<% end %>",
-        "<% va_size = 1 %>",
-        "<%= code.num %>",
-        "<%= unknown %>",
-        '<%= "MXLEN" %>',
-        '<% if ext?(:H, "malformed") %>H<% end %>',
-        "<%= ext?(:H) ? 1 : 0 %>",
-        "<% if ext?(:H) %>x",
-        "<% end %>",
-        "<% if ext?(:H)",
-        "{{ value }}",
-        "<%= 1 if ext?(:C) else 2 %>",
-        "<%= True %>",
-        "<%= False %>",
-        "<%= True == 1 %>",
-        "<% if 1 < MXLEN < 3 %>yes<% end %>",
-        "<% if not ext?(:H) %>yes<% end %>",
-        "<% if ext?(:C) and ext?(:H) %>yes<% end %>",
-        "<%= 1_000 %>",
-        "<%= 1e2 %>",
-    ],
-)
-def test_unsupported_templates_never_count_as_passes(source):
-    with pytest.raises(ProseError):
-        render(source)
-
-
-def test_failures_capture_provenance_inputs_and_inactive_branch_safety():
-    prose = CapturedProse(
-        "<%= CACHE_BLOCK_SIZE.bit_length %>",
-        "inst/cache.yaml",
-        ("description",),
-        source_text="original yaml\n",
-    )
-    with pytest.raises(ProseError) as raised:
-        render_legacy(prose, ProseInputs("broken", {"CACHE_BLOCK_SIZE": "bad"}))
-    diagnostic = raised.value.diagnostic
-    assert diagnostic.prose is prose
-    assert diagnostic.prose.source_text == "original yaml\n"
-    assert diagnostic.prose.path == ("description",)
-    assert diagnostic.tag == prose.text
-    assert diagnostic.observed_inputs == {"CACHE_BLOCK_SIZE": "bad"}
-    assert diagnostic.legacy_error_class == "NoMethodError"
-    assert "inst/cache.yaml#/description" in str(raised.value)
-    assert render("<% if ext?(:H) %><%= CACHE_BLOCK_SIZE.bit_length %><% end %>") == ""
-    upstream = CapturedFailure("ArgumentError", "precise captured upstream failure")
-    with pytest.raises(ProseError) as captured:
-        render("<%- if possible_xlens.include?(32) -%>yes<%- end -%>", possible_xlens=upstream)
-    assert captured.value.diagnostic.message == upstream.message
 
 
 def test_structured_exception_names_are_immutable_and_resolved():
@@ -148,7 +46,7 @@ def test_structured_exception_names_are_immutable_and_resolved():
         result[0]["name"] = "changed"
 
 
-def test_native_format_and_transitional_adapter_are_distinct():
+def test_native_format_rejects_legacy_syntax():
     prose = CapturedProse(
         "{% if extensions.H %}H{% else %}M{% endif %}:"
         "{% for name in names %}{{ name }};{% endfor %}"
@@ -167,7 +65,7 @@ def test_native_format_and_transitional_adapter_are_distinct():
 def test_captured_source_survives_deleted_tree(tmp_path):
     root = tmp_path / "spec"
     (root / "csr").mkdir(parents=True)
-    text = "kind: csr\nname: a\ndescription: |\n  x<% if ext?(:H) %>H<% end %>\n"
+    text = "kind: csr\nname: a\ndescription: |\n  x{% if extensions.H %}H{% endif %}\n"
     path = root / "csr/a.yaml"
     path.write_text(text)
     database = Database.from_path(root).resolve()
@@ -178,7 +76,8 @@ def test_captured_source_survives_deleted_tree(tmp_path):
     assert prose.source_text == text
     assert prose.span is not None
     assert prose.span.source == "csr/a.yaml"
-    assert render_legacy(prose, ProseInputs("offline", extensions={"H": True})) == "xH\n"
+    inputs = ProseInputs("offline", extensions={"H": True})
+    assert render_native(prose, native_prose_values(prose, inputs)) == "xH\n"
 
 
 @pytest.mark.parametrize("path", [("missing",), ("description", 0), ("names", 4), ("names", -1)])
@@ -290,16 +189,17 @@ def test_xlen_relations_add_direct_mentions_without_reexpanding_requirements():
 
 def test_unobserved_malformed_operands_have_python_not_invented_ruby_diagnostics():
     with pytest.raises(ProseError) as bit_length:
-        render("<%= CACHE_BLOCK_SIZE.bit_length %>", parameters={"CACHE_BLOCK_SIZE": True})
+        prose = CapturedProse("{{ derived.cache_block_size_log2 }}")
+        inputs = ProseInputs("test", parameters={"CACHE_BLOCK_SIZE": True})
+        render_native(prose, native_prose_values(prose, inputs))
     assert bit_length.value.diagnostic.legacy_error_class is None
-    assert "requires an integer" in bit_length.value.diagnostic.message
+    assert "must be an integer" in bit_length.value.diagnostic.message
     with pytest.raises(ProseError) as minimum:
-        render(
-            "<%= [PMP_GRANULARITY, PMA_GRANULARITY].min %>",
-            parameters={"PMP_GRANULARITY": 3, "PMA_GRANULARITY": False},
-        )
+        prose = CapturedProse("{{ derived.min_cache_granularity }}")
+        inputs = ProseInputs("test", parameters={"PMP_GRANULARITY": 3, "PMA_GRANULARITY": False})
+        render_native(prose, native_prose_values(prose, inputs))
     assert minimum.value.diagnostic.legacy_error_class is None
-    assert "requires integer operands" in minimum.value.diagnostic.message
+    assert "must be an integer" in minimum.value.diagnostic.message
 
 
 def test_input_projection_does_not_claim_satisfiability():
@@ -317,8 +217,6 @@ def test_input_projection_does_not_claim_satisfiability():
 
 
 def test_limits_and_invalid_inputs():
-    with pytest.raises(ProseError, match="10000 tags"):
-        render("<%= MXLEN %>" * 10001)
     with pytest.raises(ProseError):
         render_native(
             CapturedProse("{% for x in xs %}{{ x }}{% endfor %}"), {"xs": tuple(range(1025))}
@@ -344,35 +242,46 @@ def test_parameter_source_and_configuration_text_are_retained():
         }
     )
     inputs = ProseInputs.from_database(database, config)
+    prose = CapturedProse("{{ derived.cache_block_size_log2 }}")
     with pytest.raises(ProseError) as raised:
-        render_legacy(CapturedProse("<%= CACHE_BLOCK_SIZE.bit_length %>"), inputs)
+        render_native(prose, native_prose_values(prose, inputs))
     assert raised.value.diagnostic.configuration_source == config.source_text
     span = raised.value.diagnostic.input_sources["CACHE_BLOCK_SIZE"]
     assert span.source == "captured-config.yaml"
     assert span.start_line == 8
 
 
-def test_code_rows_require_resolved_names_and_share_the_output_budget():
-    template = CapturedProse(
-        "<%- implemented_exception_codes.sort_by { |code| code.num }.each do |code| -%>\n"
-        "<%= code.num %>: <%= code.name %>\n<%- end -%>\n"
-    )
-    with pytest.raises(ProseError, match="already be resolved"):
-        render_legacy(
-            template, ProseInputs("test", exception_codes=(CodeRecord(1, "<%= MXLEN %>"),))
-        )
+def test_code_rows_render_native_names_and_sort_by_number():
+    template = CapturedProse("{% for row in exception_code_rows %}{{ row }}\n{% endfor %}")
     assert (
-        render_legacy(
+        render_native(
             template,
-            ProseInputs(
-                "test",
-                exception_codes=(
-                    CodeRecord(2, "b"),
-                    CodeRecord(1, "a"),
+            native_prose_values(
+                template,
+                ProseInputs(
+                    "test",
+                    {"MXLEN": 64},
+                    exception_codes=(CodeRecord(1, "{{ params.MXLEN }}"),),
                 ),
             ),
         )
-        == "1: a\n2: b\n"
+        == "! 1 ! 64\n"
+    )
+    assert (
+        render_native(
+            template,
+            native_prose_values(
+                template,
+                ProseInputs(
+                    "test",
+                    exception_codes=(
+                        CodeRecord(2, "b"),
+                        CodeRecord(1, "a"),
+                    ),
+                ),
+            ),
+        )
+        == "! 1 ! a\n! 2 ! b\n"
     )
 
 
@@ -387,7 +296,9 @@ def test_malformed_values_never_invoke_python_hooks():
 
 def test_missing_version_facts_and_restricted_partial_scopes_are_explicit():
     with pytest.raises(ProseError, match="Missing captured version predicate"):
-        render('<% if ext?(:S, "> 1.9.1") %>S<% end %>', extensions={"S": True})
+        prose = CapturedProse("{% if extension_queries.S_gt_1_9_1 %}S{% endif %}")
+        inputs = ProseInputs("test", extensions={"S": True})
+        render_native(prose, native_prose_values(prose, inputs))
     database = ResolvedDatabase({})
     config = Configuration(
         {

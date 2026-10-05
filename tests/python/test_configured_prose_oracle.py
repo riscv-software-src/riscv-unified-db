@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Frozen real Ruby outputs: source inventory, exact text, explicit error outcomes."""
+"""Reviewed frozen legacy outputs and native configured-prose coverage."""
 
 from __future__ import annotations
 
@@ -25,7 +25,6 @@ from udb.prose import (
     ProseError,
     ProseInputs,
     native_prose_values,
-    render_legacy,
     render_native,
     resolve_all_exception_records,
     resolve_exception_records,
@@ -73,36 +72,6 @@ def captured_inputs(name: str, corpus=CORPUS) -> ProseInputs:
         fact("exception_codes", codes=True),
         fact("interrupt_codes", codes=True),
     )
-
-
-def check_case(name: str, inputs: ProseInputs, corpus=CORPUS) -> tuple[int, int]:
-    successes = errors = 0
-    for template, expected in zip(
-        corpus["templates"], corpus["captures"][name]["expected"], strict=True
-    ):
-        prose = CapturedProse(template["template"], template["source"], tuple(template["path"]))
-        if "error" in expected:
-            with pytest.raises(ProseError) as raised:
-                render_legacy(prose, inputs)
-            diagnostic = raised.value.diagnostic
-            assert diagnostic.legacy_error_class == expected["error"]["class"], prose.label
-            # Exact Ruby messages, including randomized anonymous-class addresses,
-            # are retained in the corpus, not regenerated or output-normalized.
-            if expected["error"]["class"] != "NameError":
-                assert diagnostic.message == expected["error"]["message"], prose.label
-            else:
-                constant = expected["error"]["message"].rsplit("::", 1)[-1]
-                assert constant in ("CACHE_BLOCK_SIZE", "PMP_GRANULARITY")
-                assert diagnostic.code == "unavailable-parameter"
-                assert diagnostic.message == f"uninitialized constant {constant}"
-            assert diagnostic.prose is prose
-            assert diagnostic.configuration == inputs.configuration
-            assert diagnostic.tag in prose.text
-            errors += 1
-        else:
-            assert render_legacy(prose, inputs) == expected["value"], prose.label
-            successes += 1
-    return successes, errors
 
 
 @cache
@@ -167,12 +136,6 @@ def test_exact_source_inventory():
         if "<%" in path.read_text()
     ]
     assert legacy_sources == []
-
-
-@pytest.mark.parametrize("name", CONFIGURATIONS)
-def test_all_frozen_scalar_outputs_and_error_outcomes(name):
-    expected_successes = 255 if name in ("cache-small", "cache-large", "h64-mixed-sv57") else 251
-    assert check_case(name, captured_inputs(name)) == (expected_successes, 255 - expected_successes)
 
 
 @pytest.mark.parametrize("name", CONFIGURATIONS)
@@ -261,27 +224,18 @@ def test_original_raw_archive_has_not_been_rewritten():
     assert digest == "efe15672fa29e89c0f046e5e0511e3c5c5164f5f8a6a311112df061eb7f68ffa"
 
 
-@pytest.mark.parametrize("case", WHITESPACE, ids=lambda case: repr(case["template"]))
-def test_extended_whitespace_is_exact_raw_tilt(case):
-    inputs = ProseInputs(
-        "whitespace",
-        {"MXLEN": 64},
-        {"H": True, "A": True},
-        exception_codes=(CodeRecord(1, "One"), CodeRecord(2, "Two")),
-    )
-    assert "value" in case["raw"]
-    assert render_legacy(CapturedProse(case["template"]), inputs) == case["raw"]["value"]
+def test_extended_whitespace_archive_has_not_been_rewritten():
+    digest = hashlib.sha256(
+        json.dumps(WHITESPACE, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
+    ).hexdigest()
+    assert digest == "b3e69e7f734b069e55e5a53491a3c3c501acdb4543a52061d0ad62bf80440c5c"
 
 
 @pytest.mark.parametrize("name", tuple(SUPPLEMENT["captures"]))
-def test_supplemental_real_ruby_scalar_captures(name, source_database):
-    assert check_case(name, captured_inputs(name, SUPPLEMENT), SUPPLEMENT) == (
-        (251, 4) if name == "mc100-full" else (255, 0)
-    )
+def test_supplemental_input_projection_matches_frozen_capture(name, source_database):
     inputs = ProseInputs.from_database(
         source_database, Configuration(SUPPLEMENT["configurations"][name]["declaration"])
     )
-    assert check_case(name, inputs, SUPPLEMENT) == ((251, 4) if name == "mc100-full" else (255, 0))
     assert resolve_all_exception_records(source_database, inputs) == tuple(
         SUPPLEMENT["captures"][name]["inputs"]["structured_exception_records"]["value"]
     )
@@ -327,42 +281,6 @@ def test_templated_names_are_selected_from_database_not_rendered_captures(name, 
     assert all("<%" not in row["name"] for row in raw["value"])
 
 
-@pytest.mark.parametrize(
-    "mutation",
-    ("bitlen+1", "bitlen-1", "min+1", "min-1", "min-to-max", "min-first", "min-second"),
-)
-def test_cache_boundary_corpus_kills_review_mutations(monkeypatch, mutation):
-    from udb.prose.render import _Adapter
-
-    bit_length = _Adapter.bit_length
-    minimum = _Adapter.minimum
-    if mutation.startswith("bitlen"):
-        offset = 1 if mutation.endswith("+1") else -1
-        monkeypatch.setattr(
-            _Adapter, "bit_length", lambda self, name: bit_length(self, name) + offset
-        )
-    elif mutation == "min-to-max":
-        monkeypatch.setattr(
-            _Adapter, "minimum", lambda self, names: max(self.parameter(name) for name in names)
-        )
-    elif mutation in ("min-first", "min-second"):
-        index = 0 if mutation == "min-first" else 1
-        monkeypatch.setattr(_Adapter, "minimum", lambda self, names: self.parameter(names[index]))
-    else:
-        offset = 1 if mutation.endswith("+1") else -1
-        monkeypatch.setattr(_Adapter, "minimum", lambda self, names: minimum(self, names) + offset)
-    cases = tuple(name for name in SUPPLEMENT["captures"] if name.startswith("cache-"))
-    assert any(
-        render_legacy(CapturedProse(template["template"]), captured_inputs(name, SUPPLEMENT))
-        != expected["value"]
-        for name in cases
-        for template, expected in zip(
-            SUPPLEMENT["templates"], SUPPLEMENT["captures"][name]["expected"], strict=True
-        )
-        if "bit_length" in template["template"]
-    ), f"surviving mutation: {mutation}"
-
-
 def test_independent_valid_mc100_witness_separates_defects_from_synthetic_shapes():
     witness = json.loads(
         (ROOT / "tests/python/fixtures/configured_prose_mc100_witness.json").read_text()
@@ -405,7 +323,7 @@ def test_from_architecture_is_the_documented_declaration_projection(source_datab
 
 
 @pytest.mark.parametrize("name", CONFIGURATIONS)
-def test_real_database_input_projection_matches_ruby(name, source_database):
+def test_real_database_input_projection_matches_frozen_capture(name, source_database):
     declaration = CORPUS["configurations"][name].get("declaration")
     config = Configuration(declaration) if declaration else Configuration.builtin(name)
     if name == "qc_iu":
@@ -433,10 +351,6 @@ def test_real_database_input_projection_matches_ruby(name, source_database):
         {"num": code.num, "name": code.name, "display_name": code.display_name}
         for code in inputs.interrupt_codes
     ] == facts["interrupt_codes"]["value"]
-    assert check_case(name, inputs) == (
-        255 if name in ("cache-small", "cache-large", "h64-mixed-sv57") else 251,
-        0 if name in ("cache-small", "cache-large", "h64-mixed-sv57") else 4,
-    )
     names = resolved_exception_names(inputs)
     assert tuple(item["name"] for item in names) == tuple(
         code.name for code in inputs.exception_codes

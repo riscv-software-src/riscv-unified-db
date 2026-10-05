@@ -43,11 +43,11 @@ def test_pages_downloads_only_retained_artifacts() -> None:
         for step in steps
         if step.get("uses", "").startswith("actions/download-artifact@")
     }
-    assert downloads == {"reuse-manifest", "resolved-spec", "udb-api", "idl-doc", "docs-site"}
+    assert downloads == {"reuse-manifest", "resolved-spec", "docs-site"}
 
 
 def test_retired_aliases_and_editor_launches_are_removed() -> None:
-    rakefile = (ROOT / "Rakefile").read_text(encoding="utf-8")
+    assert not (ROOT / "Rakefile").exists()
     launches = (ROOT / ".vscode/launch.json").read_text(encoding="utf-8")
     for retired in (
         "isa_explorer",
@@ -56,17 +56,12 @@ def test_retired_aliases_and_editor_launches_are_removed() -> None:
         "profile_release_pdf",
         "portfolios",
     ):
-        assert retired not in rakefile
         assert retired not in launches
 
 
-def test_retired_workbook_dependencies_are_absent_from_typing_inputs() -> None:
-    requires = (ROOT / "sorbet/tapioca/require.rb").read_text(encoding="utf-8")
-    lockfile = (ROOT / "Gemfile.lock").read_text(encoding="utf-8")
-    for gem in ("write_xlsx", "nkf"):
-        assert f'require "{gem}"' not in requires
-        assert f"    {gem} (" not in lockfile
-        assert not list((ROOT / "sorbet/rbi/gems").glob(f"{gem}@*.rbi"))
+def test_retired_ruby_typing_inputs_are_absent() -> None:
+    assert not any(path.is_file() for path in (ROOT / "sorbet").rglob("*"))
+    assert not (ROOT / "Gemfile.lock").exists()
 
 
 def test_site_showcase_does_not_advertise_retired_generators() -> None:

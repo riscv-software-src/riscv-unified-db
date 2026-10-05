@@ -71,6 +71,11 @@ description = "Generate strict profile configurations"
 usage = 'flag "--check" help="Report drift without writing"'
 run = "uv run python -m tools.dev.generate profile-configs"
 
+["gen:schemas"]
+description = "Generate the resolved JSON Schema bundle"
+usage = 'flag "--check" help="Report drift without writing"'
+run = "uv run python -m tools.dev.generate schemas"
+
 ["gen:schema-docs"]
 description = "Generate schema documentation"
 usage = 'flag "--check" help="Report drift without writing"'

@@ -10,16 +10,10 @@ path = [
   "yamlidl/package.json",
   "yamlidl/syntaxes/yaml-idl-injection.json",
   "yamlidl/language-configuration-yamlidl.json",
-  "cpperb/package.json",
-  "cpperb/syntaxes/cpp-ruby-injection.json",
-  "cpperb/language-configuration-cpperb.json",
   "pack/package.json",
   "idl/package.json",
   "idl/syntaxes/idl.tmLanguage.json",
-  "idl/language-configuration.json",
-  "adocerb/package.json",
-  "adocerb/syntaxes/adoc-ruby-injection.json",
-  "adocerb/language-configuration-adocerb.json"
+  "idl/language-configuration.json"
 ]
 SPDX-FileCopyrightText = "Qualcomm Technologies, Inc. and/or its subsidiaries."
 SPDX-License-Identifier = "BSD-3-Clause-Clear"

@@ -20,8 +20,6 @@
     "directory": "pack"
   },
   "extensionPack": [
-    "HowerLimited.cpperb-vscode",
-    "HowerLimited.adocerb-vscode",
     "HowerLimited.idl-vscode",
     "HowerLimited.yamlidl-vscode"
   ]

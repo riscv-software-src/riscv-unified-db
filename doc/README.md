@@ -9,18 +9,19 @@ This directory is the root of the UDB documentation site, built with [Docusaurus
 
 ## Local development
 
-Dependencies are managed from the **repo root** via aube. Run all commands from the
-repo root, not from inside `doc/`.
+Run documentation tasks from the repository root:
 
 ```bash
-# Start the local dev server with live reload
-./bin/aubr -C doc start
+# Build and serve the local site
+mise run docs:build site
+mise run docs:serve site
 
 # Build the static site
-./bin/aubr -C doc build
+mise run docs:build site
 ```
 
-The dev server runs at `http://localhost:3000` by default.
+The static server runs at `http://localhost:8000` by default. Pass a different
+port with `mise run docs:serve site -- --port PORT`.
 
 ## Directory structure
 

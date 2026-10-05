@@ -6,8 +6,6 @@
 from __future__ import annotations
 
 import json
-import os
-import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -172,7 +170,7 @@ def architecture(request, database):
 
 
 @pytest.mark.parametrize("case", CORPUS["cases"], ids=lambda case: case["id"])
-def test_live_database_translation_matches_frozen_ruby(case, architecture):
+def test_live_database_translation_matches_frozen_expectation(case, architecture):
     from udb.idl_environment import symbol_table
 
     expected = next(
@@ -196,35 +194,3 @@ def test_rv32_sxlen_invariant_closes_supervisor_presence_gap(database):
     arch = database.configure(Configuration.builtin("rv32"))
     for name in ("Sv39", "Sv48", "Sv57", "Svnapot", "Svpbmt", "Svrsw60t59b", "Svukte"):
         assert arch.extension_presence(name) is QueryPresence.ABSENT
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to verify all four frozen Ruby condition oracles",
-)
-def test_frozen_ruby_condition_corpus_is_current():
-    from regen_idl_conditions import collect_cases
-
-    assert collect_cases() == CORPUS["cases"]
-    for name in CONFIGS:
-        result = subprocess.run(
-            [
-                "mise",
-                "exec",
-                "--no-deps",
-                "--",
-                "bundle",
-                "exec",
-                "ruby",
-                str(Path(__file__).with_name("ruby_idl_condition_oracle.rb")),
-                str(ROOT),
-                name,
-            ],
-            input=json.dumps(CORPUS["cases"]),
-            text=True,
-            capture_output=True,
-            check=True,
-            cwd=ROOT,
-        )
-        observed = json.loads(result.stdout)
-        assert observed["results"] == CORPUS["results"][name]

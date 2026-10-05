@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 import json
-import os
-import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -361,33 +358,3 @@ def test_cli_reports_bad_selection_without_partial_output(cli_database, tmp_path
     )
     assert "missing" in capsys.readouterr().err
     assert not output.exists()
-
-
-@pytest.mark.skipif(
-    os.environ.get("UDB_TEST_RUBY") != "1",
-    reason="set UDB_TEST_RUBY=1 to refresh the genuine profile configuration oracle",
-)
-def test_live_profile_configuration_oracle_is_unchanged():
-    mise = shutil.which("mise")
-    if mise is None:
-        pytest.fail("UDB_TEST_RUBY=1 requires mise and the repository Ruby toolchain")
-    result = subprocess.run(
-        [
-            mise,
-            "exec",
-            "--no-deps",
-            "--",
-            "bundle",
-            "exec",
-            "ruby",
-            "-Itools/ruby-gems/udb/lib",
-            str(Path(__file__).with_name("ruby_profile_config_oracle.rb")),
-            str(ROOT),
-        ],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert result.returncode == 0, result.stderr
-    assert json.loads(result.stdout) == json.loads(ORACLE.read_text(encoding="utf-8"))

@@ -40,22 +40,7 @@ reports remain untouched.
 `cfgs/mc100-32-full-example.yaml`, verified against its manifest source hash, so
 installed acceptance never needs a checkout.
 
-## Reproduction
-
-Run from the owning worktree with the original Ruby lock, existing dependency
-environment, `UV_NO_SYNC=1`, and `mise exec --no-deps`:
-
-```bash
-bundle exec --gemfile /explicit/original/Gemfile ruby tests/python/capture_query_reports.rb
-bundle exec --gemfile /explicit/original/Gemfile ruby tests/python/capture_query_report_descriptions.rb
-```
-
-The first utility also accepts explicit case names for bounded recapture. The
-second utility captures original-vs-resolved scalar observations and copies the
-full configuration from the first utility's resolved cache (or the initial
-aggregate cache when present). The condition utility is
-`capture_query_report_conditions.rb`; it invokes the native model caller used
-by show/list and freezes 13 complete text/pretty condition shapes, including
-indexed array parameters. `native-auxiliary-manifest.json` freezes hashes and
-exact reproduction transports for these additional artifacts.
-No utility is imported or executed by production Python.
+These are reviewed, immutable legacy captures. The retired implementation and
+capture utilities are no longer present, so there is no refresh command.
+`native-auxiliary-manifest.json` freezes hashes and the original transport
+metadata for these additional artifacts.
