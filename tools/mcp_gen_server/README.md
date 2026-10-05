@@ -16,6 +16,8 @@ The server provides organized access to:
 - **Instructions**: Search and retrieve instruction definitions with advanced filtering
 - **CSRs**: Query Control and Status Registers
 - **Extensions**: Browse architecture extensions with optional instruction/CSR details
+- **Parameters**: Query architectural parameter definitions (e.g. MXLEN, PHYS_ADDR_WIDTH) with
+  schema-type and extension filtering
 - **IDL Functions**: Search function documentation and find usages
 - **Multi-Domain Search**: Search across instructions, CSRs, and extensions simultaneously
 
@@ -82,6 +84,14 @@ The server provides organized access to:
 - **search_extensions**: List all or get specific extension details
   - Args: `name`, `include_instructions`, `include_csrs`, `limit`
 
+### Parameter Tools
+
+- **search_parameters**: Search and retrieve architectural parameter definitions
+  - Args: `name`, `term`, `schema_type`, `extension`, `use_regex`, `fuzzy`, `limit`
+  - Provide `name` for full parameter detail (schema, definedBy, requirements, description)
+  - Filter by `schema_type` (`boolean`, `integer`, `string`, `array`) for type-aware queries
+  - Filter by `extension` to list all parameters a specific extension introduces
+
 ### Multi-Domain Search
 
 - **search_all**: Search across instructions, CSRs, and extensions simultaneously
@@ -126,6 +136,32 @@ The server provides organized access to:
 { "term": "atomic", "domains": ["instructions", "csrs"], "fuzzy": true }
 ```
 
+### Parameter Search
+
+List all boolean parameters:
+
+```json
+{ "schema_type": "boolean" }
+```
+
+All parameters defined by the Sm extension:
+
+```json
+{ "extension": "Sm" }
+```
+
+Full details for a named parameter:
+
+```json
+{ "name": "MXLEN" }
+```
+
+Regex search across name, long_name, and description:
+
+```json
+{ "term": "^REPORT_VA", "use_regex": true }
+```
+
 ## Architecture
 
 1. **Fuzzy Matching**: Levenshtein distance for typo tolerance
@@ -136,14 +172,15 @@ The server provides organized access to:
 
 ## Tool Summary
 
-| Tool                   | Purpose                          |
-| ---------------------- | -------------------------------- |
-| `list_gen_yaml`        | List all YAML files under gen/   |
-| `read_gen_yaml`        | Read specific YAML file          |
-| `search_instructions`  | Search instructions with filters |
-| `search_csrs`          | Search CSRs with filters         |
-| `search_extensions`    | List/query extensions from YAML  |
-| `search_all`           | Multi-domain search              |
-| `search_functions`     | Search IDL functions             |
-| `read_function_doc`    | Get function documentation       |
-| `find_function_usages` | Find function usage in code      |
+| Tool                   | Purpose                                       |
+| ---------------------- | --------------------------------------------- |
+| `list_gen_yaml`        | List all YAML files under gen/                |
+| `read_gen_yaml`        | Read specific YAML file                       |
+| `search_instructions`  | Search instructions with filters              |
+| `search_csrs`          | Search CSRs with filters                      |
+| `search_extensions`    | List/query extensions from YAML               |
+| `search_parameters`    | Search/retrieve architectural parameters      |
+| `search_all`           | Multi-domain search                           |
+| `search_functions`     | Search IDL functions                          |
+| `read_function_doc`    | Get function documentation                    |
+| `find_function_usages` | Find function usage in code                   |

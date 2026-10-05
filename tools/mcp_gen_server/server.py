@@ -343,6 +343,187 @@ def _iter_extension_yaml_paths() -> list[Path]:
     return paths
 
 
+def _iter_parameter_yaml_paths() -> list[Path]:
+    """Find all parameter YAML files in gen/."""
+    paths: list[Path] = []
+    if not GEN_DIR.exists():
+        return paths
+    for root, _dirs, files in os.walk(GEN_DIR):
+        root_p = Path(root)
+        if "param" not in root_p.parts:
+            continue
+        for f in files:
+            if f.lower().endswith((".yaml", ".yml")):
+                p = root_p / f
+                paths.append(p)
+    return paths
+
+
+def _schema_type(schema: dict) -> str | None:
+    """Extract the top-level JSON Schema type from a parameter schema hash.
+
+    Handles plain ``type``, ``enum``-only, ``allOf``, and ``$ref`` forms.
+    Returns one of: 'boolean', 'integer', 'string', 'array', or None.
+    """
+    if not isinstance(schema, dict):
+        return None
+    if "type" in schema:
+        return str(schema["type"])
+    if "enum" in schema and isinstance(schema["enum"], list) and schema["enum"]:
+        first = schema["enum"][0]
+        if isinstance(first, bool):
+            return "boolean"
+        if isinstance(first, int):
+            return "integer"
+        if isinstance(first, str):
+            return "string"
+    if "allOf" in schema and isinstance(schema["allOf"], list):
+        for sub in schema["allOf"]:
+            t = _schema_type(sub)
+            if t:
+                return t
+    if "$ref" in schema:
+        ref = str(schema["$ref"])
+        if "uint32" in ref or "uint64" in ref:
+            return "integer"
+    return None
+
+
+# ============================================================================
+# Parameter Tools
+# ============================================================================
+
+
+async def search_parameters(args: dict[str, Any]):
+    """
+    Flexible parameter search and retrieval.
+
+    Parameters are implementation-defined architectural values (e.g. MXLEN,
+    PHYS_ADDR_WIDTH, CACHE_BLOCK_SIZE) that configure the behaviour of a
+    RISC-V implementation.  Each parameter has a JSON Schema that constrains
+    its legal values, a ``definedBy`` condition listing the extension(s) that
+    introduce it, and an optional IDL ``requirements`` expression.
+
+    Args:
+        name:        specific parameter name (omit to list / search all)
+        term:        substring/regex to match against name, long_name, or description
+        schema_type: filter by JSON Schema type ('boolean', 'integer', 'string', 'array')
+        extension:   filter by defining extension name
+        use_regex:   treat ``term`` as a regular expression (default False)
+        fuzzy:       enable fuzzy matching (True or float threshold 0-1)
+        limit:       max results to return (default 50)
+
+    Returns:
+        If ``name`` is provided: detailed parameter record (schema, definedBy,
+        requirements, description).
+        Otherwise: filtered list with count.
+    """
+    name = args.get("name")
+    term = args.get("term", "")
+    schema_type_filter = args.get("schema_type", "")
+    extension_filter = args.get("extension", "")
+    use_regex = bool(args.get("use_regex", False))
+    fuzzy_arg = args.get("fuzzy", False)
+    limit = int(args.get("limit") or 50)
+
+    fuzzy_enabled = bool(fuzzy_arg) if isinstance(fuzzy_arg, bool) else False
+    fuzzy_threshold = fuzzy_arg if isinstance(fuzzy_arg, float) else 0.6
+
+    # Compile regex if requested
+    term_re = None
+    if term and use_regex:
+        try:
+            term_re = re.compile(term, re.IGNORECASE)
+        except re.error:
+            return {"error": f"Invalid regex: {term}"}
+
+    # Collect and filter parameters
+    results: list[dict[str, Any]] = []
+
+    for p in sorted(_iter_parameter_yaml_paths()):
+        data = _try_load_yaml(p)
+        if data is None:
+            continue
+
+        if data.get("kind") != "parameter":
+            continue
+
+        param_name: str = data.get("name", "")
+        long_name: str = data.get("long_name", "") or ""
+        description: str = data.get("description", "") or ""
+        schema: dict = data.get("schema", {}) or {}
+
+        # If a specific name was requested, return full detail immediately
+        if name:
+            if param_name == name:
+                return {
+                    "found": True,
+                    "path": str(p.relative_to(REPO_ROOT)),
+                    "parameter": data,
+                }
+            continue
+
+        # --- extension filter ---
+        if extension_filter:
+            defined_by = data.get("definedBy", {})
+            ext_names: set[str] = set()
+            if isinstance(defined_by, dict):
+                ext_names.update(_extract_defined_by(defined_by))
+            elif isinstance(defined_by, list):
+                for item in defined_by:
+                    if isinstance(item, dict):
+                        ext_names.update(_extract_defined_by(item))
+            if extension_filter not in ext_names:
+                continue
+
+        # --- schema type filter ---
+        if schema_type_filter:
+            detected = _schema_type(schema)
+            if detected != schema_type_filter:
+                continue
+
+        # --- text search ---
+        if term:
+            # Build combined haystack for substring/fuzzy branches
+            haystack = f"{param_name} {long_name} {description}"
+            matched = False
+            if term_re:
+                # Search each field independently so anchors (^/$) work correctly
+                matched = (
+                    bool(term_re.search(param_name))
+                    or bool(term_re.search(long_name))
+                    or bool(term_re.search(description))
+                )
+            elif fuzzy_enabled:
+                matched = (
+                    _fuzzy_match(term, param_name, fuzzy_threshold)
+                    or term.lower() in haystack.lower()
+                )
+            else:
+                matched = term.lower() in haystack.lower()
+            if not matched:
+                continue
+
+        results.append(
+            {
+                "path": str(p.relative_to(REPO_ROOT)),
+                "name": param_name,
+                "long_name": long_name if long_name != "TODO" else "",
+                "schema_type": _schema_type(schema),
+                "defined_by": _extract_defined_by(data.get("definedBy", {})),
+            }
+        )
+
+        if len(results) >= limit:
+            break
+
+    # name requested but not found
+    if name:
+        return {"found": False, "name": name}
+
+    return {"count": len(results), "parameters": results}
+
+
 # ============================================================================
 # Low-Level YAML Access
 # ============================================================================
@@ -1267,6 +1448,59 @@ async def main() -> None:
                     },
                 },
             ),
+            # ===== Parameter Tools =====
+            Tool(
+                name="search_parameters",
+                description=(
+                    "Search and retrieve architectural parameter definitions. "
+                    "Parameters are implementation-defined values (e.g. MXLEN, PHYS_ADDR_WIDTH, "
+                    "CACHE_BLOCK_SIZE) that configure RISC-V implementation behaviour. "
+                    "Each parameter has a JSON Schema constraining legal values, a defining "
+                    "extension, and optional IDL requirements. "
+                    "Omit all filters to list every parameter. Provide 'name' for full detail."
+                ),
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "exact parameter name for detailed lookup (e.g. 'MXLEN')",
+                        },
+                        "term": {
+                            "type": "string",
+                            "description": "substring/regex to match in name, long_name, or description",
+                        },
+                        "schema_type": {
+                            "type": "string",
+                            "enum": ["boolean", "integer", "string", "array"],
+                            "description": "filter by JSON Schema type of the parameter value",
+                        },
+                        "extension": {
+                            "type": "string",
+                            "description": "filter by defining extension name (e.g. 'Sm', 'Zicbom')",
+                        },
+                        "use_regex": {
+                            "type": "boolean",
+                            "default": False,
+                            "description": "treat term as a regular expression",
+                        },
+                        "fuzzy": {
+                            "description": "enable fuzzy name matching (true or float threshold 0-1)",
+                            "oneOf": [
+                                {"type": "boolean"},
+                                {"type": "number", "minimum": 0, "maximum": 1},
+                            ],
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 500,
+                            "default": 50,
+                            "description": "maximum number of results",
+                        },
+                    },
+                },
+            ),
             # ===== Extension Tools (Consolidated) =====
             Tool(
                 name="search_extensions",
@@ -1419,6 +1653,7 @@ async def main() -> None:
             "read_gen_yaml": read_gen_yaml,
             "search_instructions": search_instructions,
             "search_csrs": search_csrs,
+            "search_parameters": search_parameters,
             "search_extensions": search_extensions,
             "search_all": search_all,
             "search_functions": search_functions,
