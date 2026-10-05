@@ -959,4 +959,13 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   structural-width reads, source mapping and standalone installed compiler are accepted.
   Source-only local renames repair `rori`'s decode-name collision and `qc.cm.ilut`'s
   incorrect compile-time-constant declaration without weakening compiler checks.
-  Slice 16 is ready for its owning local commit; pass and condition layers remain pending.
+  Slice 16 is committed locally as `b6fe6e7c`; pass and condition layers remain pending.
+- Slice 17's standalone pruning, reachability, register discovery, return analysis,
+  AsciiDoc rendering and decoder-source generation are integrated and independently
+  reviewed. The integrated semantic gate passes 215 cases with one existing opt-in
+  Ruby skip, and the offline distribution gate exercises installed passes without Ruby.
+  Guarded expected-side corrections cover the confirmed invalid array printer and
+  stale assignment-binding defects, preserving the raw corpus and every unaffected
+  observation. The final genuine four-configuration pass matrix passes 90 cases with
+  the 18 original Ruby-unavailable samples explicitly skipped; no unsupported Python
+  skips are introduced. Slice 17 is ready for its owning local commit.
