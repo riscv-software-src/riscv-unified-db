@@ -34,7 +34,14 @@ from .database import Csr, DatabaseObject, Extension, Instruction, ResolvedDatab
 from .domains import DomainError, ParameterDomain
 from .errors import DataError, ObjectNotFoundError
 from .schema import SchemaStore
-from .solver import ConditionModel, ConditionSolver, SolverContext, SolverError, SolverStatus
+from .solver import (
+    ConditionModel,
+    ConditionSolver,
+    SolverContext,
+    SolverError,
+    SolverStatus,
+    SolverUnknownError,
+)
 from .versions import ExtensionVersion, VersionRequirement, parse_version_requirements
 
 
@@ -230,8 +237,7 @@ class ConfiguredArchitecture:
         )
         if deferred:
             return ArchitectureCheck(ArchitectureCheckStatus.DEFERRED, deferred)
-        solver.check()
-        return ArchitectureCheck(ArchitectureCheckStatus.VALID, model=solver.model())
+        return _checked_model(solver)
 
     def condition_presence(self, condition: Condition | bool | Mapping[str, Any]) -> QueryPresence:
         """Classify whether *condition* is necessary, possible, or impossible."""
@@ -550,10 +556,17 @@ class ConfiguredArchitecture:
                 ),
                 conflict=conflict,
             )
+        if status is SolverStatus.UNKNOWN:
+            return ArchitectureCheck(
+                ArchitectureCheckStatus.DEFERRED,
+                (
+                    ArchitectureDiagnostic(
+                        "solver-unknown", "the solver could not decide compatibility"
+                    ),
+                ),
+            )
         deferred = (*self._deferred, *candidate._deferred)
-        if status is SolverStatus.UNKNOWN or any(
-            solver.check((item.antecedent,)) is not SolverStatus.UNSAT for item in deferred
-        ):
+        if any(solver.check((item.antecedent,)) is not SolverStatus.UNSAT for item in deferred):
             return ArchitectureCheck(
                 ArchitectureCheckStatus.DEFERRED,
                 (
@@ -563,8 +576,7 @@ class ConfiguredArchitecture:
                     ),
                 ),
             )
-        solver.check()
-        return ArchitectureCheck(ArchitectureCheckStatus.VALID, model=solver.model())
+        return _checked_model(solver, compatibility=True)
 
     def instruction_operation(self, instruction: str) -> DeferredQuery:
         record = self.database.instruction(instruction)
@@ -900,6 +912,34 @@ class ConfiguredArchitecture:
     def _configuration_constraints_only(self) -> tuple[tuple[Condition, str], ...]:
         prefixes = ("configuration ",)
         return tuple(item for item in self._constraints if item[1].startswith(prefixes))
+
+
+def _checked_model(solver: ConditionSolver, *, compatibility: bool = False) -> ArchitectureCheck:
+    """Recheck after temporary queries before requesting a concrete model."""
+    purpose = "compatibility" if compatibility else "validity"
+    status = solver.check()
+    if status is SolverStatus.UNSAT:
+        return ArchitectureCheck(
+            ArchitectureCheckStatus.UNSAT,
+            (
+                ArchitectureDiagnostic(
+                    "incompatible" if compatibility else "unsatisfiable",
+                    "configuration constraints are mutually unsatisfiable",
+                ),
+            ),
+            conflict=solver.minimal_conflict(),
+        )
+    if status is SolverStatus.SAT:
+        try:
+            return ArchitectureCheck(ArchitectureCheckStatus.VALID, model=solver.model())
+        except SolverUnknownError as error:
+            message = str(error)
+    else:
+        message = f"the solver could not decide {purpose}"
+    return ArchitectureCheck(
+        ArchitectureCheckStatus.DEFERRED,
+        (ArchitectureDiagnostic("solver-unknown", message),),
+    )
 
 
 def _exact(version: str) -> tuple[VersionRequirement, ...]:

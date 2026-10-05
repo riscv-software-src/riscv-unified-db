@@ -146,6 +146,20 @@ def test_generic_repository_configurations(database):
         assert architecture.object_presence(real.instruction("add")) is add_presence
 
 
+def test_full_repository_configuration_with_huge_array_domain():
+    # qc_iu assigns HPM_EVENTS (maxItems 2**64); the solver must not refuse it.
+    configuration = Configuration.from_file(ROOT / "cfgs/qc_iu.yaml")
+    real = Database.from_path(ROOT / "spec/std/isa", schemas_path=ROOT / "spec/schemas").resolve(
+        overlays=[ROOT / "spec/custom/isa" / configuration.overlay]
+    )
+    architecture = real.configure(configuration)
+    result = architecture.check()
+    assert result.status is ArchitectureCheckStatus.DEFERRED
+    assert {item.code for item in result.diagnostics} == {"idl-deferred"}
+    assert architecture.object_presence(real.instruction("add")) is QueryPresence.MANDATORY
+    assert architecture.extension_presence("H") is QueryPresence.ABSENT
+
+
 def test_full_config_checks_exact_set_domains_and_defined_parameters(database):
     valid = database.configure(
         config(

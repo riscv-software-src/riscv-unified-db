@@ -334,6 +334,26 @@ jobs:
           gem install udb.gem
       - name: try z3
         run: ruby -r 'udb' -e "Udb::Z3Loader.ensure_z3_loaded"
+  regress-python-conditions-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compare Python condition evaluation and solving with Ruby
+        run: UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_conditions.py
+
+  regress-python-configured-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compare Python configured architecture queries with Ruby
+        run: UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_architecture.py
+
   regress-python-configuration-parity:
     runs-on: ubuntu-latest
     steps:
@@ -1064,6 +1084,8 @@ jobs:
   regress-complete:
     runs-on: ubuntu-latest
     needs:
+      - regress-python-conditions-parity
+      - regress-python-configured-parity
       - regress-python-configuration-parity
       - regress-python-domain-parity
       - regress-python-versions-parity
