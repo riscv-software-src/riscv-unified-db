@@ -18,13 +18,20 @@ from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 from typing import Any, Self
 
-from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
-from .errors import DataError, ObjectNotFoundError, ResolutionError, UnknownKindError
-from .resolver import YamlResolver, merge_patch
+from .errors import (
+    DataError,
+    ObjectNotFoundError,
+    ReferenceError,
+    ResolutionError,
+    UnknownKindError,
+)
+from .reference import Reference, ResolvedNode, classify_reference
+from .resolver import YamlResolver
 from .resources import package_data_root
 from .schema import SchemaError, SchemaStore
+from .source import ParsedYaml, SourceMap, SourceSpan, merge_patch_with_sources, parse_yaml
 
 _KIND_DIRECTORIES = {
     "csr": "csr",
@@ -105,6 +112,7 @@ class DatabaseObject(Mapping[Any, Any]):
     kind: str
     path: PurePosixPath
     data: Mapping[Any, Any] = field(repr=False)
+    sources: SourceMap | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if not isinstance(self.data, Mapping):
@@ -133,6 +141,10 @@ class DatabaseObject(Mapping[Any, Any]):
     def to_dict(self) -> dict[Any, Any]:
         """Return a mutable copy of this record's YAML data."""
         return _thaw(self.data)
+
+    def source_at(self, *path: str | int) -> SourceSpan | None:
+        """Return the exact original YAML span defining a field."""
+        return None if self.sources is None else self.sources.at(*path)
 
 
 class Extension(DatabaseObject):
@@ -167,7 +179,6 @@ class Database:
         self._schemas_root = schemas_root
         self._objects: dict[str, tuple[DatabaseObject, ...]] = {}
         self._object_maps: dict[str, Mapping[str, DatabaseObject]] = {}
-        self._yaml = YAML(typ="safe")
 
     @classmethod
     def bundled(cls) -> Self:
@@ -265,22 +276,36 @@ class Database:
         Schema validation is optional and never inserts defaults or rewrites
         declared schema URIs.
         """
-        documents = self._load_documents(self._isa_root)
-        for overlay in overlays:
+        documents, source_maps = self._load_documents(self._isa_root)
+        for overlay_index, overlay in enumerate(overlays):
             overlay_root = Path(overlay).resolve()
             if not overlay_root.is_dir():
                 raise ResolutionError(f"Overlay ISA directory does not exist: {overlay_root}")
-            for path, patch in self._load_documents(overlay_root, allow_non_mapping=True).items():
-                merged = merge_patch(documents.get(path), patch)
+            patches, patch_sources = self._load_documents(
+                overlay_root,
+                allow_non_mapping=True,
+                layer=f"overlay[{overlay_index}]",
+            )
+            for path, patch in patches.items():
+                base_sources = source_maps.get(path, SourceMap(path))
+                merged, merged_sources = merge_patch_with_sources(
+                    documents.get(path), patch, base_sources, patch_sources[path]
+                )
                 if not isinstance(merged, Mapping):
                     raise ResolutionError(
-                        f"Overlay document {path} must produce a top-level mapping"
+                        f"{patch_sources[path].at().label}: overlay document {path} "
+                        "must produce a top-level mapping"
                     )
                 documents[path] = dict(merged)
+                source_maps[path] = merged_sources
 
+        result = YamlResolver(documents, sources=source_maps).resolve_with_sources()
         resolved = ResolvedDatabase(
-            YamlResolver(documents).resolve(), schemas_root=self._schemas_root
+            result.documents,
+            schemas_root=self._schemas_root,
+            sources=result.sources,
         )
+        resolved._validate_duplicate_identities()
         if validate:
             resolved.validate()
         return resolved
@@ -317,17 +342,22 @@ class Database:
         self._objects[kind] = tuple(records)
         self._object_maps[kind] = MappingProxyType(by_name)
 
-    def _load_documents(self, root: Any, *, allow_non_mapping: bool = False) -> dict[str, Any]:
+    def _load_documents(
+        self, root: Any, *, allow_non_mapping: bool = False, layer: str = "source"
+    ) -> tuple[dict[str, Any], dict[str, SourceMap]]:
         documents: dict[str, Any] = {}
+        sources: dict[str, SourceMap] = {}
         for resource, relative_path in sorted(
             self._yaml_files(root, PurePosixPath()), key=lambda entry: entry[1].as_posix()
         ):
             path = relative_path.as_posix()
-            data = self._load_yaml(resource, relative_path)
+            parsed = self._parse_yaml(resource, relative_path, layer=layer)
+            data = parsed.value
             if not allow_non_mapping and not isinstance(data, Mapping):
                 raise DataError(f"UDB document {relative_path} must contain a mapping")
             documents[path] = _thaw(_freeze(data))
-        return documents
+            sources[path] = parsed.sources
+        return documents, sources
 
     def _yaml_files(self, directory: Any, relative_dir: PurePosixPath):
         for child in directory.iterdir():
@@ -340,22 +370,31 @@ class Database:
     def _load_record(
         self, resource: Any, relative_path: PurePosixPath, *, expected_kind: str
     ) -> DatabaseObject:
-        data = self._load_yaml(resource, relative_path)
+        parsed = self._parse_yaml(resource, relative_path)
+        data = parsed.value
 
         if not isinstance(data, Mapping):
             raise DataError(f"UDB document {relative_path} must contain a mapping")
-        return self._record_from_data(data, relative_path, expected_kind=expected_kind)
+        return self._record_from_data(
+            data, relative_path, expected_kind=expected_kind, sources=parsed.sources
+        )
 
-    def _load_yaml(self, resource: Any, relative_path: PurePosixPath) -> Any:
+    def _parse_yaml(
+        self, resource: Any, relative_path: PurePosixPath, *, layer: str = "source"
+    ) -> ParsedYaml:
         try:
             with resource.open("r", encoding="utf-8") as stream:
-                return self._yaml.load(stream)
+                return parse_yaml(stream.read(), source=relative_path.as_posix(), layer=layer)
         except (OSError, UnicodeError, YAMLError) as error:
             raise DataError(f"Cannot parse UDB YAML document {relative_path}: {error}") from error
 
     @staticmethod
     def _record_from_data(
-        data: Mapping[Any, Any], relative_path: PurePosixPath, *, expected_kind: str
+        data: Mapping[Any, Any],
+        relative_path: PurePosixPath,
+        *,
+        expected_kind: str,
+        sources: SourceMap | None = None,
     ) -> DatabaseObject:
         name = data.get("name")
         kind = data.get("kind")
@@ -376,7 +415,7 @@ class Database:
 
         record_type = _RECORD_TYPES.get(kind, DatabaseObject)
         try:
-            return record_type(name=name, kind=kind, path=relative_path, data=data)
+            return record_type(name=name, kind=kind, path=relative_path, data=data, sources=sources)
         except DataError as error:
             raise DataError(f"Cannot load UDB YAML document {relative_path}: {error}") from error
 
@@ -385,7 +424,11 @@ class ResolvedDatabase(Database):
     """An immutable database after overlays and YAML inheritance resolution."""
 
     def __init__(
-        self, documents: Mapping[str, Mapping[Any, Any]], *, schemas_root: Any | None = None
+        self,
+        documents: Mapping[str, Mapping[Any, Any]],
+        *,
+        schemas_root: Any | None = None,
+        sources: Mapping[str, SourceMap] | None = None,
     ) -> None:
         super().__init__(None, schemas_root=schemas_root)
         copied: dict[str, Mapping[Any, Any]] = {}
@@ -394,6 +437,12 @@ class ResolvedDatabase(Database):
                 raise ResolutionError(f"Resolved YAML document {path} is not a mapping")
             copied[path] = _freeze(document)
         self._resolved_documents = MappingProxyType(copied)
+        self._resolved_sources = MappingProxyType(
+            {
+                path: sources[path] if sources is not None and path in sources else SourceMap(path)
+                for path in copied
+            }
+        )
 
     @property
     def is_resolved(self) -> bool:
@@ -403,6 +452,75 @@ class ResolvedDatabase(Database):
     def documents(self) -> Mapping[str, Mapping[Any, Any]]:
         """Resolved documents keyed by their relative POSIX source paths."""
         return self._resolved_documents
+
+    @property
+    def source_maps(self) -> Mapping[str, SourceMap]:
+        """Field-level provenance keyed by resolved document path."""
+        return self._resolved_sources
+
+    def source_at(self, document: str, *path: str | int) -> SourceSpan | None:
+        """Return the exact original YAML span defining a resolved value."""
+        try:
+            return self._resolved_sources[document].at(*path)
+        except KeyError as error:
+            raise ObjectNotFoundError(f"No resolved YAML document {document!r}") from error
+
+    def node(self, document: str, *path: str | int) -> ResolvedNode:
+        """Return an immutable, source-aware node at a resolved document path."""
+        self._value_at(document, tuple(path))
+        return ResolvedNode(document, tuple(path), self)
+
+    def reference_at(self, document: str, *path: str | int) -> Reference:
+        """Return the typed, lazy `$ref` stored in the mapping at *path*."""
+        node = self.node(document, *path)
+        value = node.value
+        if not isinstance(value, Mapping) or "$ref" not in value:
+            raise ReferenceError(f"{document}{node.pointer}: value is not a reference mapping")
+        uri = value["$ref"]
+        if not isinstance(uri, str) or not uri:
+            source = self.source_at(document, *path, "$ref")
+            location = source.label if source is not None else f"{document}{node.pointer}"
+            raise ReferenceError(f"{location}: '$ref' must be a non-empty string")
+        return classify_reference(node, uri)
+
+    def references(self) -> tuple[Reference, ...]:
+        """Enumerate data and schema references without following their targets."""
+        found: list[Reference] = []
+
+        def visit(document: str, value: Any, path: tuple[str | int, ...]) -> None:
+            if isinstance(value, Mapping):
+                if "$ref" in value:
+                    found.append(self.reference_at(document, *path))
+                for key, child in value.items():
+                    visit(document, child, (*path, key))
+            elif isinstance(value, tuple):
+                for index, child in enumerate(value):
+                    visit(document, child, (*path, index))
+
+        for document in sorted(self._resolved_documents):
+            visit(document, self._resolved_documents[document], ())
+        return tuple(found)
+
+    def _value_at(self, document: str, path: tuple[str | int, ...]) -> Any:
+        try:
+            value: Any = self._resolved_documents[document]
+        except KeyError as error:
+            raise ObjectNotFoundError(f"No resolved YAML document {document!r}") from error
+        for part in path:
+            if isinstance(value, Mapping):
+                try:
+                    value = value[part]
+                except (KeyError, TypeError) as error:
+                    pointer = ResolvedNode(document, path, self).pointer
+                    raise ObjectNotFoundError(
+                        f"No resolved value at {document}{pointer}"
+                    ) from error
+            elif isinstance(value, tuple) and type(part) is int and 0 <= part < len(value):
+                value = value[part]
+            else:
+                pointer = ResolvedNode(document, path, self).pointer
+                raise ObjectNotFoundError(f"No resolved value at {document}{pointer}")
+        return value
 
     def resolve(
         self, *, overlays: Sequence[str | Path] = (), validate: bool = False
@@ -419,7 +537,25 @@ class ResolvedDatabase(Database):
             raise SchemaError("Resolved database has no schema directory")
         store = SchemaStore(self._schemas_root)
         for path, document in self._resolved_documents.items():
-            store.validate(document, source=path)
+            store.validate(document, source=self._resolved_sources[path])
+
+    def _validate_duplicate_identities(self) -> None:
+        identities: dict[tuple[str, str], str] = {}
+        for path, document in self._resolved_documents.items():
+            kind = document.get("kind")
+            name = document.get("name")
+            if not isinstance(kind, str) or not isinstance(name, str):
+                continue
+            identity = kind, name
+            previous = identities.get(identity)
+            if previous is not None:
+                span = self.source_at(path, "name")
+                location = span.label if span is not None else path
+                raise ResolutionError(
+                    f"{location}: duplicate {kind!r} identity {name!r}; first defined in {previous}"
+                )
+            first = self.source_at(path, "name")
+            identities[identity] = first.label if first is not None else path
 
     def write(self, output_dir: str | Path) -> tuple[Path, ...]:
         """Write this database as a deterministic, version-stamped YAML tree."""
@@ -436,7 +572,12 @@ class ResolvedDatabase(Database):
             if not relative_path.parts or relative_path.parts[0] != directory:
                 continue
             data = _thaw(frozen_data)
-            record = self._record_from_data(data, relative_path, expected_kind=kind)
+            record = self._record_from_data(
+                data,
+                relative_path,
+                expected_kind=kind,
+                sources=self._resolved_sources[path],
+            )
             if record.name in by_name:
                 previous = by_name[record.name]
                 raise DataError(
