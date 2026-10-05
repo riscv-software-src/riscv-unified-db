@@ -10,7 +10,7 @@ flag "--toolchain <toolchain>" help="Toolchain route" default="auto" {
 flag "--no-hooks" help="Do not explicitly install repository hooks"
 '''
 run = '''
-.venv/bin/python -m tools.dev.bootstrap \
+uv run python -m tools.dev.bootstrap \
   --toolchain "${usage_toolchain?}" \
   {% if usage.no_hooks %}--no-hooks{% endif %}
 '''
@@ -22,17 +22,17 @@ flag "-f --format <format>" help="Output format" default="text" {
   choices "text" "json"
 }
 '''
-run = '.venv/bin/python -m tools.dev.doctor --format "${usage_format?}"'
+run = 'uv run python -m tools.dev.doctor --format "${usage_format?}"'
 
 [clean]
 description = "Remove owned generated and native build outputs"
-run = ".venv/bin/python -m tools.dev.clean clean"
+run = "uv run python -m tools.dev.clean clean"
 
 [clobber]
 description = "Remove outputs plus repository-local environments and caches"
 usage = 'flag "--container" help="Also remove the toolchain container image"'
 run = '''
-.venv/bin/python -m tools.dev.clean clobber \
+uv run python -m tools.dev.clean clobber \
   {% if usage.container %}--container{% endif %}
 '''
 
@@ -40,7 +40,7 @@ run = '''
 description = "Build the content-addressed toolchain image"
 usage = 'flag "--force" help="Build even when the image exists"'
 run = '''
-.venv/bin/python -m tools.dev.container build \
+uv run python -m tools.dev.container build \
   {% if usage.force %}--force{% endif %}
 '''
 
@@ -48,38 +48,38 @@ run = '''
 description = "Pull the content-addressed toolchain image"
 usage = 'flag "--force" help="Pull even when the image exists"'
 run = '''
-.venv/bin/python -m tools.dev.container pull \
+uv run python -m tools.dev.container pull \
   {% if usage.force %}--force{% endif %}
 '''
 
 ["container:remove"]
 description = "Remove the content-addressed toolchain image"
-run = ".venv/bin/python -m tools.dev.container remove"
+run = "uv run python -m tools.dev.container remove"
 
 ["gen:all"]
 description = "Generate all retained developer artifacts and refreshable fixtures"
 usage = 'flag "--check" help="Report drift without writing"'
-run = ".venv/bin/python -m tools.dev.generate all"
+run = "uv run python -m tools.dev.generate all"
 
 ["gen:quick"]
 description = "Generate the quick retained developer artifacts"
 usage = 'flag "--check" help="Report drift without writing"'
-run = ".venv/bin/python -m tools.dev.generate quick"
+run = "uv run python -m tools.dev.generate quick"
 
 ["gen:profile-configs"]
 description = "Generate strict profile configurations"
 usage = 'flag "--check" help="Report drift without writing"'
-run = ".venv/bin/python -m tools.dev.generate profile-configs"
+run = "uv run python -m tools.dev.generate profile-configs"
 
 ["gen:schema-docs"]
 description = "Generate schema documentation"
 usage = 'flag "--check" help="Report drift without writing"'
-run = ".venv/bin/python -m tools.dev.generate schema-docs"
+run = "uv run python -m tools.dev.generate schema-docs"
 
 ["gen:idl-grammar"]
 description = "Generate the TextMate IDL grammar from the Prism definition"
 usage = 'flag "--check" help="Report drift without writing"'
-run = ".venv/bin/python -m tools.dev.generate idl-grammar"
+run = "uv run python -m tools.dev.generate idl-grammar"
 
 ["fixtures:list"]
 description = "List refreshable and frozen regression fixtures"
@@ -88,7 +88,7 @@ flag "-f --format <format>" help="Output format" default="text" {
   choices "text" "json"
 }
 '''
-run = ".venv/bin/python -m tools.dev.fixtures list"
+run = "uv run python -m tools.dev.fixtures list"
 
 ["fixtures:refresh"]
 description = "Refresh named fixtures or check them for drift"
@@ -97,7 +97,7 @@ arg "[names]" help="Fixture registry names" var=#true
 flag "--all" help="Select every registered fixture"
 flag "--check" help="Report drift without writing"
 '''
-run = ".venv/bin/python -m tools.dev.fixtures refresh"
+run = "uv run python -m tools.dev.fixtures refresh"
 
 ["author:rvtest"]
 description = "Create RV32/RV64 architecture-test source templates"
@@ -105,37 +105,37 @@ usage = '''
 arg "<name>" help="Instruction test name"
 flag "--root <root>" help="Repository root" default="."
 '''
-run = ".venv/bin/python -m tools.dev.author"
+run = "uv run python -m tools.dev.author"
 
 [check]
 description = "Run retained data, IDL, layout, fixture, lint, and format checks"
 usage = 'flag "-j --jobs <jobs>" help="Maximum parallel checks"'
-run = ".venv/bin/python -m tools.dev.checks all"
+run = "uv run python -m tools.dev.checks all"
 
 ["check:data"]
 description = "Validate all selected database documents"
-run = ".venv/bin/python -m tools.dev.checks data"
+run = "uv run python -m tools.dev.checks data"
 
 ["check:encodings"]
 description = "Check instruction encoding conflicts"
-run = ".venv/bin/python -m tools.dev.checks encodings"
+run = "uv run python -m tools.dev.checks encodings"
 
 ["check:csrs"]
 description = "Check CSR address and indirect-key conflicts"
-run = ".venv/bin/python -m tools.dev.checks csrs"
+run = "uv run python -m tools.dev.checks csrs"
 
 ["check:idl"]
 description = "Parse and type-check configured IDL"
 usage = 'flag "-c --config <config>" help="Configuration selector" default="_"'
-run = ".venv/bin/python -m tools.dev.checks idl"
+run = "uv run python -m tools.dev.checks idl"
 
 ["check:layouts"]
 description = "Check generated architecture layouts for drift"
-run = ".venv/bin/python -m tools.dev.checks layouts"
+run = "uv run python -m tools.dev.checks layouts"
 
 ["check:schema-versions"]
 description = "Compare generated schemas with their published URLs (networked)"
-run = ".venv/bin/python -m tools.dev.checks schema-versions"
+run = "uv run python -m tools.dev.checks schema-versions"
 
 [lint]
 description = "Run non-mutating source, shell, license, data, and IDL checks"
@@ -143,7 +143,7 @@ usage = '''
 arg "[files]" help="Files to lint; omitted means changed files" var=#true
 flag "--all" help="Lint the whole repository"
 '''
-run = ".venv/bin/python -m tools.dev.quality lint"
+run = "uv run python -m tools.dev.quality lint"
 
 [fmt]
 description = "Format selected source files"
@@ -152,14 +152,130 @@ arg "[files]" help="Files to format; omitted means changed files" var=#true
 flag "--all" help="Format the whole repository"
 flag "--check" help="Check formatting without writing"
 '''
-run = ".venv/bin/python -m tools.dev.quality format"
+run = "uv run python -m tools.dev.quality format"
 
-["test:python"]
-description = "Run Python tests with pytest"
-raw_args = true
+[test]
+description = "Run the default Python unit and specification tests"
 dir = "{{config_root}}"
-env = { PYTHONPATH = "src:tests/python", UV_NO_SYNC = "1" }
-run = ".venv/bin/python -m pytest"
+run = "uv run python -m pytest --durations=40"
+
+["test:slow"]
+description = "Run every named slow Python test lane"
+depends = [
+  'test:slow:idl --config _',
+  'test:slow:idl --config rv32',
+  'test:slow:idl --config rv64',
+  'test:slow:idl --config qc_iu',
+  'test:slow:idl-passes',
+  'test:slow:idl-conditions',
+  'test:slow:idl-environment',
+  'test:slow:architecture',
+  'test:slow:prose',
+  'test:slow:generators',
+  'test:slow:extension-pdf',
+  'test:slow:layouts',
+]
+
+["test:slow:idl"]
+description = "Type-check every real IDL body"
+env = { UDB_RUN_SLOW = "1" }
+run = '''
+uv run python -m pytest -m slow \
+  tests/python/test_idl_architecture_real.py \
+  --durations=40
+'''
+
+["test:slow:idl-passes"]
+description = "Run real-spec IDL pass goldens"
+run = "uv run python -m pytest -m slow tests/python/test_idl_passes_real.py --durations=40"
+
+["test:slow:idl-conditions"]
+description = "Run the real-spec IDL condition manifest"
+run = "uv run python -m pytest -m slow tests/python/test_idl_conditions.py --durations=40"
+
+["test:slow:idl-environment"]
+description = "Run real-spec IDL environment checks"
+run = '''
+uv run python -m pytest -m slow \
+  tests/python/test_idl_environment.py \
+  tests/python/test_idl_environment_fixes.py \
+  --durations=40
+'''
+
+["test:slow:architecture"]
+description = "Run full configured-architecture checks"
+run = "uv run python -m pytest -m slow tests/python/test_idl_condition_runtime.py --durations=40"
+
+["test:slow:prose"]
+description = "Run the complete configured-prose golden"
+run = "uv run python -m pytest -m slow tests/python/test_configured_prose_oracle.py --durations=40"
+
+["test:slow:generators"]
+description = "Compile and lint generated source consumers"
+env = { UDB_TEST_GENERIC_TOOLS = "1", UDB_TEST_HEADER_TOOLS = "1" }
+run = '''
+uv run python -m pytest -m slow \
+  tests/python/test_config_headers.py \
+  tests/python/test_generic_codegen_consumers.py \
+  --durations=40
+'''
+
+["test:slow:extension-pdf"]
+description = "Render and inspect extension PDFs with the external renderer"
+env = { UDB_RUN_PDF_ACCEPTANCE = "1" }
+run = "uv run python -m pytest -m slow tests/python/test_extension_pdf.py --durations=40"
+
+["test:slow:layouts"]
+description = "Run complete standard and custom layout checks"
+run = '''
+uv run python -m pytest -m slow \
+  tests/python/test_layouts.py tests/python/test_qc_layouts.py \
+  --durations=40
+'''
+
+["test:package"]
+description = "Build and test wheel and source distribution offline"
+run = "uv run python -m tools.dev.package test"
+
+["check:all"]
+description = "Run every check exercised by continuous integration"
+depends = [
+  "test",
+  "check:pre-commit",
+  "test:llvm",
+  "test:java",
+  "test:vscode",
+  "test:slow",
+  "test:package",
+  "test:cpp-hart -c rv64",
+  "test:native-bits",
+  "test:softfloat",
+  "test:riscv-tests -c rv32",
+  "test:riscv-tests -c rv64",
+  "test:riscv-vector-tests -c rv64",
+  "check:schema-versions",
+  "gen:schema-docs --check",
+  "artifact:reuse-manifest",
+  "artifact:resolved-unconfigured",
+  "docs:build site",
+]
+
+["check:pre-commit"]
+description = "Run every repository pre-commit check"
+run = "prek run --all-files"
+
+["test:java"]
+description = "Build and test the Java Xtext reactor"
+dir = "{{config_root}}/tools/eclipse/dev/org.xtext.udb.parent"
+env = { MAVEN_OPTS = "-Djdk.xml.maxGeneralEntitySizeLimit=0 -Djdk.xml.totalEntitySizeLimit=0 -Djdk.xml.entityExpansionLimit=0" }
+run = "mvn -B -U -Dheadless=true verify"
+
+["test:vscode"]
+description = "Compile and test the VS Code extension"
+run = '''
+aubr -C tools/eclipse/udb-vscode --frozen-lockfile compile
+xvfb-run -a aubr -C tools/eclipse/udb-vscode --frozen-lockfile test
+'''
 
 ["build:cpp-hart"]
 description = "Generate and build the native C++ hart library"
@@ -167,7 +283,7 @@ usage = '''
 include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli build cpp-hart"
+run = "uv run python -m tools.dev.native.cli build cpp-hart"
 
 ["build:iss"]
 description = "Generate and build the native instruction-set simulator"
@@ -175,7 +291,7 @@ usage = '''
 include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli build iss"
+run = "uv run python -m tools.dev.native.cli build iss"
 
 ["build:renode-hart"]
 description = "Generate and build the native Renode hart library"
@@ -183,7 +299,7 @@ usage = '''
 include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli build renode-hart"
+run = "uv run python -m tools.dev.native.cli build renode-hart"
 
 ["build:softfloat-tests"]
 description = "Generate rv64/debug sources and build native SoftFloat tests"
@@ -191,7 +307,7 @@ usage = '''
 include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native-base"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli build softfloat-tests"
+run = "uv run python -m tools.dev.native.cli build softfloat-tests"
 
 ["build:riscv-tests"]
 description = "Initialize and build retained RISC-V architecture tests"
@@ -204,7 +320,7 @@ flag "--build-type <type>" help="Native build type" default="fast-debug" {
 }
 flag "-j --jobs <jobs>" help="Parallel native jobs"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli build riscv-tests"
+run = "uv run python -m tools.dev.native.cli build riscv-tests"
 
 ["test:cpp-hart"]
 description = "Build and run native C++ hart unit tests"
@@ -212,7 +328,7 @@ usage = '''
 include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli test cpp-hart"
+run = "uv run python -m tools.dev.native.cli test cpp-hart"
 
 ["test:riscv-tests"]
 description = "Run scalar RISC-V architecture tests through the generated ISS"
@@ -221,7 +337,7 @@ include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native"
 flag "--timeout <seconds>" help="Per-test timeout" default="10"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli test riscv-tests"
+run = "uv run python -m tools.dev.native.cli test riscv-tests"
 
 ["test:riscv-vector-tests"]
 description = "Run retained vector architecture tests through the generated ISS"
@@ -229,7 +345,7 @@ usage = '''
 include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli test riscv-vector-tests"
+run = "uv run python -m tools.dev.native.cli test riscv-vector-tests"
 
 ["test:softfloat"]
 description = "Build and run the native rv64/debug SoftFloat tests"
@@ -237,7 +353,7 @@ usage = '''
 include file="{{ config_root }}/tools/dev/native.usage.kdl"
 use "native-base"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli test softfloat"
+run = "uv run python -m tools.dev.native.cli test softfloat"
 
 ["test:native-bits"]
 description = "Build and run handwritten native Bits tests without hart generation"
@@ -247,11 +363,20 @@ flag "--build-type <type>" help="Native build type" default="debug" {
 }
 flag "-j --jobs <jobs>" help="Parallel native jobs"
 '''
-run = ".venv/bin/python -m tools.dev.native.cli test native-bits"
+run = "uv run python -m tools.dev.native.cli test native-bits"
 
 ["test:llvm"]
-description = "Configure LLVM and build llvm-tblgen"
-run = ".venv/bin/python -m tools.dev.native.cli test llvm"
+description = "Generate LLVM instruction metadata and validate UDB encodings"
+run = '''
+uv run python -m tools.dev.native.cli test llvm
+ext/llvm-project/build/bin/llvm-tblgen \
+  -I ext/llvm-project/llvm/include \
+  -I ext/llvm-project/llvm/lib/Target/RISCV \
+  ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td \
+  --dump-json \
+  -o ext/llvm-project/riscv.json
+uv run python -m pytest -n 0 tools/python/auto-inst/test_parsing.py -v
+'''
 
 ["docs:build"]
 description = "Build retained site, Pages, IDL, schema, or deferred API docs"
@@ -260,7 +385,7 @@ arg "<target>" help="Documentation target" {
   choices "site" "pages" "idl" "schemas" "api"
 }
 '''
-run = ".venv/bin/python -m tools.dev.docs build"
+run = "uv run python -m tools.dev.docs build"
 
 ["docs:serve"]
 description = "Serve an already-built documentation tree"
@@ -270,7 +395,15 @@ arg "<target>" help="Documentation target" {
 }
 flag "--port <port>" help="HTTP port" default="8000"
 '''
-run = ".venv/bin/python -m tools.dev.docs serve"
+run = "uv run python -m tools.dev.docs serve"
+
+["artifact:reuse-manifest"]
+description = "Generate the SPDX reuse manifest"
+run = "uv run reuse spdx -o reuse_bom.txt"
+
+["artifact:resolved-unconfigured"]
+description = "Resolve the unconfigured architecture for deployment"
+run = "uv run udb resolve -o gen/resolved_spec/_"
 
 ["build:package"]
 description = "Build both wheel and source distribution"
@@ -279,29 +412,29 @@ flag "-o --output <output>" help="Artifact directory" default="dist"
 flag "--wheel-only" help="Build only a wheel"
 flag "--sdist-only" help="Build only a source distribution"
 '''
-run = ".venv/bin/python -m tools.dev.package build"
+run = "uv run python -m tools.dev.package build"
 
 ["build:wheel"]
 description = "Build the Python wheel"
 usage = 'flag "-o --output <output>" help="Artifact directory" default="dist"'
-run = ".venv/bin/python -m tools.dev.package build --wheel-only"
+run = "uv run python -m tools.dev.package build --wheel-only"
 
 ["build:sdist"]
 description = "Build the Python source distribution"
 usage = 'flag "-o --output <output>" help="Artifact directory" default="dist"'
-run = ".venv/bin/python -m tools.dev.package build --sdist-only"
+run = "uv run python -m tools.dev.package build --sdist-only"
 
 ["package:check"]
 description = "Check installed wheel and optionally a wheel rebuilt from the sdist"
 usage = 'flag "--rebuild-sdist" help="Also rebuild, install, and check the sdist wheel"'
-run = ".venv/bin/python -m tools.dev.package check"
+run = "uv run python -m tools.dev.package check"
 
 ["release:package"]
 description = "Publish built Python artifacts to an explicit repository"
 usage = 'flag "--repository <repository>" help="Required package repository name or URL"'
-run = ".venv/bin/python -m tools.dev.release package"
+run = "uv run python -m tools.dev.release package"
 
 ["release:schemas"]
 description = "Publish immutable schema release assets"
 usage = 'flag "--check-only" help="Compare remote assets without publishing"'
-run = ".venv/bin/python -m tools.dev.release schemas"
+run = "uv run python -m tools.dev.release schemas"

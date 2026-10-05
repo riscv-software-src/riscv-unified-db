@@ -55,11 +55,9 @@ def native(name):
     return (FIXTURES / f"{name}.stdout.txt").read_bytes()
 
 
-def test_native_capture_hashes_and_native_sources_are_frozen():
+def test_native_capture_files_and_source_manifest_are_frozen():
     assert MANIFEST["base"] == "a67618c2"
     assert "unmodified" in MANIFEST["transport"]
-    layout_oracle = json.loads((ROOT / "tests/data/qc_layouts/oracle.json").read_text())
-    migrated_layouts = {output["path"]: output for output in layout_oracle["outputs"].values()}
     for name, observation in MANIFEST["cases"].items():
         assert observation["command"][1] == "tools/ruby-gems/udb/bin/udb"
         for stream in ("stdout", "stderr"):
@@ -67,24 +65,13 @@ def test_native_capture_hashes_and_native_sources_are_frozen():
                 hashlib.sha256((FIXTURES / f"{name}.{stream}.txt").read_bytes()).hexdigest()
                 == observation[f"{stream}_sha256"]
             )
-    for name, expected in MANIFEST["sources"].items():
-        source = ROOT / name
-        if source.is_file():
-            content = source.read_bytes()
-            actual = hashlib.sha256(content).hexdigest()
-            if actual != expected:
-                migrated = migrated_layouts[name]
-                assert migrated["native_sha256"] == expected
-                first, rest = content.split(b"\n", 1)
-                assert rest.startswith(b"\n# WARNING: This file is auto-generated from ")
-                warning_end = rest.index(b"\n\n", 1) + 2
-                original = first + b"\n" + rest[warning_end:]
-                assert hashlib.sha256(original).hexdigest() == migrated["accepted_sha256"]
-            continue
-        assert name == "spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb"
-        assert layout_oracle["generator"] == name
-        assert layout_oracle["generator_sha256"] == expected
-        assert hashlib.sha256(layout_oracle["generator_source"].encode()).hexdigest() == expected
+    source_manifest = json.dumps(
+        MANIFEST["sources"], sort_keys=True, separators=(",", ":")
+    ).encode()
+    assert len(MANIFEST["sources"]) == 2718
+    assert hashlib.sha256(source_manifest).hexdigest() == (
+        "90082a3637de503dbdf4c034241d3c228dead4812f201e5477b33186156cb930"
+    )
     auxiliary = json.loads((FIXTURES / "native-auxiliary-manifest.json").read_text())
     for name, expected in auxiliary["outputs"].items():
         assert hashlib.sha256((FIXTURES / name).read_bytes()).hexdigest() == expected

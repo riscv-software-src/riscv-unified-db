@@ -116,6 +116,15 @@ include = [
 line-length = 100
 extend-exclude = [ "ext" ]
 
+[tool.pytest.ini_options]
+addopts = "-n auto -m 'not slow and not package' --strict-markers"
+testpaths = ["tests"]
+markers = [
+    "slow: expensive real-spec, renderer, compiler, or native acceptance",
+    "package: build or installed-artifact acceptance",
+    "needs_tool(name): requires an external executable",
+]
+
 [tool.ruff.lint]
 extend-select = [
     "A005",   # flake8-builtins: stdlib module shadowing
