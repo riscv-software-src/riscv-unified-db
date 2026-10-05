@@ -3,6 +3,16 @@
 
 """Python access to the RISC-V Unified Database."""
 
+from .architecture import (
+    ArchitectureCheck,
+    ArchitectureCheckStatus,
+    ArchitectureDiagnostic,
+    ArchitectureError,
+    ConfiguredArchitecture,
+    CsrField,
+    DeferredQuery,
+    QueryPresence,
+)
 from .authoring import AuthoringPlan, GeneratedFile
 from .conditions import (
     FALSE,
@@ -52,6 +62,13 @@ from .database import (
     ResolvedDatabase,
 )
 from .domains import DomainError, EnumerationLimitError, ParameterDomain
+from .encoding import (
+    CsrAddressKey,
+    CsrAddressOverlap,
+    InstructionEncoding,
+    InstructionOverlap,
+    OverlapKind,
+)
 from .errors import (
     AuthoringError,
     DataError,
@@ -108,6 +125,10 @@ __all__ = [
     "TRUE",
     "AllOf",
     "AnyOf",
+    "ArchitectureCheck",
+    "ArchitectureCheckStatus",
+    "ArchitectureDiagnostic",
+    "ArchitectureError",
     "AuthoringError",
     "AuthoringPlan",
     "Condition",
@@ -117,12 +138,17 @@ __all__ = [
     "Configuration",
     "ConfigurationError",
     "ConfigurationKind",
+    "ConfiguredArchitecture",
     "ConstantCondition",
     "Csr",
+    "CsrAddressKey",
+    "CsrAddressOverlap",
+    "CsrField",
     "DataError",
     "DataReference",
     "Database",
     "DatabaseObject",
+    "DeferredQuery",
     "DomainError",
     "EnumerationLimitError",
     "EvaluationContext",
@@ -136,16 +162,20 @@ __all__ = [
     "GeneratedFile",
     "Implies",
     "Instruction",
+    "InstructionEncoding",
+    "InstructionOverlap",
     "LayoutError",
     "LayoutJob",
     "NoneOf",
     "Not",
     "ObjectNotFoundError",
+    "OverlapKind",
     "ParameterDomain",
     "ParameterOperator",
     "ParameterTerm",
     "Presence",
     "Profile",
+    "QueryPresence",
     "Reference",
     "ReferenceError",
     "RequirementOperator",
