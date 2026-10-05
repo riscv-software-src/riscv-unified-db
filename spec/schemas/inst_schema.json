@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.2",
+  "$id": "v0.3",
   "$defs": {
     "fully_resolved_opcodes": {
       "type": "object",
@@ -492,5 +492,61 @@
   },
   "patternProperties": {
     "^custom_[A-Za-z0-9_]+$": {}
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["access"],
+        "properties": {
+          "access": {
+            "anyOf": [
+              {
+                "required": ["m"],
+                "properties": {
+                  "m": {
+                    "const": "sometimes"
+                  }
+                }
+              },
+              {
+                "required": ["s"],
+                "properties": {
+                  "s": {
+                    "const": "sometimes"
+                  }
+                }
+              },
+              {
+                "required": ["u"],
+                "properties": {
+                  "u": {
+                    "const": "sometimes"
+                  }
+                }
+              },
+              {
+                "required": ["vs"],
+                "properties": {
+                  "vs": {
+                    "const": "sometimes"
+                  }
+                }
+              },
+              {
+                "required": ["vu"],
+                "properties": {
+                  "vu": {
+                    "const": "sometimes"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": ["access_detail"]
+      }
+    }
+  ]
 }

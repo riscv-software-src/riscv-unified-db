@@ -27,6 +27,18 @@ access:
   u: never
   vs: sometimes
   vu: never
+access_detail: |
+  Access is controlled by `mstatus.TVM` and (when the H extension is implemented) `hstatus.VTVM`.
+
+  [%autowidth]
+  |===
+  .2+| [.rotate]#`mstatus.TVM`# .2+| [.rotate]#`hstatus.VTVM`# 4+^.>| `sinval.vma` behavior
+  h| M-mode h| S-mode h| VS-mode h| U/VU-mode
+
+  | 0 | 0 | executes | executes | executes | `Illegal`/`Virtual Instruction`
+  | 0 | 1 | executes | executes | `Virtual Instruction` | `Illegal`/`Virtual Instruction`
+  | 1 | - | executes | `Illegal Instruction` | `Illegal Instruction` | `Illegal`/`Virtual Instruction`
+  |===
 assembly: xs1, xs2
 operation(): |
   XReg vaddr = X[xs1];

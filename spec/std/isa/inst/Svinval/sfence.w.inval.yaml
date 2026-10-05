@@ -21,6 +21,10 @@ access:
   u: never
   vs: sometimes
   vu: never
+access_detail: |
+  `sfence.w.inval` is accessible from M-mode, HS-mode, and VS-mode.
+  It raises `Illegal Instruction` when executed in U-mode, and
+  `Virtual Instruction` when executed in VU-mode (when the H extension is implemented).
 assembly: ""
 operation(): |
   if (mode() == PrivilegeMode::U) {
