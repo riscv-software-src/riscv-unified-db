@@ -1,0 +1,37 @@
+# Copyright (c) 2026 Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+$schema: "inst_schema.json#"
+kind: instruction
+name: vpairo.vv
+long_name: Vector pair odd
+description: |
+  Interleaves odd-indexed elements of two source vector register groups into
+  the destination. All operands have EMUL=LMUL. For destination index `i`,
+  even indices read `vs2[i+1]` and odd indices read `vs1[i]`, producing
+  `[vs2[1], vs1[1], vs2[3], vs1[3], ...]`. When `vl` is odd, the final
+  out-of-range source position contributes zero; no source at or above `vl`
+  is read. Standard vector masking, prestart, inactive, and tail handling
+  applies. The destination may not overlap either source group.
+definedBy:
+  extension:
+    name: Zvzip
+assembly: vd, vs2, vs1, vm
+encoding:
+  match: 001111-----------010-----1010111
+  variables:
+    - name: vm
+      location: 25
+    - name: vs2
+      location: 24-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): |
