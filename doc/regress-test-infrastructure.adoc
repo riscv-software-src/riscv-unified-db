@@ -1,351 +1,44 @@
 // Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 // SPDX-License-Identifier: CC-BY-4.0
 
-= UDB Regression Test Infrastructure
-:toc: left
-:toclevels: 3
-:sectnums:
+= Regression Test Infrastructure
 
-== Overview
+Regression commands are mise tasks so the same commands run locally and in GitHub Actions.
 
-Regression tests are managed so they they are, as much as possible, runnable both in GitHub Actions
-and locally.
-
-=== Test definition
-
-Most regression tests are defined in `tools/test/regress-tests.yaml`.
-They are defined using the <<basic-tests>>.
-
-Sometimes the basic structure of `regress-tests.yaml` is insufficient to run complex tests in GitHub.
-For such tests, they are defined directly as a GitHub Workflow job in `tools/test/regress-gh-template.yaml`
-
-The GitHub Workflow file at `.github/workflows/regress.yml` is generated from the regression framework.
-Any time a change it made, the following command will update the workflow:
+== Running tests
 
 [source,bash]
 ----
-./bin/chore gen regress
+mise tasks                   # list tasks
+mise run check:smoke         # fast subset
+mise run check:unit          # unit tests
+mise run check:integration   # integration tests
+mise run check:artifacts     # generated artifacts
+mise run check:all           # complete suite
+mise run test:ruby:sorbet    # one named test
+mise run test:ruby:udb-unit --test conditions # one matrix variant
 ----
 
-=== Running tests
-
-Test will automatically run in GitHub as part of the PR process.
-
-To run tests locally, use the `./bin/regress`. For example:
-
-[source,bash]
-----
-./bin/regress --name regress-sorbet # run the 'regress-sorbet' test
-
-./bin/regress --tag smoke   # run all tests tagged as 'smoke'
-
-./bin/regress --all    # run all regression tests (will take a while)
-
-./bin/regress --help   # see more options
-----
-
-Complex tests defined directly in `tools/test/regress-gh-template.yaml` cannot be run locally with `./bin/regress`.
-Instead, you can either create a PR to see the test run or run locally using the https://github.com/nektos/act[act] tool (not supported by the UDB team).
-
-[.basic-tests]
-== Basic tests
-
-=== Important paths
-
-* *Test Definitions (basic)*: `tools/test/regress-tests.yaml`
-* *Schema File*: `tools/test/tests-schema.json`
-
-=== `regress-tests.yaml` Structure
-
-The root object must contain a single `tests` property:
-
-[source,yaml]
-----
-tests:
-  <test-name>:
-    # test definition
-----
-
-==== Properties
-
-===== `tests` (required)
-
-*Type*: `object`
-
-A mapping of test names to test definitions. Each key is a unique test name, and each value is a test definition object.
-
-=== Test Definition Object
-
-Each test definition describes a regression test with the following properties:
-
-==== Required Properties
-
-===== `test` (required)
-
-*Type*: `array` of test step objects
-
-The main test specification, defined as a series of shell commands. Borrows the `{name, run}` syntax from GitHub Actions.
-
-*Test Step Object Properties*:
-
-* `name` (required, string): A descriptive name for the test step
-* `run` (required, string): The shell command to execute
-* `env` (optional, object): Environment variables for this specific step (key-value pairs of strings)
-
-.Example
-[source,yaml]
-----
-test:
-  - name: Say Hello
-    run: echo "Hello"
-  - name: Run tests with environment
-    run: ./do test:foo
-    env:
-      DEBUG: "true"
-----
-
-===== `ci_stage` (required)
-
-*Type*: `enum` - one of `"pr"` or `"merge_queue"`
-
-Specifies when the test should run in the CI pipeline:
-
-* `"pr"`: Runs on pull requests (must pass before PR can merge)
-* `"merge_queue"`: Runs after a PR is in the merge queue, but before it merges with main
-
-.Example
-[source,yaml]
-----
-ci_stage: pr
-----
-
-==== Optional Properties
-
-===== `tags`
-
-*Type*: `array` of strings
-
-A list of tags for categorizing and filtering tests. Common tags include:
-
-* `smoke`: Quick smoke tests
-* `unit`: Unit tests
-* `integration`: Integration tests
-* `artifacts`: Tests that produce artifacts for deployment
-
-.Example
-[source,yaml]
-----
-tags:
-  - smoke
-  - unit
-----
-
-===== `env`
-
-*Type*: `object` (key-value pairs of strings)
-
-Environment variables set for all test steps in this test definition.
-
-.Example
-[source,yaml]
-----
-env:
-  CONFIG: rv64
-  BUILD_TYPE: debug
-----
-
-===== `strategy`
-
-*Type*: `object`
-
-Defines a matrix strategy to parameterize tests, similar to GitHub Actions matrix strategy. This allows running the same test with different parameter values.
-
-*Properties*:
-
-* `matrix` (required, object): Defines matrix variables, where each key maps to an array of string values
-
-.Example
-[source,yaml]
-----
-strategy:
-  matrix:
-    test:
-      - logic
-      - conditions
-      - cli
-test:
-  - name: Run udb gem ${{ matrix.test }} unit tests
-    run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
-----
-
-This creates three test jobs, one for each value in the `test` array. Use `${{ matrix.<variable> }}` syntax to reference matrix values in test steps.
-
-===== `gh_save_artifact`
-
-*Type*: `array` of artifact objects
-
-Specifies files or directories to save as GitHub Actions artifacts. Artifacts are only uploaded when tests run on a `push` event to the main branch (typically used for deployment artifacts).
-
-*Artifact Object Properties*:
-
-* `artifact_name` (required, string): Name for the artifact (passed to `actions/upload-artifact`)
-* `path` (required, string): File or directory path to upload
-* `include-hidden-files` (optional, boolean, default: `false`): Whether to include hidden files when uploading a directory
-
-.Example
-[source,yaml]
-----
-gh_save_artifact:
-  - artifact_name: isa-html-manual
-    path: gen/manual/isa/top/all/html
-  - artifact_name: resolved-spec
-    path: gen/resolved_spec/_
-    include-hidden-files: true
-----
-
-===== `gh_pre`
-
-*Type*: `array` of GitHub Actions step objects
-
-Steps to run in GitHub CI *before* the main test runs. These steps are *not executed* by `./bin/regress` (local test runner).
-
-Useful for CI-specific setup like checking out submodules or configuring the environment.
-
-.Example
-[source,yaml]
-----
-gh_pre:
-  - name: checkout ISA manual
-    run: git submodule update --init ext/riscv-isa-manual
-  - name: Mark isa-manual as safe
-    run: ./bin/bash -c "git config --local --add safe.directory '*'"
-----
-
-===== `gh_post`
-
-*Type*: `array` of GitHub Actions step objects
-
-Steps to run in GitHub CI *after* the main test completes. These steps are *not executed* by `./bin/regress` (local test runner).
-
-Useful for uploading coverage reports, saving artifacts, or performing cleanup.
-
-.Example
-[source,yaml]
-----
-gh_post:
-  - name: Upload coverage reports to Codecov
-    uses: codecov/codecov-action@v5
-    with:
-      token: ${{ secrets.CODECOV_TOKEN }}
-      files: tools/ruby-gems/idlc/coverage/coverage.xml
-----
-
-=== Complete Examples
-
-==== Simple PR Test
-
-[source,yaml]
-----
-tests:
-  regress-sorbet:
-    ci_stage: pr
-    tags:
-      - smoke
-    test:
-      - name: Run sorbet checks
-        run: ./do test:sorbet
-----
-
-==== Test with Matrix Strategy
-
-[source,yaml]
-----
-tests:
-  regress-udb-unit-test:
-    ci_stage: pr
-    tags:
-      - unit
-    strategy:
-      matrix:
-        test:
-          - logic
-          - conditions
-          - cli
-    test:
-      - name: Run udb gem ${{ matrix.test }} unit tests
-        run: ./bin/ruby tools/ruby-gems/udb/test/test_${{ matrix.test }}.rb
-    gh_post:
-      - name: Save coverage report
-        uses: actions/upload-artifact@v6
-        with:
-          name: udb-${{ matrix.test }}-cov
-          path: tools/ruby-gems/udb/coverage/${{ matrix.test }}.resultset.json
-----
-
-==== Merge Queue Test with Artifacts
-
-[source,yaml]
-----
-tests:
-  build-idl-doc:
-    ci_stage: merge_queue
-    gh_save_artifact:
-      - artifact_name: idl-doc
-        path: idl.html
-    tags:
-      - artifacts
-    test:
-      - name: Build IDL doc
-        run: ./bin/bundle exec asciidoctor -r idl_highlighter -a toc=left -a source-highlighter=rouge -o idl.html doc/idl.adoc
-----
-
-==== Test with Pre-steps and Environment Variables
-
-[source,yaml]
-----
-tests:
-  regress-riscv-tests-64:
-    ci_stage: pr
-    gh_pre:
-      - name: check out riscv-tests
-        run: git submodule update --init ext/riscv-tests
-    test:
-      - name: Run RV64 riscv-tests
-        run: ./do test:riscv_tests CONFIG=rv64 IGNOREUNDEFINED=YES JOBS=4 BUILD_TYPE=debug
-----
-
-=== Usage
-
-==== Local Testing
-
-Run tests locally using the `./bin/regress` command:
-
-[source,bash]
-----
-# Run a specific test
-./bin/regress -n regress-sorbet
-
-# Run all tests with a specific tag
-./bin/regress -t smoke
-
-# Dry run (show what would be executed)
-./bin/regress -n regress-sorbet --dry-run
-----
-
-==== CI/CD Integration
-
-Tests are automatically executed in GitHub Actions workflows based on their `ci_stage`:
-
-* *PR stage*: Tests run on pull requests, in the merge queue, and on a push to main.
-* *Merge queue stage*: Tests run when PR enters merge queue and on a push to main.
-
-The schema is used by `tools/test/gen_regress.py` to generate GitHub Actions workflow files.
-
-=== Best Practices
-
-. *Use descriptive test names*: Test names should clearly indicate what is being tested
-. *Tag appropriately*: Use tags like `smoke` for quick tests, `unit` for unit tests, `artifacts` for tests that produce deployment artifacts
-. *Keep tests focused*: Each test should verify a specific aspect of the system
-. *Use matrix strategy for variations*: When testing multiple configurations, use matrix strategy instead of duplicating test definitions
-. *Separate CI-specific steps*: Use `gh_pre` and `gh_post` for GitHub-specific operations that don't apply to local testing
-. *Document environment variables*: If your test requires specific environment variables, document them in the test name or comments
+The aggregate tasks are defined in `tools/dev/regression-aggregates.toml`.
+Individual regression tasks are executable file tasks under
+`tools/dev/regression-tasks/`.
+
+== Adding a regression
+
+1. Add an executable mise file task under `tools/dev/regression-tasks/`.
+2. Give it a descriptive namespaced task name through its path.
+3. Add it to the applicable `check:*` aggregates in
+   `tools/dev/regression-aggregates.toml`.
+4. Add it to `.github/workflows/regress.yml` when CI should run it.
+5. Run `mise tasks validate` and the new task locally.
+
+File tasks use mise `usage` declarations for matrix-like arguments. Keep setup or
+artifact-upload steps that only make sense in GitHub Actions in the workflow; keep
+the reusable test command in the mise task.
+
+== Continuous integration
+
+`.github/workflows/regress.yml` is maintained by hand. Jobs use the repository's
+mise setup action and call the same named tasks available locally. Merge-queue-only
+artifact jobs are guarded by event conditions. `regress-complete` remains the
+required aggregate CI job.

@@ -109,7 +109,6 @@ gen_subcmd_usage() {
   echo "                 (no version bumping; use 'chore update gem-versions' to also bump)"
   echo "  profile-cfgs:  Generate strict config files for profiles (cfgs/profile/)"
   echo "  vscode-idl:    Generate tools/vscode/idl/syntaxes/idl.tmLanguage.json"
-  echo "  regress:       Generate .github/workflows/regress.yml"
   echo "  ruby-type-def: Generate Ruby type signatutres"
   echo "  schema-docs:   Generate schema documentation from JSON Schema files"
   echo "  cfg-headers:   Generate golden cfg header files for regression testing"
@@ -258,28 +257,6 @@ source "${UDB_ROOT}/bin/.chore/container.sh"
 source "${UDB_ROOT}/bin/.chore/update.sh"
 
 #
-# Generate .github/workflows/regress.yml
-# Returns: 0 on success, 1 if file changed (when fail_on_change=1)
-#
-do_gen_regress() {
-  echo "Generating .github/workflows/regress.yml"
-  if [ $fail_on_change -eq 1 ]; then
-    local sha_before
-    sha_before=$(sha256sum "$UDB_ROOT"/.github/workflows/regress.yml)
-  fi
-  rm -f .github/workflows/regress.yml
-  "$UDB_ROOT/bin/python" tools/test/gen_regress.py
-  chmod -wx .github/workflows/regress.yml
-  if [ $fail_on_change -eq 1 ]; then
-    local sha_after
-    sha_after=$(sha256sum "$UDB_ROOT"/.github/workflows/regress.yml)
-    if [ "$sha_before" != "$sha_after" ]; then
-      exit 1
-    fi
-  fi
-}
-
-#
 # Generate the IDL TextMate grammar for the VSCode extension from
 # the canonical Prism definition at doc/src/prism/idl.js
 #
@@ -369,7 +346,6 @@ do_gen_udb_gen_fixtures() {
 # Generate all development artifacts
 #
 do_gen_all() {
-  do_gen_regress
   do_gen_vscode_idl
   do_gen_gem_versions
   do_ruby_type_def all
@@ -384,7 +360,6 @@ do_gen_all() {
 # Generate the development artifacts that are quick to resolve; should be run frequently (e.g., before git push)
 #
 do_gen_smoke() {
-  do_gen_regress
   do_gen_vscode_idl
   do_ruby_type_def all
 }
@@ -663,10 +638,6 @@ case "$subcommand" in
         ;;
       vscode-idl )
         do_gen_vscode_idl
-        exit 0
-        ;;
-      regress )
-        do_gen_regress
         exit 0
         ;;
       schema-docs )

@@ -28,23 +28,11 @@ RETIRED_JOBS = {
 }
 
 
-def test_retired_jobs_are_absent_from_registry_and_generated_workflow() -> None:
+def test_retired_jobs_are_absent_from_workflow() -> None:
     yaml = YAML(typ="safe")
-    definitions = yaml.load(ROOT / "tools/test/regress-tests.yaml")["tests"]
     workflow = yaml.load(ROOT / ".github/workflows/regress.yml")["jobs"]
-    assert not RETIRED_JOBS.intersection(definitions)
     assert not RETIRED_JOBS.intersection(workflow)
     assert not RETIRED_JOBS.intersection(workflow["regress-complete"]["needs"])
-    assert {
-        "regress-gen-ext-pdf",
-        "regress-gen-c-header",
-        "regress-gen-sverilog",
-        "regress-gen-go",
-        "regress-cpp-unit",
-        "regress-schema-docs",
-        "regress-python-config-headers",
-        "regress-python-profile-configs",
-    } <= definitions.keys()
 
 
 def test_pages_downloads_only_retained_artifacts() -> None:

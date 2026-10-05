@@ -125,7 +125,11 @@ The doctor script checks that the required tools, dependencies, and development 
 
 [source,bash]
 ----
-./bin/regress -h             # get help on running regression tests
+mise tasks                   # list developer and regression tasks
+
+mise run check:smoke         # run the fast regression subset
+
+mise run check:all           # run the full regression suite
 
 udb --help                   # get help on installed UDB commands
 

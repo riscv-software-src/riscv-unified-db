@@ -284,17 +284,17 @@ end
 namespace :test do
   task :unit do
     Udb.logger.warn "Running unit tests through do/Rake has been deprecated"
-    Udb.logger.warn "Try `./bin/regress --tag unit` instead"
+    Udb.logger.warn "Try `mise run check:unit` instead"
   end
 
   task :smoke do
     Udb.logger.warn "Running smoke through do/Rake has been deprecated"
-    Udb.logger.warn "Try `./bin/regress --tag smoke` instead"
+    Udb.logger.warn "Try `mise run check:smoke` instead"
   end
 
   task :regress do
     Udb.logger.warn "Running regression through do/Rake has been deprecated"
-    Udb.logger.warn "Try `./bin/regress --all` instead"
+    Udb.logger.warn "Try `mise run check:all` instead"
   end
 
   namespace :scripts do

@@ -1,0 +1,21 @@
+// SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+// SPDX-License-Identifier: BSD-3-Clause-Clear
+
+flagset "native" {
+  flag "-c --config <config>" help="Configuration selector; repeat for multiple configs" var=#true
+  flag "--build-name <name>" help="Required name for multi-configuration builds"
+  flag "--build-type <type>" help="Native build type" default="fast-debug" {
+    choices "debug" "fast-debug" "release" "asan"
+  }
+  flag "-j --jobs <jobs>" help="Parallel native jobs"
+  flag "--ignore-undefined" help="Permit undefined generated operations"
+}
+
+flagset "native-base" {
+  flag "--build-name <name>" help="Generated native build name"
+  flag "--build-type <type>" help="Native build type" default="fast-debug" {
+    choices "debug" "fast-debug" "release" "asan"
+  }
+  flag "-j --jobs <jobs>" help="Parallel native jobs"
+  flag "--ignore-undefined" help="Permit undefined generated operations"
+}

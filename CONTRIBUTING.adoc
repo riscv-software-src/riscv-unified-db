@@ -30,7 +30,7 @@ There should be a corresponding https://github.com/riscv/riscv-unified-db/issues
 All patches must meet the UnifiedDB code standards. This includes:
 
 * Pass regression tests
-** run locally as `./bin/regress --all`...though this will take a while to run sequentially. These will also run in GitHub automatically.
+** run locally as `mise run check:all`...though this will take a while. These will also run in GitHub automatically.
 * Use appropriate commit messages
 * Sign off every commit (see <<Developer Certificate of Origin (DCO)>>)
 * Cryptographically sign every commit (see <<Commit signing>>)

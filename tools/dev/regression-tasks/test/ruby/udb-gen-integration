@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from regress-udb-gen-integration"
+
+set -e
+
+# Step 1: Check udb-gen integration tests
+(
+  ./do test:udb_gen:integration
+)
+
+# Step 2: Check native instruction tables and CLI
+(
+  uv run --locked python -m pytest -n 8 tests/python/test_instruction_table.py tests/python/test_instruction_table_formats.py tests/python/test_instruction_table_bundled.py tests/python/test_instruction_table_cli.py
+)

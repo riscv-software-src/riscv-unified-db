@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
 from collections.abc import Iterator
@@ -104,13 +105,32 @@ def publish_asset(tag: str, schema_file: Path) -> None:
     )
 
 
+def check_asset(tag: str, schema_file: Path) -> None:
+    if not release_exists(tag):
+        raise RuntimeError(f"Missing schema release: {tag}")
+    if asset_content(tag, schema_file.name) != schema_file.read_bytes():
+        raise RuntimeError(
+            f"Published schema asset differs or is missing: {tag}/{schema_file.name}"
+        )
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check-only", action="store_true")
+    args = parser.parse_args()
     if not GEN_SCHEMAS_DIR.is_dir():
-        raise FileNotFoundError("gen/schemas does not exist; run './do gen:schemas' first")
+        raise FileNotFoundError(
+            "gen/schemas does not exist; run 'udb generate schema-bundle -o gen/schemas' first"
+        )
 
     for schema_name, version, version_dir in schema_versions(GEN_SCHEMAS_DIR):
         tag = f"schemas/{schema_name}/{version}"
         print(f"Processing {schema_name} {version}")
+
+        if args.check_only:
+            for schema_file in sorted(version_dir.glob("*.json")):
+                check_asset(tag, schema_file)
+            continue
 
         if not release_exists(tag):
             create_release(schema_name, version, tag)

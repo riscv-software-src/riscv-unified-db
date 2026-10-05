@@ -196,23 +196,3 @@ repos:
         pass_filenames: false
         language: system
         entry: ./do test:csrs
-      - id: regress
-        name: generate regress.yml
-        priority: 90
-        files: (tools/test/gen_regress\.py|tools/test/regress-tests.yaml|tools/test/regress-gh-template.yaml)
-        pass_filenames: false
-        language: system
-        entry: >-
-          /usr/bin/env bash -c '
-          ./bin/chore gen -f regress
-          ||
-          (
-          echo "Generated file .github/workflows/regress.yml changed." 1>&2;
-          echo "Run" 1>&2;
-          echo "" 1>&2;
-          echo "  git add .github/workflows/regress.yml" 1>&2;
-          echo "" 1>&2;
-          echo "and commit again." 1>&2;
-          false
-          )
-          '

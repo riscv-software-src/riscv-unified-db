@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from regress-udb-unit-test"
+#USAGE flag "--test <test>" help="Matrix axis test" {
+#USAGE   choices logic conditions database_obj_compare cli yaml_loader cfg_arch cfg csr mmr mmr_schema schema_versioning instruction z3 z3_extensions z3_finite_array z3_parameter_constraints
+#USAGE }
+
+set -e
+
+# Step 1: Run udb gem ${{ matrix.test }} unit tests
+(
+  ./bin/ruby tools/ruby-gems/udb/test/test_${usage_test:?}.rb
+)

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#MISE description="Regression task translated from regress-python-query-reports"
+
+set -e
+
+# Step 1: Check native query reports and fixed-bit instruction matching
+(
+  uv run --locked python -m pytest -n 8 tests/python/test_query_matching.py tests/python/test_query_reports_unit.py tests/python/test_query_reports_cli.py tests/python/test_query_reports_native.py
+)

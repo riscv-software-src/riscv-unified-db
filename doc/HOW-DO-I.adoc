@@ -14,59 +14,37 @@ To run all locally (takes a long time):
 
 [source,bash]
 --
-./bin/regress
+mise run check:all
 --
 
-To list regression tests:
+To list available regression tasks:
 
 [source,bash]
 --
-./bin/regress --list
+mise tasks
 --
 
 To run a specific regression test:
 
 [source,bash]
 --
-# run the 'regress-sorbet' test
-./bin/regress --name regress-sorbet
+# run the Sorbet test
+mise run test:ruby:sorbet
 --
 
 To run all regression tests matching a tag:
 
 [source,bash]
 --
-# run all regressions tagged as 'smoke'
-./bin/regress --tag smoke
+# run the smoke group
+mise run check:smoke
 --
 
 === Add a new regression
 
-Basic Regressions::
---
-Basic (most) regressions that can be run via the command-line within the UDB container are
-stored in `tools/test/regress-tests.yaml`.
-
-To add a basic regression, you must:
-
-1. Add the regression in `tools/test/regress-tests.yaml`
-    * The main steps of the test should go under the `test` key.
-    * If there are any steps needed to set up the test in GitHub CI, add those under the `gh_pre` key.
-    * If there are any steps needed after the test in GitHub CI, add those under the `gh_post` key.
-2. run `./bin/chore gen regress`
---
-
-See xref:regress-test-infrastructure.adoc[Regression test infrastructure] for more details.
-
-Complex Regressions::
---
-Complex regressions are not runnable on the command line. They only run in CI via GitHub Actions.
-
-To add a complex regression, you must:
-
-1. add the steps as a job in `tools/test/regress-gh-template.yaml`
-2. run `./bin/chore gen regress`
---
+Add a local regression as a mise task under `tools/dev/regression-tasks/`.
+Add it to the appropriate aggregate task in `tools/dev/regression-aggregates.toml`.
+If CI should run it, add a readable job or job step to `.github/workflows/regress.yml`.
 
 See xref:regress-test-infrastructure.adoc[Regression test infrastructure] for more details.
 
