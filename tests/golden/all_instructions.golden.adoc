@@ -40104,14 +40104,14 @@ vabd.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x11,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x15,"type":2}]}
 ....
 
 Description::
 Computes the element-wise absolute difference of two signed integer SEW-bit
 source operands vs1 and vs2 and writes the result to vd according to mask vm.
 
-Reserved when SEW is neither 8 nor 16.
+Supports SEW of 8, 16, and 32. If the Zve64x extension is supported, SEW 64 is also supported.
 
 
 Decode Variables::
@@ -40160,14 +40160,14 @@ vabdu.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x13,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x16,"type":2}]}
 ....
 
 Description::
 Computes the element-wise absolute difference of two unsigned integer SEW-bit
 source operands vs1 and vs2 and writes the result to vd according to mask vm.
 
-Reserved when SEW is neither 8 nor 16.
+Supports SEW of 8, 16, and 32. If the Zve64x extension is supported, SEW 64 is also supported.
 
 
 Decode Variables::
@@ -73504,7 +73504,7 @@ vwabda.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x15,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x3d,"type":2}]}
 ....
 
 Description::
@@ -73561,7 +73561,7 @@ vwabdau.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x16,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x3e,"type":2}]}
 ....
 
 Description::
