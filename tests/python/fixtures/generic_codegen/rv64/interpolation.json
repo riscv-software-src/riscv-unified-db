@@ -1,0 +1,6 @@
+{
+  "ext": "H",
+  "var": "<% if ext?(:H) %>Guest<% else %>Host<% end %>/<%= possible_xlens.include?(32) ? 32 : 64 %>-fault",
+  "original_name": "InstructionGuestPageFault",
+  "template": "<% if ext?(:H) %>Guest<% else %>Host<% end %>/<%= possible_xlens.include?(32) ? 32 : 64 %>-fault"
+}

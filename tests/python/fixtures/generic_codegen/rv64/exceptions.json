@@ -1,0 +1,224 @@
+[
+  {
+    "num": 20,
+    "name": "InstructionGuestPageFault",
+    "var": "InstructionGuestPageFault",
+    "ext": "H"
+  },
+  {
+    "num": 21,
+    "name": "LoadGuestPageFault",
+    "var": "LoadGuestPageFault",
+    "ext": "H"
+  },
+  {
+    "num": 23,
+    "name": "StoreAmoGuestPageFault",
+    "var": "StoreAmoGuestPageFault",
+    "ext": "H"
+  },
+  {
+    "num": 10,
+    "name": "VScall",
+    "var": "VScall",
+    "ext": "H"
+  },
+  {
+    "num": 22,
+    "name": "VirtualInstruction",
+    "var": "VirtualInstruction",
+    "ext": "H"
+  },
+  {
+    "num": 20,
+    "name": "InstructionGuestPageFault",
+    "var": "InstructionGuestPageFault",
+    "ext": "S"
+  },
+  {
+    "num": 21,
+    "name": "LoadGuestPageFault",
+    "var": "LoadGuestPageFault",
+    "ext": "S"
+  },
+  {
+    "num": 23,
+    "name": "StoreAmoGuestPageFault",
+    "var": "StoreAmoGuestPageFault",
+    "ext": "S"
+  },
+  {
+    "num": 10,
+    "name": "VScall",
+    "var": "VScall",
+    "ext": "S"
+  },
+  {
+    "num": 22,
+    "name": "VirtualInstruction",
+    "var": "VirtualInstruction",
+    "ext": "S"
+  },
+  {
+    "num": 3,
+    "name": "Breakpoint",
+    "var": "Breakpoint",
+    "ext": "Sm"
+  },
+  {
+    "num": 19,
+    "name": "HardwareError",
+    "var": "HardwareError",
+    "ext": "Sm"
+  },
+  {
+    "num": 2,
+    "name": "IllegalInstruction",
+    "var": "IllegalInstruction",
+    "ext": "Sm"
+  },
+  {
+    "num": 1,
+    "name": "InstructionAccessFault",
+    "var": "InstructionAccessFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 0,
+    "name": "InstructionAddressMisaligned",
+    "var": "InstructionAddressMisaligned",
+    "ext": "Sm"
+  },
+  {
+    "num": 20,
+    "name": "InstructionGuestPageFault",
+    "var": "InstructionGuestPageFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 12,
+    "name": "InstructionPageFault",
+    "var": "InstructionPageFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 5,
+    "name": "LoadAccessFault",
+    "var": "LoadAccessFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 4,
+    "name": "LoadAddressMisaligned",
+    "var": "LoadAddressMisaligned",
+    "ext": "Sm"
+  },
+  {
+    "num": 21,
+    "name": "LoadGuestPageFault",
+    "var": "LoadGuestPageFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 13,
+    "name": "LoadPageFault",
+    "var": "LoadPageFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 11,
+    "name": "Mcall",
+    "var": "Mcall",
+    "ext": "Sm"
+  },
+  {
+    "num": 9,
+    "name": "Scall",
+    "var": "Scall",
+    "ext": "Sm"
+  },
+  {
+    "num": 18,
+    "name": "SoftwareCheck",
+    "var": "SoftwareCheck",
+    "ext": "Sm"
+  },
+  {
+    "num": 7,
+    "name": "StoreAmoAccessFault",
+    "var": "StoreAmoAccessFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 6,
+    "name": "StoreAmoAddressMisaligned",
+    "var": "StoreAmoAddressMisaligned",
+    "ext": "Sm"
+  },
+  {
+    "num": 23,
+    "name": "StoreAmoGuestPageFault",
+    "var": "StoreAmoGuestPageFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 15,
+    "name": "StoreAmoPageFault",
+    "var": "StoreAmoPageFault",
+    "ext": "Sm"
+  },
+  {
+    "num": 8,
+    "name": "Ucall",
+    "var": "Ucall",
+    "ext": "Sm"
+  },
+  {
+    "num": 10,
+    "name": "VScall",
+    "var": "VScall",
+    "ext": "Sm"
+  },
+  {
+    "num": 22,
+    "name": "VirtualInstruction",
+    "var": "VirtualInstruction",
+    "ext": "Sm"
+  },
+  {
+    "num": 16,
+    "name": "DoubleTrap",
+    "var": "DoubleTrap",
+    "ext": "Smdbltrp"
+  },
+  {
+    "num": 20,
+    "name": "InstructionGuestPageFault",
+    "var": "InstructionGuestPageFault",
+    "ext": "U"
+  },
+  {
+    "num": 21,
+    "name": "LoadGuestPageFault",
+    "var": "LoadGuestPageFault",
+    "ext": "U"
+  },
+  {
+    "num": 23,
+    "name": "StoreAmoGuestPageFault",
+    "var": "StoreAmoGuestPageFault",
+    "ext": "U"
+  },
+  {
+    "num": 10,
+    "name": "VScall",
+    "var": "VScall",
+    "ext": "U"
+  },
+  {
+    "num": 22,
+    "name": "VirtualInstruction",
+    "var": "VirtualInstruction",
+    "ext": "U"
+  }
+]

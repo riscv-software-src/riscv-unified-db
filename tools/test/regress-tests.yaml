@@ -427,21 +427,46 @@ tests:
 
   regress-gen-go:
     ci_stage: pr
+    gh_pre:
+      - name: Install Go source acceptance tool
+        run: sudo apt-get update -qq && sudo apt-get install -y golang-go
     test:
-      - name: Generate Go code
-        run: ./do gen:go
+      - name: Generate Go code with Python
+        run: uv run --locked python -m udb.generators.go -o gen/go/inst.go
+      - name: Compile and execute the complete Go assembler adaptor
+        run: >-
+          PATH=/usr/bin:$PATH UDB_TEST_GENERIC_TOOLS=1 uv run --locked python -m pytest -n 0
+          --basetemp=gen/go/pytest tests/python/test_generic_codegen_consumers.py::test_go_complete_real_obj_package_adaptor
 
   regress-gen-c-header:
     ci_stage: pr
+    gh_pre:
+      - name: Install C source acceptance tool
+        run: sudo apt-get update -qq && sudo apt-get install -y gcc
     test:
-      - name: Generate c_header code
-        run: ./do gen:c_header
+      - name: Generate generic C encoding header with Python
+        run: uv run --locked python -m udb.generators.c_encoding -o gen/c_header/encoding.out.h
+      - name: Require genuine all-code and interpolated-name prose parity
+        run: >-
+          uv run --locked python -m pytest -n 0
+          --basetemp=gen/c_header/prose-pytest tests/python/test_generic_codegen.py -k shared_prose_provider
+      - name: Compile and execute every C declaration
+        run: >-
+          UDB_TEST_GENERIC_TOOLS=1 uv run --locked python -m pytest -n 0
+          --basetemp=gen/c_header/pytest tests/python/test_generic_codegen_consumers.py::test_c_all_instruction_csr_cause_consumer
 
   regress-gen-sverilog:
     ci_stage: pr
+    gh_pre:
+      - name: Install SystemVerilog source acceptance tool
+        run: sudo apt-get update -qq && sudo apt-get install -y verilator
     test:
-      - name: Generate sverilog_header code
-        run: ./do gen:sverilog
+      - name: Generate SystemVerilog decode package with Python
+        run: uv run --locked python -m udb.generators.sv_decode -o gen/sverilog/riscv_decode_package.svh
+      - name: Parse every SystemVerilog declaration and consumer reference
+        run: >-
+          UDB_TEST_GENERIC_TOOLS=1 uv run --locked python -m pytest -n 0
+          --basetemp=gen/sverilog/pytest tests/python/test_generic_codegen_consumers.py::test_sv_complete_decode_package_lints
 
   regress-cfg-headers:
     ci_stage: pr

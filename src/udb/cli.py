@@ -148,6 +148,13 @@ def build_parser() -> argparse.ArgumentParser:
     profiles_parser.add_argument(
         "--check", action="store_true", help="report generated-file drift without rewriting files"
     )
+    from .generators.generic_cli import add_options as add_generic_options
+
+    for generator in ("c-encoding", "sv-decode", "go"):
+        generic_parser = generators.add_parser(
+            generator, help=f"generate generic {generator} source"
+        )
+        add_generic_options(generic_parser, generator)
     docs_parser = generators.add_parser("schema-docs", help="generate versioned schema MDX")
     docs_parser.add_argument("--schemas", dest="docs_schemas", type=Path)
     docs_parser.add_argument("--out", required=True, type=Path)
@@ -221,6 +228,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "schemas" and (args.resolved or args.overlay or args.validate):
         parser.error("the schemas command does not accept resolution options")
     try:
+        if args.command == "generate" and args.generator in ("c-encoding", "sv-decode", "go"):
+            from .generators.generic_cli import load_and_render
+
+            text = load_and_render(args, args.generator)
+            _write_generated_source(text, args.output, artifact=args.generator, create_parents=True)
+            return 0
         if args.command == "generate" and args.generator == "schema-docs":
             from .schema_docs.__main__ import main as schema_docs_main
 

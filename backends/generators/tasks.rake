@@ -1,130 +1,31 @@
 # frozen_string_literal: true
+# SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+# SPDX-License-Identifier: BSD-3-Clause-Clear
 
-require "udb/resolver"
-require 'json'
-require 'tempfile'
-
-directory "#{$root}/gen/go"
-directory "#{$root}/gen/c_header"
-directory "#{$root}/gen/sverilog"
-
-def with_resolved_exception_codes(cfg_arch)
-  # Process ERB templates in exception codes using Ruby ERB processing
-  resolved_exception_codes = []
-
-  # Collect all exception codes from extensions and resolve ERB templates
-  cfg_arch.extensions.each do |ext|
-    ext.exception_codes.each do |ecode|
-      # Use Ruby's ERB processing to resolve templates in exception names
-      resolved_name = cfg_arch.render_erb(
-        ecode.name,
-        "exception code name: #{ecode.name}"
-      )
-
-      resolved_exception_codes << {
-        "num"  => ecode.num,
-        "name" => resolved_name,
-        "var"  => ecode.var,
-        "ext"  => ext.name
-      }
-    end
-  end
-
-  # Write resolved exception codes to a temporary JSON file
-  tempfile = Tempfile.new(["resolved_exception_codes", ".json"])
-  tempfile.write(JSON.pretty_generate(resolved_exception_codes))
-  tempfile.flush
-
-  begin
-    yield tempfile.path # Run the generator script
-  ensure
-    tempfile.close
-    tempfile.unlink
-  end
-end
+require "pathname"
 
 namespace :gen do
-  desc <<~DESC
-    Generate Go code from RISC-V instruction and CSR definitions
-
-    Options:
-     * CONFIG - Configuration name (defaults to "_")
-     * OUTPUT_DIR - Output directory for generated Go code (defaults to "#{$root}/gen/go")
-  DESC
-  task go: "#{$root}/gen/go" do
-    config_name = ENV["CONFIG"] || "_"
-    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/go/"
-
-    # Ensure the output directory exists
-    FileUtils.mkdir_p output_dir
-
-    # Get the arch paths based on the config
-    resolver = Udb::Resolver.new
-    cfg_arch = resolver.cfg_arch_for(config_name)
-    inst_dir = cfg_arch.path / "inst"
-    csr_dir = cfg_arch.path / "csr"
-
-    # Run the Go generator script
-    # Note: The script uses --output not --output-dir
-    sh "uv run #{$root}/backends/generators/Go/go_generator.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}inst.go"
-  end
-
-  desc <<~DESC
-    Generate C encoding header from RISC-V instruction and CSR definitions
-    This is used by Spike, ACTs and the Sail Model
-
-    Options:
-     * CONFIG - Configuration name (defaults to "_")
-     * OUTPUT_DIR - Output directory for generated C Header headers (defaults to "#{$root}/gen/c_header")
-  DESC
-  task c_header: "#{$root}/gen/c_header" do
-    config_name = ENV["CONFIG"] || "_"
-    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/c_header/"
-
-    # Ensure the output directory exists
-    FileUtils.mkdir_p output_dir
-
-    # Get the arch paths based on the config
-    resolver = Udb::Resolver.new
-    cfg_arch = resolver.cfg_arch_for(config_name)
-    inst_dir = cfg_arch.path / "inst"
-    csr_dir = cfg_arch.path / "csr"
-    ext_dir = cfg_arch.path / "ext"
-
-    with_resolved_exception_codes(cfg_arch) do |resolved_codes|
-      sh "uv run #{$root}/backends/generators/c_header/generate_encoding.py " \
-         "--inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} " \
-         "--resolved-codes=#{resolved_codes} " \
-         "--output=#{output_dir}encoding.out.h --include-all"
-    end
-  end
-
-  desc <<~DESC
-    Generate SystemVerilog package from RISC-V instruction and CSR definitions
-
-    Options:
-     * CONFIG - Configuration name (defaults to "_")
-     * OUTPUT_DIR - Output directory for generated SystemVerilog code (defaults to "#{$root}/gen/sverilog")
-  DESC
-  task sverilog: "#{$root}/gen/sverilog" do
-    config_name = ENV["CONFIG"] || "_"
-    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/sverilog/"
-
-    # Ensure the output directory exists
-    FileUtils.mkdir_p output_dir
-
-    # Get the arch paths based on the config
-    resolver = Udb::Resolver.new
-    cfg_arch = resolver.cfg_arch_for(config_name)
-    inst_dir = cfg_arch.path / "inst"
-    csr_dir = cfg_arch.path / "csr"
-    ext_dir = cfg_arch.path / "ext"
-
-    with_resolved_exception_codes(cfg_arch) do |resolved_codes|
-      sh "uv run #{$root}/backends/generators/sverilog/sverilog_generator.py " \
-         "--inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} " \
-         "--resolved-codes=#{resolved_codes} " \
-         "--output=#{output_dir}riscv_decode_package.svh --include-all"
+  {
+    "go" => ["udb.generators.go", "go", "inst.go"],
+    "c_header" => ["udb.generators.c_encoding", "c_header", "encoding.out.h"],
+    "sverilog" => ["udb.generators.sv_decode", "sverilog", "riscv_decode_package.svh"]
+  }.each do |task_name, (generator, directory, filename)|
+    desc "Generate #{task_name} using the offline Python public API (CONFIG/OUTPUT_DIR)"
+    task task_name do
+      config = ENV.fetch("CONFIG", "_")
+      unless ["_", "rv32", "rv64"].include?(config)
+        named_path = $root / "cfgs" / "#{config}.yaml"
+        config = named_path.to_s if named_path.file?
+      end
+      output = Pathname.new(ENV.fetch("OUTPUT_DIR", ($root / "gen" / directory).to_s)) / filename
+      command = [
+        "uv", "run", "--locked", "python", "-m", generator,
+        "--path", ($root / "spec/std/isa").to_s,
+        "--schemas", ($root / "spec/schemas").to_s,
+        "--overlay-root", ($root / "spec/custom/isa").to_s,
+        "--config", config, "--output", output.to_s
+      ]
+      sh(*command)
     end
   end
 end
