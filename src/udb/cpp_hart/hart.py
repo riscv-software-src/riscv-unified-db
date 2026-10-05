@@ -85,11 +85,7 @@ def _registers(context):
             if write_cases
             else f"m_{name}regs[static_cast<unsigned>(num.get())] = value;"
         )
-        convert = (
-            f"static_cast<uint64_t>(_{name}reg(num).get().get_ui())"
-            if runtime or capacity > 64
-            else f"_{name}reg(num).get()"
-        )
+        convert = f"to_uint64(_{name}reg(num).get())"
         setter_val = (
             f"{typ}{{Bits<64>{{value}}, WidthArg(m_{name}regs[num].width())}}"
             if runtime
@@ -325,7 +321,7 @@ public:
   void clear_smode_ext_int() {{ pending_smode_external_interrupt = false; refresh_pending_interrupts(); }}
   TranslateResult translate_native(uint64_t vaddr, MemoryOperation op, PrivilegeMode mode_, uint64_t encoding) override {{
     auto result = translate(Bits<64>{{vaddr}}, op, mode_, Bits<64>{{encoding}});
-    return TranslateResult{{result.paddr.get()}};
+    return TranslateResult{{to_uint64(result.paddr.get())}};
   }}
   PrivilegeMode _get_mode() override {{ return current_mode; }}
   void _set_mode(const PrivilegeMode& mode_) override {{ current_mode = mode_; }}
@@ -359,12 +355,7 @@ def hart_implementation(context):
     printing = []
     for record in context.database.objects("register_file"):
         name = record.name.lower()
-        width, _capacity = context.register_width(record.name)
-        value = (
-            f"static_cast<uint64_t>(_{name}reg(i).get().get_ui())"
-            if width == WIDTH_UNKNOWN or width > 64
-            else f"_{name}reg(i).get()"
-        )
+        value = f"to_uint64(_{name}reg(i).get())"
         printing.append(
             f'fmt::print(out, "{record.name} registers:\\n"); for (unsigned i = 0; i < {len(record["registers"])}; i++) fmt::print(out, "{name}{{}}: {{:#x}}\\n", i, {value});'
         )
