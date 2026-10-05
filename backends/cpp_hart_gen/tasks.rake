@@ -69,7 +69,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/.*\.cpp$} => proc { |tname|
 end
 
 # copy the tests to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.cpp$} => proc { |tname|
+rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.(cpp|hpp|cmake)$} => proc { |tname|
   [(CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(tname)).to_s]
 } do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(t.name)
@@ -226,13 +226,6 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hpp} do |t|
   FileUtils.ln_s "#{CPP_HART_GEN_SRC}/cpp/include/udb/#{fname}", t.name
 end
 
-# the gen script creates all tests, so we just need a task for one
-file (CPP_HART_GEN_SRC / "cpp" / "test" / "test_bits_random_0.cpp").to_s => [
-  CPP_HART_GEN_SRC / "cpp" / "test" / "gen_test_bits.rb"
-] do
-  sh "ruby #{CPP_HART_GEN_SRC}/cpp/test/gen_test_bits.rb -o #{CPP_HART_GEN_SRC}/cpp/test"
-end
-
 def configs_build_name
   raise ArgumentError, "Missing required option CONFIG:\n#{HELP}" if ENV["CONFIG"].nil?
 
@@ -289,7 +282,7 @@ namespace :gen do
       dst_path = CPP_HART_GEN_DST / build_name / "src" / File.basename(src)
       Rake::Task[dst_path].invoke
     end
-    Dir.glob("#{CPP_HART_GEN_SRC}/cpp/test/*.cpp").each do |src|
+    Dir.glob("#{CPP_HART_GEN_SRC}/cpp/test/*.{cpp,hpp,cmake}").each do |src|
       dst_path = CPP_HART_GEN_DST / build_name / "test" / File.basename(src)
       Rake::Task[dst_path].invoke
     end
@@ -428,7 +421,6 @@ namespace :test do
     _, build_name = configs_build_name
 
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
-    Rake::Task[(CPP_HART_GEN_SRC / "cpp" / "test" / "test_bits_random_0.cpp").to_s].invoke
 
     Dir.chdir "#{CPP_HART_GEN_DST}/#{build_name}/build" do
       sh "make -j #{$jobs} test_bits_directed"
