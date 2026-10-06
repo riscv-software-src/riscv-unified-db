@@ -1,0 +1,33 @@
+# Copyright (c) 2026 Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfbdota32f
+long_name: FP32 batched dot-product extension
+type: unprivileged
+requirements:
+  extension:
+    name: Zve32f
+    version: "= 1.0.0"
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2025-07
+    repositories:
+      - url: https://github.com/riscv/riscv-isa-manual.git
+        branch: zvbdot
+description: |
+  `Zvfbdota32f` is an unprivileged member of the `Zvbdota` family of batched
+  dot-product extensions. It provides FP32 batched dot-product capability and
+  depends on the `Zve32f` extension.
+
+  The extension introduces no new CSRs or extension-wide architectural state.
+  Its architectural integration is through the existing vector and
+  floating-point facilities defined by the dependent specifications.
+
+  The RISC-V Specification Dashboard is available at
+  https://riscv.github.io/adm-spec-dashboard/. The linked Confluence page is
+  https://riscv.atlassian.net/browse/RVS-3925. Its `Specification Plan
+  Approved` field records 2025-07-18; the UDB schema records the ratification
+  month as `2025-07`.
