@@ -566,6 +566,194 @@ def signed(value: int, width: int) -> int:
     return value if 0 <= value < (1 << (width - 1)) else value - (1 << width)
 
 
+def extract_extensions(defined_by):
+    """
+    Extract a list of extension names from a definedBy field.
+    """
+    exts = []
+    if not defined_by:
+        return exts
+
+    if isinstance(defined_by, str):
+        exts.append(defined_by)
+    elif isinstance(defined_by, dict):
+        if "extension" in defined_by:
+            ext_info = defined_by["extension"]
+            if isinstance(ext_info, str):
+                exts.append(ext_info)
+            elif isinstance(ext_info, dict):
+                if "name" in ext_info:
+                    exts.append(ext_info["name"])
+                elif "anyOf" in ext_info:
+                    for alt in ext_info["anyOf"]:
+                        if isinstance(alt, dict) and "name" in alt:
+                            exts.append(alt["name"])
+                        elif isinstance(alt, str):
+                            exts.append(alt)
+                elif "allOf" in ext_info:
+                    for req in ext_info["allOf"]:
+                        if isinstance(req, dict) and "name" in req:
+                            exts.append(req["name"])
+                        elif isinstance(req, str):
+                            exts.append(req)
+        elif "anyOf" in defined_by:
+            for alt in defined_by["anyOf"]:
+                exts.extend(extract_extensions(alt))
+        elif "allOf" in defined_by:
+            for req in defined_by["allOf"]:
+                exts.extend(extract_extensions(req))
+        elif "name" in defined_by:
+            exts.append(defined_by["name"])
+    return sorted(set(exts))
+
+
+def load_instructions_with_metadata(
+    root_dir, enabled_extensions, include_all=False, target_arch="RV64"
+):
+    """
+    Similar to load_instructions, but returns a tuple (instr_dict, metadata_dict)
+    where metadata_dict[instr_key] = {"extensions": [...]}
+    """
+    instr_dict = {}
+    metadata_dict = {}
+    found_files = 0
+    found_instructions = 0
+    extension_filtered = 0
+    encoding_filtered = 0
+
+    logging.info(
+        f"Searching for instruction files in {root_dir} for target architecture {target_arch}"
+    )
+
+    for dirpath, _, filenames in os.walk(root_dir):
+        for fname in filenames:
+            if not fname.endswith(".yaml"):
+                continue
+            found_files += 1
+            path = os.path.join(dirpath, fname)
+            try:
+                with open(path, encoding="utf-8") as f:
+                    data = YAML_SAFE.load(f)
+            except Exception as e:
+                logging.error(f"Error parsing {path}: {e}")
+                continue
+
+            if data.get("kind") != "instruction":
+                continue
+
+            found_instructions += 1
+            name = data.get("name")
+            if not name:
+                logging.error(f"Missing 'name' field in {path}")
+                continue
+
+            definedBy = data.get("definedBy")
+            # If include_all is True, skip extension filtering
+            if not include_all:
+                if definedBy is None:
+                    logging.error(f"Missing 'definedBy' field in instruction {name} in {path}")
+                    extension_filtered += 1
+                    continue
+
+                meets_extension_req = parse_extension_requirements(definedBy)
+                if not meets_extension_req(enabled_extensions):
+                    extension_filtered += 1
+                    continue
+
+                excludedBy = data.get("excludedBy")
+                if excludedBy:
+                    exclusion_check = parse_extension_requirements(excludedBy)
+                    if exclusion_check(enabled_extensions):
+                        extension_filtered += 1
+                        continue
+
+            exts = extract_extensions(definedBy)
+
+            encoding = data.get("encoding", {})
+            if not encoding:
+                format_field = data.get("format")
+                if not format_field:
+                    encoding_filtered += 1
+                    continue
+
+                match_string = build_match_from_format(format_field)
+                if not match_string:
+                    encoding_filtered += 1
+                    continue
+
+                encoding = {"match": match_string, "variables": []}
+
+            base = data.get("base")
+            if base is not None:
+                if (base == 32 and target_arch not in ["RV32", "BOTH"]) or (
+                    base == 64 and target_arch not in ["RV64", "BOTH"]
+                ):
+                    encoding_filtered += 1
+                    continue
+
+            if isinstance(encoding, dict):
+                if "RV64" in encoding and "RV32" in encoding:
+                    if target_arch == "RV64":
+                        encoding_to_use = encoding["RV64"]
+                        instr_key = name
+                    elif target_arch == "RV32":
+                        encoding_to_use = encoding["RV32"]
+                        instr_key = name
+                    else:
+                        rv64_encoding = encoding["RV64"]
+                        rv32_encoding = encoding["RV32"]
+
+                        rv64_match = rv64_encoding.get("match")
+                        rv32_match = rv32_encoding.get("match")
+
+                        if rv64_match:
+                            instr_dict[name] = {"match": rv64_match}
+                            metadata_dict[name] = {"extensions": exts}
+
+                        if rv32_match and rv32_match != rv64_match:
+                            instr_dict[f"{name}_rv32"] = {"match": rv32_match}
+                            metadata_dict[f"{name}_rv32"] = {"extensions": exts}
+
+                        continue
+                elif "RV64" in encoding:
+                    if target_arch in ["RV64", "BOTH"]:
+                        encoding_to_use = encoding["RV64"]
+                        instr_key = name
+                    else:
+                        encoding_filtered += 1
+                        continue
+                elif "RV32" in encoding:
+                    if target_arch in ["RV32", "BOTH"]:
+                        encoding_to_use = encoding["RV32"]
+                        instr_key = f"{name}_rv32" if target_arch == "BOTH" else name
+                    else:
+                        encoding_filtered += 1
+                        continue
+                elif "match" in encoding:
+                    encoding_to_use = encoding
+                    instr_key = name
+                else:
+                    encoding_filtered += 1
+                    continue
+            else:
+                encoding_filtered += 1
+                continue
+
+            match_str = encoding_to_use.get("match")
+            if not match_str:
+                encoding_filtered += 1
+                continue
+
+            instr_dict[instr_key] = {"match": match_str}
+            metadata_dict[instr_key] = {"extensions": exts}
+
+    if found_instructions > 0:
+        logging.info(f"Found {found_instructions} instruction definitions in {found_files} files")
+        logging.info(f"Added {len(instr_dict)} instruction encodings to the output")
+
+    return instr_dict, metadata_dict
+
+
 if __name__ == "__main__":
     print("This module is not meant to be run directly.")
     print("Please use go_generator.py instead.")

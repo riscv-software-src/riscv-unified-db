@@ -7,6 +7,7 @@ require 'tempfile'
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
 directory "#{$root}/gen/sverilog"
+directory "#{$root}/gen/overlap"
 
 def with_resolved_exception_codes(cfg_arch)
   # Process ERB templates in exception codes using Ruby ERB processing
@@ -126,5 +127,29 @@ namespace :gen do
          "--resolved-codes=#{resolved_codes} " \
          "--output=#{output_dir}riscv_decode_package.svh --include-all"
     end
+  end
+
+  desc <<~DESC
+    Generate overlap instruction header for Spike simulator
+
+    Options:
+     * CONFIG - Configuration name (defaults to "_")
+     * OUTPUT_DIR - Output directory for generated header (defaults to "#{$root}/gen/overlap")
+  DESC
+  task overlap: "#{$root}/gen/overlap" do
+    config_name = ENV["CONFIG"] || "_"
+    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/overlap"
+    output_file = File.join(output_dir, "overlap_list.out.h")
+
+    # Ensure the output directory exists
+    FileUtils.mkdir_p output_dir
+
+    # Get the arch paths based on the config
+    resolver = Udb::Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+
+    sh "uv run #{$root}/backends/generators/overlap/overlap_generator.py " \
+       "--inst-dir=#{inst_dir} --output=#{output_file} --include-all"
   end
 end
