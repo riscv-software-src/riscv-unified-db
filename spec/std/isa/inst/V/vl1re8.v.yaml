@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vl1re8.v
-long_name: Vector load 1 element of 8 bits with register stride
+long_name: "Vector load 1 whole register (EEW=8)"
 description: |
-  Loads 1 segment of 8-bit elements from memory starting at address in xs1 register with stride in xs2, using vector mask vm, and stores results in vector register vd. The effective element width is 8 bits.
+  Loads 1 whole vector register from memory starting at the address in xs1, into the register group starting at vd. This is a unit-stride, unmasked operation -- there is no stride or mask operand. The effective element width is 8 bits, used only to determine the required alignment of vd.
 definedBy:
   extension:
     name: Zvl32b
