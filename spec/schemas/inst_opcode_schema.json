@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.1",
+  "$id": "v0.2",
   "title": "Instruction Opcode Schema",
   "description": "Schema for instruction opcode definitions",
   "type": "object",
@@ -32,6 +32,11 @@
           "$ref": "schema_defs.json#/$defs/ref_url_list"
         }
       }
+    },
+    "$source": {
+      "type": "string",
+      "description": "Path to the source file containing this object"
     }
-  }
+  },
+  "additionalProperties": false
 }

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.1",
+  "$id": "v0.2",
   "type": "object",
   "required": ["$schema", "kind", "name", "long_name", "description"],
   "properties": {
@@ -17,6 +17,112 @@
     "long_name": {
       "type": "string",
       "description": "One line description of this Profile Release"
+    },
+    "marketing_name": {
+      "type": "string",
+      "description": "The publicly displayed marketing name for this release"
+    },
+    "family": {
+      "description": "Reference to the profile family this release belongs to",
+      "type": "object",
+      "required": ["$ref"],
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "pattern": "^profile_family/.*#$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "release": {
+      "type": "integer",
+      "description": "Release number (e.g., 20, 22, 23)"
+    },
+    "base": {
+      "description": "Base ISA XLEN, or null if unconstrained",
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "$ref": "schema_defs.json#/$defs/spec_state",
+      "description": "Ratification state of this release"
+    },
+    "ratification_date": {
+      "$ref": "schema_defs.json#/$defs/date",
+      "description": "Date when this profile release was ratified"
+    },
+    "versions": {
+      "description": "Versions of this profile release",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["version"],
+        "properties": {
+          "version": {
+            "$ref": "schema_defs.json#/$defs/extension_version",
+            "description": "Version string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "introduction": {
+      "type": "string",
+      "description": "Asciidoc text containing the introduction prose for the release"
+    },
+    "description": {
+      "$ref": "schema_defs.json#/$defs/spec_text",
+      "description": "Asciidoc text containing longer description prose for the release"
+    },
+    "contributors": {
+      "description": "People who contributed to this profile release",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Contributor name"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Contributor email address"
+          },
+          "company": {
+            "type": "string",
+            "description": "Company or organization name"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "profiles": {
+      "description": "List of profiles included in this release",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["$ref"],
+        "properties": {
+          "$ref": {
+            "type": "string",
+            "pattern": "^profile/.*#$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "$source": {
+      "type": "string",
+      "description": "Path to the source file containing this object"
     }
-  }
+  },
+  "additionalProperties": false
 }

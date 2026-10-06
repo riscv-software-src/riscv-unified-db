@@ -1,10 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.1",
+  "$id": "v0.2",
   "title": "Instruction Variable Type Schema",
   "description": "Schema for instruction variable type definitions",
   "type": "object",
-  "unevaluatedProperties": false,
   "required": ["$schema", "kind", "name", "type"],
   "properties": {
     "$schema": {
@@ -18,8 +17,20 @@
     },
     "type": {
       "enum": ["register_reference", "immediate"]
+    },
+    "register_file": {
+      "enum": ["X", "F", "V"]
+    },
+    "access": {
+      "enum": ["R", "W", "RW"],
+      "description": "Register access type: R - Read only (src) , W - Write only (dst), RW - Read/write (srcdst)"
+    },
+    "$source": {
+      "type": "string",
+      "description": "Path to the source file containing this object"
     }
   },
+  "additionalProperties": false,
   "allOf": [
     {
       "if": {
@@ -30,15 +41,7 @@
         }
       },
       "then": {
-        "properties": {
-          "register_file": {
-            "enum": ["X", "F", "V"]
-          },
-          "access": {
-            "enum": ["R", "W", "RW"],
-            "description": "Register access type: R - Read only (src) , W - Write only (dst), RW - Read/write (srcdst)"
-          }
-        }
+        "required": ["register_file", "access"]
       }
     }
   ]

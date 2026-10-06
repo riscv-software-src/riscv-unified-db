@@ -1,0 +1,85 @@
+---
+title: Profile Release Schema (v0.2)
+sidebar_label: Profile Release Schema
+custom_edit_url: null
+# This file is auto-generated from profile_release_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Profile Release Schema
+
+<span class="badge badge--secondary">v0.2</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`profile_release_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/profile_release_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ |  |
+| `kind` | `any` | ✓ |  |
+| `name` | `string` | ✓ | Name (database key) of this Profile Release |
+| `long_name` | `string` | ✓ | One line description of this Profile Release |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; | ✓ | Asciidoc text containing longer description prose for the release |
+| `marketing_name` | `string` |  | The publicly displayed marketing name for this release |
+| `family` | `object` |  | Reference to the profile family this release belongs to |
+| `release` | `integer` |  | Release number (e.g., 20, 22, 23) |
+| `base` | One of: `integer` \| `null` |  | Base ISA XLEN, or null if unconstrained |
+| `state` | Ratification state of a specification or extension version: `development` (actively being worked on), `frozen` (feature-complete, under review), `public-review` (open for public comment), `ratification-ready` (approved by the task group, awaiting board vote), `ratified` (officially approved by RISC-V International), or `nonstandard-released` (released but not part of the RISC-V standard). |  | Ratification state of this release |
+| `ratification_date` | A specific day in YYYY-MM-DD format |  | Date when this profile release was ratified |
+| `versions` | Array&lt;\{`version`\}&gt; [↓&nbsp;schema](#versions-schema) |  | Versions of this profile release |
+| `introduction` | `string` |  | Asciidoc text containing the introduction prose for the release |
+| `contributors` | Array&lt;\{`name`, `email`, `company`\}&gt; [↓&nbsp;schema](#contributors-schema) |  | People who contributed to this profile release |
+| `profiles` | Array&lt;\{`$ref`\}&gt; [↓&nbsp;schema](#profiles-schema) |  | List of profiles included in this release |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="versions-schema"></a><code>versions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `version` | `string` | ✓ | Version string |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="contributors-schema"></a><code>contributors</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Contributor name |
+| `email` | `string` |  | Contributor email address |
+| `company` | `string` |  | Company or organization name |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="profiles-schema"></a><code>profiles</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$ref` | `string` | ✓ |  |
+
+</details>
+
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.2` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |
