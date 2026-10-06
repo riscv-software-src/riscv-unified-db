@@ -2,4 +2,5 @@
 ROOT=$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")
 EXEC_DIR=${PWD}
 cd "$ROOT" || exit 1
-exec "${ROOT}/bin/mise" exec -- bash -c 'cd "$1" && shift && exec "$@"' _ "$EXEC_DIR" uv run reuse "$@"
+# shellcheck disable=SC2016
+exec "${ROOT}/bin/mise" exec -- /bin/bash -c 'cd "$1" && shift && exec "$@"' _ "$EXEC_DIR" uv run reuse "$@"

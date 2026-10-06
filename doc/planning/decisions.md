@@ -136,9 +136,9 @@ and aube reads that workspace from the shared `package-lock.json`. `doc/package.
 Docusaurus-specific manifest (listing Docusaurus dependencies) but has no lockfile of its own.
 
 All aube commands are run from the repo root:
-- `./bin/aube ci` — install dependencies explicitly
-- `./bin/aubr -C doc build` — build the docs site
-- `./bin/aubr -C doc start` — start the dev server
+- `aube ci` — install dependencies explicitly
+- `aubr -C doc build` — build the docs site
+- `aubr -C doc start` — start the dev server
 
 ### Rationale
 - The repo already had a root `package.json` (for Antora, Prettier, etc.); a second `package.json`
@@ -150,7 +150,7 @@ All aube commands are run from the repo root:
 ### Implemented in
 - `package.json` — added `"private": true` and `"workspaces": ["doc"]`
 - `doc/package.json` — remains the Docusaurus manifest and declares Docusaurus packages imported directly by the site
-- `doc/README.md` — updated to show aube commands (`./bin/aubr -C doc build`)
+- `doc/README.md` — updated to show aube commands (`aubr -C doc build`)
 - `.gitignore` — comment noting that `doc/package-lock.json` is intentionally absent
 
 ### Reversal: split back to a standalone doc/package.json
@@ -158,11 +158,11 @@ If this decision were reversed (Docusaurus managed independently in `doc/`):
 
 1. Remove `"workspaces": ["doc"]` from root `package.json`.
 2. Remove `"private": true` from root `package.json` if it was not there before.
-3. Run `./bin/aube install --lockfile-only` from the repo root to regenerate the root lockfile without the workspace.
-4. Run `./bin/aube install -C doc --lockfile-only` from the repo root to generate `doc/package-lock.json`.
-5. Update `doc/README.md`: change workspace commands back to `./bin/aube ci -C doc` / `./bin/aubr -C doc start`.
+3. Run `aube install --lockfile-only` from the repo root to regenerate the root lockfile without the workspace.
+4. Run `aube install -C doc --lockfile-only` from the repo root to generate `doc/package-lock.json`.
+5. Update `doc/README.md`: change workspace commands back to `aube ci -C doc` / `aubr -C doc start`.
 6. Update `.gitignore`: remove the comment about `doc/package-lock.json`; add `doc/node_modules/` explicitly if the bare `node_modules` entry is removed.
-7. Update CI workflow to `./bin/aube ci -C doc && ./bin/aubr -C doc build` instead of the root workspace build.
+7. Update CI workflow to `aube ci -C doc && aubr -C doc build` instead of the root workspace build.
 
 ---
 
@@ -175,8 +175,7 @@ If this decision were reversed (Docusaurus managed independently in `doc/`):
 ### Decision
 The `build-docs-site` CI job builds the Docusaurus site on every PR and push to `main` as a smoke
 test, but does **not deploy** it to GitHub Pages. Deployment is wired up in Phase 15 when content
-is ready. The job runs via `./bin/aube`/`./bin/aubr` wrappers that work in both container and native
-mise environments.
+is ready. The job runs via the mise-managed `aube`/`aubr` commands.
 
 ### Rationale
 - Catches build errors (broken links, TypeScript errors, missing dependencies) on every PR.
@@ -188,7 +187,7 @@ mise environments.
 ### Implemented in
 - `tools/test/regress-tests.yaml` — added `build-docs-site` test with `ci_stage: pr`, `tags: [smoke]`
 - `.github/workflows/regress.yml` — auto-generated from the above
-- `bin/aube` and `bin/aubr` — wrappers for aube-managed installs and script execution
+- `.mise.toml` — provides the aube-managed install and script-execution commands
 - `doc/planning/documentation-implementation-plan.md` — task 0.4.1 marked `[x]`
 
 ### Reversal: deploy immediately (skip build-only phase)
