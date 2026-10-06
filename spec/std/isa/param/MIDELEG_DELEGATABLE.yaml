@@ -1,0 +1,177 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MIDELEG_DELEGATABLE
+description: |
+  Indicates which interrupts can be delegated via `mideleg`.
+
+  Entry _i_ corresponds to `mideleg` bit _i_, which uses the same bit layout as `mip`.
+  When an entry is true, the corresponding interrupt can be delegated: the `mideleg` bit is writable,
+  except for bits that are always delegated, which are read-only one.
+  When an entry is false, the corresponding `mideleg` bit is read-only zero.
+
+  An unimplemented interrupt cannot be delegated, i.e., if `STI_INTR_IMPL` is false,
+  `MIDELEG_DELEGATABLE[5]` must be false.
+
+  When the H extension is implemented, VSSI, VSTI, and VSEI are always delegated to HS-mode,
+  so `MIDELEG_DELEGATABLE[2]`, `[6]`, and `[10]` must be true.
+  SGEI is also always delegated when any guest external interrupts are implemented
+  (`NUM_EXTERNAL_GUEST_INTERRUPTS` is nonzero), so `MIDELEG_DELEGATABLE[12]` must then be true;
+  otherwise it must be false.
+  When H is not implemented, all four must be false.
+long_name: Interrupts that can be delegated through mideleg
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 64
+  minItems: 64
+definedBy:
+  extension:
+    name: S
+requirements:
+  allOf:
+    # Reserved interrupt codes (0, 4, 8, 14, 15) cannot be delegated
+    - param:
+        allOf:
+          - name: MIDELEG_DELEGATABLE
+            index: 0
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 4
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 8
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 14
+            equal: false
+          - name: MIDELEG_DELEGATABLE
+            index: 15
+            equal: false
+    # An unimplemented interrupt cannot be delegated
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 1
+          equal: true
+      then:
+        param:
+          name: SSI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 3
+          equal: true
+      then:
+        param:
+          name: MSI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 5
+          equal: true
+      then:
+        param:
+          name: STI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 7
+          equal: true
+      then:
+        param:
+          name: MTI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 9
+          equal: true
+      then:
+        param:
+          name: SEI_INTR_IMPL
+          equal: true
+    - if:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 11
+          equal: true
+      then:
+        param:
+          name: MEI_INTR_IMPL
+          equal: true
+    # LCOFI (bit 13) is defined by Sscofpmf
+    - if:
+        not:
+          extension:
+            name: Sscofpmf
+      then:
+        param:
+          name: MIDELEG_DELEGATABLE
+          index: 13
+          equal: false
+    # VSSI, VSTI, and VSEI are always delegated to HS-mode when H is implemented
+    - if:
+        extension:
+          name: H
+      then:
+        allOf:
+          # VSSI, VSTI, and VSEI are always delegated to HS-mode when H is implemented
+          - param:
+              allOf:
+                - name: MIDELEG_DELEGATABLE
+                  index: 2
+                  equal: true
+                - name: MIDELEG_DELEGATABLE
+                  index: 6
+                  equal: true
+                - name: MIDELEG_DELEGATABLE
+                  index: 10
+                  equal: true
+          # SGEI is always delegated to HS-mode when any guest external interrupts are implemented (GEILEN nonzero)
+          - if:
+              not:
+                param:
+                  name: NUM_EXTERNAL_GUEST_INTERRUPTS
+                  equal: 0
+            then:
+              param:
+                name: MIDELEG_DELEGATABLE
+                index: 12
+                equal: true
+          - if:
+              param:
+                name: NUM_EXTERNAL_GUEST_INTERRUPTS
+                equal: 0
+            then:
+              param:
+                name: MIDELEG_DELEGATABLE
+                index: 12
+                equal: false
+    - if:
+        not:
+          extension:
+            name: H
+      then:
+        param:
+          allOf:
+            - name: MIDELEG_DELEGATABLE
+              index: 2
+              equal: false
+            - name: MIDELEG_DELEGATABLE
+              index: 6
+              equal: false
+            - name: MIDELEG_DELEGATABLE
+              index: 10
+              equal: false
+            - name: MIDELEG_DELEGATABLE
+              index: 12
+              equal: false
