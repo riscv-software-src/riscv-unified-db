@@ -42499,6 +42499,95 @@ Included in::
 
 
 
+[#udb:doc:inst:vfbdota_vv]
+== vfbdota.vv
+
+Synopsis::
+FP32 batched vector dot product
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vfbdota.vv vd, vs2, vs1, ci, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x77,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":3,"name": "ci","type":4},{"bits":2,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2b,"type":2}]}
+....
+
+Description::
+The xref:exts:Zvfbdota32f.adoc#udb:doc:ext:Zvfbdota32f[Zvfbdota32f] extension adds xref:insts:vfbdota_vv.adoc#udb:doc:inst:vfbdota_vv[vfbdota.vv], which performs a batched
+dot-product operation on FP32 vectors, accumulating into FP32. The
+instruction is reserved unless `SEW=32` and `LMUL=1`. The `vs1`, `vs2`, and
+`vd` operands all have `EEW=SEW`.
+
+The batched dot-product family treats `vs1` as an EMUL=1 vector register
+group and `vs2` as an EMUL=8 vector register group, computing eight
+independent dot products and accumulating the results into `vd`. xref:csrs:vl.adoc#udb:doc:csr:vl[vl] sets
+the length of each dot product. Tail elements are substituted with the bit
+pattern of all zeros, then the computation is performed as though
+`vl=VLMAX`.
+
+For long-vector implementations with `VLEN > 8*EEW`, `ci` is a 3-bit
+scaled-by-8 immediate indicating which eight elements of `vd` are read and
+written. The `ci` field is encoded in `vs2[2:0]`; those bits are not needed
+for the register address because `vs2` addresses an EMUL=8 register group.
+The instruction is reserved if `ci >= VLEN/(8*EEW)`. Destination elements
+at or beyond `ci+8` are tail elements, elements below `ci` are prestart
+elements, and the remaining elements are body elements. The destination
+vector register group cannot overlap either source vector register group.
+Masked-off body elements follow the current mask agnostic or undisturbed
+policy, and the instruction is reserved when xref:csrs:vstart.adoc#udb:doc:csr:vstart[vstart] is nonzero; exceptions
+are always reported with `vstart=0`.
+
+The FP32 products are first computed to full precision, setting the invalid
+operation exception flag as appropriate. The products are then optionally
+rounded to FP32 according to the dynamic rounding mode, setting the inexact,
+overflow, and underflow exception flags as appropriate. The sum of these
+products and the accumulator is then computed as though by xref:insts:vfredusum_vs.adoc#udb:doc:inst:vfredusum_vs[vfredusum.vs]
+with `SEW=32`, including the setting of exception flags.
+
+This formulation allows significant implementation flexibility while being
+sufficiently precise to implement SGEMM. The algorithm used by
+xref:insts:vfredusum_vs.adoc#udb:doc:inst:vfredusum_vs[vfredusum.vs] offers several implementation choices; implementations are
+not required to use the same algorithm configuration for xref:insts:vfbdota_vv.adoc#udb:doc:inst:vfbdota_vv[vfbdota.vv] as for
+xref:insts:vfredusum_vs.adoc#udb:doc:inst:vfredusum_vs[vfredusum.vs].
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:23]
+|ci |$encoding[22:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvfbdota32f*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vfclass_v]
 == vfclass.v
 
