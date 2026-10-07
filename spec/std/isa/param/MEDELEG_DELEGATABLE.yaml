@@ -1,0 +1,121 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MEDELEG_DELEGATABLE
+description: |
+  Indicates which synchronous exceptions can be delegated via `medeleg`.
+
+  Entry _i_ corresponds to `medeleg` bit _i_, whose index is the exception code reported in `mcause`.
+  When an entry is true, the corresponding `medeleg` bit is writable.
+  When an entry is false, the corresponding `medeleg` bit is read-only zero.
+
+  An implementation may support any subset of the delegatable exceptions,
+  but no bit of `medeleg` may be read-only one.
+
+  `MEDELEG_DELEGATABLE[11]` (environment call from M-mode) and
+  `MEDELEG_DELEGATABLE[16]` (double trap) must always be false.
+long_name: Exceptions that can be delegated through medeleg
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 64
+  minItems: 64
+definedBy:
+  extension:
+    name: S
+requirements:
+  allOf:
+    # medeleg[11] (ECALL from M-mode) and medeleg[16] (double trap) are read-only zero
+    - param:
+        allOf:
+          - name: MEDELEG_DELEGATABLE
+            index: 11
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 16
+            equal: false
+    # Reserved exception codes (14, 17, 32-47) cannot be delegated
+    - param:
+        allOf:
+          - name: MEDELEG_DELEGATABLE
+            index: 14
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 17
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 32
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 33
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 34
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 35
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 36
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 37
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 38
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 39
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 40
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 41
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 42
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 43
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 44
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 45
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 46
+            equal: false
+          - name: MEDELEG_DELEGATABLE
+            index: 47
+            equal: false
+    # Exception codes 10 and 20-23 are defined by H
+    - if:
+        not:
+          extension:
+            name: H
+      then:
+        param:
+          allOf:
+            - name: MEDELEG_DELEGATABLE
+              index: 10
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 20
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 21
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 22
+              equal: false
+            - name: MEDELEG_DELEGATABLE
+              index: 23
+              equal: false

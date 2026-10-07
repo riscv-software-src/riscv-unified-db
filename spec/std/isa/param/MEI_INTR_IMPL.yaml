@@ -13,7 +13,7 @@ description: |
 
   true::
     Machine-level external interrupts are implemented.
-    `mie.MEIE` and `mideleg.MEI` are writable.
+    `mie.MEIE` is writable, and `mideleg.MEI` is writable if `MIDELEG_DELEGATABLE[11]` is true.
 
   false::
     Machine-level external interrupts are not implemented.
