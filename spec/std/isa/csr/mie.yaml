@@ -20,7 +20,8 @@ fields:
     location: 1
     description: |
       Enables Supervisor Software Interrupts.
-    type: RW
+    type(): |
+      return SSI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy:
       extension:
         name: S
@@ -29,7 +30,8 @@ fields:
     location: 2
     description: |
       Enables Virtual Supervisor Software Interrupts.
-    type: RW
+    type(): |
+      return VSSI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy:
       extension:
         name: H
@@ -37,13 +39,15 @@ fields:
   MSIE:
     location: 3
     description: Enables Machine Software Interrupts.
-    type: RW
+    type(): |
+      return MSI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   STIE:
     location: 5
     description: |
       Enables Supervisor Timer Interrupts.
-    type: RW
+    type(): |
+      return STI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy:
       extension:
         name: S
@@ -52,7 +56,8 @@ fields:
     location: 6
     description: |
       Enables Virtual Supervisor Timer Interrupts.
-    type: RW
+    type(): |
+      return VSTI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy:
       extension:
         name: H
@@ -60,13 +65,15 @@ fields:
   MTIE:
     location: 7
     description: Enables Machine Timer Interrupts.
-    type: RW
+    type(): |
+      return MTI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   SEIE:
     location: 9
     description: |
       Enables Supervisor External Interrupts.
-    type: RW
+    type(): |
+      return SEI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy:
       extension:
         name: S
@@ -75,7 +82,8 @@ fields:
     location: 10
     description: |
       Enables Virtual Supervisor External Interrupts.
-    type: RW
+    type(): |
+      return VSEI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy:
       extension:
         name: H
@@ -83,7 +91,8 @@ fields:
   MEIE:
     location: 11
     description: Enables Machine External Interrupts.
-    type: RW
+    type(): |
+      return MEI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   SGEIE:
     location: 12

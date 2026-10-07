@@ -7,7 +7,7 @@ $schema: param_schema.json#
 kind: parameter
 name: REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK
 description: |
-  When true, `mtval` is written with the shadow stack cause (code=18) when a SoftwareCheck exception is raised into M-mode due to a landing pad error.
+  When true, `mtval` is written with the landing pad fault cause (code=2) when a SoftwareCheck exception is raised into M-mode due to a landing pad error.
 
   When false, `mtval` is written with 0.
 long_name: TODO

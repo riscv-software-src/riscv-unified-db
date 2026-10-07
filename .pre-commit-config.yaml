@@ -59,7 +59,7 @@ repos:
         exclude: backends/cpp_hart_gen
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.6
+    rev: v0.16.9
     hooks:
       - id: ruff-format
         priority: 20
@@ -189,6 +189,13 @@ repos:
 
   - repo: local
     hooks:
+      - id: check-csr-conflicts
+        name: Check CSR address conflicts
+        priority: 40
+        files: ^(Rakefile|\.pre-commit-config\.yaml|spec/std/isa/csr/.*\.ya?ml)$
+        pass_filenames: false
+        language: system
+        entry: ./do test:csrs
       - id: regress
         name: generate regress.yml
         priority: 90

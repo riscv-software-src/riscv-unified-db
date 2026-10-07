@@ -46,7 +46,7 @@ fields:
       The data read from or written to the register selected by the current `siselect` value.
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      Csr handle = indirect_csr_lookup(CSR[siselect].VALUE, 4);
+      Csr handle = indirect_csr_lookup(PrivilegeMode::S, CSR[siselect].VALUE, 4);
       if (!handle.valid) {
         unimplemented_csr($encoding);
       }
@@ -56,7 +56,7 @@ fields:
       csr_sw_write(handle, csr_value.VALUE);
       return csr_hw_read(handle);
 sw_read(): |
-  Csr handle = indirect_csr_lookup(CSR[siselect].VALUE, 4);
+  Csr handle = indirect_csr_lookup(PrivilegeMode::S, CSR[siselect].VALUE, 4);
   if (!handle.valid) {
     unimplemented_csr($encoding);
   }

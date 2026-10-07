@@ -56,9 +56,6 @@ definedBy:
 fields:
   CY:
     location: 0
-    definedBy:
-      extension:
-        name: Sm
     description: When set, `mcycle.COUNT` stops counting in all privilege modes.
     type(): |
       return COUNTINHIBIT_EN[0] ? CsrFieldType::RW : CsrFieldType::RO;
@@ -66,9 +63,6 @@ fields:
       return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
   IR:
     location: 2
-    definedBy:
-      extension:
-        name: Sm
     description: When set, `minstret.COUNT` stops counting in all privilege modes.
     type(): |
       return COUNTINHIBIT_EN[2] ? CsrFieldType::RW : CsrFieldType::RO;
@@ -76,580 +70,348 @@ fields:
       return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
   HPM3:
     location: 3
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 3
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[3] == true"]
       When set, `hpmcounter3.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[3] == false"]
-      Since `hpmcounter3` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM3` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[3] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[3] ? UNDEFINED_LEGAL : 0;
   HPM4:
     location: 4
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 4
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[4] == true"]
       When set, `hpmcounter4.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[4] == false"]
-      Since `hpmcounter4` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM4` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[4] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[4] ? UNDEFINED_LEGAL : 0;
   HPM5:
     location: 5
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 5
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[5] == true"]
       When set, `hpmcounter5.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[5] == false"]
-      Since `hpmcounter5` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM5` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[5] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[5] ? UNDEFINED_LEGAL : 0;
   HPM6:
     location: 6
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 6
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[6] == true"]
       When set, `hpmcounter6.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[6] == false"]
-      Since `hpmcounter6` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM6` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[6] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[6] ? UNDEFINED_LEGAL : 0;
   HPM7:
     location: 7
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 7
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[7] == true"]
       When set, `hpmcounter7.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[7] == false"]
-      Since `hpmcounter7` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM7` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[7] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[7] ? UNDEFINED_LEGAL : 0;
   HPM8:
     location: 8
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 8
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[8] == true"]
       When set, `hpmcounter8.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[8] == false"]
-      Since `hpmcounter8` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM8` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[8] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[8] ? UNDEFINED_LEGAL : 0;
   HPM9:
     location: 9
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 9
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[9] == true"]
       When set, `hpmcounter9.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[9] == false"]
-      Since `hpmcounter9` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM9` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[9] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[9] ? UNDEFINED_LEGAL : 0;
   HPM10:
     location: 10
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 10
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[10] == true"]
       When set, `hpmcounter10.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[10] == false"]
-      Since `hpmcounter10` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM10` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[10] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[10] ? UNDEFINED_LEGAL : 0;
   HPM11:
     location: 11
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 11
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[11] == true"]
       When set, `hpmcounter11.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[11] == false"]
-      Since `hpmcounter11` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM11` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[11] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[11] ? UNDEFINED_LEGAL : 0;
   HPM12:
     location: 12
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 12
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[12] == true"]
       When set, `hpmcounter12.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[12] == false"]
-      Since `hpmcounter12` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM12` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[12] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[12] ? UNDEFINED_LEGAL : 0;
   HPM13:
     location: 13
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 13
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[13] == true"]
       When set, `hpmcounter13.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[13] == false"]
-      Since `hpmcounter13` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM13` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[13] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[13] ? UNDEFINED_LEGAL : 0;
   HPM14:
     location: 14
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 14
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[14] == true"]
       When set, `hpmcounter14.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[14] == false"]
-      Since `hpmcounter14` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM14` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[14] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[14] ? UNDEFINED_LEGAL : 0;
   HPM15:
     location: 15
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 15
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[15] == true"]
       When set, `hpmcounter15.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[15] == false"]
-      Since `hpmcounter15` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM15` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[15] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[15] ? UNDEFINED_LEGAL : 0;
   HPM16:
     location: 16
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 16
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[16] == true"]
       When set, `hpmcounter16.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[16] == false"]
-      Since `hpmcounter16` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM16` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[16] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[16] ? UNDEFINED_LEGAL : 0;
   HPM17:
     location: 17
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 17
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[17] == true"]
       When set, `hpmcounter17.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[17] == false"]
-      Since `hpmcounter17` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM17` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[17] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[17] ? UNDEFINED_LEGAL : 0;
   HPM18:
     location: 18
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 18
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[18] == true"]
       When set, `hpmcounter18.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[18] == false"]
-      Since `hpmcounter18` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM18` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[18] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[18] ? UNDEFINED_LEGAL : 0;
   HPM19:
     location: 19
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 19
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[19] == true"]
       When set, `hpmcounter19.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[19] == false"]
-      Since `hpmcounter19` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM19` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[19] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[19] ? UNDEFINED_LEGAL : 0;
   HPM20:
     location: 20
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 20
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[20] == true"]
       When set, `hpmcounter20.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[20] == false"]
-      Since `hpmcounter20` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM20` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[20] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[20] ? UNDEFINED_LEGAL : 0;
   HPM21:
     location: 21
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 21
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[21] == true"]
       When set, `hpmcounter21.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[21] == false"]
-      Since `hpmcounter21` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM21` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[21] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[21] ? UNDEFINED_LEGAL : 0;
   HPM22:
     location: 22
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 22
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[22] == true"]
       When set, `hpmcounter22.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[22] == false"]
-      Since `hpmcounter22` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM22` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[22] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[22] ? UNDEFINED_LEGAL : 0;
   HPM23:
     location: 23
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 23
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[23] == true"]
       When set, `hpmcounter23.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[23] == false"]
-      Since `hpmcounter23` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM23` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[23] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[23] ? UNDEFINED_LEGAL : 0;
   HPM24:
     location: 24
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 24
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[24] == true"]
       When set, `hpmcounter24.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[24] == false"]
-      Since `hpmcounter24` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM24` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[24] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[24] ? UNDEFINED_LEGAL : 0;
   HPM25:
     location: 25
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 25
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[25] == true"]
       When set, `hpmcounter25.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[25] == false"]
-      Since `hpmcounter25` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM25` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[25] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[25] ? UNDEFINED_LEGAL : 0;
   HPM26:
     location: 26
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 26
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[26] == true"]
       When set, `hpmcounter26.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[26] == false"]
-      Since `hpmcounter26` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM26` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[26] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[26] ? UNDEFINED_LEGAL : 0;
   HPM27:
     location: 27
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 27
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[27] == true"]
       When set, `hpmcounter27.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[27] == false"]
-      Since `hpmcounter27` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM27` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[27] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[27] ? UNDEFINED_LEGAL : 0;
   HPM28:
     location: 28
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 28
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[28] == true"]
       When set, `hpmcounter28.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[28] == false"]
-      Since `hpmcounter28` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM28` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[28] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[28] ? UNDEFINED_LEGAL : 0;
   HPM29:
     location: 29
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 29
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[29] == true"]
       When set, `hpmcounter29.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[29] == false"]
-      Since `hpmcounter29` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM29` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[29] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[29] ? UNDEFINED_LEGAL : 0;
   HPM30:
     location: 30
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 30
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[30] == true"]
       When set, `hpmcounter30.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[30] == false"]
-      Since `hpmcounter30` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM30` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[30] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return COUNTINHIBIT_EN[30] ? UNDEFINED_LEGAL : 0;
   HPM31:
     location: 31
-    definedBy:
-      allOf:
-        - extension:
-            name: Sm
-        - param:
-            name: HPM_COUNTER_EN
-            index: 31
-            equal: true
     description: |
       [when="COUNTINHIBIT_EN[31] == true"]
       When set, `hpmcounter31.COUNT` stops counting in all privilege modes.
 
       [when="COUNTINHIBIT_EN[31] == false"]
-      Since `hpmcounter31` cannot be inhibited, this field is read-only zero.
+      Since `mcountinhibit.HPM31` is not writable, this field is read-only zero.
     type(): |
       return COUNTINHIBIT_EN[31] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |

@@ -132,6 +132,8 @@ module Udb
 
   sig { params(fmt: String, options: T.untyped).returns(T.any(TTY::ProgressBar, DummyProgressBar)) }
   def self.create_progressbar(fmt, **options)
+    fmt = progressbar_format_for_terminal(fmt, **options)
+
     if @top_level_progressbar.nil?
 
       target_level = options.key?(:level) ? LogLevel.deserialize(options[:level].to_s) : LogLevel::Info
@@ -144,4 +146,18 @@ module Udb
       @top_level_progressbar.register(fmt, **options)
     end
   end
+
+  sig { params(fmt: String, options: T.untyped).returns(String) }
+  def self.progressbar_format_for_terminal(fmt, **options)
+    return fmt unless fmt.match?(/:bar/i)
+    return fmt unless options[:total].nil?
+
+    inset = options.fetch(:inset, 0).to_i
+    without_bar = fmt.gsub(/:bar/i, "")
+    available_space = TTY::ProgressBar.max_columns - TTY::ProgressBar.display_columns(without_bar) - inset
+    return fmt if available_space >= 1
+
+    fmt.gsub(/\s*\[:bar\]\s*/i, " ").gsub(/\s*:bar\s*/i, " ").squeeze(" ").strip
+  end
+  private_class_method :progressbar_format_for_terminal
 end

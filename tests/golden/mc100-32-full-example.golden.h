@@ -89,5 +89,6 @@
 #define UDB_VENDOR_ID_BANK_1
 #define UDB_VENDOR_ID_OFFSET 1
 #define UDB_VENDOR_ID_OFFSET_1
+#define UDB_WFI_FINITE
 
 #endif /* UDB_CFG_MC100_32_FULL_H */

@@ -5,16 +5,13 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: PMLEN
+name: NON_STANDARD_EXTENSION_IMPLEMENTED
 description: |
-  The number of high-order bits of an address that are masked by the
-  pointer masking facility.
-long_name: TODO
+  If any non-standard extensions are implemented, this parameter must be true.
+  This parameter is used as the reset value for `misa.X`.
+long_name: Non-standard extensions implemented
 schema:
-  type: integer
+  type: boolean
 definedBy:
   extension:
-    anyOf:
-      - name: Smmpm
-      - name: Smnpm
-      - name: Ssnpm
+    name: Sm

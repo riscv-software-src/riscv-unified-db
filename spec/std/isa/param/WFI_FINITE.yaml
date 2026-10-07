@@ -1,0 +1,20 @@
+# Copyright (c) 2026 Neel Kumar
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: WFI_FINITE
+long_name: |
+  Whether WFI resumes execution after a finite amount of time
+definedBy:
+  extension:
+    name: Sm
+description: |
+  Options:
+
+    * true: WFI resumes execution after waiting for a finite amount of time
+    * false: WFI may continue waiting until another event causes execution to resume
+schema:
+  type: boolean

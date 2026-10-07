@@ -464,6 +464,14 @@ module Idl
       self
     end
 
+    sig { params(value: Integer).returns(Integer) }
+    def self.unsigned_bits_needed(value)
+      raise "unsigned JSON schema integer cannot be negative" if value.negative?
+
+      value.zero? ? 1 : value.bit_length
+    end
+    private_class_method :unsigned_bits_needed
+
     # @return [Idl::Type] Type of a scalar
     # @param schema [Hash] JSON Schema description of a scalar
     sig { params(schema: T::Hash[String, T.untyped]).returns(T.nilable(Type)) }
@@ -474,9 +482,9 @@ module Idl
           Type.new(:boolean)
         when "integer"
           if schema.key?("enum")
-            Type.new(:bits, width: schema["enum"].max.bit_length)
+            Type.new(:bits, width: schema["enum"].map { |e| unsigned_bits_needed(e) }.max)
           elsif schema.key?("maximum")
-            Type.new(:bits, width: schema["maximum"].bit_length)
+            Type.new(:bits, width: unsigned_bits_needed(schema["maximum"]))
           else
             Type.new(:bits, width: 128)
           end
@@ -494,7 +502,7 @@ module Idl
         when TrueClass, FalseClass
           Type.new(:boolean)
         when Integer
-          Type.new(:bits, width: schema["const"].bit_length)
+          Type.new(:bits, width: unsigned_bits_needed(schema["const"]))
         when String
           Type.new(:string, width: schema["const"].length)
         else
@@ -507,7 +515,7 @@ module Idl
         when TrueClass, FalseClass
           Type.new(:boolean)
         when Integer
-          Type.new(:bits, width: schema["enum"].map { |e| e.bit_length }.max)
+          Type.new(:bits, width: schema["enum"].map { |e| unsigned_bits_needed(e) }.max)
         when String
           Type.new(:string, width: schema["enum"].map { |e| e.length }.max)
         else
@@ -551,6 +559,27 @@ module Idl
     end
     private_class_method :from_json_schema_scalar_type
 
+    sig { params(types: T::Array[Type]).returns(Type) }
+    def self.merge_json_schema_scalar_types(types)
+      raise "No scalar types" if types.empty?
+
+      first = types.fetch(0)
+      kind = first.kind
+      raise "Schema error: Array elements must be the same type" unless types.all? { |t| t.kind == kind }
+
+      if kind == :bits
+        unknown_width_type = types.find { |t| t.width == :unknown }
+        return unknown_width_type unless unknown_width_type.nil?
+
+        Type.new(:bits, width: T.must(types.map(&:width).max))
+      else
+        raise "Schema error: Array elements must be the same type" unless types.all? { |t| first.equal_to?(t) }
+
+        first
+      end
+    end
+    private_class_method :merge_json_schema_scalar_types
+
     # @return [Idl::Type] Type of array
     # @param schema [Hash] JSON Schema description of an array
     sig { params(schema: T::Hash[String, T.untyped]).returns(Type) }
@@ -566,25 +595,9 @@ module Idl
         raise "unexpected #{schema}" unless schema["items"].is_a?(Array)
 
         # this ia an array with each element specified
-        sub_type = T.let(nil, T.nilable(Type))
-        schema["items"].each do |item_schema|
-          if sub_type.nil?
-            sub_type = from_json_schema_scalar_type(item_schema)
-          else
-            unless sub_type.equal_to?(from_json_schema_scalar_type(item_schema))
-              raise "Schema error: Array elements must be the same type (#{sub_type} #{from_json_schema_scalar_type(item_schema)}) \n#{schema["items"]}"
-            end
-          end
-        end
-        if schema.key?("additionalItems")
-          if sub_type.nil?
-            sub_type = from_json_schema_scalar_type(schema["additionalItems"])
-          else
-            unless sub_type.equal_to?(from_json_schema_scalar_type(schema["additionalItems"]))
-              raise "Schema error: Array elements must be the same type"
-            end
-          end
-        end
+        item_types = schema["items"].map { |item_schema| from_json_schema_scalar_type(item_schema) }
+        item_types << from_json_schema_scalar_type(schema["additionalItems"]) if schema.key?("additionalItems")
+        sub_type = merge_json_schema_scalar_types(item_types.compact)
         Type.new(:array, width:, sub_type:)
       end
     end

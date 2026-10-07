@@ -1,17 +1,14 @@
 # Tool versions managed by mise (https://mise.jdx.dev)
-# Used by both Docker and native development environments.
-# In Docker, this is copied into the mise config dir during image build.
-# For native setup: install mise, then run `mise install` from this directory.
 
 [tools]
-ruby = "3.4.10"
-prek = "0.5.2"
-aube = "2.2.4"
-uv = "0.12.10"
+ruby = "3.4.11"
+prek = "0.5.3"
+aube = "2.4.0"
+uv = "0.12.19"
 cmake = "4.4.3"
 make = "4.4.1"
 shellcheck = "0.11.0"
-"github-cli" = "2.100.0"
+"github-cli" = "2.101.0"
 
 [env]
 RUBY_YJIT_ENABLE = "1"
@@ -19,35 +16,67 @@ RUBY_YJIT_ENABLE = "1"
 # across all platforms (e.g. aarch64 variants on an x86 machine) so we opt out entirely.
 BUNDLE_LOCKFILE_CHECKSUMS = "false"
 
+[deps.bundler]
+auto = true
+
+[deps.uv]
+auto = true
+
+[deps.npm]
+auto = true
+run = "aube ci"
+
+[deps.git-submodule]
+auto = true
+outputs = ["ext/rbi-central/README.md"]
+run = "git submodule update --init ext/rbi-central"
+
+[deps.prek]
+auto = true
+sources = [".pre-commit-config.yaml"]
+run = "prek install --prepare-hooks"
+
+[deps.native]
+auto = true
+sources = [
+  "tools/ruby-gems/udb/ext/udb_download/extconf.rb",
+  "tools/ruby-gems/udb/lib/udb/dep_versions.rb",
+  "tools/ruby-gems/udb/lib/udb/*_VERSION",
+]
+outputs = ["gen/.mise-native-deps"]
+run = '''
+mkdir -p gen &&
+(cd tools/ruby-gems/udb/ext/udb_download && ruby extconf.rb) &&
+touch gen/.mise-native-deps
+'''
+
 [hooks]
-# Temporary migration shim for existing users with symlinks from the old shared-env setup.
-# This runs from existing post-merge/post-checkout hooks because they call `mise install`
-# when .mise.toml changes. Remove after some time has passed and everyone has migrated.
+# Temporary migration shim for existing users with legacy git hooks
 postinstall = { shell = "bash -c", run = '''
 root="${MISE_PROJECT_ROOT:-$PWD}"
+git_hooks_dir=$(git -C "$root" rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || exit 0
 
-if [[ -L "$root/.venv" ]]; then
-  venv_target=$(readlink "$root/.venv")
-  if [[ "$venv_target" == "${XDG_DATA_HOME:-$HOME/.local/share}/udb/venv-"* ]]; then
-    echo "mise: removing old shared .venv symlink"
-    rm -f "$root/.venv"
-    echo "mise: running uv sync"
-    "$root/bin/uv" sync
-  fi
-fi
+remove_legacy_hook() {
+  hook_path="$git_hooks_dir/hooks/$1"
+  [ -f "$hook_path" ] || return 0
 
-if [[ -L "$root/node_modules" ]]; then
-  node_modules_target=$(readlink "$root/node_modules")
-  if [[ "$node_modules_target" == "${XDG_DATA_HOME:-$HOME/.local/share}/udb/npm-"*/node_modules ]]; then
-    echo "mise: removing old shared node_modules symlink"
-    rm -f "$root/node_modules"
-    echo "mise: running aube ci"
-    "$root/bin/aube" ci
+  if grep -qF 'ROOT=$(git rev-parse --show-toplevel)' "$hook_path" &&
+    grep -qF 'running mise install...' "$hook_path" &&
+    { grep -qF 'running bundle install...' "$hook_path" ||
+      grep -qF 'Dependency files changed — running mise deps...' "$hook_path"; }; then
+    rm -f "$hook_path"
+    echo "mise: removed legacy $1 hook"
   fi
-fi
+
+  return 0
+}
+
+remove_legacy_hook post-merge
+remove_legacy_hook post-checkout
 ''' }
 
 [settings]
+experimental = true                            # Needed for deps feature
 idiomatic_version_file_enable_tools = ["node"]
 ruby.compile = false
 ruby.default_packages_file = ".default-gems"

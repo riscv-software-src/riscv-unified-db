@@ -39489,6 +39489,62 @@ if pass:[(]xref:#udb-function-mode[mode]pass:[(]) == PrivilegeMode::M) {
 return xref:#udb-function-mode[mode]pass:[(]);
 ----
 
+[#udb-function-endianness]
+=== endianness
+Returns the endianness for the effective privilege mode.
+  
+
+[cols="1,4"]
+|===
+h| Return Type h| `Endian`
+h| Arguments
+a|
+
+None
+
+|===
+
+[source,idl,subs="specialchars,macros"]
+----
+if pass:[(]xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]) == PrivilegeMode::M) {
+  if pass:[(]CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-MBE[MBE] == 1'b1) {
+    return Endian::Big;
+  } else {
+    return Endian::Little;
+  }
+} else if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::S) && xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]) == PrivilegeMode::S) {
+  if pass:[(]CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-SBE[SBE] == 1'b1) {
+    return Endian::Big;
+  } else {
+    return Endian::Little;
+  }
+} else if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::U) && xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]) == PrivilegeMode::U) {
+  if pass:[(]CSR[xref:#udb-csr-mstatus[mstatus]].xref:#udb-csrfield-mstatus-UBE[UBE] == 1'b1) {
+    return Endian::Big;
+  } else {
+    return Endian::Little;
+  }
+} else if pass:[(]xref:#udb-function-implemented?[implemented?]pass:[(]ExtensionName::H)) {
+  if pass:[(]xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]) == PrivilegeMode::VS) {
+    if pass:[(]CSR[xref:#udb-csr-hstatus[hstatus]].xref:#udb-csrfield-hstatus-VSBE[VSBE] == 1'b1) {
+      return Endian::Big;
+    } else {
+      return Endian::Little;
+    }
+  } else if pass:[(]xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]) == PrivilegeMode::VU) {
+    if pass:[(]CSR[xref:#udb-csr-vsstatus[vsstatus]].xref:#udb-csrfield-vsstatus-UBE[UBE] == 1'b1) {
+      return Endian::Big;
+    } else {
+      return Endian::Little;
+    }
+  } else {
+    xref:#udb-function-unreachable[unreachable]pass:[(]);
+  }
+} else {
+  xref:#udb-function-unreachable[unreachable]pass:[(]);
+}
+----
+
 [#udb-function-exception_handling_mode]
 === exception_handling_mode
 Returns the target privilege mode that will handle synchronous exception `exception_code`
@@ -40450,15 +40506,34 @@ h! `Bits<INSTR_ENC_SIZE>`
 ----
 Boolean aligned = xref:#udb-function-is_naturally_aligned[is_naturally_aligned]pass:[(]LEN, virtual_address);
 XReg physical_address;
+XReg result;
 if pass:[(]aligned) {
-  return xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]LEN, virtual_address, encoding, 1'b0, 1'b0);
+  result = xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]LEN, virtual_address, encoding, 1'b0, 1'b0);
+  if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
+    U32 tmp;
+    for pass:[(]U32 i = 0; i < LEN / 2; i = i pass:[+] 8) {
+      tmp = result[(i pass:[+] 7):i];
+      result[(i pass:[+] 7):i] = result[(LEN - 1 - i):(LEN - 8 - i)];
+      result[(LEN - 1 - i):(LEN - 8 - i)] = tmp[7:0];
+    }
+  }
+  return result;
 }
 if pass:[(]MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 0) {
   xref:#udb-function-assert[assert]pass:[(]MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");
   physical_address = (CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-S[S] == 1) ? xref:#udb-function-translate[translate]pass:[(]virtual_address, MemoryOperation::Read, xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]), encoding).paddr : virtual_address;
   if pass:[(]xref:#udb-function-misaligned_is_atomic?[misaligned_is_atomic?]pass:[(]LEN, physical_address)) {
     xref:#udb-function-access_check[access_check]pass:[(]physical_address, LEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]));
-    return xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, physical_address);
+    result = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, physical_address);
+    if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
+      U32 tmp;
+      for pass:[(]U32 i = 0; i < LEN / 2; i = i pass:[+] 8) {
+        tmp = result[(i pass:[+] 7):i];
+        result[(i pass:[+] 7):i] = result[(LEN - 1 - i):(LEN - 8 - i)];
+        result[(LEN - 1 - i):(LEN - 8 - i)] = tmp[7:0];
+      }
+    }
+    return result;
   }
 }
 if pass:[(]!MISALIGNED_LDST) {
@@ -40469,9 +40544,17 @@ if pass:[(]!MISALIGNED_LDST) {
   xref:#udb-function-raise[raise]pass:[(]ExceptionCode::LoadAddressMisaligned, xref:#udb-function-mode[mode]pass:[(]), virtual_address);
 } else {
   if pass:[(]MISALIGNED_SPLIT_STRATEGY == "sequential_bytes") {
-    XReg result = 0;
+    result = 0;
     for pass:[(]U32 I = 0; I < (LEN / 8); I++) {
       result = result | (xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]8, virtual_address pass:[+] I, encoding, 1'b0, 1'b0) pass:[`]<< (8 * I));
+    }
+    if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
+      U32 tmp;
+      for pass:[(]U32 i = 0; i < LEN / 2; i = i pass:[+] 8) {
+        tmp = result[(i pass:[+] 7):i];
+        result[(i pass:[+] 7):i] = result[(LEN - 1 - i):(LEN - 8 - i)];
+        result[(LEN - 1 - i):(LEN - 8 - i)] = tmp[7:0];
+      }
     }
     return result;
   } else if pass:[(]MISALIGNED_SPLIT_STRATEGY == "custom") {
@@ -40978,6 +41061,14 @@ h! `Bits<INSTR_ENC_SIZE>`
 ----
 Boolean aligned = xref:#udb-function-is_naturally_aligned[is_naturally_aligned]pass:[(]LEN, virtual_address);
 XReg physical_address;
+if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
+  U32 tmp;
+  for pass:[(]U32 i = 0; i < LEN / 2; i = i pass:[+] 8) {
+    tmp = value[(i pass:[+] 7):i];
+    value[(i pass:[+] 7):i] = value[(LEN - 1 - i):(LEN - 8 - i)];
+    value[(LEN - 1 - i):(LEN - 8 - i)] = tmp[7:0];
+  }
+}
 if pass:[(]aligned) {
   xref:#udb-function-write_memory_aligned[write_memory_aligned]pass:[(]LEN, virtual_address, value, encoding, 1'b0, 1'b0);
   return ;

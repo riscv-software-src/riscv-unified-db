@@ -43,9 +43,9 @@ versions:
 requirements:
   allOf:
     - param:
-        name: TRAP_ON_UNIMPLEMENTED_INSTRUCTION
+        name: TRAP_ON_RESERVED_INSTRUCTION
         equal: true
-        reason: Ssstrict requires unimplemented opcodes to trap
+        reason: Ssstrict requires unimplemented opcodes in the standard or reserved encoding spaces to trap
     - param:
         name: TRAP_ON_UNIMPLEMENTED_CSR
         equal: true

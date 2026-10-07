@@ -2967,7 +2967,10 @@ module Idl
 
       value_result = value_try do
         idx_value = idx.value(symtab)
-        type_error "Array index (#{idx.text_value} = #{idx_value}) out of range (< #{lhs.type(symtab).width})" if idx_value >= lhs.type(symtab).width
+        lhs_width = lhs.type(symtab).width
+        if lhs_width != :unknown && idx_value >= lhs_width
+          type_error "Array index (#{idx.text_value} = #{idx_value}) out of range (< #{lhs_width})"
+        end
       end
       # OK, doesn't need to be known
 
@@ -9373,7 +9376,9 @@ module Idl
 
     sig { params(symtab: SymbolTable).returns(CsrField) }
     def field_def(symtab)
-      T.must(csr_obj(symtab).fields.find { |f| f.name == @field_name })
+      field = csr_obj(symtab).fields.find { |f| f.name == @field_name }
+      type_error "#{@field_name} is not a field of CSR[#{csr_name}]" if not field
+      field
     end
 
     sig { params(symtab: SymbolTable).returns(String) }

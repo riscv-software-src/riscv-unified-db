@@ -24,7 +24,7 @@ tests:
         run: ./do test:idlc:unit
     gh_post:
       - name: Upload idlc coverage reports to Codecov
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           disable_search: true
@@ -226,7 +226,7 @@ tests:
       - unit
     test:
       - name: Run cpp unit tests
-        run: ./do test:cpp_hart CONFIG=rv64 JOBS=4 BUILD_TYPE=debug
+        run: ./do test:cpp_hart CONFIG=rv64 BUILD_NAME=rv64-unit JOBS=4 BUILD_TYPE=debug
 
   regress-riscv-tests-32:
     ci_stage: pr

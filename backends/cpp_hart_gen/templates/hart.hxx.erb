@@ -121,7 +121,7 @@ namespace udb {
           m_csr_indirect_addr_map{
             <%- cfg_arch.not_prohibited_csrs.map do |csr| -%>
               <%- if csr.indirect? -%>
-                { {<%= csr.indirect_address %>_b, <%= csr.indirect_slot %>_b}, &m_csrs.<%= csr.cxx_name %> },
+                { std::make_tuple(PrivilegeMode::<%= csr.priv_mode %>, Bits<64>{<%= csr.indirect_address %>_b}, Bits<4>{<%= csr.indirect_slot %>_b}), &m_csrs.<%= csr.cxx_name %> },
               <%- end -%>
             <%- end -%>
           },
@@ -228,38 +228,38 @@ namespace udb {
         if (csr == m_csr_addr_map.end()) {
           csr_handle.valid = false;
           return csr_handle;
-        } else {
-          csr_handle.valid = csr->second->defined();
-          csr_handle.name = csr->second->name();
-          csr_handle.addr_type = CsrAddressType::Direct;
-          csr_handle.address = csr_addr;
-          csr_handle.indirect_slot = 0_b;
-          csr_handle.mode = csr->second->mode();
-          csr_handle.writable = csr->second->writable();
-          return csr_handle;
         }
+
+        csr_handle.valid = csr->second->defined();
+        csr_handle.name = csr->second->name();
+        csr_handle.addr_type = CsrAddressType::Direct;
+        csr_handle.address = csr_addr;
+        csr_handle.indirect_slot = 0_b;
+        csr_handle.mode = csr->second->mode();
+        csr_handle.writable = csr->second->writable();
+        return csr_handle;
       }
 
-      <%= name_of(:struct, cfg_arch, "Csr") %> indirect_csr_lookup(const PossiblyUnknownBits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
+      <%= name_of(:struct, cfg_arch, "Csr") %> indirect_csr_lookup(const PrivilegeMode& target_mode, const PossiblyUnknownBits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
         <%= name_of(:struct, cfg_arch, "Csr") %> csr_handle;
 
         udb_assert((window_slot > 0_b) && (window_slot <= 6_b), "Indirect slots must be between 1-6, inclusive");
 
         <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
-        auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_indirect_addr, window_slot));
+        auto csr = m_csr_indirect_addr_map.find(std::make_tuple(target_mode, csr_indirect_addr.to_defined(), window_slot));
         if (csr == m_csr_indirect_addr_map.end()) {
           csr_handle.valid = false;
           return csr_handle;
-        } else {
-          csr_handle.valid = true;
-          csr_handle.name = csr->second->name();
-          csr_handle.addr_type = CsrAddressType::Indirect;
-          csr_handle.address = csr_indirect_addr;
-          csr_handle.indirect_slot = window_slot;
-          csr_handle.mode = csr->second->mode();
-          csr_handle.writable = csr->second->writable();
-          return csr_handle;
         }
+
+        csr_handle.valid = csr->second->defined();
+        csr_handle.name = csr->second->name();
+        csr_handle.addr_type = CsrAddressType::Indirect;
+        csr_handle.address = csr_indirect_addr;
+        csr_handle.indirect_slot = window_slot;
+        csr_handle.mode = csr->second->mode();
+        csr_handle.writable = csr->second->writable();
+        return csr_handle;
         <%- else -%>
         csr_handle.valid = false;
         return csr_handle;
@@ -273,7 +273,7 @@ namespace udb {
           return csr->second->hw_read(xlen().to_defined());
         } else {
           <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
-          auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
+          auto csr = m_csr_indirect_addr_map.find(std::make_tuple(csr_handle.mode, csr_handle.address.to_defined(), csr_handle.indirect_slot.to_defined()));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
           return csr->second->hw_read(xlen().to_defined());
           <%- else -%>
@@ -289,7 +289,7 @@ namespace udb {
           return csr->second->sw_read(xlen().to_defined());
         } else {
           <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
-          auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
+          auto csr = m_csr_indirect_addr_map.find(std::make_tuple(csr_handle.mode, csr_handle.address.to_defined(), csr_handle.indirect_slot.to_defined()));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
           return csr->second->sw_read(xlen().to_defined());
           <%- else -%>
@@ -305,7 +305,7 @@ namespace udb {
           csr->second->sw_write(value, xlen().to_defined());
         } else {
           <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
-          auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
+          auto csr = m_csr_indirect_addr_map.find(std::make_tuple(csr_handle.mode, csr_handle.address.to_defined(), csr_handle.indirect_slot.to_defined()));
           udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
           csr->second->sw_write(value, xlen().to_defined());
           <%- else -%>
@@ -558,7 +558,7 @@ namespace udb {
       <%= name_of(:csr_container, cfg_arch) %><SocType> m_csrs;
       std::unordered_map<PossiblyUnknownBits<12>, CsrBase*> m_csr_addr_map;
       <%- if cfg_arch.not_prohibited_csrs.any?(&:indirect?) -%>
-      std::unordered_map<std::pair<Bits<64>, Bits<4>>, CsrBase*> m_csr_indirect_addr_map;
+      std::map<std::tuple<PrivilegeMode, Bits<64>, Bits<4>>, CsrBase*> m_csr_indirect_addr_map;
       <%- end -%>
       std::map<std::string, CsrBase*> m_csr_name_map;
 

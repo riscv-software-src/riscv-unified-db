@@ -67,16 +67,6 @@ _record_warn() { ((_WARN_COUNT++)) || true; }
 _check_core_prerequisites() {
   _section "Core Prerequisites"
 
-  # gpg
-  if command -v gpg > /dev/null 2>&1 || command -v gpg2 > /dev/null 2>&1; then
-    _pass "gpg  ${_C_DIM}found${_C_RESET}"
-    _record_pass
-  else
-    _fail "gpg not found"
-    _info "Fix: install gnupg via your package manager (e.g. \`brew install gnupg\`)"
-    _record_fail
-  fi
-
   # git
   if command -v git > /dev/null 2>&1; then
     local git_ver
@@ -271,37 +261,7 @@ _check_developer_setup() {
       _record_pass
     else
       _warn "Pre-commit hook not installed"
-      _info "Fix: run \`bin/setup\` in the repo root"
-      _record_warn
-    fi
-
-    if [[ -f "${git_hooks_dir}/hooks/post-merge" ]]; then
-      if grep -qE '\.venv-deps|\.npm-deps|bin/npm" install|bin/npm" ci' "${git_hooks_dir}/hooks/post-merge" 2>/dev/null; then
-        _warn "Post-merge hook is stale"
-        _info "Fix: run \`bin/setup\`"
-        _record_warn
-      else
-        _pass "Post-merge hook installed"
-        _record_pass
-      fi
-    else
-      _warn "Post-merge hook not installed"
-      _info "Fix: run \`bin/setup\` in the repo root"
-      _record_warn
-    fi
-
-    if [[ -f "${git_hooks_dir}/hooks/post-checkout" ]]; then
-      if grep -qE '\.venv-deps|\.npm-deps|bin/npm" install|bin/npm" ci' "${git_hooks_dir}/hooks/post-checkout" 2>/dev/null; then
-        _warn "Post-checkout hook is stale"
-        _info "Fix: run \`bin/setup\`"
-        _record_warn
-      else
-        _pass "Post-checkout hook installed"
-        _record_pass
-      fi
-    else
-      _warn "Post-checkout hook not installed"
-      _info "Fix: run \`bin/setup\` in the repo root"
+      _info "Fix: run \`mise deps prek\` in the repo root"
       _record_warn
     fi
   fi

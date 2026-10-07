@@ -18,3 +18,84 @@ schema:
 definedBy:
   extension:
     name: S
+requirements:
+  idl(): |
+    ($array_size(SXLEN) == 1 && SXLEN[0] == 32) -> STVAL_WIDTH <= 32;
+
+    # in RV32, STVAL must be able to hold a physical address if S-mode takes an exception
+    # that reports an address
+    # Since physical address width can be larger than 32 with Sv32, need to downsize STVAL in that case
+    (
+      ($array_size(SXLEN) == 1 && SXLEN[0] == 32) &&
+      PHYS_ADDR_WIDTH > 32 &&
+        (
+          implemented?(ExtensionName::Sdext) ||
+          implemented?(ExtensionName::Sstvala) ||
+          REPORT_VA_IN_STVAL_ON_BREAKPOINT ||
+          REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ||
+          REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED ||
+          REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED ||
+          REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED ||
+          REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT ||
+          REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT ||
+          REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+          REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT ||
+          REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT ||
+          REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+        )
+    ) -> (STVAL_WIDTH == 32);
+
+    # TODO: uncomment when we have support for parameter/function comparison
+    #       on the RHS of a constraint.
+    # (
+    #   (
+    #     $array_includes?(SXLEN, 64) ||
+    #     (
+    #       ($array_size(SXLEN) == 1 && SXLEN[0] == 32) &&
+    #       PHYS_ADDR_WIDTH <= 32
+    #     )
+    #   ) &&
+    #     (
+    #       implemented?(ExtensionName::Sdext) ||
+    #       implemented?(ExtensionName::Sstvala) ||
+    #       REPORT_VA_IN_STVAL_ON_BREAKPOINT ||
+    #       REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ||
+    #       REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED ||
+    #       REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED ||
+    #       REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED ||
+    #       REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT ||
+    #       REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT ||
+    #       REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+    #       REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT ||
+    #       REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT ||
+    #       REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+    #     )
+    # ) -> (STVAL_WIDTH >= PHYS_ADDR_WIDTH);
+
+    # TODO: uncomment when we have support for parameter/function comparison
+    #       on the RHS of a constraint.
+    # (
+    #   implemented?(ExtensionName::S) &&
+    #   (
+    #     implemented?(ExtensionName::Sdext) ||
+    #     implemented?(ExtensionName::Sstvala) ||
+    #     REPORT_VA_IN_STVAL_ON_BREAKPOINT ||
+    #     REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ||
+    #     REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED ||
+    #     REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED ||
+    #     REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED ||
+    #     REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT ||
+    #     REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT ||
+    #     REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+    #     REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT ||
+    #     REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT ||
+    #     REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+    #   )
+    # ) -> (STVAL_WIDTH >= max_va_size());
+
+    (
+      implemented?(ExtensionName::Sstvala) ||
+      REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+    ) -> (STVAL_WIDTH >= INSTR_ENC_SIZE);
+  reason: |
+    `stval` must be able to hold physical and/or virtual addresses
