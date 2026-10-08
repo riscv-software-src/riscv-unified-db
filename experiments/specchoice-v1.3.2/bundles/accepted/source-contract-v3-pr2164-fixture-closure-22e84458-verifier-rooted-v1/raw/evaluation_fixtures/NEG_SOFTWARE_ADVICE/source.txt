@@ -1,0 +1,7 @@
+Source class: software/compiler optimization advice (not a hardware architectural parameter).
+Constructed hard-negative control ("should" present thrice).
+
+Compilers should place likely-taken branches so that the fall-through path is
+the common case. Programmers should avoid hard-to-predict branches in hot loops
+when possible. Documentation should describe recommended layout only; this is
+not a RISC-V architectural parameter describing a configurable predictor table.

@@ -1,0 +1,40 @@
+Do not infer a parameter from a keyword alone.
+Distinguish who selects the choice space.
+Distinguish implementation-selected from ISA-fixed.
+Treat software advice and extension gating separately.
+Quote evidence verbatim.
+Prefer review when the decisive semantic axis is unknown.
+Do not invent numeric bounds.
+Do not infer final UDB alignment unless explicitly supported.
+Demonstration 1: retrieved contract pair SYNTH_PAIR_ALPHA canonical complete-pair payload:
+{"contrast":{"evidence_spans":[{"end_byte":33,"source_sha256":"24ec9332faf10e1e7cf4fe4bd12b8a57b2c891b4e58f5c12667e99df6eb9fc65","start_byte":0,"text":"Alpha contrast: ISA fixes label.\n"}],"final_status":"classify_out","frame":{"authority":{"evidence_span":{"end_byte":33,"source_sha256":"24ec9332faf10e1e7cf4fe4bd12b8a57b2c891b4e58f5c12667e99df6eb9fc65","start_byte":0,"text":"Alpha contrast: ISA fixes label.\n"},"value":"ISA"},"choice_object":{"evidence_span":{"end_byte":33,"source_sha256":"24ec9332faf10e1e7cf4fe4bd12b8a57b2c891b4e58f5c12667e99df6eb9fc65","start_byte":0,"text":"Alpha contrast: ISA fixes label.\n"},"value":"direct_value"},"choice_space_origin":{"evidence_span":{"end_byte":33,"source_sha256":"24ec9332faf10e1e7cf4fe4bd12b8a57b2c891b4e58f5c12667e99df6eb9fc65","start_byte":0,"text":"Alpha contrast: ISA fixes label.\n"},"value":"ISA_fixed"}},"source_sha256":"24ec9332faf10e1e7cf4fe4bd12b8a57b2c891b4e58f5c12667e99df6eb9fc65","source_text":"Alpha contrast: ISA fixes label.\n"},"count_eligible":false,"discriminating_axes":["authority","choice_space_origin"],"pair_id":"SYNTH_PAIR_ALPHA","positive":{"evidence_spans":[{"end_byte":46,"source_sha256":"3861c0f76ed0c7bfe023fc74f1af1a4506eb5aa53bd8c7e11e9d834fd9ac46f2","start_byte":0,"text":"Alpha positive: implementation chooses label.\n"}],"final_status":"accept","frame":{"authority":{"evidence_span":{"end_byte":46,"source_sha256":"3861c0f76ed0c7bfe023fc74f1af1a4506eb5aa53bd8c7e11e9d834fd9ac46f2","start_byte":0,"text":"Alpha positive: implementation chooses label.\n"},"value":"implementation"},"choice_object":{"evidence_span":{"end_byte":46,"source_sha256":"3861c0f76ed0c7bfe023fc74f1af1a4506eb5aa53bd8c7e11e9d834fd9ac46f2","start_byte":0,"text":"Alpha positive: implementation chooses label.\n"},"value":"direct_value"},"choice_space_origin":{"evidence_span":{"end_byte":46,"source_sha256":"3861c0f76ed0c7bfe023fc74f1af1a4506eb5aa53bd8c7e11e9d834fd9ac46f2","start_byte":0,"text":"Alpha positive: implementation chooses label.\n"},"value":"implementation_selected"}},"source_sha256":"3861c0f76ed0c7bfe023fc74f1af1a4506eb5aa53bd8c7e11e9d834fd9ac46f2","source_text":"Alpha positive: implementation chooses label.\n"},"shared_structure":["synthetic contract comparison","generic status treatment"],"test_only":true}
+Demonstration 2: retrieved contract pair SYNTH_PAIR_GAMMA canonical complete-pair payload:
+{"contrast":{"evidence_spans":[{"end_byte":32,"source_sha256":"5fa0d3cca4e4c101b3ba8eb9eb80de5ba1b76d838181e17f602dfc21130769c2","start_byte":0,"text":"Gamma contrast: ISA fixes flag.\n"}],"final_status":"classify_out","frame":{"authority":{"evidence_span":{"end_byte":32,"source_sha256":"5fa0d3cca4e4c101b3ba8eb9eb80de5ba1b76d838181e17f602dfc21130769c2","start_byte":0,"text":"Gamma contrast: ISA fixes flag.\n"},"value":"ISA"},"choice_object":{"evidence_span":{"end_byte":32,"source_sha256":"5fa0d3cca4e4c101b3ba8eb9eb80de5ba1b76d838181e17f602dfc21130769c2","start_byte":0,"text":"Gamma contrast: ISA fixes flag.\n"},"value":"presence"},"choice_space_origin":{"evidence_span":{"end_byte":32,"source_sha256":"5fa0d3cca4e4c101b3ba8eb9eb80de5ba1b76d838181e17f602dfc21130769c2","start_byte":0,"text":"Gamma contrast: ISA fixes flag.\n"},"value":"ISA_fixed"}},"source_sha256":"5fa0d3cca4e4c101b3ba8eb9eb80de5ba1b76d838181e17f602dfc21130769c2","source_text":"Gamma contrast: ISA fixes flag.\n"},"count_eligible":false,"discriminating_axes":["authority","choice_space_origin"],"pair_id":"SYNTH_PAIR_GAMMA","positive":{"evidence_spans":[{"end_byte":45,"source_sha256":"f48b6546a882f08b971644f7d42f97a97633fdd6943de03a3fb3b923cef010d6","start_byte":0,"text":"Gamma positive: implementation chooses flag.\n"}],"final_status":"accept","frame":{"authority":{"evidence_span":{"end_byte":45,"source_sha256":"f48b6546a882f08b971644f7d42f97a97633fdd6943de03a3fb3b923cef010d6","start_byte":0,"text":"Gamma positive: implementation chooses flag.\n"},"value":"implementation"},"choice_object":{"evidence_span":{"end_byte":45,"source_sha256":"f48b6546a882f08b971644f7d42f97a97633fdd6943de03a3fb3b923cef010d6","start_byte":0,"text":"Gamma positive: implementation chooses flag.\n"},"value":"presence"},"choice_space_origin":{"evidence_span":{"end_byte":45,"source_sha256":"f48b6546a882f08b971644f7d42f97a97633fdd6943de03a3fb3b923cef010d6","start_byte":0,"text":"Gamma positive: implementation chooses flag.\n"},"value":"implementation_selected"}},"source_sha256":"f48b6546a882f08b971644f7d42f97a97633fdd6943de03a3fb3b923cef010d6","source_text":"Gamma positive: implementation chooses flag.\n"},"shared_structure":["synthetic contract comparison","generic status treatment"],"test_only":true}
+Target source text:
+Contract fixture: choose a generic status label under synthetic guidance.
+Represent the passage using exactly three required semantic axes:
+1. authority:
+   who determines the value or legal behavior?
+2. choice_object:
+   what kind of thing is being selected or configured?
+3. choice_space_origin:
+   is the allowed choice space selected by the implementation,
+   fixed by the ISA, derived, not applicable, or unknown?
+For each DelegationFrame axis, quote a verbatim source span supporting that axis value.
+Then decide:
+- accept: the passage describes a plausible architectural parameter;
+- classify_out: the passage should be surfaced but should not become a parameter;
+- review: the passage contains a possible implementation choice but the decisive semantic axis is unresolved;
+- not_surfaced: no candidate finding is present.
+Encode not_surfaced only as:
+- surfaced: false
+- parameter_status: null
+- proposed_name: null
+- evidence_spans: []
+When surfaced is true:
+- parameter_status must be accept, classify_out, or review;
+- evidence_spans must be non-empty.
+Do not use not_surfaced as a parameter_status value.
+Return exactly one JSON object with exactly two top-level keys: "delegation_frame" and "adjudication".
+The adjudication object must contain exactly surfaced, parameter_status, proposed_name, evidence_spans, and rationale.
+For every surfaced finding, quote one or more verbatim source spans in adjudication.evidence_spans.

@@ -1,0 +1,5 @@
+id: NEG_FIXED_ENCODING
+kind: fixed_csr_encoding
+expect_extract: false
+expect_params: 0
+skill_risk: fixed convention must not become parameters

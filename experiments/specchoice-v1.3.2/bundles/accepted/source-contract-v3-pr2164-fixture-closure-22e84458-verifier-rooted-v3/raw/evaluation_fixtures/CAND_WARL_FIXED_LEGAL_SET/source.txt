@@ -1,0 +1,8 @@
+# Adversarial synthetic-from-normative pattern (frozen for eval).
+# Uses WARL vocabulary while fixing the legal set entirely in the ISA text
+# (no implementation choice of the legal value *set*).
+
+The example status field is a WARL field. Software may write any value, but
+implementations must legalize all writes to the single legal encoding 0.
+The only legal value of this field is 0; this is required for all
+implementations and is not implementation-defined.

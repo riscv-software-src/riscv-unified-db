@@ -1,0 +1,17 @@
+$schema: param_schema.json#
+kind: parameter
+name: ASIDLEN
+description: |
+  Number of implemented ASID bits. Maximum is 16 for XLEN==64 and 9 for
+  XLEN==32.
+long_name: ASID length
+schema:
+  type: integer
+  minimum: 0
+  maximum: 16
+definedBy:
+  extension:
+    name: S
+requirements:
+  idl(): |
+    MXLEN == 32 -> ASIDLEN <= 9;
