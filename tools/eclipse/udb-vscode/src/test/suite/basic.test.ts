@@ -25,7 +25,8 @@ suite('UDB LS – smoke', () => {
     this.timeout(30000);
     this.retries(2);
     // Give a slow language server time to recover before nudging validation again.
-    if (this.currentRetry() > 0) {
+    const currentRetry = (this.test as Mocha.Runnable & { currentRetry(): number }).currentRetry();
+    if (currentRetry > 0) {
       await new Promise(r => setTimeout(r, 1000));
     }
     // Use your new invalid fixture filename here if you renamed it.
