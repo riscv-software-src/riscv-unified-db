@@ -1,0 +1,10 @@
+id: POS_WARL_ASID_WIDTH
+class: NORM_CSR_WARL
+gold_name: ASIDLEN
+versioned_aliases:
+  - ASID_WIDTH
+expect_extract: true
+expect_status: existing_alias
+expect_udb_file: spec/std/isa/param/ASID_WIDTH.yaml
+must_have_excerpt: true
+skill_signal: UNSPECIFIED/ASIDLEN-style width

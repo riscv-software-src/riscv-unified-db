@@ -1,0 +1,1 @@
+The number of implemented ASID bits is implementation-defined, with a maximum of 16 for XLEN=64 and 9 for XLEN=32.

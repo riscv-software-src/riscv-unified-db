@@ -1,0 +1,1 @@
+{"adapter_version":"pr2164-adapter-v2","fixture_count":11,"raw_file_count":29,"schema_version":"2","score_bearing_allowlist":["fixture_id","category","expect_extract","expected_parameter_count","expected_parameter_names","evidence_required"]}

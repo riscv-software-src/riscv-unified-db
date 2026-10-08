@@ -1,0 +1,10 @@
+id: NEG_EXT_GATED_PBMTE
+kind: conditional_writability_but_extension_gated
+expect_extract: false
+expect_params: 0
+recall_case: true
+skill_risk: >
+  "is read-only zero" phrasing carries no WARL token, so a rule keyed on that
+  token misses it, but a rule that admits all such phrasing over-fires here.
+  The condition is an extension being absent, which UnifiedDB expresses with
+  definedBy rather than a parameter.

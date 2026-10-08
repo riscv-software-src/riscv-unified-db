@@ -1,0 +1,1 @@
+An implementation may have zero, sixteen, or sixty-four physical memory protection entries. The number of implemented PMP entries is implementation-defined within the architectural constraints.

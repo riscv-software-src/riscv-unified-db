@@ -1,0 +1,1 @@
+[{"code":"ACCEPTED_PARAMETER_NAME_MISSING","expected":"MTVEC_ACCESS","field":"adjudication.proposed_name","finding_id":"POS_CSR_RW_MTVEC_ACCESS:1","fixture_id":"POS_CSR_RW_MTVEC_ACCESS","observed":null,"occurrence":0,"severity":"warning","source_sha256":null}]
