@@ -215,8 +215,7 @@ fields:
       * `hip.VSSIP`
       * `hvip.VSSIP`
       * `vsip.SSIP` when `hideleg.VSSI` is set
-    type(): |
-      return VSSI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
+    type: RW
     reset_value: 0
     definedBy:
       extension:
@@ -372,8 +371,7 @@ fields:
 
       * `hip.VSEIP`
       * `vsip.SEIP` when `hideleg.VSEI` is set
-    type(): |
-      return VSEI_INTR_IMPL ? CsrFieldType::ROH : CsrFieldType::RO;
+    type: RO-H
     reset_value: 0
     definedBy:
       extension:
