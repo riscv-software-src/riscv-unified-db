@@ -39,6 +39,11 @@ access:
 operation(): |
   check_f_ok($encoding);
 
+  # STATUS: INCOMPLETE. Narrowing single -> half loses precision, so it needs
+  # IEEE 754 rounding (per _rm_), overflow/underflow and inexact handling.
+  # Only the NaN, infinity and zero cases below are handled. Every other
+  # input hits the assert(false) TODO. softfloat_roundPackToF16 does not exist
+  # in fp.idl yet.
   Bits<32> sp_value = F[fs1][31:0];
 
   Bits<1> sign = sp_value[31];
@@ -47,7 +52,8 @@ operation(): |
 
   if (exp == 0xFF) {
     if (frac != 0) {
-      if ((sp_value & 0x00400000) != 0) {
+      # NaN. A signaling NaN has the quiet bit (frac[22]) clear and raises NV.
+      if ((sp_value & 0x00400000) == 0) {
         set_fp_flag(FpFlag::NV);
       }
       F[fd] = nan_box(16, FLEN, HP_CANONICAL_NAN);
@@ -63,8 +69,10 @@ operation(): |
     if ((exp | frac16) == 0) {
       F[fd] = nan_box(16, FLEN, packToF16UI( sign, 0, 0 ));
     } else {
+      # TODO: finite nonzero inputs need softfloat_roundPackToF16, which is not implemented.
+      # The frac16/sticky computation above is unverified draft code.
       assert(false, "TODO: implement roundPackToF16");
-      # F[fd] = soffloat_roundPackToF16(sign, exp - 0x71, frac16 | 0x4000);
+      # F[fd] = softfloat_roundPackToF16(sign, exp - 0x71, frac16 | 0x4000);
     }
 
   }

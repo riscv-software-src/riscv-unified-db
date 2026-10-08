@@ -42,28 +42,43 @@ operation(): |
   Bits<5> exp = hp_value[14:10];
   Bits<10> frac = hp_value[9:0];
 
+  Bits<32> sp_value = 0;
+
+  # Widening half -> single is always exact, so no rounding is needed.
   if (exp == 0x1F) {
     if (frac != 0) {
-      if ((hp_value & 0x0200) != 0) {
+      # NaN. A signaling NaN has the quiet bit (frac[9]) clear and raises NV.
+      # Either way the result is the canonical single-precision NaN.
+      if ((hp_value & 0x0200) == 0) {
         set_fp_flag(FpFlag::NV);
       }
-      F[fd] = HP_CANONICAL_NAN;
+      sp_value = SP_CANONICAL_NAN;
     } else {
-      F[fd] = packToF32UI(sign, 0xFF, 0);
+      sp_value = packToF32UI(sign, 0xFF, 0);
+    }
+  } else if (exp == 0) {
+    if (frac == 0) {
+      sp_value = packToF32UI(sign, 0, 0);
+    } else {
+      # Subnormal half: value = frac * 2^-24. Shift the leading 1 of frac up to
+      # bit 10 (the implicit-bit position), drop it, and rebias the exponent.
+      Bits<16> frac16 = frac;
+      Bits<8> shift_dist = count_leading_zeros(16, frac16) - 5;
+      Bits<32> norm_frac = ((frac16 << shift_dist) & 0x3FF);
+      sp_value = packToF32UI(sign, 0x71 - shift_dist, norm_frac << 13);
     }
   } else {
-    if (exp != 0) {
-      if (frac != 0) {
-        F[fd] = packToF32UI(sign, 0, 0);
-      } else {
-        Bits<6> norm_exp;
-        (norm_exp, frac) = softfloat_normSubnormalF16Sig( frac );
-        exp = norm_exp - 1;
-        F[fd] = packToF32UI(sign, exp + 0x70, frac << 13);
-      }
-    } else {
-      F[fd] = packToF32UI(sign, exp + 0x70, frac << 13);
-    }
+    # Normal half: rebias the exponent (127 - 15 = 0x70) and widen the fraction
+    # from 10 to 23 bits.
+    Bits<8> sp_exp = exp;
+    Bits<32> frac32 = frac;
+    sp_value = packToF32UI(sign, sp_exp + 0x70, frac32 << 13);
+  }
+
+  if (implemented?(ExtensionName::D)) {
+    F[fd] = nan_box(32, 64, sp_value);
+  } else {
+    F[fd] = sp_value;
   }
 
   mark_f_state_dirty();
