@@ -44101,7 +44101,7 @@ Included in::
 == vfncvt.f.f.w
 
 Synopsis::
-Vector floating-point widening conversion
+Vector floating-point narrowing conversion
 
 Base::
 
@@ -44123,7 +44123,7 @@ Encoding::
 ....
 
 Description::
-Converts floating-point elements from vector register vs2 to a wider floating-point format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 standards.
+Converts double-width floating-point elements from vector register vs2 to a single-width floating-point format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 standards.
 
 
 Decode Variables::
@@ -44153,7 +44153,7 @@ Included in::
 == vfncvt.f.x.w
 
 Synopsis::
-Vector integer to floating-point widening conversion
+Vector integer to floating-point narrowing conversion
 
 Base::
 
@@ -44175,7 +44175,7 @@ Encoding::
 ....
 
 Description::
-Converts signed integer elements from vector register vs2 to a wider floating-point format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 standards.
+Converts double-width signed integer elements from vector register vs2 to a single-width floating-point format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 standards.
 
 
 Decode Variables::
@@ -44205,7 +44205,7 @@ Included in::
 == vfncvt.f.xu.w
 
 Synopsis::
-Vector unsigned integer to floating-point widening conversion
+Vector unsigned integer to floating-point narrowing conversion
 
 Base::
 
@@ -44227,7 +44227,7 @@ Encoding::
 ....
 
 Description::
-Converts unsigned integer elements from vector register vs2 to a wider floating-point format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 standards.
+Converts double-width unsigned integer elements from vector register vs2 to a single-width floating-point format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 standards.
 
 
 Decode Variables::
@@ -44257,7 +44257,7 @@ Included in::
 == vfncvt.rod.f.f.w
 
 Synopsis::
-Vector floating-point format conversion with round-to-odd (widening)
+Vector floating-point format conversion with round-to-odd (narrowing)
 
 Base::
 
@@ -44279,7 +44279,7 @@ Encoding::
 ....
 
 Description::
-Converts floating-point elements from vector register vs2 to a wider floating-point format using round-to-odd mode and stores results in vector register vd, using vector mask vm.
+Converts double-width floating-point elements from vector register vs2 to a single-width floating-point format using round-to-odd mode and stores results in vector register vd, using vector mask vm.
 
 
 Decode Variables::
@@ -44309,7 +44309,7 @@ Included in::
 == vfncvt.rtz.x.f.w
 
 Synopsis::
-Vector floating-point to integer widening conversion with truncation
+Vector floating-point to integer narrowing conversion with truncation
 
 Base::
 
@@ -44331,7 +44331,7 @@ Encoding::
 ....
 
 Description::
-Converts floating-point elements from vector register vs2 to a wider integer format using round-toward-zero mode and stores results in vector register vd, using vector mask vm.
+Converts double-width floating-point elements from vector register vs2 to a single-width integer format using round-toward-zero mode and stores results in vector register vd, using vector mask vm.
 
 
 Decode Variables::
@@ -44361,7 +44361,7 @@ Included in::
 == vfncvt.rtz.xu.f.w
 
 Synopsis::
-Vector floating-point to unsigned integer widening conversion with truncation
+Vector floating-point to unsigned integer narrowing conversion with truncation
 
 Base::
 
@@ -44383,7 +44383,7 @@ Encoding::
 ....
 
 Description::
-Converts floating-point elements from vector register vs2 to a wider unsigned integer format using round-toward-zero mode and stores results in vector register vd, using vector mask vm.
+Converts double-width floating-point elements from vector register vs2 to a single-width unsigned integer format using round-toward-zero mode and stores results in vector register vd, using vector mask vm.
 
 
 Decode Variables::
@@ -44468,7 +44468,7 @@ Included in::
 == vfncvt.x.f.w
 
 Synopsis::
-Vector floating-point to integer widening conversion
+Vector floating-point to integer narrowing conversion
 
 Base::
 
@@ -44490,7 +44490,7 @@ Encoding::
 ....
 
 Description::
-Converts floating-point elements from vector register vs2 to a wider integer format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 rounding rules.
+Converts double-width floating-point elements from vector register vs2 to a single-width integer format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 rounding rules.
 
 
 Decode Variables::
@@ -44520,7 +44520,7 @@ Included in::
 == vfncvt.xu.f.w
 
 Synopsis::
-Vector floating-point to unsigned integer widening conversion
+Vector floating-point to unsigned integer narrowing conversion
 
 Base::
 
@@ -44542,7 +44542,7 @@ Encoding::
 ....
 
 Description::
-Converts floating-point elements from vector register vs2 to a wider unsigned integer format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 rounding rules.
+Converts double-width floating-point elements from vector register vs2 to a single-width unsigned integer format and stores results in vector register vd, using vector mask vm. The conversion follows IEEE 754 rounding rules.
 
 
 Decode Variables::
@@ -61535,7 +61535,7 @@ Included in::
 == vnclip.wi
 
 Synopsis::
-Vector widening signed clip with immediate
+Vector narrowing signed clip with immediate
 
 Base::
 
@@ -61557,7 +61557,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed clip operation on elements from vector register vs2 using immediate clip value and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and widens the result.
+Performs narrowing signed clip operation on double-width elements from vector register vs2 using immediate clip value and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and packs the result into a narrower destination.
 
 
 Decode Variables::
@@ -61588,7 +61588,7 @@ Included in::
 == vnclip.wv
 
 Synopsis::
-Vector widening signed clip
+Vector narrowing signed clip
 
 Base::
 
@@ -61610,7 +61610,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed clip operation on elements from vector register vs2 using clip values from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and widens the result.
+Performs narrowing signed clip operation on double-width elements from vector register vs2 using clip values from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and packs the result into a narrower destination.
 
 
 Decode Variables::
@@ -61641,7 +61641,7 @@ Included in::
 == vnclip.wx
 
 Synopsis::
-Vector widening signed clip with scalar
+Vector narrowing signed clip with scalar
 
 Base::
 
@@ -61663,7 +61663,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed clip operation on elements from vector register vs2 using scalar clip value from register xs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and widens the result.
+Performs narrowing signed clip operation on double-width elements from vector register vs2 using scalar clip value from register xs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and packs the result into a narrower destination.
 
 
 Decode Variables::
@@ -61694,7 +61694,7 @@ Included in::
 == vnclipu.wi
 
 Synopsis::
-Vector widening unsigned clip with immediate
+Vector narrowing unsigned clip with immediate
 
 Base::
 
@@ -61716,7 +61716,7 @@ Encoding::
 ....
 
 Description::
-Performs widening unsigned clip operation on elements from vector register vs2 using immediate clip value and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and widens the result.
+Performs narrowing unsigned clip operation on double-width elements from vector register vs2 using immediate clip value and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and packs the result into a narrower destination.
 
 
 Decode Variables::
@@ -61747,7 +61747,7 @@ Included in::
 == vnclipu.wv
 
 Synopsis::
-Vector widening unsigned clip
+Vector narrowing unsigned clip
 
 Base::
 
@@ -61769,7 +61769,7 @@ Encoding::
 ....
 
 Description::
-Performs widening unsigned clip operation on elements from vector register vs2 using clip values from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and widens the result.
+Performs narrowing unsigned clip operation on double-width elements from vector register vs2 using clip values from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and packs the result into a narrower destination.
 
 
 Decode Variables::
@@ -61800,7 +61800,7 @@ Included in::
 == vnclipu.wx
 
 Synopsis::
-Vector widening unsigned clip with scalar
+Vector narrowing unsigned clip with scalar
 
 Base::
 
@@ -61822,7 +61822,7 @@ Encoding::
 ....
 
 Description::
-Performs widening unsigned clip operation on elements from vector register vs2 using scalar clip value from register xs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and widens the result.
+Performs narrowing unsigned clip operation on double-width elements from vector register vs2 using scalar clip value from register xs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and packs the result into a narrower destination.
 
 
 Decode Variables::
@@ -62065,7 +62065,7 @@ Included in::
 == vnsra.wi
 
 Synopsis::
-Vector widening signed shift right arithmetic with immediate
+Vector narrowing signed shift right arithmetic with immediate
 
 Base::
 
@@ -62087,7 +62087,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed arithmetic right shift on elements from vector register vs2 by immediate shift amount and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and widens the result.
+Performs narrowing signed arithmetic right shift on double-width elements from vector register vs2 by immediate shift amount and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and writes a single-width destination.
 
 
 Decode Variables::
@@ -62118,7 +62118,7 @@ Included in::
 == vnsra.wv
 
 Synopsis::
-Vector widening signed shift right arithmetic
+Vector narrowing signed shift right arithmetic
 
 Base::
 
@@ -62140,7 +62140,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed arithmetic right shift on elements from vector register vs2 by shift amounts from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and widens the result.
+Performs narrowing signed arithmetic right shift on double-width elements from vector register vs2 by shift amounts from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and writes a single-width destination.
 
 
 Decode Variables::
@@ -62171,7 +62171,7 @@ Included in::
 == vnsra.wx
 
 Synopsis::
-Vector widening signed shift right arithmetic with scalar
+Vector narrowing signed shift right arithmetic with scalar
 
 Base::
 
@@ -62193,7 +62193,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed arithmetic right shift on elements from vector register vs2 by shift amount from scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and widens the result.
+Performs narrowing signed arithmetic right shift on double-width elements from vector register vs2 by shift amount from scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and writes a single-width destination.
 
 
 Decode Variables::
@@ -62224,7 +62224,7 @@ Included in::
 == vnsrl.wi
 
 Synopsis::
-Vector widening logical shift right with immediate
+Vector narrowing logical shift right with immediate
 
 Base::
 
@@ -62246,7 +62246,7 @@ Encoding::
 ....
 
 Description::
-Performs widening logical right shift on elements from vector register vs2 by immediate shift amount and stores results in vector register vd, using vector mask vm. The operation fills with zeros and widens the result.
+Performs narrowing logical right shift on double-width elements from vector register vs2 by immediate shift amount and stores results in vector register vd, using vector mask vm. The operation fills with zeros and writes a single-width destination.
 
 
 Decode Variables::
@@ -62277,7 +62277,7 @@ Included in::
 == vnsrl.wv
 
 Synopsis::
-Vector widening logical shift right
+Vector narrowing logical shift right
 
 Base::
 
@@ -62299,7 +62299,7 @@ Encoding::
 ....
 
 Description::
-Performs widening logical right shift on elements from vector register vs2 by shift amounts from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation fills with zeros and widens the result.
+Performs narrowing logical right shift on double-width elements from vector register vs2 by shift amounts from vector register vs1 and stores results in vector register vd, using vector mask vm. The operation fills with zeros and writes a single-width destination.
 
 
 Decode Variables::
@@ -62330,7 +62330,7 @@ Included in::
 == vnsrl.wx
 
 Synopsis::
-Vector widening logical shift right with scalar
+Vector narrowing logical shift right with scalar
 
 Base::
 
@@ -62352,7 +62352,7 @@ Encoding::
 ....
 
 Description::
-Performs widening logical right shift on elements from vector register vs2 by shift amount from scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation fills with zeros and widens the result.
+Performs narrowing logical right shift on double-width elements from vector register vs2 by shift amount from scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation fills with zeros and writes a single-width destination.
 
 
 Decode Variables::
