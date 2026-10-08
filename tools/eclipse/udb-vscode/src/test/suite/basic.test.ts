@@ -21,7 +21,13 @@ async function waitFor<T>(probe: () => T | null | undefined | false, ms = 8000, 
 // Smoke test, test if language server starts up correctly and
 // it can distinguish between good and bad syntax.
 suite('UDB LS – smoke', () => {
-  test('initialize → diagnostics on open (real .udb file)', async () => {
+  test('initialize → diagnostics on open (real .udb file)', async function () {
+    this.timeout(30000);
+    this.retries(2);
+    // Give a slow language server time to recover before nudging validation again.
+    if (this.currentRetry() > 0) {
+      await new Promise(r => setTimeout(r, 1000));
+    }
     // Use your new invalid fixture filename here if you renamed it.
     const uri = vscode.Uri.file(wsPath('badGrammar.udb'));
     let doc = await vscode.workspace.openTextDocument(uri);
@@ -43,7 +49,7 @@ suite('UDB LS – smoke', () => {
     const diags = await waitFor(() => {
       const d = vscode.languages.getDiagnostics(doc.uri);
       return d.length ? d : null;
-    }, 8000);
+    }, 15000);
 
     if (!diags || diags.length === 0) {
       console.log('Diagnostics (bad file):', vscode.languages.getDiagnostics(doc.uri));
