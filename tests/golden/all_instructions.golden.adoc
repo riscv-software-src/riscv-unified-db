@@ -18292,7 +18292,7 @@ Included in::
 == fcvt.h.s
 
 Synopsis::
-Convert half-precision float to a single-precision float
+Convert single-precision float to a half-precision float
 
 Base::
 
@@ -18314,7 +18314,7 @@ Encoding::
 ....
 
 Description::
-Converts a half-precision number in floating-point register _fs1_ into a single-precision floating-point number in
+Converts a single-precision number in floating-point register _fs1_ into a half-precision floating-point number in
 floating-point register _fd_.
 
 xref:insts:fcvt_h_s.adoc#udb:doc:inst:fcvt_h_s[fcvt.h.s] rounds according to the _rm_ field.
@@ -19325,7 +19325,7 @@ This instruction requires the following:
 == fcvt.s.h
 
 Synopsis::
-Convert single-precision float to a half-precision float
+Convert half-precision float to a single-precision float
 
 Base::
 
@@ -19347,7 +19347,7 @@ Encoding::
 ....
 
 Description::
-Converts a single-precision number in floating-point register _fs1_ into a half-precision floating-point number in
+Converts a half-precision number in floating-point register _fs1_ into a single-precision floating-point number in
 floating-point register _fd_.
 
 xref:insts:fcvt_s_h.adoc#udb:doc:inst:fcvt_s_h[fcvt.s.h] will never round, and so the 'rm' field is effectively ignored.
