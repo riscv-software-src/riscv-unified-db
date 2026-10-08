@@ -6,9 +6,65 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Sdext
-long_name: Debug
+long_name: External debug support
 description: |
-  Hart-visible portion of the debug spec.
+  Sdext is the hart-visible portion of the RISC-V Debug Specification. It
+  defines Debug Mode, the `dret` instruction, and the `dcsr`, `dpc`,
+  `dscratch0`, and `dscratch1` CSRs that allow an external debugger (via the
+  Debug Module) to halt, inspect, and resume a hart.
+
+  *Debug Mode*
+
+  Debug Mode is a special processor mode used only when a hart is halted for
+  external debugging. While in Debug Mode:
+
+  * All operations are executed with machine-mode privilege, except that
+    `mstatus.MPRV` is ignored unless `dcsr.MPRVEN` is set.
+  * Interrupts (including NMI) are not taken.
+  * Exceptions do not update any registers (including `mcause`, `mepc`, and
+    `mtval`); the hart instead returns to the Debug Module's park loop.
+  * Triggers do not fire.
+  * Counters and `time` may be stopped, as controlled by `dcsr.STOPCOUNT` and
+    `dcsr.STOPTIME`.
+  * The debug CSRs (`dcsr`, `dpc`, `dscratch0`, `dscratch1`) are accessible.
+    Accessing them outside of Debug Mode raises an Illegal Instruction
+    exception.
+
+  *Halting*
+
+  A hart enters Debug Mode (halts) in response to a halt request from the
+  debugger, a halt-on-reset request, an `ebreak` executed in a mode whose
+  `dcsr.EBREAK*` bit is set, a trigger with `action`=1, completion of a
+  single step, membership in a halt group, or (with Smdbltrp and
+  `dcsr.CETRIG`=1) a critical error. On entry:
+
+  . `dcsr.CAUSE` (and, where applicable, `dcsr.EXTCAUSE`) records why Debug
+    Mode was entered.
+  . `dcsr.PRV` and `dcsr.V` record the privilege and virtualization mode the
+    hart was in.
+  . `dpc` records the virtual address of the next instruction that would have
+    executed.
+  . If Zicfilp is implemented, `dcsr.PELP` records the current `ELP` state and
+    `ELP` is set to `NO_LP_EXPECTED`.
+
+  *Resuming*
+
+  The debugger resumes the hart by having it execute `dret` from Debug Mode.
+  On resume, the PC is set to `dpc`, the privilege and virtualization mode
+  are restored from `dcsr.PRV` and `dcsr.V`, `mstatus.MPRV` (and, with
+  Smdbltrp/Ssdbltrp, the double-trap bits) are cleared when returning to a
+  less-privileged mode, `ELP` is restored from `dcsr.PELP` when Zicfilp is
+  implemented, and the hart leaves Debug Mode. A debugger may write `dcsr`
+  and `dpc` before resuming to change where and in what mode execution
+  continues.
+
+  *Single step*
+
+  When `dcsr.STEP` is set and the hart resumes, it executes exactly one
+  instruction and then re-enters Debug Mode with `dcsr.CAUSE` = 4 (step). If
+  that instruction takes an exception, the hart enters Debug Mode
+  immediately after the PC is updated to the trap handler. `dcsr.STEPIE`
+  controls whether interrupts may be taken while single stepping.
 type: privileged
 versions:
   - version: "1.0.0"
