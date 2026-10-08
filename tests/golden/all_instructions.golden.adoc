@@ -17307,7 +17307,7 @@ xlen+++()+++ == 64
 == dret
 
 Synopsis::
-No synopsis available
+Return from Debug Mode
 
 Base::
 
@@ -17329,7 +17329,24 @@ Encoding::
 ....
 
 Description::
-No description available.
+Resumes execution after Debug Mode. xref:insts:dret.adoc#udb:doc:inst:dret[dret] is only legal in Debug Mode;
+executing it in any other mode raises an Illegal Instruction exception.
+
+When executed in Debug Mode, xref:insts:dret.adoc#udb:doc:inst:dret[dret]:
+
+. Sets the PC to the value in xref:csrs:dpc.adoc#udb:doc:csr:dpc[dpc].
+. Changes the privilege and virtualization mode to those held in
+  xref:csrs:dcsr.adoc#udb:doc:csr_field:dcsr:PRV[dcsr.PRV] and xref:csrs:dcsr.adoc#udb:doc:csr_field:dcsr:V[dcsr.V].
+. If the new privilege mode is less privileged than M-mode, clears
+  xref:csrs:mstatus.adoc#udb:doc:csr_field:mstatus:MPRV[mstatus.MPRV].
+. If Smdbltrp is implemented and the new privilege mode is less privileged
+  than M-mode, clears xref:csrs:mstatus.adoc#udb:doc:csr_field:mstatus:MDT[mstatus.MDT].
+. If Ssdbltrp is implemented and the new privilege mode is U, VS, or VU,
+  clears xref:csrs:sstatus.adoc#udb:doc:csr:sstatus[sstatus]; if the new mode is VU, also clears xref:csrs:vsstatus.adoc#udb:doc:csr:vsstatus[vsstatus].
+. If Zicfilp is implemented, sets `ELP` to xref:csrs:dcsr.adoc#udb:doc:csr_field:dcsr:PELP[dcsr.PELP] if Zicfilp is
+  enabled (`xLPE`=1) in the new privilege mode, otherwise to
+  `NO_LP_EXPECTED`, and then clears xref:csrs:dcsr.adoc#udb:doc:csr_field:dcsr:PELP[dcsr.PELP].
+. Leaves Debug Mode.
 
 
 Decode Variables::
