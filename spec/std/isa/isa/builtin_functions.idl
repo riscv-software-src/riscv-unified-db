@@ -687,3 +687,22 @@ builtin function atomic_read_modify_write_64 {
     it's assumed the RMW is OK to proceed.
   }
 }
+builtin function read_seed {
+ returns Bits<32>
+ description {
+   Poll the implementation's entropy source and return the 32-bit seed value.
+   Bits 31:30 hold the OPST status and bits 15:0 hold the entropy, which is
+   only meaningful when OPST is ES16. Each poll returns unique randomness,
+   even if its numerical value happens to match a previous poll.
+   A single call represents one complete poll, so the status and the entropy
+   it returns describe the same state of the source.
+ }
+}
+builtin function write_seed {
+ description {
+   Signal a write to the seed CSR.
+   The written value is ignored; the write exists to signal polling and
+   flushing, so an implementation may use this to advance the state of its
+   entropy source.
+ }
+}

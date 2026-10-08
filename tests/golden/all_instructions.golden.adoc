@@ -62610,6 +62610,123 @@ Included in::
 
 
 
+[#udb:doc:inst:vpaire_vv]
+== vpaire.vv
+
+Synopsis::
+Vector pair even
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vpaire.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0xf,"type":2}]}
+....
+
+Description::
+Interleaves even-indexed elements of two source vector register groups into
+the destination. All operands have EMUL=LMUL. For destination index `i`,
+even indices read `vs2[i]` and odd indices read `vs1[i-1]`, producing
+`[vs2[0], vs1[0], vs2[2], vs1[2], ...]`. Standard vector masking,
+prestart, inactive, and tail handling applies. The destination may not
+overlap either source group.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvzip*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vpairo_vv]
+== vpairo.vv
+
+Synopsis::
+Vector pair odd
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vpairo.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0xf,"type":2}]}
+....
+
+Description::
+Interleaves odd-indexed elements of two source vector register groups into
+the destination. All operands have EMUL=LMUL. For destination index `i`,
+even indices read `vs2[i+1]` and odd indices read `vs1[i]`, producing
+`[vs2[1], vs1[1], vs2[3], vs1[3], ...]`. When xref:csrs:vl.adoc#udb:doc:csr:vl[vl] is odd, the final
+out-of-range source position contributes zero; no source at or above xref:csrs:vl.adoc#udb:doc:csr:vl[vl]
+is read. Standard vector masking, prestart, inactive, and tail handling
+applies. The destination may not overlap either source group.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvzip*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vredand_vs]
 == vredand.vs
 
@@ -73571,6 +73688,118 @@ Included in::
 
 
 
+[#udb:doc:inst:vunzipe_v]
+== vunzipe.v
+
+Synopsis::
+Vector unzip even
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vunzipe.v vd, vs2, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0x5a,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+....
+
+Description::
+Extracts even-indexed elements from source vector register group `vs2`,
+with EMUL=2*LMUL, into destination `vd`, with EMUL=LMUL. For `0 <= i < vl`,
+`vd[i] = vs2[2*i]`; source indices below `2*vl` may be read. `LMUL=8`
+and masked encodings (`vm=0`) are illegal. Destination/source overlap is
+allowed only when `vd` equals `vs2`, as for narrowing instructions.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvzip*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vunzipo_v]
+== vunzipo.v
+
+Synopsis::
+Vector unzip odd
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vunzipo.v vd, vs2, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0x7a,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+....
+
+Description::
+Extracts odd-indexed elements from source vector register group `vs2`,
+with EMUL=2*LMUL, into destination `vd`, with EMUL=LMUL. For `0 <= i < vl`,
+`vd[i] = vs2[2*i+1]`; source indices below `2*vl` may be read. `LMUL=8`
+and masked encodings (`vm=0`) are illegal. Destination/source overlap is
+allowed only when `vd` equals `vs2`, as for narrowing instructions.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvzip*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vwabda_vv]
 == vwabda.vv
 
@@ -75796,6 +76025,65 @@ Included in::
 | Extension | Version
 
 | *Zvl32b*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vzip_vv]
+== vzip.vv
+
+Synopsis::
+Vector zip
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vzip.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x3e,"type":2}]}
+....
+
+Description::
+Interleaves source vector register groups `vs2` and `vs1`, each with
+EMUL=LMUL/2, into destination `vd` with EMUL=LMUL. For destination index
+`i`, even indices read `vs2[i/2]` and odd indices read `vs1[i/2]`.
+Standard vector masking, prestart, inactive, and tail handling applies.
+The source and destination groups may overlap only when source EMUL is at
+least 1 and their highest-numbered registers coincide. The encoding is
+illegal when `2*SEW > LMUL * ELEN` or overlap rules are violated.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvzip*
 | any
 |===
 
