@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vfncvt.rod.f.f.w
-long_name: "Vector floating-point format conversion with round-to-odd (widening)"
+long_name: "Vector floating-point format conversion with round-to-odd (narrowing)"
 description: |
-  Converts floating-point elements from vector register vs2 to a wider floating-point format using round-to-odd mode and stores results in vector register vd, using vector mask vm.
+  Converts double-width floating-point elements from vector register vs2 to a single-width floating-point format using round-to-odd mode and stores results in vector register vd, using vector mask vm.
 definedBy:
   extension:
     anyOf:
