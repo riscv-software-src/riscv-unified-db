@@ -89,5 +89,3 @@ operation(): |
 
   set_mode(new_mode);
   $pc = $bits(CSR[dpc]);
-
-  # TODO: leave Debug Mode. UDB's IDL does not yet model Debug Mode state.
