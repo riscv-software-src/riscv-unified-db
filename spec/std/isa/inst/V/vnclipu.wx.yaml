@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vnclipu.wx
-long_name: "Vector widening unsigned clip with scalar"
+long_name: "Vector narrowing unsigned clip with scalar"
 description: |
-  Performs widening unsigned clip operation on elements from vector register vs2 using scalar clip value from register xs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and widens the result.
+  Performs narrowing unsigned clip operation on double-width elements from vector register vs2 using scalar clip value from register xs1 and stores results in vector register vd, using vector mask vm. The operation clips values to a specified range and packs the result into a narrower destination.
 definedBy:
   extension:
     name: Zvl32b
