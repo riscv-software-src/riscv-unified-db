@@ -865,6 +865,18 @@ jobs:
       - name: Check schema versions against published URLs
         run: ./do gen:schemas && ./bin/python tools/scripts/check_schema_versions.py
 
+  regress-param-enum-literals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Unit test parameter enum literal checker
+        run: ./bin/python -m unittest tools.scripts.test.test_check_param_enum_literals
+      - name: Check parameter enum string literals in IDL comparisons
+        run: ./bin/python tools/scripts/check_param_enum_literals.py
+
   regress-schema-docs:
     runs-on: ubuntu-latest
     steps:
@@ -1007,6 +1019,7 @@ jobs:
       - build-instruction-appendix
       - build-profile
       - regress-schema-versions
+      - regress-param-enum-literals
       - regress-schema-docs
       - build-idl-doc
       - check-gem-versions
