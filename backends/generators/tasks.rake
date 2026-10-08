@@ -7,6 +7,7 @@ require 'tempfile'
 directory "#{$root}/gen/go"
 directory "#{$root}/gen/c_header"
 directory "#{$root}/gen/sverilog"
+directory "#{$root}/gen/gas_testsuite"
 
 def with_resolved_exception_codes(cfg_arch)
   # Process ERB templates in exception codes using Ruby ERB processing
@@ -126,5 +127,43 @@ namespace :gen do
          "--resolved-codes=#{resolved_codes} " \
          "--output=#{output_dir}riscv_decode_package.svh --include-all"
     end
+  end
+
+  desc <<~DESC
+    Generate GAS (GNU Assembler) testsuite files from RISC-V instruction definitions
+    These test files are used for testing the binutils GAS assembler.
+
+    Options:
+     * CONFIG - Configuration name (defaults to "_")
+     * OUTPUT_DIR - Output directory for generated test files (defaults to "#{$root}/gen/gas_testsuite")
+     * EXTENSION - Optionally specify extension(s) to generate tests for (e.g., "Zba,Zbb")
+     * ARCH - Target architecture: RV32, RV64, or BOTH (defaults to "RV64")
+  DESC
+  task gas_testsuite: "#{$root}/gen/gas_testsuite" do
+    config_name = ENV["CONFIG"] || "_"
+    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/gas_testsuite/"
+    extensions = ENV["EXTENSION"]
+    arch = ENV["ARCH"] || "RV64"
+
+    # Ensure the output directory exists
+    FileUtils.mkdir_p output_dir
+
+    # Get the arch paths based on the config
+    resolver = Udb::Resolver.new
+    cfg_arch = resolver.cfg_arch_for(config_name)
+    inst_dir = cfg_arch.path / "inst"
+
+    # Build the command
+    cmd = "/opt/venv/bin/python3 #{$root}/backends/generators/gas_testsuite/generate_gas_tests.py " \
+          "--inst-dir=#{inst_dir} --output-dir=#{output_dir} --arch=#{arch} --include-all"
+
+    # Add extension filter if specified
+    if extensions
+      extensions.split(",").each do |ext|
+        cmd += " --extension=#{ext.strip}"
+      end
+    end
+
+    sh cmd
   end
 end
