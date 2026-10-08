@@ -193,6 +193,17 @@ z3_version = Udb::Z3_VERSION
 z3_dir  = File.join(xdg_cache, "udb", "z3", z3_version, cpu)
 z3_file = File.join(z3_dir, "libz3.so")
 
+if RbConfig::CONFIG["host_os"] =~ /darwin|mac os/
+  abort <<~ERROR
+    ERROR: Prebuilt Z3 binaries are not yet available for macOS.
+    The published GitHub release assets contain Linux libz3.so binaries, which cannot be loaded on macOS.
+    If you previously ran bin/setup on macOS, remove the cached Z3 directory:
+
+      #{z3_dir}
+    See https://github.com/riscv/riscv-unified-db/issues/1996
+  ERROR
+end
+
 unless File.exist?(z3_file)
   FileUtils.mkdir_p(z3_dir)
   url_str = "https://github.com/#{GITHUB_REPO}/releases/download/#{z3_version}/libz3-#{cpu}.so"
