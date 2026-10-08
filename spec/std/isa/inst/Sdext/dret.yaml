@@ -42,57 +42,52 @@ data_independent_timing: false
 operation(): |
   # UDB does not yet model Debug Mode state, so the hart can never be in Debug
   # Mode and dret is always illegal, regardless of privilege mode.
+  # TODO: once Debug Mode is modeled, raise this only when the hart is not in
+  # Debug Mode.
   raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
 
-  # TODO: once Debug Mode is modeled, raise the exception above only when the
-  # hart is not in Debug Mode, and restore the resume logic below.
-  #
-  # # determine the resume mode from dcsr.PRV/dcsr.V
-  # PrivilegeMode new_mode = PrivilegeMode::M;
-  # if (CSR[dcsr].PRV == 2'b11) {
-  #   new_mode = PrivilegeMode::M;
-  # } else if (CSR[dcsr].PRV == 2'b01) {
-  #   new_mode = PrivilegeMode::S;
-  #   if (implemented?(ExtensionName::H)) {
-  #     if (CSR[dcsr].V == 1'b1) {
-  #       new_mode = PrivilegeMode::VS;
-  #     }
-  #   }
-  # } else if (CSR[dcsr].PRV == 2'b00) {
-  #   new_mode = PrivilegeMode::U;
-  #   if (implemented?(ExtensionName::H)) {
-  #     if (CSR[dcsr].V == 1'b1) {
-  #       new_mode = PrivilegeMode::VU;
-  #     }
-  #   }
-  # } else {
-  #   unpredictable("dcsr.PRV holds a reserved encoding; the hart may resume in any supported privilege mode");
-  # }
-  #
-  # if (new_mode != PrivilegeMode::M) {
-  #   if (implemented?(ExtensionName::U)) {
-  #     CSR[mstatus].MPRV = 0;
-  #   }
-  #   if (implemented?(ExtensionName::Smdbltrp)) {
-  #     if (xlen() == 64) {
-  #       CSR[mstatus].MDT = 1'b0;
-  #     } else {
-  #       CSR[mstatush].MDT = 1'b0;
-  #     }
-  #   }
-  # }
-  #
-  # # TODO: Ssdbltrp: if new_mode is U, VS, or VU, clear sstatus.SDT; if new_mode
-  # # is VU, also clear vsstatus.SDT. UDB does not yet define the SDT fields.
-  #
-  # if (implemented?(ExtensionName::Zicfilp)) {
-  #   # TODO: set ELP to dcsr.PELP if xLPE is enabled for new_mode, otherwise to
-  #   # NO_LP_EXPECTED. UDB does not yet model the ELP state, so this restore
-  #   # must happen before dcsr.PELP is cleared below once it is added.
-  #   CSR[dcsr].PELP = 1'b0;
-  # }
-  #
-  # set_mode(new_mode);
-  # $pc = $bits(CSR[dpc]);
-  #
-  # # TODO: leave Debug Mode. UDB's IDL does not yet model Debug Mode state.
+  # determine the resume mode from dcsr.PRV/dcsr.V
+  PrivilegeMode new_mode = PrivilegeMode::M;
+  if (CSR[dcsr].PRV == 2'b11) {
+    new_mode = PrivilegeMode::M;
+  } else if (CSR[dcsr].PRV == 2'b01) {
+    new_mode = PrivilegeMode::S;
+    if (implemented?(ExtensionName::H)) {
+      if (CSR[dcsr].V == 1'b1) {
+        new_mode = PrivilegeMode::VS;
+      }
+    }
+  } else if (CSR[dcsr].PRV == 2'b00) {
+    new_mode = PrivilegeMode::U;
+    if (implemented?(ExtensionName::H)) {
+      if (CSR[dcsr].V == 1'b1) {
+        new_mode = PrivilegeMode::VU;
+      }
+    }
+  } else {
+    unpredictable("dcsr.PRV holds a reserved encoding; the hart may resume in any supported privilege mode");
+  }
+
+  if (new_mode != PrivilegeMode::M) {
+    if (implemented?(ExtensionName::U)) {
+      CSR[mstatus].MPRV = 0;
+    }
+    if (implemented?(ExtensionName::Smdbltrp)) {
+      CSR[mstatus].MDT = 1'b0;
+    }
+  }
+
+  # TODO: Ssdbltrp: if new_mode is U, VS, or VU, clear sstatus.SDT; if new_mode
+  # is VU, also clear vsstatus.SDT. UDB does not yet define the SDT fields.
+
+  if (implemented?(ExtensionName::Zicfilp)) {
+    # TODO: set ELP to dcsr.PELP if xLPE is enabled for new_mode, otherwise to
+    # NO_LP_EXPECTED. UDB does not yet model the ELP state, so this restore
+    # must happen before dcsr.PELP is cleared below once it is added.
+    CSR[dcsr].PELP = 1'b0;
+  }
+
+  set_mode(new_mode);
+  $pc = $bits(CSR[dpc]);
+
+  # TODO: leave Debug Mode. UDB's IDL does not yet model Debug Mode state.
