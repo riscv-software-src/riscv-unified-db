@@ -656,6 +656,38 @@ builtin function atomically_set_pte_a_d {
   }
 }
 
+builtin function atomic_read_modify_write_8 {
+  returns Bits<8>
+  arguments
+    Bits<PHYS_ADDR_WIDTH>  phys_addr,
+    Bits<8>                value,
+    AmoOperation           op
+  description {
+    Atomically read-modify-write 8-bits starting at phys_address using +value+ and +op+.
+
+    Return the original (unmodified) read value.
+
+    All access checks/alignment checks/etc. should be done before calling this function;
+    it's assumed the RMW is OK to proceed.
+  }
+}
+
+builtin function atomic_read_modify_write_16 {
+  returns Bits<16>
+  arguments
+    Bits<PHYS_ADDR_WIDTH>  phys_addr,
+    Bits<16>               value,
+    AmoOperation           op
+  description {
+    Atomically read-modify-write 16-bits starting at phys_address using +value+ and +op+.
+
+    Return the original (unmodified) read value.
+
+    All access checks/alignment checks/etc. should be done before calling this function;
+    it's assumed the RMW is OK to proceed.
+  }
+}
+
 builtin function atomic_read_modify_write_32 {
   returns Bits<32>
   arguments

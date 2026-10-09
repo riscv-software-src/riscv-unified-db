@@ -217,6 +217,128 @@ namespace udb {
                                    uint32_t pte_len) {
       return true;
     }
+    uint64_t atomic_read_modify_write_8(uint64_t phys_addr, uint64_t value,
+                                        AmoOperation op) {
+      switch (op.value()) {
+        case AmoOperation::Swap: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr, value, 1);
+          return orig;
+        }
+        case AmoOperation::Add: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr, orig + value, 1);
+          return orig;
+        }
+        case AmoOperation::And: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr, orig & value, 1);
+          return orig;
+        }
+        case AmoOperation::Or: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr, orig | value, 1);
+          return orig;
+        }
+        case AmoOperation::Xor: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr, orig ^ value, 1);
+          return orig;
+        }
+        case AmoOperation::Max: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr,
+                         std::max(static_cast<int8_t>(orig),
+                                  static_cast<int8_t>(value & 0xff)),
+                         1);
+          return orig;
+        }
+        case AmoOperation::Maxu: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr,
+                         std::max(orig, static_cast<uint8_t>(value & 0xff)), 1);
+          return orig;
+        }
+        case AmoOperation::Min: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr,
+                         std::min(static_cast<int8_t>(orig),
+                                  static_cast<int8_t>(value & 0xff)),
+                         1);
+          return orig;
+        }
+        case AmoOperation::Minu: {
+          uint8_t orig = m_memory.read(phys_addr, 1);
+          m_memory.write(phys_addr,
+                         std::min(orig, static_cast<uint8_t>(value & 0xff)), 1);
+          return orig;
+        }
+        default:
+          __builtin_unreachable();
+      }
+    }
+    uint64_t atomic_read_modify_write_16(uint64_t phys_addr, uint64_t value,
+                                         AmoOperation op) {
+      switch (op.value()) {
+        case AmoOperation::Swap: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(phys_addr, value, 2);
+          return orig;
+        }
+        case AmoOperation::Add: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(phys_addr, orig + value, 2);
+          return orig;
+        }
+        case AmoOperation::And: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(phys_addr, orig & value, 2);
+          return orig;
+        }
+        case AmoOperation::Or: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(phys_addr, orig | value, 2);
+          return orig;
+        }
+        case AmoOperation::Xor: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(phys_addr, orig ^ value, 2);
+          return orig;
+        }
+        case AmoOperation::Max: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(phys_addr,
+                         std::max(static_cast<int16_t>(orig),
+                                  static_cast<int16_t>(value & 0xffff)),
+                         2);
+          return orig;
+        }
+        case AmoOperation::Maxu: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(
+              phys_addr, std::max(orig, static_cast<uint16_t>(value & 0xffff)),
+              2);
+          return orig;
+        }
+        case AmoOperation::Min: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(phys_addr,
+                         std::min(static_cast<int16_t>(orig),
+                                  static_cast<int16_t>(value & 0xffff)),
+                         2);
+          return orig;
+        }
+        case AmoOperation::Minu: {
+          uint16_t orig = m_memory.read(phys_addr, 2);
+          m_memory.write(
+              phys_addr, std::min(orig, static_cast<uint16_t>(value & 0xffff)),
+              2);
+          return orig;
+        }
+        default:
+          __builtin_unreachable();
+      }
+    }
     uint64_t atomic_read_modify_write_32(uint64_t phys_addr, uint64_t value,
                                          AmoOperation op) {
       switch (op.value()) {
