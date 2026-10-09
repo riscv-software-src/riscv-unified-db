@@ -1,0 +1,29 @@
+# Copyright (c) 2026 RISC-V International
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/profile_release_schema.json
+
+$schema: profile_release_schema.json#
+kind: profile release
+name: RVA23p1
+long_name: RVA23.1
+marketing_name: RVA23.1
+family:
+  $ref: profile_family/RVA.yaml#
+release: "23.1"
+state: development
+# Semantic versions within the release
+versions:
+  - version: "0.7.1"
+
+introduction: |
+  The RVA23.1 profile release expands upon the RVA23 family of RISC-V
+  application processor profiles with additional optional extensions.
+description: |
+  This is a minor release of the RVA23 profile family. As such, it contains
+  only optional extensions and introduces no new mandatory extensions.
+
+  Only a supervisor-mode profile is specified in this release.
+
+profiles:
+  - { $ref: profile/RVA23p1S64.yaml# }
