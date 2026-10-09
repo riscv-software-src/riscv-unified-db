@@ -7,6 +7,8 @@ async function main() {
   const testWorkspace = path.resolve(__dirname, '../../test-fixtures');
 
   await runTests({
+    // A pinned version lets @vscode/test-electron reuse the cache without a network lookup.
+    version: '1.141.0',
     extensionDevelopmentPath,
     extensionTestsPath,
     launchArgs: [
