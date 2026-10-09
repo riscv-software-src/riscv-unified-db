@@ -8,7 +8,7 @@ kind: parameter
 name: SDTRIG_ETRIGGER_SUPPORTED
 description: |
   Indicates which triggers support etrigger.
-long_name: TODO
+long_name: List for which exceptions are supported by etrigger
 schema:
   type: array
   items:
