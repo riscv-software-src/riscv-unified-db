@@ -1,0 +1,74 @@
+# Copyright (c) Alibaba Damo Academy
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: vwabdau.vx
+long_name: Vector Widening Unsigned Integer Absolute Difference and Accumulate with Scalar
+description: |
+  Computes the element-wise absolute difference of unsigned integer operands
+  from vector register vs2 and scalar register xs1, and accumulates the results
+  into the 2*SEW-bit elements of vd. The scalar is sign-extended or truncated
+  to SEW before being interpreted as an unsigned value.
+
+  Reserved when SEW is neither 8 nor 16.
+definedBy:
+  extension:
+    name: Zvabd
+assembly: vd, vs2, xs1, vm
+encoding:
+  match: 111110-----------100-----1010111
+  variables:
+    - name: vm
+      location: 25
+    - name: vs2
+      location: 24-20
+    - name: xs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  VectorState state = vector_state();
+
+  if (state.sew != 8 && state.sew != 16) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  Bits<64> scalar = $signed(X[xs1]);
+  U32 sew2 = state.sew + state.sew;
+
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    U32 src_start = i * state.sew;
+    U32 src_end = src_start + state.sew - 1;
+    U32 dst_start = i * sew2;
+    U32 dst_end = dst_start + sew2 - 1;
+    if (vm == 1'b1 || V[0][i:i] == 1'b1) {
+      # active element
+      if (V[vs2][src_end:src_start] >= scalar[state.sew-1:0]) {
+        V[vd][dst_end:dst_start] = V[vd][dst_end:dst_start] + (V[vs2][src_end:src_start] - scalar[state.sew-1:0]);
+      } else {
+        V[vd][dst_end:dst_start] = V[vd][dst_end:dst_start] + (scalar[state.sew-1:0] - V[vs2][src_end:src_start]);
+      }
+    }
+    # inactive element: handled according to vtype.VMA policy
+  }
+  # tail elements (i >= vl): handled according to vtype.VTA policy
+
+  CSR[vstart].VALUE = 0;

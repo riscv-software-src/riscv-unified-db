@@ -12,9 +12,13 @@ description: |
   vectors of integers, including widening absolute-difference-and-accumulate
   variants. These operations are widely used in image registration, object
   recognition, motion estimation, and loop filters for video workloads.
+
+  The single-width instructions support SEW = 8, 16, and 32, and also support
+  SEW = 64 when Zve64x is implemented. The widening accumulate instructions
+  support SEW = 8 and 16.
 type: unprivileged
 versions:
-  - version: "0.7.0"
+  - version: "0.9.0"
     state: frozen
 requirements:
   extension:
