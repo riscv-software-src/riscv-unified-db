@@ -1,0 +1,1 @@
+[{"code":"NEGATIVE_UNNECESSARILY_SURFACED","expected":null,"field":"adjudication.parameter_status","finding_id":"NEG_EXT_GATED_PBMTE:1","fixture_id":"NEG_EXT_GATED_PBMTE","observed":"review","occurrence":0,"severity":"blocker","source_sha256":null}]

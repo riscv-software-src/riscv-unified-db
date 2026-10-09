@@ -1,0 +1,5 @@
+id: NEG_SOFTWARE_ADVICE
+kind: software_advice
+expect_extract: false
+expect_params: 0
+skill_risk: should/may software advice is not a hardware parameter

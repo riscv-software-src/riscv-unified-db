@@ -1,0 +1,8 @@
+kind: classified_out_candidate
+name: PBMTE
+final_disposition: classify_out
+classify_out_reason: surfaced_classified_out
+description: |
+  PBMTE is a runtime enable field. The source is surfaced for review because
+  it describes implementation-dependent Svpbmt gating, but it is not an
+  independent implementation parameter in this ontology version.

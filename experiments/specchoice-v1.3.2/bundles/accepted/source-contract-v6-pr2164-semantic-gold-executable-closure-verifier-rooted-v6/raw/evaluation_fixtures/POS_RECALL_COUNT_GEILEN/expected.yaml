@@ -1,0 +1,7 @@
+id: POS_RECALL_COUNT_GEILEN
+class: NORM_DIRECT
+gold_name: GEILEN
+versioned_aliases: [NUM_EXTERNAL_GUEST_INTERRUPTS]
+expect_extract: true
+expect_status: existing_alias
+expect_udb_file: spec/std/isa/param/NUM_EXTERNAL_GUEST_INTERRUPTS.yaml

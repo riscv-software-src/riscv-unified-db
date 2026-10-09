@@ -1,0 +1,1 @@
+[{"code":"POSITIVE_CLASSIFIED_OUT","expected":"accept","field":"adjudication.parameter_status","finding_id":"POS_CSR_RW_MTVEC_ACCESS:1","fixture_id":"POS_CSR_RW_MTVEC_ACCESS","observed":"classify_out","occurrence":0,"severity":"blocker","source_sha256":null}]

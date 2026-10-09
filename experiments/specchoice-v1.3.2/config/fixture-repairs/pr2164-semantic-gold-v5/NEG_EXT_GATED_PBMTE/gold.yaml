@@ -1,0 +1,7 @@
+kind: classified_out_candidate
+name: PBMTE
+final_disposition: classify_out
+classify_out_reason: surfaced_classified_out
+description: |
+  PBMTE is provenance-only: it is surfaced for review, then classified out,
+  and never becomes a proposed parameter identity.

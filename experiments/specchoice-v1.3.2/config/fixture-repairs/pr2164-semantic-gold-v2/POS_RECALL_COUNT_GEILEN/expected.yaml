@@ -1,0 +1,14 @@
+id: POS_RECALL_COUNT_GEILEN
+class: NORM_DIRECT
+gold_name: GEILEN
+versioned_aliases:
+  - NUM_EXTERNAL_GUEST_INTERRUPTS
+versioned_aliases:
+  - NUM_EXTERNAL_GUEST_INTERRUPTS
+expect_extract: true
+expect_status: existing_alias
+expect_udb_file: spec/std/isa/param/NUM_EXTERNAL_GUEST_INTERRUPTS.yaml
+must_have_excerpt: true
+skill_signal: implemented guest-external-interrupt slots and direct targets
+warl_true_parameter: false
+recall_case: true
