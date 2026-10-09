@@ -139,5 +139,8 @@ namespace udb {
     {
       s.sync_write_after_read_device(true, static_cast<uint32_t>(0))
     };
+    { s.read_seed() } -> std::same_as<uint32_t>;
+
+    { s.write_seed() };
   };
 }  // namespace udb
