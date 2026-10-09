@@ -40121,14 +40121,14 @@ vabd.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x11,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x15,"type":2}]}
 ....
 
 Description::
 Computes the element-wise absolute difference of two signed integer SEW-bit
 source operands vs1 and vs2 and writes the result to vd according to mask vm.
 
-Reserved when SEW is neither 8 nor 16.
+Supports SEW of 8, 16, and 32, and SEW of 64 when Zve64x is implemented.
 
 
 Decode Variables::
@@ -40138,6 +40138,63 @@ Decode Variables::
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
 |vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vabd_vx]
+== vabd.vx
+
+Synopsis::
+Vector Single-Width Signed Integer Absolute Difference with Scalar
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vabd.vx vd, vs2, xs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x15,"type":2}]}
+....
+
+Description::
+Computes the element-wise absolute difference of signed integer operands from
+vector register vs2 and scalar register xs1, and writes the SEW-bit results to
+vd according to mask vm. The scalar is sign-extended or truncated to SEW.
+
+Supports SEW of 8, 16, and 32, and SEW of 64 when Zve64x is implemented.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -40177,14 +40234,14 @@ vabdu.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x13,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x16,"type":2}]}
 ....
 
 Description::
 Computes the element-wise absolute difference of two unsigned integer SEW-bit
 source operands vs1 and vs2 and writes the result to vd according to mask vm.
 
-Reserved when SEW is neither 8 nor 16.
+Supports SEW of 8, 16, and 32, and SEW of 64 when Zve64x is implemented.
 
 
 Decode Variables::
@@ -40211,11 +40268,11 @@ Included in::
 
 
 
-[#udb:doc:inst:vabs_v]
-== vabs.v
+[#udb:doc:inst:vabdu_vx]
+== vabdu.vx
 
 Synopsis::
-Vector Single-Width Signed Integer Absolute
+Vector Single-Width Unsigned Integer Absolute Difference with Scalar
 
 Base::
 
@@ -40228,20 +40285,21 @@ Base::
 |===
 
 Assembly::
-vabs.v vd, vs2, vm
+vabdu.vx vd, vs2, xs1, vm
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0x82,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x12,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x16,"type":2}]}
 ....
 
 Description::
-An absolute value operation is performed on each element of vs2, storing the
-result in vector register vd according to mask vm.
+Computes the element-wise absolute difference of unsigned integer operands
+from vector register vs2 and scalar register xs1, and writes the SEW-bit
+results to vd according to mask vm. The scalar is sign-extended or truncated
+to SEW before being interpreted as an unsigned value.
 
-vabs.v supports SEW of 8, 16, and 32 when Zve32x is implemented.
-When Zve64x is implemented, vabs.v also supports SEW of 64.
+Supports SEW of 8, 16, and 32, and SEW of 64 when Zve64x is implemented.
 
 
 Decode Variables::
@@ -40250,6 +40308,7 @@ Decode Variables::
 |Variable Name |Location
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -73750,7 +73809,7 @@ vwabda.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x15,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x3d,"type":2}]}
 ....
 
 Description::
@@ -73768,6 +73827,63 @@ Decode Variables::
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
 |vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vwabda_vx]
+== vwabda.vx
+
+Synopsis::
+Vector Widening Signed Integer Absolute Difference and Accumulate with Scalar
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vwabda.vx vd, vs2, xs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x3d,"type":2}]}
+....
+
+Description::
+Computes the element-wise absolute difference of signed integer operands from
+vector register vs2 and scalar register xs1, and accumulates the results into
+the 2*SEW-bit elements of vd. The scalar is sign-extended or truncated to SEW.
+
+Reserved when SEW is neither 8 nor 16.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
@@ -73807,7 +73923,7 @@ vwabdau.vv vd, vs2, vs1, vm
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x16,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x3e,"type":2}]}
 ....
 
 Description::
@@ -73825,6 +73941,64 @@ Decode Variables::
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
 |vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvabd*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vwabdau_vx]
+== vwabdau.vx
+
+Synopsis::
+Vector Widening Unsigned Integer Absolute Difference and Accumulate with Scalar
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vwabdau.vx vd, vs2, xs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x3e,"type":2}]}
+....
+
+Description::
+Computes the element-wise absolute difference of unsigned integer operands
+from vector register vs2 and scalar register xs1, and accumulates the results
+into the 2*SEW-bit elements of vd. The scalar is sign-extended or truncated
+to SEW before being interpreted as an unsigned value.
+
+Reserved when SEW is neither 8 nor 16.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
 |vd |$encoding[11:7]
 |===
 
