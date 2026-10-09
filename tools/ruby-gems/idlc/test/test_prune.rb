@@ -93,6 +93,42 @@ class TestVariables < Minitest::Test
     assert_equal expected_idl, pruned.to_idl
   end
 
+  def test_prune_signed_division_matches_riscv_div_rem
+    # RISC-V DIV/REM (as used by div.yaml and rem.yaml) truncate the quotient toward zero, and
+    # REM takes the sign of the dividend. Ruby's Integer#/ and #% round toward negative infinity.
+    [
+      # [expression,                      expected,  meaning]
+      ["$signed(8'hF9) / $signed(8'h02)", "8'sd-3", "-7 / 2"],
+      ["$signed(8'h07) / $signed(8'hFE)", "8'sd-3", "7 / -2"],
+      ["$signed(8'hF9) / $signed(8'hFE)", "8'3",    "-7 / -2"],
+      ["$signed(8'h07) / $signed(8'h02)", "8'3",    "7 / 2"],
+      ["$signed(8'hF9) % $signed(8'h02)", "8'sd-1", "-7 % 2"],
+      ["$signed(8'h07) % $signed(8'hFE)", "8'1",    "7 % -2"],
+      ["$signed(8'hF9) % $signed(8'hFE)", "8'sd-1", "-7 % -2"],
+      ["$signed(8'h07) % $signed(8'h02)", "8'1",    "7 % 2"]
+    ].each do |orig_idl, expected_idl, meaning|
+      symtab = Idl::SymbolTable.new
+      ast = @compiler.parser.parse(orig_idl, root: :expression).to_ast
+
+      pruned = ast.prune(symtab)
+      assert_instance_of Idl::IntLiteralAst, pruned, meaning
+      assert_equal expected_idl, pruned.to_idl, meaning
+    end
+  end
+
+  def test_prune_division_by_zero_is_not_folded
+    # a zero divisor is not a compile-time-known value: the expression is left alone
+    # rather than crashing with a Ruby ZeroDivisionError
+    ["4'd5 / 4'd0", "4'd5 % 4'd0", "$signed(8'hF9) / $signed(8'h00)"].each do |orig_idl|
+      symtab = Idl::SymbolTable.new
+      ast = @compiler.parser.parse(orig_idl, root: :expression).to_ast
+
+      pruned = ast.prune(symtab)
+      refute_kind_of Idl::IntLiteralAst, pruned, orig_idl
+      assert_equal :unknown_value, Idl::AstNode.value_try { ast.value(symtab) }, orig_idl
+    end
+  end
+
   def test_prune_function_body_negative_return_value
     # regression test for the highest_set_bit() bug: a function whose declared
     # return type is signed, that falls through to a bare negative literal
