@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_ETRIGGER_EXCEPTIONS_LEGAL_VALUES
+description: |
+  The set of exception codes (mcause Exception Code) that etrigger can be enabled for, i.e. the bits of
+  etrigger.tdata2 that are writable as 1.
+
+  Debug spec 1.0, etrigger: "Hardware may support only a subset of exceptions."
+long_name: List of exceptions supported by etrigger
+schema:
+  type: array
+  items:
+    type: integer
+    minimum: 0
+    maximum: 63
+  maxItems: 64
+  minItems: 0
+  uniqueItems: true
+requirements:
+  idl(): |
+    for (U32 i = 32; i < 64; i++) {
+      (MXLEN == 32) -> !$array_includes?(SDTRIG_ETRIGGER_EXCEPTIONS_LEGAL_VALUES, i);
+    }
+  reason: etrigger.tdata2 is XLEN bits wide, so codes above 31 cannot be selected when XLEN is 32.
+definedBy:
+  extension:
+    name: Sdtrig

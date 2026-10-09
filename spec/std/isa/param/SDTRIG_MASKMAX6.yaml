@@ -1,0 +1,22 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_MASKMAX6
+description:
+  In implementations that support match mode 1 (NAPOT), not all NAPOT ranges may be supported. All NAPOT ranges between 2^1 and 2^SDTRIG_MASKMAX6 are supported.
+long_name: NAPOT ranges supported by match control type 6
+schema:
+  type: integer
+  minimum: 1
+  maximum: 64
+definedBy:
+  extension:
+    name: Sdtrig
+
+requirements:
+  idl(): |
+    MXLEN == 32 -> SDTRIG_MASKMAX6 <= 32;
