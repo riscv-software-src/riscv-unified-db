@@ -146,10 +146,18 @@ module Udb
       @hash
     end
 
+    sig { void }
+    def refresh_memoized_state
+      @version_str = canonical
+      @hash = [@major, @minor, @patch, @pre].hash
+    end
+    private :refresh_memoized_state
+
     sig { returns(VersionSpec) }
     def increment_patch
       copy = dup
       copy.instance_variable_set(:@patch, @patch + 1)
+      copy.send(:refresh_memoized_state)
       copy
     end
 
@@ -168,6 +176,7 @@ module Udb
       else
         raise "Cannot decrement version 0"
       end
+      copy.send(:refresh_memoized_state)
       copy
     end
   end
