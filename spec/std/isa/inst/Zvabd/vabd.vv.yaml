@@ -11,13 +11,13 @@ description: |
   Computes the element-wise absolute difference of two signed integer SEW-bit
   source operands vs1 and vs2 and writes the result to vd according to mask vm.
 
-  Reserved when SEW is neither 8 nor 16.
+  Supports SEW of 8, 16, and 32, and SEW of 64 when Zve64x is implemented.
 definedBy:
   extension:
     name: Zvabd
 assembly: vd, vs2, vs1, vm
 encoding:
-  match: 010001-----------010-----1010111
+  match: 010101-----------010-----1010111
   variables:
     - name: vm
       location: 25
@@ -34,10 +34,6 @@ access:
   vu: always
 operation(): |
   VectorState state = vector_state();
-
-  if (state.sew != 8 && state.sew != 16) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
 
   VectorLmulType lmul_type = state.lmul_type;
 

@@ -5,25 +5,26 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: vabdu.vv
-long_name: Vector Single-Width Unsigned Integer Absolute Difference
+name: vabd.vx
+long_name: Vector Single-Width Signed Integer Absolute Difference with Scalar
 description: |
-  Computes the element-wise absolute difference of two unsigned integer SEW-bit
-  source operands vs1 and vs2 and writes the result to vd according to mask vm.
+  Computes the element-wise absolute difference of signed integer operands from
+  vector register vs2 and scalar register xs1, and writes the SEW-bit results to
+  vd according to mask vm. The scalar is sign-extended or truncated to SEW.
 
   Supports SEW of 8, 16, and 32, and SEW of 64 when Zve64x is implemented.
 definedBy:
   extension:
     name: Zvabd
-assembly: vd, vs2, vs1, vm
+assembly: vd, vs2, xs1, vm
 encoding:
-  match: 010110-----------010-----1010111
+  match: 010101-----------110-----1010111
   variables:
     - name: vm
       location: 25
     - name: vs2
       location: 24-20
-    - name: vs1
+    - name: xs1
       location: 19-15
     - name: vd
       location: 11-7
@@ -32,6 +33,9 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xs1 == 0
+    to: vabs.v vd, vs2, vm
 operation(): |
   VectorState state = vector_state();
 
@@ -45,15 +49,17 @@ operation(): |
     vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
   }
 
+  Bits<64> scalar = $signed(X[xs1]);
+
   for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
     U32 start_bit_pos = i * state.sew;
     U32 end_bit_pos = start_bit_pos + state.sew - 1;
     if (vm == 1'b1 || V[0][i:i] == 1'b1) {
       # active element
-      if (V[vs2][end_bit_pos:start_bit_pos] >= V[vs1][end_bit_pos:start_bit_pos]) {
-        V[vd][end_bit_pos:start_bit_pos] = V[vs2][end_bit_pos:start_bit_pos] - V[vs1][end_bit_pos:start_bit_pos];
+      if ($signed(V[vs2][end_bit_pos:start_bit_pos]) >= $signed(scalar[state.sew-1:0])) {
+        V[vd][end_bit_pos:start_bit_pos] = V[vs2][end_bit_pos:start_bit_pos] - scalar[state.sew-1:0];
       } else {
-        V[vd][end_bit_pos:start_bit_pos] = V[vs1][end_bit_pos:start_bit_pos] - V[vs2][end_bit_pos:start_bit_pos];
+        V[vd][end_bit_pos:start_bit_pos] = scalar[state.sew-1:0] - V[vs2][end_bit_pos:start_bit_pos];
       }
     }
     # inactive element: handled according to vtype.VMA policy
