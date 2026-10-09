@@ -5,20 +5,16 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: SDTRIG_ETRIGGER_SUPPORTED
+name: SDTRIG_ETRIGGER_EXCEPTIONS_AVAILABLE
 description: |
-  Indicates which triggers support etrigger.
+  Indicates which exceptions are supported by etrigger.
 long_name: List for which exceptions are supported by etrigger
 schema:
   type: array
   items:
     type: boolean
-  maxItems: 18446744073709551616 # 2**64, max tselect values (2**XLEN)
+  maxItems: 64
   minItems: 0
 definedBy:
   extension:
     name: Sdtrig
-
-requirements:
-  idl(): |
-    $array_size(SDTRIG_ETRIGGER_SUPPORTED) == SDTRIG_NUM_TRIGGERS;

@@ -10,7 +10,7 @@ description: |
   If true then icount.count is hard-wired to 1 for all icount triggers: it does not become 0 when the
   trigger matches, and icount.m, icount.s, icount.u, icount.vs, and icount.vu are cleared when the trigger fires.
   If false, icount.count is writable and becomes 0 when the trigger matches with a count of 1.
-long_name: TODO
+long_name: icount.COUNT is hard-wired to 1
 schema:
   type: boolean
 definedBy:

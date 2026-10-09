@@ -13,8 +13,12 @@ schema:
   type: array
   items:
     type: boolean
-  maxItems: 256
-  minItems: 1
+  maxItems: 18446744073709551616 # 2**64, max tselect values (2**XLEN)
+  minItems: 0
 definedBy:
   extension:
     name: Sdtrig
+
+requirements:
+  idl(): |
+    $array_size(SDTRIG_ITRIGGER_SUPPORTED) == SDTRIG_NUM_TRIGGERS;
