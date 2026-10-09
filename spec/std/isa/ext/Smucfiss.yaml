@@ -1,0 +1,30 @@
+# Copyright (c) NVIDIA Corporation
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smucfiss
+long_name: U-mode Shadow Stack on M+U-only systems
+description: |
+  The Smucfiss extension enables Zicfiss shadow stacks in U-mode on harts with
+  no S-mode, where page tables are not available to mark shadow-stack pages.
+
+  It reuses the PMP region tagging introduced by Smpmpind and Smcfiss. A PMP
+  entry with E=1 and XWR=110 marks a U-mode shadow-stack region, which M-mode
+  enables by setting menvcfg.SSE.
+type: privileged
+versions:
+  - version: "0.1.0"
+    state: development
+    url: "https://github.com/ved-rivos/riscv-isa-manual/blob/smpmpss/src/smcfiss.adoc"
+requirements:
+  extension:
+    allOf:
+      - name: Zicfiss
+        version: "~> 1.0"
+      - name: Smcfiss
+        version: "~> 0.1"
+      - not:
+          name: S

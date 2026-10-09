@@ -28,8 +28,12 @@ requirements:
           - name: Zimop
           - name: Zaamo
     - if:
-        extension:
-          name: U
+        allOf:
+          - extension:
+              name: U
+          - not:
+              extension:
+                name: Smucfiss
       then:
         extension:
           name: S
