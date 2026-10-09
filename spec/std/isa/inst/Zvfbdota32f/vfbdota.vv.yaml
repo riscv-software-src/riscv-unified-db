@@ -1,0 +1,68 @@
+# Copyright (c) 2026 Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: vfbdota.vv
+long_name: FP32 batched vector dot product
+description: |
+  The `Zvfbdota32f` extension adds `vfbdota.vv`, which performs a batched
+  dot-product operation on FP32 vectors, accumulating into FP32. The
+  instruction is reserved unless `SEW=32` and `LMUL=1`. The `vs1`, `vs2`, and
+  `vd` operands all have `EEW=SEW`.
+
+  The batched dot-product family treats `vs1` as an EMUL=1 vector register
+  group and `vs2` as an EMUL=8 vector register group, computing eight
+  independent dot products and accumulating the results into `vd`. `vl` sets
+  the length of each dot product. Tail elements are substituted with the bit
+  pattern of all zeros, then the computation is performed as though
+  `vl=VLMAX`.
+
+  For long-vector implementations with `VLEN > 8*EEW`, `ci` is a 3-bit
+  scaled-by-8 immediate indicating which eight elements of `vd` are read and
+  written. The `ci` field is encoded in `vs2[2:0]`; those bits are not needed
+  for the register address because `vs2` addresses an EMUL=8 register group.
+  The instruction is reserved if `ci >= VLEN/(8*EEW)`. Destination elements
+  at or beyond `ci+8` are tail elements, elements below `ci` are prestart
+  elements, and the remaining elements are body elements. The destination
+  vector register group cannot overlap either source vector register group.
+  Masked-off body elements follow the current mask agnostic or undisturbed
+  policy, and the instruction is reserved when `vstart` is nonzero; exceptions
+  are always reported with `vstart=0`.
+
+  The FP32 products are first computed to full precision, setting the invalid
+  operation exception flag as appropriate. The products are then optionally
+  rounded to FP32 according to the dynamic rounding mode, setting the inexact,
+  overflow, and underflow exception flags as appropriate. The sum of these
+  products and the accumulator is then computed as though by `vfredusum.vs`
+  with `SEW=32`, including the setting of exception flags.
+
+  This formulation allows significant implementation flexibility while being
+  sufficiently precise to implement SGEMM. The algorithm used by
+  `vfredusum.vs` offers several implementation choices; implementations are
+  not required to use the same algorithm configuration for `vfbdota.vv` as for
+  `vfredusum.vs`.
+definedBy:
+  extension:
+    name: Zvfbdota32f
+assembly: vd, vs2, vs1, ci, vm
+encoding:
+  match: 101011-----------001-----1110111
+  variables:
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-23
+    - name: ci
+      location: 22-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |

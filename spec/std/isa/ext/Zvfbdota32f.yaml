@@ -1,0 +1,23 @@
+# Copyright (c) 2026 Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfbdota32f
+long_name: FP32 batched dot-product extension
+type: unprivileged
+rvi_jira_issue: https://riscv.atlassian.net/browse/RVS-3925
+requirements:
+  extension:
+    name: Zve32f
+    version: "= 1.0.0"
+versions:
+  - version: "1.0.0"
+    state: development
+    repositories:
+      - url: https://github.com/riscv/riscv-isa-manual.git
+        branch: zvbdot
+description: |
+  `Zvfbdota32f` is an unprivileged member of the `Zvbdota` family of batched
+  dot-product extensions. It provides FP32 batched dot-product capability for
+  vector floating-point computation.
