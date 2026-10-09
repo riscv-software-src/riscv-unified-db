@@ -1,0 +1,39 @@
+# Copyright (c) Shanghai Jiao Tong University
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sspmp
+type: privileged
+long_name: Supervisor Physical Memory Protection
+description: |
+  The Sspmp extension defines a Supervisor-level Physical Memory Protection (SPMP)
+  mechanism that allows S-mode software to configure memory protection regions.
+
+  SPMP entries are accessed indirectly via the Sscsrind/Smcsrind extension.
+  The siselect CSR selects the SPMP entry (0x100-0x13F), and sireg/sireg2 access
+  the corresponding spmpaddr/spmpcfg values.
+
+  SPMP provides memory protection for S-mode and U-mode accesses when satp.MODE
+  is Bare. It does not apply when virtual memory translation is active.
+
+  Key behaviors:
+
+  * SPMP entries are delegated from PMP entries via the mpmpdeleg CSR.
+  * Each SPMP entry has address (spmpaddr) and configuration (spmpcfg) registers
+  * spmpcfg includes R, W, X permissions, address matching mode (A), lock bit (L),
+    U-mode bit (U), and SHARED bit
+  * Out-of-bounds siselect values read as 0 and writes are ignored
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2026-08
+    url: "https://github.com/riscv/riscv-spmp/tree/v1.0"
+requirements:
+  allOf:
+    - extension:
+        name: Sscsrind
+    - extension:
+        name: Smpmpdeleg
