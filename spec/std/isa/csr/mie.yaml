@@ -30,8 +30,7 @@ fields:
     location: 2
     description: |
       Enables Virtual Supervisor Software Interrupts.
-    type(): |
-      return VSSI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
+    type: RW
     definedBy:
       extension:
         name: H
@@ -82,8 +81,7 @@ fields:
     location: 10
     description: |
       Enables Virtual Supervisor External Interrupts.
-    type(): |
-      return VSEI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
+    type: RW
     definedBy:
       extension:
         name: H
