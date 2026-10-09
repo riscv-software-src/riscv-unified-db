@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES
+description: |
+  The set of values that mcontrol6.MATCH supports.
+long_name: Legal values of mcontrol6.MATCH
+schema:
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 8
+      - 9
+      - 12
+      - 13
+  maxItems: 10
+  minItems: 1
+  uniqueItems: true
+definedBy:
+  extension:
+    name: Sdtrig

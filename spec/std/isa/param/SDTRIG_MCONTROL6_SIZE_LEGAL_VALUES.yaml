@@ -1,0 +1,33 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES
+description: |
+  The set of values that mcontrol6.SIZE supports (0: any, 1: 8-bit, 2: 16-bit, 3: 32-bit, 4: 48-bit, 5: 64-bit, 6: 128-bit).
+long_name: Legal values of mcontrol6.SIZE
+schema:
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  maxItems: 7
+  minItems: 1
+  uniqueItems: true
+requirements:
+  idl(): |
+    $array_includes?(SDTRIG_MCONTROL6_SIZE_LEGAL_VALUES, 0);
+  reason: 'Debug spec 1.0, mcontrol6.size: "An implementation must support the value of 0, but all other values are optional."'
+definedBy:
+  extension:
+    name: Sdtrig

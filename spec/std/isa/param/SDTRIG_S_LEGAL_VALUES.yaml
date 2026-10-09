@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_S_LEGAL_VALUES
+description: |
+  The set of values that the S field supports in every trigger type that has one (mcontrol, mcontrol6, icount, itrigger, etrigger).
+long_name: Legal values of the trigger S bit
+schema:
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+  maxItems: 2
+  minItems: 1
+  uniqueItems: true
+requirements:
+  idl(): |
+    !implemented?(ExtensionName::S) -> !$array_includes?(SDTRIG_S_LEGAL_VALUES, 1);
+  reason: 'Debug spec 1.0: "This bit is hard-wired to 0 if the hart does not support S-mode."'
+definedBy:
+  extension:
+    name: Sdtrig

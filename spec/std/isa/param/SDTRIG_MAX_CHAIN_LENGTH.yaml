@@ -1,0 +1,26 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_MAX_CHAIN_LENGTH
+description: |
+  The maximum number of triggers in a trigger chain. A value of 1 means chaining is not supported.
+
+  Debug spec 1.0, mcontrol6.chain: "Implementations that wish to limit the maximum length of a trigger
+  chain (eg. to meet timing requirements) may do so by zeroing chain in writes to mcontrol6 that would
+  make the chain too long."
+long_name: Maximum trigger chain length
+schema:
+  type: integer
+  minimum: 1
+  maximum: 18446744073709551616 # 2**64, max tselect values (2**XLEN)
+requirements:
+  idl(): |
+    SDTRIG_MAX_CHAIN_LENGTH <= SDTRIG_NUM_TRIGGERS;
+  reason: A chain cannot contain more triggers than are implemented.
+definedBy:
+  extension:
+    name: Sdtrig

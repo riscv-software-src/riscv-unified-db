@@ -5,12 +5,20 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: SDTRIG_M_AVAILABLE
+name: SDTRIG_MCONTROL6_SELECT_LEGAL_VALUES
 description: |
-  If true then tdata1.m supports all m values defined in the debug spec for all triggers. If false, tdata1.m supports at least 0.
-long_name: TODO
+  The set of values that mcontrol6.SELECT supports.
+long_name: Legal values of mcontrol6.SELECT
 schema:
-  type: boolean
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+  maxItems: 2
+  minItems: 1
+  uniqueItems: true
 definedBy:
   extension:
     name: Sdtrig
