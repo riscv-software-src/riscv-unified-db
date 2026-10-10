@@ -122,6 +122,13 @@ assert udb.Database.bundled().extension('Zvkg').name == 'Zvkg'
 resolved = udb.Database.bundled().resolve(validate=True)
 assert resolved.profile('RVI20U64')['extensions']['I']['presence'] == 'mandatory'
 assert '$inherits' not in resolved.profile('RVI20U64')
+sm = udb.Database.bundled().extension('Sm')
+assert [version.canonical for version in sm.versions] == ['1.11.0', '1.12.0', '1.13.0']
+assert udb.VersionRequirement.parse('>= 1.11').matches(sm.version('1.12').version)
+series = udb.ExtensionVersionSet.from_metadata('X', [
+    {'version': '1.0'}, {'version': '2.0', 'breaking': True}, {'version': '3.0'}
+])
+assert [version.canonical for version in series.compatible_versions('2.0')] == ['2.0.0', '3.0.0']
 authoring_root = Path('authoring')
 assert len(udb.generate_layouts(authoring_root)) == 532
 generated = authoring_root / 'spec/std/isa/inst/Zaamo/amoadd.w.yaml'
