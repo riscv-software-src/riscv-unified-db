@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vnsrl.wx
-long_name: "Vector widening logical shift right with scalar"
+long_name: "Vector narrowing logical shift right with scalar"
 description: |
-  Performs widening logical right shift on elements from vector register vs2 by shift amount from scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation fills with zeros and widens the result.
+  Performs narrowing logical right shift on double-width elements from vector register vs2 by shift amount from scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation fills with zeros and writes a single-width destination.
 definedBy:
   extension:
     name: Zvl32b
