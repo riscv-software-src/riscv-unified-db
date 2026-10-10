@@ -77,6 +77,44 @@ def check_install() -> None:
     assert not domains["SUPPORTED_PMLEN_SMMPM"].accepts([7])
     assert not domains["SUPPORTED_PMLEN_SMMPM"].accepts([0, 0])
 
+    condition = udb.parse_condition(
+        {
+            "allOf": [
+                {"extension": {"name": "I"}},
+                {"param": {"name": "MXLEN", "equal": 64}},
+            ]
+        }
+    )
+    assert condition.evaluate(udb.EvaluationContext(xlen=64)) is udb.TruthValue.UNKNOWN
+    assert (
+        condition.evaluate(
+            udb.EvaluationContext(extensions={"I": "2.1.0"}, parameters={"MXLEN": 64})
+        )
+        is udb.TruthValue.TRUE
+    )
+    closed_ctx = udb.EvaluationContext(
+        xlen=64, closed_world_extensions=True, closed_world_parameters=True
+    )
+    assert condition.evaluate(closed_ctx) is udb.TruthValue.FALSE
+
+    solver_ctx = udb.SolverContext(
+        xlen=64,
+        extension_versions={"I": ["2.1.0"]},
+        parameter_domains={"MXLEN": domains["MXLEN"]},
+        fixed_extensions={"I": "2.1.0"},
+    )
+    solver = udb.ConditionSolver(solver_ctx)
+    solver.add(condition)
+    assert solver.check() is udb.SolverStatus.SAT
+    solver.add(udb.parse_condition({"param": {"name": "MXLEN", "equal": 32}}))
+    assert solver.check() is udb.SolverStatus.UNSAT
+
+    rv64_arch = resolved.configure(udb.Configuration.builtin("rv64"))
+    assert rv64_arch.extension_presence("I") is udb.QueryPresence.MANDATORY
+    # Some rv64 extensions and parameters are gated by idl() conditions until Stage 4.
+    assert rv64_arch.check().status is udb.ArchitectureCheckStatus.DEFERRED
+    assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
+
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()
 
@@ -168,7 +206,7 @@ def check_install() -> None:
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
-        f"{len(sm_versions)} Sm versions, 532 layout outputs"
+        f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries"
     )
 
 
