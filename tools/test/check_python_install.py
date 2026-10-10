@@ -27,6 +27,44 @@ def tree_digest(root: Path) -> dict[str, str]:
     }
 
 
+def check_instruction_table(resolved: udb.ResolvedDatabase) -> None:
+    from udb.instruction_fields import InstructionFieldBuilder
+    from udb.instruction_table import generate_instruction_table, render_instruction_table
+
+    expected = render_instruction_table(resolved).encode("utf-8")
+    assert hashlib.sha256(expected).hexdigest() == (
+        "061e3526a34fe1ec43f7363d442767091b8f93f71ef6230fc59927371f8bea5a"
+    )
+    assert len([line for line in expected.splitlines() if not line.startswith(b"#")]) == 1400
+    encoding = InstructionFieldBuilder(resolved).describe("beq").encoding(32)
+    assert encoding is not None
+    immediate = encoding.variables[0]
+    assert immediate.name == "imm"
+    assert immediate.bits == (31, 7, 30, 29, 28, 27, 26, 25, 11, 10, 9, 8)
+    assert (immediate.encoded_width, immediate.width, immediate.left_shift) == (12, 13, 1)
+    assert immediate.sign_extend
+    command = str(Path(sys.executable).with_name("udb"))
+    args = [command, "generate", "instruction-table", "--cfg", "rv32"]
+    stdout = subprocess.run(args, check=True, capture_output=True)
+    assert stdout.stdout == expected and stdout.stderr == b""
+    with TemporaryDirectory(prefix="udb-installed-table-") as temporary:
+        output = Path(temporary) / "test_table.txt"
+        generate_instruction_table(resolved, output=output)
+        file_bytes = output.read_bytes()
+        assert hashlib.sha256(file_bytes).hexdigest() == (
+            "84decffca54d1c359d29879e71cfd0a450c816d205a3212b8934b29f74e09cf8"
+        )
+        output.unlink()
+        written = subprocess.run([*args, "--out", str(output)], check=True, capture_output=True)
+        assert written.stdout == written.stderr == b""
+        assert output.read_bytes() == file_bytes
+        rejected = subprocess.run(
+            [*args, "-o", str(output / "missing.txt")], check=False, capture_output=True
+        )
+        assert rejected.returncode == 2 and rejected.stdout == b""
+        assert b"cannot write instruction table" in rejected.stderr
+
+
 def check_config_headers(resolved: udb.ResolvedDatabase) -> None:
     """Use bundled ISA data and an explicit full config, never a checkout path."""
     from udb.generators.config_headers import generate_config_header
@@ -362,6 +400,7 @@ def check_install() -> None:
     check_configured_prose(resolved)
     check_config_headers(resolved)
     check_profile_configurations(resolved)
+    check_instruction_table(resolved)
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()
