@@ -400,61 +400,52 @@ def test_global_clone_is_independent_but_shares_global_scope() -> None:
     assert symtab.levels == 2  # unaffected by clone.push()
 
 
-def test_global_clone_sharing_global_scope_dict_is_faithful_to_ruby() -> None:
-    """Deviation 3: adding a *global*-scope binding through a clone is visible
-    in the original too, because Ruby's `global_clone` shares the same global
-    scope dict object rather than copying it. Documented as intentional,
-    not a bug -- callers must not add global-scope bindings through a clone.
-    """
+def test_global_clone_has_independent_global_bindings() -> None:
     symtab = SymbolTable()
+    symtab.add("existing", Var("existing", BITS8, 1))
     clone = symtab.global_clone()
-    clone.add("shared_global", Var("shared_global", BITS8, 1))
-    assert "shared_global" in symtab
+    clone.add("clone_only", Var("clone_only", BITS8, 1))
+    clone.get("existing").value = 2
+    assert "clone_only" in clone
+    assert "clone_only" not in symtab
+    assert symtab.get("existing").value == 1
+    symtab.add("original_only", Var("original_only", BITS8, 3))
+    assert "original_only" not in clone
 
 
-def test_deep_clone_default_shares_var_objects_by_reference() -> None:
-    """Deviation: `deep_clone(clone_values=False)` (the default) shares the
-    same `Var` objects between original and clone -- mutating a `Var`'s
-    `.value` through the clone is visible in the original too. Confirmed
-    faithful to Ruby's `deep_clone` (default `clone_values: false`), not a
-    bug.
-    """
+def test_deep_clone_default_has_independent_var_objects() -> None:
     symtab = SymbolTable()
+    symtab.add("global_x", Var("global_x", BITS8, 7))
     symtab.push()
     symtab.add("x", Var("x", BITS8, 1))
 
     clone = symtab.deep_clone()
     assert clone is not symtab
+    assert clone.get("x") is not symtab.get("x")
+    assert clone.get("global_x") is not symtab.get("global_x")
     clone.get("x").value = 42
-    assert symtab.get("x").value == 42  # shared Var, mutation visible.
+    clone.get("global_x").value = 9
+    assert symtab.get("x").value == 1
+    assert symtab.get("global_x").value == 7
+    assert clone.get("x").value == 42
+    assert clone.get("global_x").value == 9
 
 
-def test_deep_clone_with_clone_values_true_is_independent() -> None:
-    """`clone_values=True` gives the clone independent `Var` *wrapper*
-    objects (so *reassigning* `var.value = ...` on the clone does not affect
-    the original's `Var`), matching Ruby's `v.dup` in the `clone_values:
-    true` branch of `deep_clone`. Confirmed live against Ruby: `Object#dup`
-    is shallow, so a *mutable* `.value` (e.g. a `list`/Ruby `Array`) is still
-    the *same* object referenced by both the original and cloned `Var` --
-    in-place mutation (`.append`/`<<`) is visible in both. Only reassigning
-    `.value` is isolated. This is intentional Ruby behavior, not a bug the
-    Python port should "fix" (`copy.copy(var)` here mirrors Ruby's `dup`
-    exactly).
-    """
+@pytest.mark.parametrize("clone_values", [False, True])
+def test_deep_clone_mutable_values_are_independent(clone_values: bool) -> None:
     symtab = SymbolTable()
     symtab.push()
-    symtab.add("x", Var("x", BITS8, [1, 2, 3]))
+    symtab.add("x", Var("x", BITS8, [1, [2, 3]]))
 
-    clone = symtab.deep_clone(clone_values=True)
+    clone = symtab.deep_clone(clone_values=clone_values)
 
-    # In-place mutation of the (still shared) mutable value leaks through.
     clone.get("x").value.append(4)
-    assert symtab.get("x").value == [1, 2, 3, 4]
+    clone.get("x").value[1].append(5)
+    assert symtab.get("x").value == [1, [2, 3]]
+    assert clone.get("x").value == [1, [2, 3, 5], 4]
 
-    # But *reassigning* the clone's Var.value does not affect the original,
-    # because clone_values=True gave the clone its own Var object.
     clone.get("x").value = [9, 9]
-    assert symtab.get("x").value == [1, 2, 3, 4]
+    assert symtab.get("x").value == [1, [2, 3]]
     assert clone.get("x").value == [9, 9]
 
 
@@ -505,7 +496,13 @@ def test_builtin_global_vars_are_seeded() -> None:
     v = Var("MY_CONST", BITS8, 5)
     env = IdlEnvironment(builtin_global_vars=(v,))
     symtab = SymbolTable(env)
-    assert symtab.get("MY_CONST") is v
+    other = SymbolTable(env)
+    assert symtab.get("MY_CONST") is not v
+    assert symtab.get("MY_CONST") is not other.get("MY_CONST")
+    assert symtab.get("MY_CONST").value == 5
+    symtab.get("MY_CONST").value = 9
+    assert v.value == 5
+    assert other.get("MY_CONST").value == 5
 
 
 def test_builtin_enums_are_seeded_as_enumeration_types() -> None:
@@ -707,9 +704,7 @@ def test_global_clone_copies_memo_independently() -> None:
     assert calls["n"] == 2
 
 
-def test_deep_clone_shares_memo_with_original() -> None:
-    """Deviation 2: `deep_clone` (unlike `global_clone`) shares the same
-    `_Memo` object with the original, matching Ruby's shallow `dup`."""
+def test_deep_clone_has_independent_memo() -> None:
     calls = {"n": 0}
 
     def cb() -> list[int]:
@@ -719,11 +714,14 @@ def test_deep_clone_shares_memo_with_original() -> None:
     env = IdlEnvironment(possible_xlens_cb=cb)
     symtab = SymbolTable(env)
     clone = symtab.deep_clone()
-    _ = clone.possible_xlens
+    assert clone.possible_xlens == (64,)
     assert calls["n"] == 1
-    # The original sees the already-memoized value; no second call.
-    _ = symtab.possible_xlens
+    assert clone.possible_xlens == (64,)
     assert calls["n"] == 1
+    assert symtab.possible_xlens == (64,)
+    assert calls["n"] == 2
+    assert symtab.possible_xlens == (64,)
+    assert calls["n"] == 2
 
 
 # ---------------------------------------------------------------------------

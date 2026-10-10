@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""IDL (ISA Description Language) parsing and syntax tree.
+"""IDL (ISA Description Language) parsing, typing and statement execution.
 
 This subpackage is a Python port of the syntactic layer of Ruby's IDL
 compiler (``tools/ruby-gems/idlc``): a hand-written packrat PEG parser
@@ -9,9 +9,9 @@ compiler (``tools/ruby-gems/idlc``): a hand-written packrat PEG parser
 rule, and a syntax tree (:mod:`udb.idl.ast`) that mirrors every
 ``Idl::*Ast`` class's ``to_h``/``to_idl``/``from_h``.
 
-Semantic analysis (type checking, constant evaluation, execution, adoc
-generation) is out of scope for this slice and is added to these same node
-classes in later migration slices.
+Syntax nodes provide type checking, constant evaluation and statement execution
+against an explicit symbol table. Architecture-bound compilation and whole-tree
+passes are added in subsequent migration slices.
 """
 
 from __future__ import annotations

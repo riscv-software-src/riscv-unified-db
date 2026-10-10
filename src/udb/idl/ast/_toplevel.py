@@ -8,23 +8,24 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar
+from weakref import WeakSet
 
 from ..source import IdlSource
 from ..symbols import SymbolTable
 from ..types import (
     Type,
+    TypeKind,
 )
 from ._base import Node, _check_kind, _idl_join, _source_and_span, from_h
 from ._declarations import (
     BitfieldDefinition,
     BuiltinEnumDefinition,
     EnumDefinition,
-    FunctionBody,
-    FunctionDef,
     Global,
     GlobalWithInitialization,
     StructDefinition,
 )
+from ._functions import FunctionBody, FunctionDef
 from ._leaves import StringLiteral
 
 
@@ -36,6 +37,16 @@ class ConstraintBody(Node):
     """
 
     kind: ClassVar[str] = "constraint_body"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return all(stmt.const_eval(symtab) for stmt in self.stmts)
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        for stmt in self.stmts:
+            stmt.type_check(symtab, strict=strict)
+
+    def satisfied(self, symtab: SymbolTable) -> bool:
+        return all(stmt.satisfied(symtab) for stmt in self.stmts)
 
     @property
     def stmts(self) -> tuple[Node, ...]:
@@ -60,6 +71,38 @@ class Fetch(Node):
     """A top-level ``fetch { ... }`` block; Ruby's ``FetchAst``."""
 
     kind: ClassVar[str] = "fetch_decl"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        if symtab.levels == 1:
+            local = symtab.global_clone()
+            local.push(self)
+            try:
+                return self.body.const_eval(local)
+            finally:
+                local.pop()
+                local.release()
+        return self.body.const_eval(symtab)
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if symtab.levels == 1:
+            local = symtab.global_clone()
+            local.push(self)
+            try:
+                local.add("__expected_return_type", self.return_type(local))
+                self.body.type_check(local, strict=strict)
+            finally:
+                local.pop()
+                local.release()
+            return
+        self.body.type_check(symtab, strict=strict)
+
+    def return_type(self, symtab: SymbolTable) -> Type:
+        width = symtab.get("INSTR_ENC_WIDTH")
+        if width is None:
+            self.type_error("INSTR_ENC_WIDTH has not been declared")
+        if width.value is None:
+            self.value_error("INSTR_ENC_WIDTH is not compile-time-known")
+        return Type(TypeKind.BITS, width=width.value)
 
     @property
     def body(self) -> FunctionBody:
@@ -99,6 +142,12 @@ class IncludeStatement(Node):
     """
 
     kind: ClassVar[str] = "include"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return False
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        pass
 
     @property
     def string_literal(self) -> StringLiteral:
@@ -140,6 +189,91 @@ class Isa(Node):
     """
 
     kind: ClassVar[str] = "isa"
+
+    @property
+    def globals(self) -> tuple[Global | GlobalWithInitialization, ...]:
+        return tuple(
+            node
+            for node in self.definitions
+            if isinstance(node, (Global, GlobalWithInitialization))
+        )
+
+    @property
+    def enums(self) -> tuple[EnumDefinition | BuiltinEnumDefinition, ...]:
+        return tuple(
+            node
+            for node in self.definitions
+            if isinstance(node, (EnumDefinition, BuiltinEnumDefinition))
+        )
+
+    @property
+    def bitfields(self) -> tuple[BitfieldDefinition, ...]:
+        return tuple(node for node in self.definitions if isinstance(node, BitfieldDefinition))
+
+    @property
+    def structs(self) -> tuple[StructDefinition, ...]:
+        return tuple(node for node in self.definitions if isinstance(node, StructDefinition))
+
+    @property
+    def functions(self) -> tuple[FunctionDef, ...]:
+        return tuple(node for node in self.definitions if isinstance(node, FunctionDef))
+
+    @property
+    def fetch(self) -> Fetch:
+        for node in self.definitions:
+            if isinstance(node, Fetch):
+                return node
+        self.internal_error("No fetch block defined")
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return False
+
+    def add_global_symbols(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if symtab.levels != 1:
+            self.internal_error("Symtab is not at global scope")
+        registered = self._cache.setdefault("registered_tables", WeakSet())
+        if symtab in registered:
+            return
+        for definition in self.definitions:
+            if isinstance(
+                definition,
+                (EnumDefinition, BuiltinEnumDefinition, BitfieldDefinition, StructDefinition),
+            ):
+                definition.type_check(symtab, strict=strict)
+        for function in self.functions:
+            function.add_symbol(symtab)
+        declared = set()
+        for definition in self.globals:
+            if definition.id in declared:
+                definition.type_error(
+                    f"Variable '{definition.id}' is already declared in this scope"
+                )
+            declared.add(definition.id)
+            definition.add_symbol(symtab)
+        registered.add(symtab)
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.add_global_symbols(symtab, strict=strict)
+        if sum(isinstance(node, Fetch) for node in self.definitions) > 1:
+            self.type_error("Multiple fetch blocks defined")
+        for definition in self.globals:
+            definition.type_check(symtab, strict=strict, add_sym=False)
+        for function in self.functions:
+            function.type_check(symtab, strict=strict)
+        for definition in self.definitions:
+            if not isinstance(
+                definition,
+                (
+                    EnumDefinition,
+                    BuiltinEnumDefinition,
+                    BitfieldDefinition,
+                    StructDefinition,
+                    FunctionDef,
+                    Global,
+                    GlobalWithInitialization,
+                ),
+            ):
+                definition.type_check(symtab, strict=strict)
 
     @property
     def definitions(self) -> tuple[Node, ...]:

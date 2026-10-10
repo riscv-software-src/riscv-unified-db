@@ -419,6 +419,39 @@ jobs:
       - name: Compare Python and Ruby IDL expression type-checking and constant evaluation
         run: UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_idl_expressions.py
 
+  regress-python-idl-statement-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compare Python and Ruby IDL statements and function semantics
+        run: >-
+          UDB_TEST_RUBY=1 uv run --locked python -m pytest -n 0
+          tests/python/test_idl_arrays.py
+          tests/python/test_idl_const_function_arguments.py
+          tests/python/test_idl_constraints.py
+          tests/python/test_idl_control_flow.py
+          tests/python/test_idl_csr_operations.py
+          tests/python/test_idl_functions.py
+          tests/python/test_idl_includes.py
+          tests/python/test_idl_loops.py
+          tests/python/test_idl_register_files.py
+          tests/python/test_idl_reserved_words.py
+          tests/python/test_idl_statements_corpus.py
+          tests/python/test_idl_strictness_and_unknowns.py
+          tests/python/test_idl_type_checking_comprehensive.py
+          tests/python/test_idl_type_checking_data_driven.py
+          tests/python/test_idl_variables.py
+          tests/python/test_idl_statement_regressions.py
+          tests/python/test_idl_statement_review_regressions.py
+          tests/python/test_idl_conditional_assignment_correction.py
+          tests/python/test_idl_return_state_review.py
+          tests/python/test_idl_return_abort_regressions.py
+          tests/python/test_idl_partial_array_unknown_review.py
+          tests/python/test_idl_partial_array_unknown_regressions.py
+
   regress-python-layout-drift:
     runs-on: ubuntu-latest
     steps:
@@ -1117,6 +1150,7 @@ jobs:
       - regress-python-resolution-parity
       - regress-python-idl-syntax-parity
       - regress-python-idl-expression-parity
+      - regress-python-idl-statement-parity
       - regress-python-layout-drift
       - regress-python-unit
       - regress-scripts-unit

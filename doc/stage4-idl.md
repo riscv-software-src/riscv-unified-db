@@ -78,8 +78,10 @@ Modules stay under about 1,000 lines. `udb.idl.parser` is a package split by gra
 `parse_*` entry points. `udb.idl.ast` is likewise a package, split by node family: `_base` (the
 `Node` base class and shared helpers), `_leaves` (literals and other leaf nodes), `_operators`,
 `_aggregates` (array, concatenation, and field/element-access expressions), `_csr`, `_builtins`
-(the `$`-prefixed builtin expressions), `_statements`, `_assignments`, `_declarations` (including
-`FunctionBody`), `_toplevel`, and `_registry` (the `from_h` dispatch table). Later slices add
+(the `$`-prefixed builtin expressions), `_statements`, `_assignments`, `_declarations`
+(variables/globals and user types), `_functions` (`FunctionDef`/`FunctionBody`), `_toplevel`,
+`_effects` (scope-aware nonexecuting write/call invalidation), and `_registry`
+(the `from_h` dispatch table). Later slices add
 their semantics and passes in separate modules, which also lets slices proceed in parallel.
 Package `__init__` modules re-export the public API, so imports do not depend on the layout.
 
@@ -106,7 +108,53 @@ The implementation must not use global compiler state:
   semaphore are not reproduced.
 - The architecture environment reaches the compiler through an explicit protocol: parameters,
   CSRs, register files, builtin enums, `implemented?` callbacks, MXLEN, and possible XLENs.
+  Environment-seeded enums retain builtin metadata so `generated enum` declarations can
+  validate them, including in independent cloned tables.
   `udb.idl` does not import `udb.architecture`. Stage 4 integration provides the adapter.
+
+`Isa.add_global_symbols` registers user types, function signatures, and globals without
+eagerly checking initializer RHS types, matching ordinary Ruby architecture loading.
+`Isa.type_check` explicitly validates registered globals, function bodies and remaining
+definitions; ordinary mixed-width array literals retain their rejection rules.
+`add_global_symbols` followed by `type_check` does not register symbols twice.
+Global initializers can therefore call functions whose
+signatures appear later in the file. Fetch blocks create an isolated body scope when checked
+from an ISA's global scope. As a Python validation policy, declarations cannot
+replace a name in their current scope; nested scopes may shadow outer names. Ruby permits
+same-scope replacement, so this policy is a documented deviation, not a claimed Ruby defect.
+
+An unknown conditional write raises `IdlValueUnknown` and invalidates its local destinations.
+Unknown block branches invalidate possible writes without executing branch bodies.
+Function calls invalidate escaping aggregate aliases and affected globals transitively,
+while protecting scalar argument copies, shadowed locals and runtime-state bindings.
+Unknown array indices and bitfield RHS invalidate their root before propagating unknown.
+Assignment execution resolves the current binding every time, including loop redeclarations.
+Body return evaluation and candidate replay invalidate trailing potential writes before
+an unknown statement aborts, without executing those writes. Loop initializer, condition,
+body and update aborts similarly invalidate possible loop writes while retaining the
+original unknown reason. Known-false/no-write loops, lexical shadows, unrelated bindings,
+runtime state and literal return alternatives remain protected.
+Reading a partially unknown array element raises `IdlValueUnknown` rather than returning
+`None`; known siblings remain readable, and dependent unknown-index writes invalidate roots.
+Array element reads support both mutable lists and immutable configuration tuples without
+normalizing or mutating their contents; readonly configuration writes remain type errors.
+For nested array/range or field writes, invalidation conservatively marks the root binding
+unknown without evaluating an uncertain index. Hardware registers and CSRs have no
+compile-time contents to mutate. Unsupported invalidation raises `IdlInternalError`, rather
+than silently retaining a fabricated known value.
+
+Symbol-table construction copies environment-provided mutable bindings. Both clone methods
+copy mutable global bindings and nested values; `deep_clone` also copies local scopes, even
+for legacy `clone_values=False` callers. Immutable ordinary types, AST/source objects and
+environment callbacks are retained. Function signatures bind to the cloned global context,
+so a cloned parameter value is visible inside calls without mutating the original table.
+Truncation returns values that already fit before constructing a width mask, allowing small
+known or partially unknown values at very large widths without excessive allocation.
+Function arguments are bound before argument-dependent return types are checked.
+Call return-type inference takes the explicit caller table, binds argument values and
+resolves dependent widths per context; no table-name-only type/binding caches are used.
+CSR `$bits` casts use actual CSR width metadata and propagate unknown CSR reads.
+Implication checking recursively validates both operands before checking Boolean kinds.
 
 ## Source mapping
 
@@ -132,10 +180,33 @@ directly.
   | --- | --- | --- |
   | `test_type_to_idl.rb` | `test_idl_types.py` | 14 |
   | `test_expressions.rb` (with `expressions.yaml`, `literals.yaml`) | `test_idl_expressions.py` | 14 |
+  | `test_control_flow.rb` | `test_idl_control_flow.py` | 15 |
+  | `test_functions.rb` (definitions/calls; reachability and pruning remain slice 17) | `test_idl_functions.py` | 15 |
+  | `test_loops.rb` | `test_idl_loops.py` | 15 |
+  | `test_variables.rb` | `test_idl_variables.py` | 15 |
+  | `test_arrays.rb` | `test_idl_arrays.py` | 15 |
+  | `test_register_files.rb` (construction/access/writes; discovery remains slice 17) | `test_idl_register_files.py` | 15 |
+  | CSR read/write adversarial oracle cases | `test_idl_csr_operations.py` | 15 |
+  | `test_reserved_words.rb` | `test_idl_reserved_words.py` | 15 |
+  | `test_const_function_arguments.rb` | `test_idl_const_function_arguments.py` | 15 |
+  | `test_type_checking_comprehensive.rb` | `test_idl_type_checking_comprehensive.py` | 15 |
+  | `test_type_checking_data_driven.rb` | `test_idl_type_checking_data_driven.py` | 15 |
+  | `test_strictness_and_unknowns.rb` | `test_idl_strictness_and_unknowns.py` | 15 |
+  | `test_constraints.rb` (`constraints.yaml`, `constraint_errors.yaml`) | `test_idl_constraints.py` | 15 |
+  | Include statements and frozen statement oracle | `test_idl_includes.py`, `test_idl_statements_corpus.py` | 15 |
+  | Python registration/clone/unknown-write and truncation corrections | `test_idl_statement_regressions.py`, `test_idl_conditional_assignment_correction.py` | 15 |
+  | Reviewed control-flow/call effects, current bindings, CSR casts and genuine global loading | `test_idl_statement_review_regressions.py` | 15 |
+  | Residual body/loop abort state and partially unknown array elements | `test_idl_return_state_review.py`, `test_idl_return_abort_regressions.py`, `test_idl_partial_array_unknown_review.py`, `test_idl_partial_array_unknown_regressions.py` | 15 |
   | `test_values.rb` (`max_value`/`min_value`, CSR fields) and the CSR cases of `test_ast_type.rb` | not yet ported | 16 |
 - **Corrections:** a confirmed Ruby defect goes in `doc/python-migration-bugfixes.md` with a
   regression test and a reviewed corpus exception. Python defects go in the migration progress
   log.
+
+The statement oracle adapter keeps the frozen Ruby corpus unchanged. It explicitly applies
+previously reviewed expression corrections (signed literal widths/values and concatenation
+constness) and the same-scope declaration policy. Function-body type checking uses an
+isolated scope; observing runtime local variables requires execution, as in Ruby. The
+declaration policy is identified separately from Ruby defect corrections.
 
 ## Slices
 

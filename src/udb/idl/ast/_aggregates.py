@@ -9,19 +9,21 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, ClassVar
 
-from ..errors import IdlInternalError, IdlTypeError, IdlValueUnknown
+from ..errors import IdlValueUnknown
 from ..symbols import SymbolTable
 from ..types import (
     POSSIBLY_UNKNOWN_BITS1_TYPE,
     WIDTH_UNKNOWN,
     BitfieldType,
+    FunctionType,
     Qualifier,
     RegFileElementType,
     StructType,
     Type,
     TypeKind,
 )
-from ._base import Node, _check_kind, _idl_join, _source_and_span, from_h
+from ._assignments import invalidate_binding
+from ._base import RESERVED_WORDS, Node, _check_kind, _idl_join, _source_and_span, from_h
 from ._leaves import UnknownLiteral
 
 
@@ -30,6 +32,9 @@ class ArrayLiteral(Node):
     """An array literal (``[a, b, c]``); Ruby's ``ArrayLiteralAst``."""
 
     kind: ClassVar[str] = "array_literal"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return all(node.const_eval(symtab) for node in self.children)
 
     def to_idl(self) -> str:
         return f"[{_idl_join(self.children, sep=',')}]"
@@ -67,6 +72,9 @@ class ConcatenationExpression(Node):
     """A bit concatenation expression (``{a, b, c}``); Ruby's ``ConcatenationExpressionAst``."""
 
     kind: ClassVar[str] = "concat_expr"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return all(node.const_eval(symtab) for node in self.children)
 
     def to_idl(self) -> str:
         return f"{{{_idl_join(self.children, sep=',')}}}"
@@ -137,6 +145,9 @@ class ReplicationExpression(Node):
 
     kind: ClassVar[str] = "repl_expr"
 
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.n.const_eval(symtab) and self.v.const_eval(symtab)
+
     @property
     def n(self) -> Node:
         return self.children[0]
@@ -195,6 +206,41 @@ class PostIncrementExpression(Node):
     kind: ClassVar[str] = "post_increment_expr"
 
     @property
+    def is_executable(self) -> bool:
+        return True
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.rval.const_eval(symtab)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return self.rval.type(symtab)
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.rval.type_check(symtab, strict=strict)
+        variable = symtab.get(self.rval.text)
+        if variable is None:
+            self.internal_error(f"No symbol named '{self.rval.text}'")
+        if (
+            self.rval.kind == "id"
+            and self.rval.type(symtab).is_const
+            and not variable.for_loop_iter
+        ):
+            self.type_error("Cannot increment a const variable")
+        if not variable.type.is_integral:
+            self.type_error("Post increment variable must be integral")
+
+    def execute(self, symtab: SymbolTable) -> None:
+        variable = symtab.get(self.rval.text)
+        if variable is None:
+            self.internal_error(f"No symbol named '{self.rval.text}'")
+        if variable.value is None:
+            self.value_error(f"{self.rval.text} is not compile-time-known")
+        variable.value += 1
+
+    def nullify_assignments(self, symtab: SymbolTable) -> None:
+        invalidate_binding(self.rval, symtab)
+
+    @property
     def rval(self) -> Node:
         return self.children[0]
 
@@ -217,6 +263,39 @@ class PostDecrementExpression(Node):
     """A post-decrement expression (``x--``); Ruby's ``PostDecrementExpressionAst``."""
 
     kind: ClassVar[str] = "post_decrement_expr"
+
+    @property
+    def is_executable(self) -> bool:
+        return True
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.rval.const_eval(symtab)
+
+    def type(self, symtab: SymbolTable) -> Type:
+        return self.rval.type(symtab)
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        self.rval.type_check(symtab, strict=strict)
+        variable = symtab.get(self.rval.text)
+        if (
+            self.rval.kind == "id"
+            and self.rval.type(symtab).is_const
+            and not variable.for_loop_iter
+        ):
+            self.type_error("Cannot decrement a const variable")
+        if not self.rval.type(symtab).is_integral:
+            self.type_error("Post decement must be integral")
+
+    def execute(self, symtab: SymbolTable) -> None:
+        variable = symtab.get(self.rval.text)
+        if variable is None:
+            self.internal_error(f"No symbol {self.rval.text}")
+        if variable.value is None:
+            self.value_error(f"value of variable '{self.rval.text}' not know")
+        variable.value -= 1
+
+    def nullify_assignments(self, symtab: SymbolTable) -> None:
+        invalidate_binding(self.rval, symtab)
 
     @property
     def rval(self) -> Node:
@@ -243,6 +322,9 @@ class FieldAccessExpression(Node):
     kind: ClassVar[str] = "field_access_expr"
 
     field_name: str
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return self.obj.const_eval(symtab)
 
     @property
     def obj(self) -> Node:
@@ -311,6 +393,11 @@ class AryElementAccess(Node):
     """An array/register-file element access (``var[index]``); Ruby's ``AryElementAccessAst``."""
 
     kind: ClassVar[str] = "array_access"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        if self._is_register_file_array(self.var.type(symtab)):
+            return False
+        return self.var.const_eval(symtab) and self.index.const_eval(symtab)
 
     @property
     def var(self) -> Node:
@@ -395,20 +482,19 @@ class AryElementAccess(Node):
             # Ruby's Integer#[] reads a negative bit index as 0.
             return 0 if index < 0 else (var_val >> index) & 1
 
-        try:
-            var_type = self.var.type(symtab)
-        except (IdlTypeError, IdlInternalError):
-            var_type = None
-        if isinstance(var_type, Type) and self._is_register_file_array(var_type):
+        if self._is_register_file_array(self.var.type(symtab)):
             self.value_error("Register file registers are not compile-time-known")
 
-        if not isinstance(var_val, list):
+        if not isinstance(var_val, (list, tuple)):
             self.internal_error(f"Not an array (is a {type(var_val).__name__})")
 
         idx = self.index.value(symtab)
         if idx >= len(var_val):
             self.internal_error("Index out of range; make sure type_check is called")
-        return var_val[idx]
+        value = var_val[idx]
+        if value is None:
+            self.value_error(f"Value of '{self.text}' not known")
+        return value
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -416,6 +502,9 @@ class AryRangeAccess(Node):
     """An array bit-range access (``var[msb:lsb]``); Ruby's ``AryRangeAccessAst``."""
 
     kind: ClassVar[str] = "array_range_access"
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return all(node.const_eval(symtab) for node in self.children)
 
     @property
     def var(self) -> Node:
@@ -502,6 +591,135 @@ class FunctionCallExpression(Node):
     kind: ClassVar[str] = "funcall_expr"
 
     name: str
+
+    @property
+    def is_executable(self) -> bool:
+        return True
+
+    @property
+    def arg_nodes(self) -> tuple[Node, ...]:
+        return self.args
+
+    def func_type(self, symtab: SymbolTable) -> FunctionType:
+        dtype = symtab.get(self.name)
+        if dtype is None:
+            self.type_error(f"No symbol {self.name}")
+        if not isinstance(dtype, FunctionType):
+            self.type_error(f"{self.name} is not a function (it's a {type(dtype).__name__})")
+        return dtype
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        return all(arg.const_eval(symtab) for arg in self.args) and self.func_type(
+            symtab
+        ).func_def_ast.const_eval(symtab)
+
+    def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
+        if self.name in RESERVED_WORDS:
+            self.type_error(f"Cannot use reserved word '{self.name}' as function name")
+        level = symtab.levels
+        function = self.func_type(symtab)
+        if function.num_args != len(self.args):
+            self.type_error(
+                f"Wrong number of arguments to '{self.name}' function call. "
+                f"Expecting {function.num_args}, got {len(self.args)}"
+            )
+        for arg in self.args:
+            arg.type_check(symtab, strict=strict)
+        for i, arg in enumerate(self.args):
+            expected = function.argument_type(i, self.args, symtab, self)
+            if not arg.type(symtab).convertable_to(expected):
+                self.type_error(
+                    f"Wrong type for argument number {i + 1}. Expecting {expected}, "
+                    f"got {arg.type(symtab)}"
+                )
+            name = function.argument_nodes[i].id.name
+            if name[:1].isupper() and not arg.type(symtab).is_const:
+                self.type_error(
+                    f"You cannot pass a mutable expression to '{name}' const argument of {self.name}"
+                )
+        function.return_type(self.args, self, symtab)
+        if symtab.levels != level:
+            self.internal_error(
+                f"Function call symtab not at same level post type check ({symtab.levels} {level})"
+            )
+
+    def type(self, symtab: SymbolTable) -> Type:
+        if self.name in ("implemented?", "implemented_version?", "implemented_csr?"):
+            return Type(TypeKind.BOOLEAN, qualifiers=(Qualifier.CONST,))
+        function = self.func_type(symtab)
+        dtype = function.return_type(self.args, self, symtab)
+        if all(arg.type(symtab).is_const for arg in self.args) and function.func_def_ast.const_eval(
+            symtab
+        ):
+            dtype = dtype.make_const()
+        return dtype
+
+    def value(self, symtab: SymbolTable) -> Any:
+        try:
+            return self._value(symtab)
+        except IdlValueUnknown:
+            self.nullify_assignments(symtab)
+            raise
+
+    def _value(self, symtab: SymbolTable) -> Any:
+        for argument in self.args:
+            dtype = argument.type(symtab)
+            if dtype.is_global and not dtype.is_const:
+                self.value_error("Runtime global arguments are not compile-time-knowable")
+        if self.name == "xlen":
+            xlen = symtab.get("__effective_xlen")
+            if xlen is not None:
+                return xlen.value
+        function = self.func_type(symtab)
+        if function.is_generated:
+            callbacks = symtab.builtin_funcs
+            if callbacks is None:
+                self.value_error("builtin functions not provided")
+            if self.name in ("implemented?", "implemented_version?"):
+                extension = self.args[0]
+                if (
+                    extension.type(symtab).kind != TypeKind.ENUM_REF
+                    or extension.class_name != "ExtensionName"
+                ):
+                    self.type_error("First argument should be a ExtensionName")
+                if self.name == "implemented?":
+                    value = callbacks.implemented(extension.member_name)
+                else:
+                    value = callbacks.implemented_version(
+                        extension.member_name, self.args[1].text[1:-1]
+                    )
+            elif self.name == "implemented_csr?":
+                value = callbacks.implemented_csr(self.args[0].value(symtab))
+            elif self.name in (
+                "cached_translation",
+                "maybe_cache_translation",
+                "invalidate_translations",
+                "direct_csr_lookup",
+                "indirect_csr_lookup",
+                "csr_hw_read",
+                "csr_sw_read",
+                "csr_sw_write",
+            ):
+                self.value_error(f"{self.name} is not compile-time-knowable")
+            else:
+                self.internal_error(f"Unimplemented generated: '{self.name}'")
+            if value is None:
+                self.value_error(
+                    f"{self.name} is only known when evaluating in the context "
+                    "of a fully-configured arch def"
+                )
+            return value
+        if function.is_builtin:
+            self.value_error("value of builtin functions aren't knowable")
+        return function.return_value(self.args, symtab, self)
+
+    def execute(self, symtab: SymbolTable) -> Any:
+        return self.value(symtab)
+
+    def nullify_assignments(self, symtab: SymbolTable) -> None:
+        from ._effects import invalidate_call
+
+        invalidate_call(self, symtab)
 
     @property
     def args(self) -> tuple[Node, ...]:
