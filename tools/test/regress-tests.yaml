@@ -234,7 +234,7 @@ tests:
       - smoke
     test:
       - name: Check layout-derived architecture files
-        run: uv run --locked udb generate-layouts --root . --check
+        run: uv run --locked udb generate-layouts --root . --collection standard --collection qc_iu --check
 
   regress-python-configured-prose-frozen:
     ci_stage: pr

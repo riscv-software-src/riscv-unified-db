@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: qc.mclicilvl{{ index }}
+long_name: IRQ Level {{ number }}
+address: {{ address }}
+length: 32
+priv_mode: M
+definedBy:
+  allOf:
+    - xlen: 32
+    - extension:
+        name: Xqciint
+        version: ">=0.4"
+writable: true
+description: |
+  Level bits for IRQs {{ number * 8 }}-{{ (number + 1) * 8 - 1 }}
+fields:
+{% for field in field_numbers -%}
+  IRQ{{ number * 8 + field }}:
+    type: RW
+    reset_value: 0
+    location: {{ field * 4 + 3 }}-{{ field * 4 }}
+    description: IRQ{{ number * 8 + field }} level
+{% endfor -%}
