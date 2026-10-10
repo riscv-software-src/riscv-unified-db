@@ -32,7 +32,7 @@ module FFI
         if name =~ /z3/
           unless Pathname.new(name).absolute?
             # when we load z3, make sure we get our installed version
-            File.join(Udb::Z3Loader.z3_lib_dir, name)
+            File.join(Udb::Z3Loader.z3_lib_dir, Udb::Z3Loader.library_name)
           else
             name
           end
@@ -76,8 +76,6 @@ module Udb
         File.join(xdg_cache, "udb", "z3", Udb::Z3_VERSION, cpu)
       end
 
-      private
-
       # Returns the platform-specific library name
       sig { returns(String) }
       def library_name
@@ -92,6 +90,9 @@ module Udb
           "libz3.so" # fallback
         end
       end
+
+      private
+
     end
   end
 end

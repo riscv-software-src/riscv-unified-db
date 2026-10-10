@@ -101,6 +101,10 @@ jobs:
             arch: x64
           - runner: ubuntu-24.04-arm
             arch: arm64
+          - runner: macos-15-intel
+            arch: x64
+          - runner: macos-15
+            arch: arm64
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
@@ -128,6 +132,11 @@ jobs:
             arch: x64
           - runner: ubuntu-24.04-arm
             arch: arm64
+          - runner: macos-15-intel
+            arch: x64
+          - runner: macos-15
+            arch: arm64
+
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
@@ -155,6 +164,11 @@ jobs:
             arch: x64
           - runner: ubuntu-24.04-arm
             arch: arm64
+          - runner: macos-15-intel
+            arch: x64
+          - runner: macos-15
+            arch: arm64
+
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
@@ -182,6 +196,11 @@ jobs:
             arch: x64
           - runner: ubuntu-24.04-arm
             arch: arm64
+          - runner: macos-15-intel
+            arch: x64
+          - runner: macos-15
+            arch: arm64
+
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout repository
