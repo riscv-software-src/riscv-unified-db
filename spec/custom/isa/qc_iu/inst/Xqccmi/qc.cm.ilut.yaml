@@ -63,16 +63,16 @@ operation(): |
   XReg real_pc = $pc & ~32'b1;
   Boolean resuming_second = ($pc[0:0] == 1'b1);
 
-  XReg N = {21'b0, CSR[qc.itdec].dec};
+  XReg double_entry_count = {21'b0, CSR[qc.itdec].dec};
   XReg base_addr = CSR[qc.itba].base << 6;
   XReg entry_addr;
   Boolean is_double;
 
-  if (ilut_index < N) {
+  if (ilut_index < double_entry_count) {
     entry_addr = base_addr + (ilut_index * 8);
     is_double = true;
   } else {
-    entry_addr = base_addr + (N * 8) + ((ilut_index - N) * 4);
+    entry_addr = base_addr + (double_entry_count * 8) + ((ilut_index - double_entry_count) * 4);
     is_double = false;
   }
 

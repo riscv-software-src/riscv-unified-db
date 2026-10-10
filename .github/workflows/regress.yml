@@ -452,6 +452,34 @@ jobs:
           tests/python/test_idl_partial_array_unknown_review.py
           tests/python/test_idl_partial_array_unknown_regressions.py
 
+  regress-python-idl-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Check captured sources and all available IDL architecture bodies
+        run: >-
+          uv run --locked python -m pytest -n 0
+          tests/python/test_configuration_idl_source.py
+          tests/python/test_database_idl_sources.py
+          tests/python/test_idl_environment.py
+          tests/python/test_idl_environment_fixes.py
+          tests/python/test_idl_environment_review.py
+          tests/python/test_idl_architecture_adapter.py
+          tests/python/test_idl_architecture_review_fixes.py
+          tests/python/test_idl_architecture_review_regressions.py
+          tests/python/test_idl_csr_protocol_review.py
+          tests/python/test_idl_csr_symbolic_base_review.py
+          tests/python/test_idl_native_descriptor_integration.py
+          tests/python/test_idl_effective_xlen_review.py
+          tests/python/test_idl_unavailable_body_review.py
+          tests/python/test_idl_unavailable_body_edges.py
+          tests/python/test_idl_rori_source_review.py
+          tests/python/test_idl_qc_ilut_source_review.py
+          tests/python/test_idl_architecture_real.py
+
   regress-python-layout-drift:
     runs-on: ubuntu-latest
     steps:
@@ -1151,6 +1179,7 @@ jobs:
       - regress-python-idl-syntax-parity
       - regress-python-idl-expression-parity
       - regress-python-idl-statement-parity
+      - regress-python-idl-architecture
       - regress-python-layout-drift
       - regress-python-unit
       - regress-scripts-unit
