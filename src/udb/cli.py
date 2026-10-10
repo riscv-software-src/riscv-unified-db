@@ -102,6 +102,18 @@ def build_parser() -> argparse.ArgumentParser:
     layouts_parser.add_argument(
         "--check", action="store_true", help="report generated-file drift without rewriting files"
     )
+    profiles_parser = generators.add_parser(
+        "profile-configs", help="generate solver-expanded profile configurations"
+    )
+    profiles_parser.add_argument("-o", "--output", type=Path, required=True)
+    profiles_parser.add_argument(
+        "--profile",
+        action="append",
+        help="select a named profile; repeat, or omit for all profiles",
+    )
+    profiles_parser.add_argument(
+        "--check", action="store_true", help="report generated-file drift without rewriting files"
+    )
     return parser
 
 
@@ -145,10 +157,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         if resolves_database:
             database = database.resolve(overlays=args.overlay, validate=args.validate)
         if args.command == "generate":
+            assert isinstance(database, ResolvedDatabase)
+            if args.generator == "profile-configs":
+                from .profile_configs import profile_configuration_plan
+
+                plan = profile_configuration_plan(database, args.profile)
+                drift = plan.apply(args.output, check=args.check)
+                if args.check and drift:
+                    for path in drift:
+                        print(path)
+                    return 1
+                return 0
+
             from .configuration import Configuration
             from .generators.config_headers import ConfigHeaderError, generate_config_header
 
-            assert isinstance(database, ResolvedDatabase)
             configuration = (
                 Configuration.builtin(args.config)
                 if args.config in ("_", "rv32", "rv64")

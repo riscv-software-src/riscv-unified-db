@@ -408,7 +408,9 @@ do_gen_profile_cfgs() {
     before_hash=$(find "$cfgs_dir" -type f -name "*.yaml" -exec md5sum {} \; | sort | md5sum | awk '{print $1}')
   fi
 
-  "${UDB_ROOT}"/bin/bundle exec rake gen:cfg
+  "${UDB_ROOT}"/bin/python -m udb \
+    --path "${UDB_ROOT}/spec/std/isa" --schemas "${UDB_ROOT}/spec/schemas" \
+    generate profile-configs -o "$cfgs_dir"
 
   if [ $fail_on_change -eq 1 ]; then
     local after_hash=""
