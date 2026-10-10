@@ -1,0 +1,24 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvfbfa
+long_name: Vector Extension for Additional BF16 Computation
+type: unprivileged
+description: |
+ The Zvfbfa extension adds more complete BF16 vector compute support.
+ Zvfbfa is compatible with, but does not require, Zvfbfwma and Zvfbfmin.
+versions:
+ - version: "0.8.0"
+   # date: 2026-06-08
+   # commit: f15df74e95e56ad5fabdc9edcf0f1c907d29040a
+   state: development
+   repositories:
+     - url: https://github.com/riscv/riscv-isa-manual
+       branch: zvfbfa
+requirements:
+ extension:
+   allOf:
+     - name: Zve32f
+     - name: Zfbfmin

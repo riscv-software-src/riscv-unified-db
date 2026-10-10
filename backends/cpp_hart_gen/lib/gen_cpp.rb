@@ -578,17 +578,35 @@ module Idl
       t = type(symtab)
 
       if w == :unknown
+        lit_width = symtab.possible_xlens.max
         if t.known?
-          "#{' ' * indent}_RuntimeBits<#{symtab.possible_xlens.max}, #{t.signed?}>{#{v}_b, __UDB_XLEN}"
+          "#{' ' * indent}_RuntimeBits<#{lit_width}, #{t.signed?}>{#{bits_literal_text(v, lit_width)}_b, __UDB_XLEN}"
         else
-          "#{' ' * indent}_PossiblyUnknownRuntimeBits<#{symtab.possible_xlens.max}, #{t.signed?}>{\"#{v}\"_xb, __UDB_XLEN}"
+          "#{' ' * indent}_PossiblyUnknownRuntimeBits<#{lit_width}, #{t.signed?}>{\"#{v}\"_xb, __UDB_XLEN}"
         end
       else
         if t.known?
-          "#{' ' * indent}_Bits<#{t.width}, #{t.signed?}>(#{v}_b)"
+          "#{' ' * indent}_Bits<#{t.width}, #{t.signed?}>(#{bits_literal_text(v, t.width)}_b)"
         else
           "#{' ' * indent}_PossiblyUnknownBits<#{t.width}, #{t.signed?}>(\"#{v}\"_xb)"
         end
+      end
+    end
+
+    private
+
+    # Render +value+ as the unsigned decimal text of its +width+-bit two's-complement
+    # bit pattern. The C++ "_b" literal operator always produces an unsigned _Bits
+    # whose width is derived from the digit text itself (e.g. "1_b" is 1 bit wide), so
+    # emitting a negative value directly (e.g. "-1_b") relies on C++ unary minus over
+    # that undersized unsigned literal, which loses the sign (e.g. -15_b becomes +1,
+    # because "15_b" is only four bits and negation drops the sign bit). Pre-masking to
+    # the literal's real width avoids that and always yields the correct bit pattern.
+    def bits_literal_text(value, width)
+      if value.is_a?(Integer) && value.negative?
+        (value & ((1 << width) - 1)).to_s
+      else
+        value.to_s
       end
     end
   end

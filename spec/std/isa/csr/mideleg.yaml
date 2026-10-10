@@ -101,8 +101,16 @@ fields:
       *Supervisor Software Interrupt delegation*
 
       When 1, Supervisor Software interrupts are delegated to HS/S-mode.
-    type: RW
+    type(): |
+      return MIDELEG_DELEGATABLE[1] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
+    sw_write(csr_value): |
+      if (csr_value.SSI == 0) {
+        if (implemented?(ExtensionName::H)) {
+          CSR[hideleg].SSI = 0;
+        }
+      }
+      return csr_value.SSI;
   VSSI:
     location: 2
     description: |
@@ -116,13 +124,22 @@ fields:
     definedBy:
       extension:
         name: H
+    sw_write(csr_value): |
+      if (csr_value.VSSI == 0) {
+        CSR[hie].VSSIE = 0;
+        CSR[hip].VSSIP = 0;
+        CSR[hideleg].VSSI = 0;
+      }
+      return csr_value.VSSI;
   MSI:
     location: 3
     description: |
       *Machine Software interrupt delegation*
 
-      Since M-mode interrupts cannot be delegated, this field is read-only zero.
-    type: RO
+      When 1, Machine Software interrupts are delegated to HS/S-mode.
+      This is unusual but permitted. See https://github.com/riscv/riscv-isa-manual/issues/3162.
+    type(): |
+      return MIDELEG_DELEGATABLE[3] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   STI:
     location: 5
@@ -130,7 +147,8 @@ fields:
       *Supervisor Timer interrupt delegation*
 
       When 1, Supervisor Timer interrupts are delegated to HS/S-mode.
-    type: RW
+    type(): |
+      return MIDELEG_DELEGATABLE[5] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   VSTI:
     location: 6
@@ -145,13 +163,22 @@ fields:
     definedBy:
       extension:
         name: H
+    sw_write(csr_value): |
+      if (csr_value.VSTI == 0) {
+        CSR[hie].VSTIE = 0;
+        CSR[hip].VSTIP = 0;
+        CSR[hideleg].VSTI = 0;
+      }
+      return csr_value.VSTI;
   MTI:
     location: 7
     description: |
       *Machine Timer interrupt delegation*
 
-      Since M-mode interrupts cannot be delegated, this field is read-only zero.
-    type: RO
+      When 1, Machine Timer interrupts are delegated to HS/S-mode.
+      This is unusual but permitted. See https://github.com/riscv/riscv-isa-manual/issues/3162.
+    type(): |
+      return MIDELEG_DELEGATABLE[7] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   SEI:
     location: 9
@@ -159,7 +186,8 @@ fields:
       *Supervisor External interrupt delegation*
 
       When 1, Supervisor External interrupts are delegated to HS/S-mode.
-    type: RW
+    type(): |
+      return MIDELEG_DELEGATABLE[9] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   VSEI:
     location: 10
@@ -172,33 +200,57 @@ fields:
     definedBy:
       extension:
         name: H
+    sw_write(csr_value): |
+      if (csr_value.VSEI == 0) {
+        CSR[hie].VSEIE = 0;
+        CSR[hip].VSEIP = 0;
+        CSR[hideleg].VSEI = 0;
+      }
+      return csr_value.VSEI;
   MEI:
     location: 11
     description: |
       *Machine External interrupt delegation*
 
-      Since M-mode interrupts cannot be delegated, this field is read-only zero.
-    type: RO
+      When 1, Machine External interrupts are delegated to HS/S-mode.
+      This is unusual but permitted. See https://github.com/riscv/riscv-isa-manual/issues/3162.
+    type(): |
+      return MIDELEG_DELEGATABLE[11] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
   SGEI:
     location: 12
     description: |
       *Supervisor Guest External Interrupt delegation*
 
-      Supervisor Guest External interrupts are always delegated to HS-mode, so this field is read-only one.
+      Supervisor Guest External interrupts are always delegated to HS-mode when any guest external interrupts
+      are implemented (`NUM_EXTERNAL_GUEST_INTERRUPTS` is nonzero), so this field is read-only one;
+      otherwise it is read-only zero.
     type: RO
-    reset_value: 1
+    reset_value(): |
+      return MIDELEG_DELEGATABLE[12] ? 1 : 0;
     definedBy:
       extension:
         name: H
+    sw_write(csr_value): |
+      if (csr_value.SGEI == 0) {
+        CSR[hie].SGEIE = 0;
+        CSR[hip].SGEIP = 0;
+      }
+      return csr_value.SGEI;
   LCOFI:
     location: 13
     description: |
       *Local Counter Overflow Interrupt delegation*
 
       When 1, local counter overflow interrupts are delegated to (H)S-mode.
-    type: RW
+    type(): |
+      return MIDELEG_DELEGATABLE[13] ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value: 0
     definedBy:
       extension:
         name: Sscofpmf
+    sw_write(csr_value): |
+      if (csr_value.LCOFI == 0) {
+        CSR[hideleg].LCOFI = 0;
+      }
+      return csr_value.LCOFI;

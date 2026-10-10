@@ -238,6 +238,14 @@ namespace udb {
                                 const PossiblyUnknownBits<32>& pte_len) {
       return atomically_set_pte_a_d(pte_paddr.get(), pte_value.get(), pte_len.get());
     }
+    Bits<8> atomic_read_modify_write_8(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<8>& value,
+                                       AmoOperation op) {
+      return Bits<8>{m_soc.atomic_read_modify_write_8(paddr.get(), value.get(), op)};
+    }
+    Bits<16> atomic_read_modify_write_16(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<16>& value,
+                                         AmoOperation op) {
+      return Bits<16>{m_soc.atomic_read_modify_write_16(paddr.get(), value.get(), op)};
+    }
     Bits<32> atomic_read_modify_write_32(const PossiblyUnknownBits<64>& paddr, const PossiblyUnknownBits<32>& value,
                                          AmoOperation op) {
       return Bits<32>{m_soc.atomic_read_modify_write_32(paddr.get(), value.get(), op)};
@@ -250,6 +258,11 @@ namespace udb {
                         PossiblyUnknownBits<64> len) {
       return m_soc.pma_applies_Q_(attr, start_paddr.get(), len.get());
     }
+    PossiblyUnknownBits<32> read_seed() {
+      return Bits<32>{m_soc.read_seed()};
+    }
+
+    void write_seed() { m_soc.write_seed(); }
 
     // external interrupt interface
     virtual void set_mmode_ext_int() = 0;

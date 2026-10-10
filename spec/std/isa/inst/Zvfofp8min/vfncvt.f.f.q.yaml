@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+$schema: "inst_schema.json#"
+kind: instruction
+name: vfncvt.f.f.q
+long_name: Vector floating-point FP32 conversion to OFP8
+description: |
+  Converts FP32 floating-point elements in vector register vs2 to OFP8
+  elements and stores the results in vector register vd according to mask vm.
+  Results are rounded using the dynamic floating-point rounding mode.
+definedBy:
+  extension:
+    name: Zvfofp8min
+assembly: vd, vs2, vm
+encoding:
+  match: 010010------11001001-----1010111
+  variables:
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |

@@ -82,9 +82,9 @@ module Udb
 
     sig { override.params(other: BasicObject).returns(T.nilable(Integer)) }
     def <=>(other)
-      return nil unless T.cast(other, Object).is_a?(ExceptionCode)
+      return nil unless T.cast(other, Object).is_a?(InterruptCode)
 
-      num <=> T.cast(other, ExceptionCode).num
+      num <=> T.cast(other, InterruptCode).num
     end
 
     sig { override.params(other: BasicObject).returns(T::Boolean) }
@@ -93,6 +93,6 @@ module Udb
     end
 
     sig { override.returns(Integer) }
-    def hash = [ExceptionCode, num].hash
+    def hash = [InterruptCode, num].hash
   end
 end

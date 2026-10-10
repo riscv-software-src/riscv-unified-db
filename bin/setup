@@ -52,20 +52,6 @@ _ok "mise ready ($("$MISE_BIN" --version 2>/dev/null | head -1))"
 
 _section "Tool versions (Ruby, aube, uv, CMake, …)"
 
-# gpg is required by some asdf plugins (make, ruby) during
-# mise install. Check for it early to surface a clear error.
-if ! command -v gpg > /dev/null 2>&1 && ! command -v gpg2 > /dev/null 2>&1; then
-  printf "\nERROR: GnuPG (gpg) is required but not found.\n" >&2
-  printf "       Install it via your package manager (e.g. \`brew install gnupg\` on macOS,\n" >&2
-  printf "       \`apt install gnupg\` on Debian/Ubuntu).\n\n" >&2
-  exit 1
-fi
-_note "gpg found"
-
-# Pre-initialize ~/.gnupg before mise install so parallel gpg invocations
-# (e.g. for make, ruby) don't race to create the directory.
-mkdir -p "${GNUPGHOME:-$HOME/.gnupg}" && chmod 700 "${GNUPGHOME:-$HOME/.gnupg}"
-
 # mise install is idempotent and exits quickly when everything is current.
 _run "Running mise install..."
 if ! "$MISE_BIN" install; then
@@ -75,83 +61,17 @@ fi
 _ok "All tool versions installed"
 
 # ---------------------------------------------------------------------------
-# Ruby gems
+# Project dependencies
 # ---------------------------------------------------------------------------
 
-_section "Ruby gems"
+_section "Project dependencies"
 
-if BUNDLE_GEMFILE="$ROOT/Gemfile" "$MISE_BIN" exec -- bundle check > /dev/null 2>&1; then
-  _ok "Ruby gems already up to date"
-else
-  _run "Running bundle install..."
-  if ! "$ROOT/bin/bundle" install; then
-    printf "\nERROR: bundle install failed.\n" >&2
-    exit 1
-  fi
-  _ok "Ruby gems installed"
-fi
-
-# ---------------------------------------------------------------------------
-# Native dependencies (z3, espresso, eqntott, must)
-# ---------------------------------------------------------------------------
-
-_section "Native dependencies (z3, espresso, eqntott, must)"
-
-if [[ ! -f "$ROOT/ext/rbi-central/README.md" ]]; then
-  _run "Initializing rbi-central submodule..."
-  git submodule update --init ext/rbi-central
-fi
-
-_run "Downloading native dependencies..."
-if ! (cd "${ROOT}/tools/ruby-gems/udb/ext/udb_download" && "$MISE_BIN" exec -- ruby extconf.rb); then
-  printf "\nERROR: native dependency download failed.\n" >&2
+_run "Running mise deps..."
+if ! "$MISE_BIN" deps; then
+  printf "\nERROR: mise deps failed.\n" >&2
   exit 1
 fi
-_ok "Native dependencies ready"
-
-# ---------------------------------------------------------------------------
-# Python packages (uv installs Python itself if needed)
-# ---------------------------------------------------------------------------
-
-_section "Python packages (uv-managed Python)"
-
-# Temporary migration shim for existing users with symlinks from the old shared-env setup.
-if [[ -L "$ROOT/.venv" ]]; then
-  _VENV_TARGET=$(readlink "$ROOT/.venv")
-  if [[ "$_VENV_TARGET" == "${XDG_DATA_HOME:-$HOME/.local/share}/udb/venv-"* ]]; then
-    _run "Removing old shared .venv symlink..."
-    rm -f "$ROOT/.venv"
-  fi
-fi
-
-_run "Running uv sync..."
-if ! "$ROOT/bin/uv" sync; then
-  printf "\nERROR: uv sync failed.\n" >&2
-  exit 1
-fi
-_ok "Python packages installed"
-
-# ---------------------------------------------------------------------------
-# aube packages
-# ---------------------------------------------------------------------------
-
-_section "aube packages"
-
-# Temporary migration shim for existing users with symlinks from the old shared-env setup.
-if [[ -L "$ROOT/node_modules" ]]; then
-  _NODE_MODULES_TARGET=$(readlink "$ROOT/node_modules")
-  if [[ "$_NODE_MODULES_TARGET" == "${XDG_DATA_HOME:-$HOME/.local/share}/udb/npm-"*/node_modules ]]; then
-    _run "Removing old shared node_modules symlink..."
-    rm -f "$ROOT/node_modules"
-  fi
-fi
-
-_run "Running aube ci..."
-if ! "$ROOT/bin/aube" ci; then
-  printf "\nERROR: aube ci failed.\n" >&2
-  exit 1
-fi
-_ok "aube packages installed"
+_ok "Project dependencies installed"
 
 # ---------------------------------------------------------------------------
 # C++ toolchain preference
@@ -239,14 +159,6 @@ if [[ "${UDB_TOOLCHAIN_CONTAINER:-0}" = "1" ]]; then
     _info "You can retry later with: bin/chore container build -t toolchain"
   fi
 fi
-
-# ---------------------------------------------------------------------------
-# Git hooks
-# ---------------------------------------------------------------------------
-
-_section "Git hooks"
-
-"$ROOT/bin/install_hooks"
 
 # ---------------------------------------------------------------------------
 # Done

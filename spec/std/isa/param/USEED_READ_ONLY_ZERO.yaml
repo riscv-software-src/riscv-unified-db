@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: USEED_READ_ONLY_ZERO
+long_name: Whether `mseccfg.USEED` is read-only zero
+description: |
+  Indicates whether the `mseccfg.USEED` field is hardwired read-only zero.
+
+  Options:
+
+    true::
+      `mseccfg.USEED` is read-only zero.
+
+    false::
+      `mseccfg.USEED` is writable.
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Sm
+        version: ">= 1.12"
+      - name: Zkr
+      - name: U

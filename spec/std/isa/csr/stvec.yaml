@@ -10,19 +10,20 @@ long_name: Supervisor Trap Vector
 address: 0x105
 writable: true
 priv_mode: S
-length: 64
+length: SXLEN
 description: Controls where traps jump.
 definedBy:
   extension:
     name: S
 fields:
   BASE:
-    location: 63-2
+    location_rv32: 31-2
+    location_rv64: 63-2
     description: |
       <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 48 : 39) -%>
-      Bits 63:2 of the virtual address of the exception vector for any trap taken into S-mode.
+      Bits [SXLEN-1:2] of the virtual address of the exception vector for any trap taken into S-mode.
 
-      If the base address is written with a non-canonical address (_i.e._, bits 63:<%= va_size %> do not match bit <%= va_size-1 %>),
+      If the base address is written with a non-canonical address (_i.e._, bits [SXLEN-1:<%= va_size %>] do not match bit <%= va_size-1 %>),
       the write should be ignored.
 
     type: RW-R

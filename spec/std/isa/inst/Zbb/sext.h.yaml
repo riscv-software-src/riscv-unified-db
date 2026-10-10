@@ -27,10 +27,6 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   if (xlen() == 32) {
     X[xd] = {{16{X[xs1][15]}}, X[xs1][15:0]};
   } else if (xlen() == 64) {

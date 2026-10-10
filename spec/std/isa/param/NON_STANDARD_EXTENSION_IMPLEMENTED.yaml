@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: NON_STANDARD_EXTENSION_IMPLEMENTED
+description: |
+  If any non-standard extensions are implemented, this parameter must be true.
+  This parameter is used as the reset value for `misa.X`.
+long_name: Non-standard extensions implemented
+schema:
+  type: boolean
+definedBy:
+  extension:
+    name: Sm

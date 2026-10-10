@@ -115,7 +115,7 @@ module Udb
     sig { override.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other)
       return nil unless other.is_a?(DatabaseObject)
-      return nil unless @Kind == other.kind
+      return nil unless kind == other.kind
 
       @name <=> other.name
     end

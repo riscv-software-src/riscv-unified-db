@@ -66,6 +66,8 @@ mandatory_extensions:
   version: "~> 2.0"
 - name: Zifencei
   version: "~> 2.0"
+- name: Zmmul
+  version: "~> 1.0.0"
 non_mandatory_extensions:
 - name: Ssu64xl
   version: "~> 1.0"

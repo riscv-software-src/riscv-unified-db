@@ -10,7 +10,7 @@ description: |
   Whether or not a Store Conditional fails if its physical address and size do not
   exactly match the physical address and size of the last Load Reserved in program order
   (independent of whether or not the SC is in the current reservation set)
-long_name: TODO
+long_name: "Store Conditional fails on inexact match of address and size of Load Reserved"
 schema:
   type: boolean
 definedBy:

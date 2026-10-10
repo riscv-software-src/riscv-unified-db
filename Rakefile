@@ -229,6 +229,16 @@ namespace :test do
             warn "CSRs #{csr.name} and #{other_csr.name} have conflicting addresses (#{csr.address})"
             failed = true
           end
+
+          if csr.indirect? && other_csr.indirect? &&
+              csr.priv_mode == other_csr.priv_mode &&
+              csr.indirect_address == other_csr.indirect_address &&
+              csr.indirect_slot == other_csr.indirect_slot
+            warn "Indirect CSRs #{csr.name} and #{other_csr.name} have conflicting keys in RV#{xlen} " \
+              "(priv_mode: #{csr.priv_mode}, indirect_address: 0x#{csr.indirect_address.to_s(16)}, " \
+              "indirect_slot: #{csr.indirect_slot})"
+            failed = true
+          end
         end
       end
     end
@@ -311,6 +321,14 @@ end
     ] do |t|
     erb = ERB.new(File.read($resolver.std_path / "csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
     erb.filename = "#{$resolver.std_path}/csr/Zihpm/hpmcounterNh.layout"
+    File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+  end
+  file "#{$resolver.std_path}/param/HPM_COUNTER#{hpm_num}_WIDTH.yaml" => [
+    "#{$resolver.std_path}/param/HPM_COUNTERN_WIDTH.layout",
+    __FILE__
+  ] do |t|
+    erb = ERB.new(File.read($resolver.std_path / "param/HPM_COUNTERN_WIDTH.layout"), trim_mode: "-")
+    erb.filename = "#{$resolver.std_path}/param/HPM_COUNTERN_WIDTH.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
   end
 end
@@ -558,6 +576,7 @@ namespace :gen do
 
       gen_arch_file("#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}.yaml")
       gen_arch_file("#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}h.yaml")
+      gen_arch_file("#{$resolver.std_path}/param/HPM_COUNTER#{hpm_num}_WIDTH.yaml")
     end
 
     gen_arch_file("#{$resolver.std_path}/csr/I/mcounteren.yaml")

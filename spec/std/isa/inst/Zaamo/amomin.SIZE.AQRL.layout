@@ -69,16 +69,12 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::A) && MISA_CSR_IMPLEMENTED && CSR[misa].A == 1'b0) {
-    reserved_instruction($encoding);
-  }
-
 <% if aq -%>
   memory_model_acquire();
 
 <% end -%>
   XReg virtual_address = X[xs1];
-  X[xd] = amo(<%= current_size[:operation_bits] %>, virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::Min, <%= aq ? "1'b1" : "1'b0" %>, <%= rl ? "1'b1" : "1'b0" %>, $encoding);
+  X[xd] = <%= %w[b h w].include?(size) ? "sext(" : "" %>amo(<%= current_size[:operation_bits] %>, virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::Min, <%= aq ? "1'b1" : "1'b0" %>, <%= rl ? "1'b1" : "1'b0" %>, $encoding)<%= %w[b h w].include?(size) ? ", #{current_size[:bits]})" : "" %>;
 <% if rl -%>
 
   memory_model_release();

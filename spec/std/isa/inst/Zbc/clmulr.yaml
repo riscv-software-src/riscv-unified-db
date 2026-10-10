@@ -28,10 +28,6 @@ encoding:
     - name: xd
       location: 11-7
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   XReg xs1_val = X[xs1];
   XReg xs2_val = X[xs2];
   XReg output = 0;

@@ -14,7 +14,9 @@ priv_mode: VS
 length: 64
 definedBy:
   extension:
-    name: Smctr
+    allOf:
+      - name: Ssctr
+      - name: H
 description: |
   The `vsctrctl` register is a VS-mode's version of supervisor register `sctrctl` that
   configures the Control Transfer Records capability. When `V=1`, vsctrctl substitutes
@@ -225,4 +227,4 @@ sw_read(): |
   if (MCTRCTL_CUSTOM_IMPLEMENTED) {
     mask = mask | (4'b1111 `<< 60);
   }
-  return ($bits(CSR[mctrctl]) & mask);
+  return ($bits(CSR[vsctrctl]) & mask);

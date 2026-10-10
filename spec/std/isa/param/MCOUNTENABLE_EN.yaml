@@ -9,9 +9,8 @@ name: MCOUNTENABLE_EN
 description: |
   Indicates which counters can be delegated via `mcounteren`.
 
-  An unimplemented counter cannot be specified, i.e., if
-  HPM_COUNTER_EN[3] is false, it would be illegal to set
-  MCOUNTENABLE_EN[3] to true.
+  `MCOUNTENABLE_EN[n]` controls whether `mcounteren.HPM<n>` is writable. It does not
+  depend on whether `hpmcounter<n>`/`mhpmcounter<n>` is read-only zero.
 
   MCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
   MCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
@@ -32,9 +31,7 @@ requirements:
     }
     for (U32 i=3; i < 32; i++) {
       !implemented?(ExtensionName::Zihpm) -> !MCOUNTENABLE_EN[i];
-      MCOUNTENABLE_EN[i] -> HPM_COUNTER_EN[i];
     }
   reason: |
     Counters 0-2 are defined by Zicntr
     Counters 3..31 are defined by Zihpm
-    When mhpmcounter[i] is not implemented, it cannot be enabled.

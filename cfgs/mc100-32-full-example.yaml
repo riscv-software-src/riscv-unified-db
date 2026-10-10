@@ -11,6 +11,7 @@ implemented_extensions:
   - [C, "2.0"]
   - [Zca, "1.0"]
   - [M, "2.0"]
+  - [Zmmul, "1.0"]
   - [Zicsr, "2.0"]
   - [Zicntr, "2.0"]
   - [Smrnmi, "1.0"]
@@ -161,3 +162,9 @@ params:
       false,
       false,
     ]
+  MEI_INTR_IMPL: false
+  MSI_INTR_IMPL: false
+  MTI_INTR_IMPL: false
+  WFI_U_MODE: false
+  WFI_FINITE: true
+  NON_STANDARD_EXTENSION_IMPLEMENTED: false

@@ -11,19 +11,20 @@ address: 0x205
 writable: true
 virtual_address: 0x105
 priv_mode: VS
-length: 64
+length: VSXLEN
 description: Controls where traps jump.
 definedBy:
   extension:
     name: H
 fields:
   BASE:
-    location: 63-2
+    location_rv32: 31-2
+    location_rv64: 63-2
     description: |
       <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 48 : 39) -%>
-      Bits 63:2 of the virtual address of the exception vector for any trap taken into VS-mode.
+      Bits [VSXLEN-1:2] of the virtual address of the exception vector for any trap taken into VS-mode.
 
-      If the base address is written with a non-canonical address (_i.e._, bits 63:<%= va_size %> do not match bit <%= va_size-1 %>),
+      If the base address is written with a non-canonical address (_i.e._, bits [VSXLEN-1:<%= va_size %>] do not match bit <%= va_size-1 %>),
       the write should be ignored.
 
     type: RW-R

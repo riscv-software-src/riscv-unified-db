@@ -11,7 +11,9 @@ description: |
   Performs floating-point subtraction on elements from vector register vs2 and floating-point scalar register fs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows IEEE 754 floating-point arithmetic rules.
 definedBy:
   extension:
-    name: Zvl32b
+    anyOf:
+      - name: Zvl32b
+      - name: Zvfbfa
 assembly: vd, vs2, fs1, vm
 encoding:
   match: 110010-----------101-----1010111

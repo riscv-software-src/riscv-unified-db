@@ -21,9 +21,7 @@ description: |
   Microarchitectures may look for that sequence and fuse the operations.
 definedBy:
   extension:
-    anyOf:
-      - name: M
-      - name: Zmmul
+    name: Zmmul
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------001-----0110011
@@ -41,10 +39,6 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   # enlarge and sign extend the sources
   Bits<1> xs1_sign_bit = X[xs1][xlen()-1];
   Bits<MXLEN `* 2> src1 = {{xlen(){xs1_sign_bit}}, X[xs1]};

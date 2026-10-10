@@ -15,7 +15,7 @@ description: |
 
   Hypervisor-related interrupts (VS-mode interrupts and Supervisor Guest interrupts) are not reflected
   in `sip` even though those interrupts can be taken in HS-mode. Instead, they are reported through `hip`.
-length: 64
+length: SXLEN
 definedBy:
   extension:
     name: S

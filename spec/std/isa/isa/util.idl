@@ -71,11 +71,12 @@ function highest_set_bit {
   description {
     Returns the position of the highest (nearest MSB) bit that is '1',
     or -1 if value is zero.
+    Callers should cast the return value with $signed().
   }
   body {
-    for (Bits<8> i=xlen()-1; i >= 0; i--) {
-      if (value[i] == 1) {
-        return i;
+    for (Bits<8> i=xlen(); i > 0; i--) {
+      if (value[i-1] == 1) {
+        return i-1;
       }
     }
 

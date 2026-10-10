@@ -258,7 +258,7 @@ fields:
       if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {
         return csr_value.CBIE;
       } else {
-        return CSR[menvcfg].CBIE;
+        return CSR[henvcfg].CBIE;
       }
     reset_value: UNDEFINED_LEGAL
   SSE:

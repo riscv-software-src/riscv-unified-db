@@ -11,7 +11,9 @@ description: |
   Moves floating-point element from vector register vs2 to scalar floating-point register fd, using vector mask vm. This operation extracts a single element from the vector.
 definedBy:
   extension:
-    name: Zvl32b
+    anyOf:
+      - name: Zvl32b
+      - name: Zvfbfa
 assembly: fd, vs2
 encoding:
   match: 0100001-----00000001-----1010111

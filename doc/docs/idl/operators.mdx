@@ -14,6 +14,24 @@ Binary operators between operands of different bit widths extend the smaller ope
 
 The result of a binary operation is signed if both operands are signed; otherwise the result is unsigned.
 
+## Signedness of Arithmetic Results
+
+For arithmetic operators (`+`, `-`, `*`, and their widening variants), the operand types decide the signedness of the result.
+
+- **Both operands signed** -> result is signed.
+- **Either operand unsigned** -> result is unsigned.
+
+For example:
+
+```idl
+Bits<8> a = 5;
+Bits<8> b = 8;
+
+Bits<32> c = $signed(a) - $signed(b);  # both signed   -> -3, sign-extended to 0xfffffffd
+Bits<32> d = a - b;                    # both unsigned -> zero-extended to 0x000000fd (253)
+Bits<32> e = $signed(a - b);           # reinterpret a - b's bit pattern as signed: -3, sign-extended to 0xfffffffd
+```
+
 ## Widening Operators
 
 IDL includes widening variants of several binary operators, indicated by a backtick (`` ` ``) prefix. These are unique to IDL and have no direct C or Verilog equivalent. They are useful when you need to preserve the full result of an operation that would otherwise overflow or lose bits.

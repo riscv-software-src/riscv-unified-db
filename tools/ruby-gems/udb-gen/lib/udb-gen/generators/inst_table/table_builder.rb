@@ -120,6 +120,14 @@ module UdbGen
 #                                 ! mark 'num' as an invalid input for this variable
 EOM
 
+        # Sort alphabetically by instruction mnemonic so the output is
+        # deterministic regardless of where the instruction files live (moving a
+        # file between extension directories must not change this table). Each
+        # line begins with the instruction name, so sorting the full lines orders
+        # by mnemonic and keeps an instruction's multi-row entries (e.g.
+        # "common,32"/"common,64") grouped and stably ordered.
+        lines.sort!
+
         header + lines.join("\n") + "\n"
       end
     end

@@ -20,6 +20,17 @@ module Udb
     BITS6_CONST_TYPE = Idl::Type.new(:bits, width: 6, qualifiers: [:const]).freeze
     BITS128_TYPE = Idl::Type.new(:bits, width: 128).freeze
     ENCODING_SIZE_VAR = Idl::Var.new("__instruction_encoding_size", BITS6_TYPE, 32).freeze
+    # Privilege mode => IDL expression naming the field that selects the effective
+    # XLEN in that mode. Debug mode executes at MXLEN, so it shares M-mode's field.
+    MODE_TO_XLEN_FIELD = {
+      "M" => "CSR[misa].MXL",
+      "D" => "CSR[misa].MXL",
+      "S" => "CSR[mstatus].SXL",
+      "U" => "CSR[mstatus].UXL",
+      "VS" => "CSR[hstatus].VSXL",
+      "VU" => "CSR[vsstatus].UXL"
+    }.freeze
+    XLEN_TO_ENCODING = { 32 => 0, 64 => 1 }.freeze
     # Add all methods in this module to this type of database object.
     include HasFields
 
@@ -193,14 +204,7 @@ module Udb
         # dynamic if either we don't know VSXLEN or VSXLEN is explicitly mutable
         !cfg_arch.param_values.key?("VSXLEN") || cfg_arch.param_values["VSXLEN"].size > 1
       when "XLEN"
-        # must always have M-mode
-        # SXLEN condition applies if S-mode is possible
-        # VSXLEN condition applies if VS-mode is possible
-        (cfg_arch.mxlen.nil?) || \
-        (cfg_arch.possible_extensions.map(&:name).include?("S") && \
-          (cfg_arch.param_values["SXLEN"].nil? || cfg_arch.param_values["SXLEN"].size > 1)) || \
-        (cfg_arch.possible_extensions.map(&:name).include?("H") && \
-          (cfg_arch.param_values["VSXLEN"].nil? || cfg_arch.param_values["VSXLEN"].size > 1))
+        modes_with_dynamic_xlen.any?
       else
         raise "Unexpected length"
       end
@@ -299,7 +303,7 @@ module Udb
           64
         end
       when "XLEN"
-        if cfg_arch.possible_extensions.map(&:name).include?("M")
+        if cfg_arch.possible_extensions.map(&:name).include?("Sm")
           cfg_arch.mxlen || 64
         elsif cfg_arch.possible_extensions.map(&:name).include?("S")
           if cfg_arch.param_values.key?("SXLEN")
@@ -341,61 +345,50 @@ module Udb
       end
     end
 
-    # @return [String] IDL condition of when the effective xlen is 32
-    def length_cond32
+    # @return [Array<String>] Modes with access to this CSR whose effective XLEN can
+    #                          vary in this configuration
+    def modes_with_dynamic_xlen
+      modes_with_access.select { |mode| cfg_arch.multi_xlen_in_mode?(mode) }
+    end
+
+    # @param xlen [Integer] 32 or 64
+    # @return [String] IDL condition of when the effective xlen is +xlen+
+    def length_cond(xlen)
+      encoding = XLEN_TO_ENCODING.fetch(xlen)
       case @data["length"]
       when "MXLEN"
-        "CSR[misa].MXL == 0"
+        "#{MODE_TO_XLEN_FIELD['M']} == #{encoding}"
       when "SXLEN"
-        "CSR[mstatus].SXL == 0"
+        "#{MODE_TO_XLEN_FIELD['S']} == #{encoding}"
       when "VSXLEN"
-        "CSR[hstatus].VSXL == 0"
+        "#{MODE_TO_XLEN_FIELD['VS']} == #{encoding}"
       when "XLEN"
-        "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == 0) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 0) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 0)"
+        modes = modes_with_dynamic_xlen
+        raise "No mode with access to #{name} has a dynamic XLEN" if modes.empty?
+
+        modes.map { |mode|
+          "(priv_mode() == PrivilegeMode::#{mode} && #{MODE_TO_XLEN_FIELD.fetch(mode)} == #{encoding})"
+        }.join(" || ")
       else
         raise "Unexpected length #{@data['length']} for #{name}"
       end
     end
 
+    # @return [String] IDL condition of when the effective xlen is 32
+    def length_cond32 = length_cond(32)
+
     # @return [String] IDL condition of when the effective xlen is 64
-    def length_cond64
-      case @data["length"]
-      when "MXLEN"
-        "CSR[misa].MXL == 1"
-      when "SXLEN"
-        "CSR[mstatus].SXL == 1"
-      when "VSXLEN"
-        "CSR[hstatus].VSXL == 1"
-      when "XLEN"
-        "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == 1) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 1) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 1)"
-      else
-        raise "Unexpected length"
-      end
-    end
+    def length_cond64 = length_cond(64)
 
     # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
     # @return [String] Pretty-printed length string
     def length_pretty(effective_xlen = nil)
       raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
       if dynamic_length?
-        cond =
-          case @data["length"]
-          when "MXLEN"
-            "CSR[misa].MXL == %%"
-          when "SXLEN"
-            "CSR[mstatus].SXL == %%"
-          when "VSXLEN"
-            "CSR[hstatus].VSXL == %%"
-          when "XLEN"
-            "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == %%) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == %%) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == %%)"
-          else
-            raise "Unexpected length '#{@data['length']}'"
-          end
-
         if effective_xlen.nil?
           [
-            "* #{length(32)} when #{cond.sub('%%', '0')}",
-            "* #{length(64)} when #{cond.sub('%%', '1')}"
+            "* #{length(32)} when #{length_cond(32)}",
+            "* #{length(64)} when #{length_cond(64)}"
           ].join("\n")
         else
           "#{length(effective_xlen)}-bit"

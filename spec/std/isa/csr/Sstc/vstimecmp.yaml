@@ -1,0 +1,45 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vstimecmp
+long_name: Virtual supervisor timer compare
+address: 0x24D
+writable: true
+virtual_address: 0x14D
+priv_mode: VS
+length: 64
+description: |
+  Virtual supervisor timer compare register.
+
+  When `menvcfg.STCE` and `henvcfg.STCE` are set, `vstimecmp` is operational
+  and provides VS-mode with a CSR-based timer interrupt facility.
+definedBy:
+  extension:
+    allOf:
+      - name: H
+      - name: Sstc
+fields:
+  TIME:
+    location: 63-0
+    description: |
+      Time compare value for virtual supervisor timer interrupts.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[menvcfg].STCE == 1'b0 || CSR[mcounteren].TM == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      } else if (CSR[henvcfg].STCE == 1'b0 || CSR[hcounteren].TM == 1'b0) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      return csr_value.TIME;
+sw_read(): |
+  if (CSR[menvcfg].STCE == 1'b0 || CSR[mcounteren].TM == 1'b0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (CSR[henvcfg].STCE == 1'b0 || CSR[hcounteren].TM == 1'b0) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+  return CSR[vstimecmp].TIME;

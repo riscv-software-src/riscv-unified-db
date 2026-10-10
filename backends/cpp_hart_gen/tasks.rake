@@ -109,7 +109,8 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/src/[^/]+\.cxx\.unformatted$} => proc { |tname
   [
     "#{CPP_HART_GEN_SRC}/templates/#{fname}.erb",
     __FILE__
-  ]
+  ] \
+  + FileList[$resolver.resolved_spec_path(configs_build_name[0][0]) / "**" / "*.yaml"]
 } do |t|
   configs, = configs_build_name
   config_name = configs[0]
@@ -434,6 +435,7 @@ namespace :test do
       sh "make -j #{$jobs} test_bits_random"
       sh "make -j #{$jobs} test_softfloat_fp"
       sh "make -j #{$jobs} test_regfile"
+      sh "make -j #{$jobs} test_util"
       sh "ctest -T coverage -T test"
     end
   end
@@ -471,6 +473,7 @@ namespace :test do
       "srl", "srli", "srliw", "srlw",
       "sub", "subw",
       "xor", "xori"]
+    #rv64uiTests = ["add"]
 
     rv32umTests = ["div", "divu",
       "mul", "mulh", "mulhsu", "mulhu",

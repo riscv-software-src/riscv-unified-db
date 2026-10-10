@@ -10,7 +10,7 @@ long_name: Vector Fixed-Point Saturate Flag
 address: 0x009
 writable: true
 priv_mode: U
-length: MXLEN
+length: XLEN
 description: Indicates if a fixed-point instruction has had to saturate an output value to fit into a destination format
 definedBy:
   extension:

@@ -231,12 +231,37 @@ class DecodeGen
   end
 
   # @return [Boolean] whether or not the instruction in node is a base of HINTs
-  def has_hints?(node, inst_list, xlen)
+  # that are decoded through the tree (exclusion-constrained hints are instead
+  # dispatched at the parent's endpoint, so they don't count here)
+  def has_tree_decoded_hints?(node, inst_list, xlen)
     return false unless node.type == DecodeTreeNode::ENDPOINT_TYPE
 
     return false unless node.insts.size == 1
 
-    !node.insts[0].hints.select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }.empty?
+    !node.insts[0].hints.select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) && !exclusion_constrained_hint?(hint_inst, xlen) }.empty?
+  end
+
+  # A hint that overlays its parent's encoding but has decode variables with
+  # exclusion constraints (e.g. sspopchk's xs1 restricted to x1/x5) cannot be
+  # separated from the parent by opcode bits alone. Such hints are kept out of
+  # the decode tree and dispatched with explicit value checks at the parent's
+  # endpoint instead.
+  def exclusion_constrained_hint?(inst, xlen)
+    return false unless inst.defined_in_base?(xlen)
+
+    inst.encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
+  end
+
+  # @return [String] C++ condition that the encoding's dv field holds a permitted value
+  def dv_allowed_cond(dv, encoding_var_name)
+    width = dv.encoding_fields.sum { |ef| ef.range.size }
+    allowed = (0...(1 << width)).to_a - dv.excludes
+    dv_val = extract_dv(dv, encoding_var_name)
+    if allowed.size <= dv.excludes.size
+      "(#{allowed.map { |val| "(#{dv_val} == #{val}_b)" }.join(' || ')})"
+    else
+      "(#{dv.excludes.map { |val| "(#{dv_val} != #{val}_b)" }.join(' && ')})"
+    end
   end
 
   # returns true if the extension defining inst is not gauranteed to be implemented by the config
@@ -256,7 +281,7 @@ class DecodeGen
     node.children.any? do |child|
       needs_to_check_dv = child.type == DecodeTreeNode::ENDPOINT_TYPE \
         && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
-      needs_to_check_hint = has_hints?(child, inst_list, xlen)
+      needs_to_check_hint = has_tree_decoded_hints?(child, inst_list, xlen)
 
       needs_to_check_implemented?(child.insts[0]) || needs_to_check_dv || needs_to_check_hint
     end
@@ -277,7 +302,7 @@ class DecodeGen
           code += comment_tree(child, indent + 2)
           has_not = child.type == DecodeTreeNode::ENDPOINT_TYPE \
             && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
-          has_hints = has_hints?(child, inst_list, xlen)
+          has_guarded_hints = has_tree_decoded_hints?(child, inst_list, xlen)
           conds = []
           if has_not
             # some field(s) in the instruction have prohibited values ('not:' in the yaml)
@@ -288,8 +313,11 @@ class DecodeGen
               conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val}_b)" })
             end
           end
-          if has_hints
-            impl_hints = child.insts[0].hints.select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }
+          if has_guarded_hints
+            # exclusion-constrained hints are handled at the endpoint itself, so
+            # they must not appear in the parent's rejection guard (their mask
+            # would also cover encodings that belong to the parent)
+            impl_hints = child.insts[0].hints.select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) && !exclusion_constrained_hint?(hint_inst, xlen) }
             impl_hints.each do |hint_inst|
               mask = hint_inst.encoding(xlen).format.gsub("0", "1").gsub("-", "0")
               value = hint_inst.encoding(xlen).format.gsub("-", "0")
@@ -298,48 +326,9 @@ class DecodeGen
           end
 
           if child.type == DecodeTreeNode::ENDPOINT_TYPE && needs_to_check_implemented?(child.insts[0])
-            conds << child.insts[0].defined_by_condition.to_cxx do |term|
-              if term.is_a?(Udb::ExtensionTerm)
-                if term.matches_any_version?
-                  "implemented_Q_(ExtensionName::#{term.name})"
-                else
-                  "implemented_version_Q_(ExtensionName::#{term.name}, \"#{term.comparison.serialize}#{term.version}\"sv)"
-                end
-              elsif term.is_a?(Udb::XlenTerm)
-                "(xlen() == #{term.xlen}_b)"
-              elsif term.is_a?(Udb::ParameterTerm)
-                var =
-                  if cfg_arch.params_with_value.key?(term.name)
-                    "m_params.#{term.name}_VALUE"
-                  else
-                    "m_params.#{term.name}"
-                  end
-                comparison_type = term.comparison_type
-                case comparison_type
-                when Udb::ParameterTerm::ParameterComparisonType::Equal
-                  "(#{var} == #{term.comparison_value})"
-                when Udb::ParameterTerm::ParameterComparisonType::NotEqual
-                  "(#{var} != #{term.comparison_value})"
-                when Udb::ParameterTerm::ParameterComparisonType::LessThan
-                  "(#{var} < #{term.comparison_value})"
-                when Udb::ParameterTerm::ParameterComparisonType::GreaterThan
-                  "(#{var} > #{term.comparison_value})"
-                when Udb::ParameterTerm::ParameterComparisonType::LessThanOrEqual
-                  "(#{var} <= #{term.comparison_value})"
-                when Udb::ParameterTerm::ParameterComparisonType::GreaterThanOrEqual
-                  "(#{var} >= #{term.comparison_value})"
-                when Udb::ParameterTerm::ParameterComparisonType::Includes
-                  "(#{var}.find(#{term.comparison_value}) != #{var}.end())"
-                when Udb::ParameterTerm::ParameterComparisonType::OneOf
-                  vals = term.comparison_value
-                  tests = vals.map { |v| "(#{var} == #{v})" }.join(" || ")
-                  "(#{tests})"
-                else
-                  T.absurd(comparison_type)
-                end
-              end
-            end
+            conds << implemented_cond_cxx(child.insts[0])
           end
+
           if !conds.empty?
             code += "#{' ' * indent}#{els}if ((#{encoding_var_name}.extract<#{child.range.last}, #{child.range.first}>() == 0b#{child.value.reverse}_b) && #{conds.join(' && ')}) {\n"
           else
@@ -362,6 +351,29 @@ class DecodeGen
     else
       raise "unexpected" unless node.type == DecodeTreeNode::ENDPOINT_TYPE
 
+      exclusion_constrained_hints = node.insts[0].hints.select do |hint_inst|
+        inst_list.include?(hint_inst) && exclusion_constrained_hint?(hint_inst, xlen)
+      end
+      exclusion_constrained_hints.each do |hint_inst|
+        henc = hint_inst.encoding(xlen)
+        mask = henc.format.gsub("0", "1").gsub("-", "0")
+        value = henc.format.gsub("-", "0")
+        conds = ["((#{encoding_var_name} & 0b#{mask}_b) == 0b#{value}_b)"]
+        henc.decode_variables.each do |dv|
+          conds << dv_allowed_cond(dv, encoding_var_name) unless dv.excludes.empty?
+        end
+        conds << implemented_cond_cxx(hint_inst) if needs_to_check_implemented?(hint_inst)
+        code += <<~HINT_INST
+        if (#{conds.join(' && ')}) {
+            std::construct_at(
+              reinterpret_cast<#{tenv.name_of(:inst, @cfg_arch, hint_inst.name)}<#{xlen}, SocType>*>(inst),
+              this, pc, #{encoding_var_name}
+            );
+            return true;
+        }
+        HINT_INST
+      end
+
       code += <<~NEW_INST
       {
           std::construct_at(
@@ -376,6 +388,52 @@ class DecodeGen
     code
   end
   private :decode_c
+
+  # @return [String] C++ condition that inst's defining extension is implemented
+  def implemented_cond_cxx(inst)
+    inst.defined_by_condition.to_cxx do |term|
+      if term.is_a?(Udb::ExtensionTerm)
+        if term.matches_any_version?
+          "implemented_Q_(ExtensionName::#{term.name})"
+        else
+          "implemented_version_Q_(ExtensionName::#{term.name}, \"#{term.comparison.serialize}#{term.version}\"sv)"
+        end
+      elsif term.is_a?(Udb::XlenTerm)
+        "(xlen() == #{term.xlen}_b)"
+      elsif term.is_a?(Udb::ParameterTerm)
+        var =
+          if @cfg_arch.params_with_value.key?(term.name)
+            "m_params.#{term.name}_VALUE"
+          else
+            "m_params.#{term.name}"
+          end
+        comparison_type = term.comparison_type
+        case comparison_type
+        when Udb::ParameterTerm::ParameterComparisonType::Equal
+          "(#{var} == #{term.comparison_value})"
+        when Udb::ParameterTerm::ParameterComparisonType::NotEqual
+          "(#{var} != #{term.comparison_value})"
+        when Udb::ParameterTerm::ParameterComparisonType::LessThan
+          "(#{var} < #{term.comparison_value})"
+        when Udb::ParameterTerm::ParameterComparisonType::GreaterThan
+          "(#{var} > #{term.comparison_value})"
+        when Udb::ParameterTerm::ParameterComparisonType::LessThanOrEqual
+          "(#{var} <= #{term.comparison_value})"
+        when Udb::ParameterTerm::ParameterComparisonType::GreaterThanOrEqual
+          "(#{var} >= #{term.comparison_value})"
+        when Udb::ParameterTerm::ParameterComparisonType::Includes
+          "(#{var}.find(#{term.comparison_value}) != #{var}.end())"
+        when Udb::ParameterTerm::ParameterComparisonType::OneOf
+          vals = term.comparison_value
+          tests = vals.map { |v| "(#{var} == #{v})" }.join(" || ")
+          "(#{tests})"
+        else
+          T.absurd(comparison_type)
+        end
+      end
+    end
+  end
+  private :implemented_cond_cxx
 
   def annotate_identical(tree, xlen)
     tree.children.each do |child|
@@ -397,7 +455,12 @@ class DecodeGen
   # @param xlen [Integer] Effective xlen
   # @return [String] Decoder function for the given set of instructions and the effective xlen
   def generate(instructions, xlen, indent: 2)
-    root = DecodeTreeNode.new(nil, instructions, nil, nil, DecodeTreeNode::SELECT_TYPE)
+    # Hints with exclusion-constrained decode variables are not separable from
+    # their parent by opcode bits; keep them out of the tree and dispatch them
+    # at the parent's endpoint (see exclusion_constrained_hint?).
+    hinted = instructions.flat_map(&:hints).uniq
+    tree_insts = instructions.reject { |inst| hinted.include?(inst) && exclusion_constrained_hint?(inst, xlen) }
+    root = DecodeTreeNode.new(nil, tree_insts, nil, nil, DecodeTreeNode::SELECT_TYPE)
     construct_decode_tree(root, xlen, 0..0)
     annotate_identical(root, xlen)
     decode_c("encoding", xlen, instructions, root, indent)

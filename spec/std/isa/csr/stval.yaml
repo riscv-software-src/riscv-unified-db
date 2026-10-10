@@ -11,13 +11,14 @@ address: 0x143
 writable: true
 description: Holds trap-specific information
 priv_mode: S
-length: 64
+length: SXLEN
 definedBy:
   extension:
     name: S
 fields:
   VALUE:
-    location: 63-0
+    location_rv32: 31-0
+    location_rv64: 63-0
     description: |
       Written with trap-specific information when a trap is taken into S-mode.
 

@@ -40,9 +40,9 @@ fields:
       # this is read-only if FS and VS are both read-only
       # otherwise, it is read-only with hardware update
 
-      if (implemented?(ExtensionName::F) && (HW_MSTATUS_FS_DIRTY_UPDATE != "never")) {
+      if (implemented?(ExtensionName::F)) {
         return CsrFieldType::ROH;
-      } else if (implemented?(ExtensionName::V) && (HW_MSTATUS_VS_DIRTY_UPDATE != "never")) {
+      } else if (implemented?(ExtensionName::V)) {
         return CsrFieldType::ROH;
       } else {
         return CsrFieldType::RO;
@@ -71,7 +71,7 @@ fields:
         - extension:
             name: Smdbltrp
     type: RW-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 1
   MPELP:
     location: 41
     long_name: M-mode Previous Expected Landing Pad state

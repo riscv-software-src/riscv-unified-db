@@ -9,7 +9,7 @@ name: MUTABLE_MISA_A
 description: |
   When the `A` extensions is supported, indicates whether or not
   the extension can be disabled in the `misa.A` bit.
-long_name: TODO
+long_name: "`misa.A` mutability"
 schema:
   type: boolean
 definedBy:

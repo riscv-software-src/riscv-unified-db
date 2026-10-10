@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+$schema: "inst_schema.json#"
+kind: instruction
+name: vfncvtbf16.sat.f.f.w
+long_name: Vector saturating narrowing BFloat16 to OFP8 conversion
+description: |
+  Converts BFloat16 floating-point elements in vector register vs2 to OFP8
+  elements and stores the results in vector register vd according to mask vm.
+  Infinite results are converted to the maximum-magnitude finite value of the
+  same sign.
+definedBy:
+  extension:
+    name: Zvfofp8min
+assembly: vd, vs2, vm
+encoding:
+  match: 010010------11111001-----1010111
+  variables:
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |

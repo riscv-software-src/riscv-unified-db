@@ -86,6 +86,8 @@ mandatory_extensions:
   version: "~> 1.0"
 - name: Zkt
   version: "~> 1.0"
+- name: Zmmul
+  version: "~> 1.0.0"
 non_mandatory_extensions:
 - name: Supm
   version: "~> 1.0"

@@ -28,8 +28,4 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   X[xd] = (X[xs1] > X[xs2]) ? X[xs1] : X[xs2];

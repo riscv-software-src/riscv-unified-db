@@ -76,6 +76,4 @@ sw_read(): |
     }
   }
 
-  # since the counter may be shared among harts, reads must be handled
-  # as a builtin function
-  return read_mcycle();
+  return CSR[minstret].COUNT[63:32];

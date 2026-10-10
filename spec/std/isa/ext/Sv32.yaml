@@ -6,8 +6,8 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Sv32
-long_name: 32-bit virtual address translation (3 level)
-description: 32-bit virtual address translation (3 level)
+long_name: 32-bit virtual address translation (2 level)
+description: 32-bit virtual address translation (2 level)
 type: privileged
 versions:
   - version: "1.0"

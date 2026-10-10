@@ -32,8 +32,9 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  # lowest_set_bit() reports xlen() (64 here) for a zero input, but ctzw must report 32
+  if (X[xs1][31:0] == 0) {
+    X[xd] = 32;
+  } else {
+    X[xd] = lowest_set_bit(X[xs1][31:0]);
   }
-
-  X[xd] = lowest_set_bit(X[xs1][31:0]);

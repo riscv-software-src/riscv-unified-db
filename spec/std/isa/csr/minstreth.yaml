@@ -34,6 +34,6 @@ definedBy:
   allOf:
     - xlen: 32
     - extension:
-        name: Zicntr
+        name: Sm
 sw_read(): |
   return CSR[minstret].COUNT[63:32];

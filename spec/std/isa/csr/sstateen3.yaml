@@ -9,7 +9,7 @@ name: sstateen3
 long_name: Supervisor State Enable 3 Register
 address: 0x10F
 priv_mode: S
-length: MXLEN
+length: 64
 writable: true
 description: |
   Each bit of a `stateen` CSR controls less-privileged access to an extension’s state,
@@ -61,8 +61,7 @@ definedBy:
 
 fields:
   DATA:
-    location_rv64: 63-0
-    location_rv32: 31-0
+    location: 31-0
     description: Data value
     type: RW
     sw_write(csr_value): |

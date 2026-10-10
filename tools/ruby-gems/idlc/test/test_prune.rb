@@ -72,6 +72,60 @@ class TestVariables < Minitest::Test
     end
   end
 
+  def test_prune_forced_type_negative_value
+    # regression test: a negative value pruned into a forced (signed) type must
+    # keep its sign marker ('sd, not just 'd), or the literal re-parses as
+    # unsigned and its sign is lost when later rendered to C++
+    orig_idl = "false ? 4'sb0 : -(8'sd1)"
+
+    expected_idl = "8'sd-1"
+
+    symtab = Idl::SymbolTable.new
+    m = @compiler.parser.parse(orig_idl, root: :expression)
+    refute_nil m
+
+    ast = m.to_ast
+    assert_instance_of Idl::TernaryOperatorExpressionAst, ast
+
+    pruned = ast.prune(symtab)
+    assert_instance_of Idl::IntLiteralAst, pruned
+
+    assert_equal expected_idl, pruned.to_idl
+  end
+
+  def test_prune_function_body_negative_return_value
+    # regression test for the highest_set_bit() bug: a function whose declared
+    # return type is signed, that falls through to a bare negative literal
+    # return (e.g. "return -'sd1;"), must prune to a literal that keeps its
+    # sign marker so the value survives C++ codegen (see gen_cpp.rb IntLiteralAst#gen_cpp)
+    orig_idl = <<~IDL
+      if (false) {
+        return 1;
+      }
+      return -(64'sd1);
+    IDL
+
+    symtab = Idl::SymbolTable.new(possible_xlens_cb: proc { [32, 64] })
+    ast =
+      @compiler.compile_func_body(
+        orig_idl,
+        return_type: Idl::Type.new(:bits, width: 64, qualifiers: [:signed]),
+        symtab:,
+        input_file: "temp"
+      )
+    refute_nil(ast)
+
+    pruned = ast.prune(symtab)
+    return_stmt = pruned.statements.last
+    assert_instance_of Idl::ReturnStatementAst, return_stmt
+
+    literal = return_stmt.return_expression.return_value_nodes.first
+    assert_instance_of Idl::IntLiteralAst, literal
+    assert_equal "64'sd-1", literal.to_idl
+    assert literal.type(symtab).signed?
+    assert_equal(-1, literal.value(symtab))
+  end
+
   def test_ternary_prune
     orig_idl = "(true) ? {1'b1, {31{1'b0}}} : {1'b1, {63{1'b0}}}"
     expected_idl = "64'h80000000"

@@ -63,6 +63,36 @@ function divmod {
 (quot, rem) = divmod(x, y);
 ```
 
+## Return Value Signedness
+
+There is no support for declaring a signed return type, so every function returns an unsigned value.
+
+When a function's result is conceptually signed (e.g., `-1`), the value is encoded as a two's-complement bit pattern, and callers must reinterpret the result with `$signed()` before using it anywhere signedness matters.
+
+```idl title="highest_set_bit, from util.idl"
+function highest_set_bit {
+  returns Bits<8>
+  arguments XReg value
+  description {
+    Returns the position of the highest (nearest MSB) bit that is '1',
+    or -1 if value is zero.
+  }
+  body {
+    for (Bits<8> i=xlen(); i > 0; i--) {
+      if (value[i-1] == 1) {
+        return i-1;
+      }
+    }
+    return -'sd1;   # falls through when value == 0
+  }
+}
+```
+
+The returned bit pattern for `highest_set_bit(0)` is `0xff` -- 255 if read as unsigned. Use `$signed` to treat the return value as signed.
+```idl title="clz, from Zbb/clz.yaml"
+X[xd] = (xlen() - 1) - $signed(highest_set_bit(X[xs1]));
+```
+
 ## Function Declarations
 
 The basic form of a function declaration:

@@ -31,12 +31,8 @@ access:
   vu: always
 operation(): |2
 
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
-  if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  if (implemented?(ExtensionName::C) && MISA_CSR_IMPLEMENTED && (CSR[misa].C == 1'b0)) {
+    reserved_instruction($encoding);
   }
 
   X[creg2reg(xd)] = X[creg2reg(xd)][31:0];

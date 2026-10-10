@@ -36,8 +36,11 @@ published as GitHub releases under the tag `schemas/<schema_name>/<version>`.
 | 0.1 (current for all schemas except csr_schema.json)
 | https://riscv.github.io/riscv-unified-db/schemas/ext_schema.json/v0.1/ext_schema.json (example)
 
-| 0.2 (current for csr_schema.json)
+| 0.2 (current for csr_schema.json except indirect_address description fix)
 | https://riscv.github.io/riscv-unified-db/schemas/csr_schema.json/v0.2/csr_schema.json
+
+| 0.3 (current for csr_schema.json)
+| https://riscv.github.io/riscv-unified-db/schemas/csr_schema.json/v0.3/csr_schema.json
 |===
 
 == Schema Identification (`$id`)

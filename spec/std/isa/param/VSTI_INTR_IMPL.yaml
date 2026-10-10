@@ -1,0 +1,33 @@
+# Copyright (C) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: VSTI_INTR_IMPL
+description: |
+  Whether or not virtual supervisor-level timer interrupts are implemented.
+  If Sstc is implemented, then VSTI_INTR_IMPL must be true.
+
+  Possible values:
+
+  true::
+    Virtual supervisor-level timer interrupts are implemented.
+    `mie.VSTIE` and `mdeleg.VSTI` are writable.
+
+  false::
+    Virtual supervisor-level timer interrupts are not implemented.
+    `mie.VSTIE`, `mip.VSTIP`, and and `mdeleg.VSTI` are read-only zero.
+long_name: Virtual supervisor-level timer interrupts are implemented.
+schema:
+  type: boolean
+requirements:
+  idl(): |
+    implemented?(ExtensionName::Sstc) -> VSTI_INTR_IMPL;
+  reason: "When the Sstc extension is implemented, VSTIP reflects the timer interrupt signal resulting from `vstimecmp`."
+definedBy:
+  extension:
+    allOf:
+      - name: Zicsr
+      - name: H

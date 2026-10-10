@@ -36,7 +36,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty.ee10</groupId>
 				<artifactId>jetty-ee10-maven-plugin</artifactId>
-				<version>12.1.11</version>
+				<version>12.1.13</version>
 				<configuration>
 					<webAppSourceDirectory>WebRoot</webAppSourceDirectory>
 				</configuration>
@@ -44,7 +44,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.6.1</version>
+				<version>3.6.2</version>
 				<executions>
 					<execution>
 						<?m2e ignore?>
@@ -117,13 +117,13 @@
 		<dependency>
 			<groupId>org.eclipse.jetty.ee10</groupId>
 			<artifactId>jetty-ee10-annotations</artifactId>
-			<version>12.1.11</version>
+			<version>12.1.13</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>2.0.18</version>
+			<version>2.0.20</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: "csr_schema.json#"
+kind: csr
+name: tcontrol
+long_name: Trigger Control
+address: 0x7A5
+priv_mode: M
+length: XLEN
+writable: true
+description: |
+  This optional register is only accessible in M-mode and Debug Mode and provides
+  various control bits related to triggers.
+definedBy:
+  extension:
+    name: Sdtrig
+fields:
+  MPTE:
+    location: 7
+    description: |
+      M-mode previous trigger enable field.
+      MPTE and MTE provide one solution to a problem regarding triggers with action=0
+      firing in M-mode trap handlers.
+      When any trap into M-mode is taken, MPTE is set to the value of MTE.
+    type: RW-H
+    reset_value: 0
+  MTE:
+    location: 3
+    description: |
+      M-mode trigger enable field.
+      0 (disabled):: Triggers with action=0 do not match/fire while the hart is in M-mode.
+      1 (enabled):: Triggers do match/fire while the hart is in M-mode.
+      When any trap into M-mode is taken, MTE is set to 0. When `mret` is executed, MTE is
+      set to the value of MPTE.
+    type: RW-H
+    reset_value: 0
