@@ -44257,7 +44257,7 @@ Included in::
 == vfncvt.rod.f.f.w
 
 Synopsis::
-Vector floating-point format conversion with round-to-odd (narrowing)
+Vector floating-point narrowing conversion with round-to-odd
 
 Base::
 
