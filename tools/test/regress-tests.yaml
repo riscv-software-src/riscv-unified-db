@@ -475,6 +475,19 @@ tests:
       - name: Generate cfg header golden files
         run: ./bin/chore gen -f cfg-headers
 
+  regress-native-bits:
+    ci_stage: pr
+    toolchain_container: true
+    tags:
+      - unit
+    test:
+      - name: Configure native Bits without hart or source generation
+        run: cmake -S backends/cpp_hart_gen/cpp/test -B gen/native-bits -DCMAKE_CXX_COMPILER="$PWD/bin/g++" -DCMAKE_BUILD_TYPE=Debug
+      - name: Build handwritten Bits targets
+        run: cmake --build gen/native-bits --target test_bits_random test_bits_directed -j1
+      - name: Check native Bits properties, defects and directed cases
+        run: ctest --test-dir gen/native-bits -j1 --output-on-failure
+
   regress-cpp-unit:
     ci_stage: pr
     toolchain_container: true
