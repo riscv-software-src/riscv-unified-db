@@ -8,7 +8,7 @@
 | Stage 1: packaged source database and raw API | Complete locally; CI pending |
 | Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
 | Stage 2b: schema validation | Complete locally; CI pending |
-| Stage 2c: layout authoring, serialization, and remaining resolution work | Pending |
+| Stage 2c: layout authoring, serialization, and remaining resolution work | In progress |
 | Stage 3: versions, configurations, conditions, and solving | Pending |
 | Stage 4: IDL compiler and semantic passes | Pending |
 | Stage 5: generators, templates, and document rendering | Pending |
@@ -668,3 +668,20 @@ system-installed native dependencies used by UDB itself.
   Stage 2 chunk covers deterministic resolved output, provenance/source spans,
   and replacing Ruby layout generation; configurations and IDL remain later
   stages.
+
+### 2026-09-29: Stage 2c deterministic serialization
+
+- Added canonical YAML and JSON encoders plus atomic writers for generic
+  configuration mappings, resolved architecture trees, and publishable schemas.
+- Resolved trees retain relative document paths and inheritance provenance,
+  version-stamp `$schema` in emitted copies, and omit implicit checkout paths.
+  Absolute `$source` values are rejected with a logical document and JSON
+  Pointer diagnostic.
+- Schema publication preserves the Ruby path and public `$id` contract while
+  producing byte-identical JSON for the current schema versions. The existing
+  `./do gen:schemas` entry point and schema-version CI check now invoke the
+  Python `udb schemas` command; `udb resolve` exposes resolved trees without
+  Ruby or repository-relative execution.
+- Fine-grained YAML source spans and provenance propagation through overlays and
+  inheritance remain pending. Adding them requires resolver metadata that does
+  not change the resolved semantic values or leak absolute paths.

@@ -430,7 +430,7 @@ tests:
       - smoke
     test:
       - name: Check schema versions against published URLs
-        run: ./do gen:schemas && ./bin/python tools/scripts/check_schema_versions.py
+        run: uv run --locked udb --schemas spec/schemas schemas gen/schemas && ./bin/python tools/scripts/check_schema_versions.py
 
   regress-schema-docs:
     ci_stage: pr
