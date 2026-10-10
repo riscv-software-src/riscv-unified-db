@@ -18,6 +18,7 @@ from .errors import (
     DataError,
     LayoutError,
     ObjectNotFoundError,
+    ReferenceError,
     ResolutionError,
     SerializationError,
     UdbError,
@@ -31,6 +32,7 @@ from .layouts import (
     layout_sources,
     render_layout,
 )
+from .reference import DataReference, Reference, ResolvedNode, SchemaReference
 from .resolver import YamlResolver, merge_patch
 from .schema import SchemaError, SchemaStore
 from .serialization import (
@@ -41,6 +43,7 @@ from .serialization import (
     write_resolved_database,
     write_resolved_schemas,
 )
+from .source import SourceMap, SourceSpan
 
 __all__ = [
     "SCHEMAS_BASE_URL",
@@ -48,6 +51,7 @@ __all__ = [
     "AuthoringPlan",
     "Csr",
     "DataError",
+    "DataReference",
     "Database",
     "DatabaseObject",
     "Extension",
@@ -57,11 +61,17 @@ __all__ = [
     "LayoutJob",
     "ObjectNotFoundError",
     "Profile",
+    "Reference",
+    "ReferenceError",
     "ResolutionError",
     "ResolvedDatabase",
+    "ResolvedNode",
     "SchemaError",
+    "SchemaReference",
     "SchemaStore",
     "SerializationError",
+    "SourceMap",
+    "SourceSpan",
     "UdbError",
     "UnknownKindError",
     "YamlResolver",
