@@ -34,20 +34,6 @@ def dump_value(value)
   end
 end
 
-# Reproduces `symtab_callbacks`'s `implemented`/`implemented_version` closures
-# (cfg_arch.rb ~502-543) in their *steady-state* (post-symtab-construction)
-# branch -- i.e. with `constructing_symtab?` always false, since this oracle
-# never runs `add_global_symbols` (that's slice 15, not yet ported to Python).
-def implemented_tri_state(cfg_arch, ext_name, version_reqs = [])
-  if cfg_arch.fully_configured?
-    cfg_arch.ext?(ext_name, version_reqs)
-  elsif cfg_arch.ext?(ext_name, version_reqs)
-    true
-  elsif cfg_arch.prohibited_ext?(ext_name)
-    false
-  end
-end
-
 global_scope = symtab.keys_pretty[0]
 builtin_vars = global_scope.filter_map do |key|
   var = symtab.get(key)
@@ -99,8 +85,8 @@ end.sort_by { |h| h[:name] }
 
 sample_versions = ["= 1.0.0", ">= 2.0.0", "= 0.1.0", "> 1.9.1", "<= 1.9.1"]
 extension_results = cfg_arch.extensions.to_h do |ext|
-  per_version = sample_versions.to_h { |v| [v, implemented_tri_state(cfg_arch, ext.name, [v])] }
-  [ext.name, { implemented: implemented_tri_state(cfg_arch, ext.name), implemented_version: per_version }]
+  per_version = sample_versions.to_h { |v| [v, symtab.builtin_funcs.implemented_version.call(ext.name, v)] }
+  [ext.name, { implemented: symtab.builtin_funcs.implemented.call(ext.name), implemented_version: per_version }]
 end
 
 # Keep structural CSR parity separate from the still-unported dynamic behavior bodies.
