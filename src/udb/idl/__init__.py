@@ -96,7 +96,14 @@ from .ast import (
     WidthReveal,
     from_h,
 )
-from .errors import IdlError, IdlInternalError, IdlSyntaxError, IdlTypeError, IdlValueUnknown
+from .errors import (
+    IdlError,
+    IdlInternalError,
+    IdlSemanticError,
+    IdlSyntaxError,
+    IdlTypeError,
+    IdlValueUnknown,
+)
 from .parser import (
     ROOTS,
     parse,
@@ -158,6 +165,7 @@ __all__ = [
     "Id",
     "IdlError",
     "IdlInternalError",
+    "IdlSemanticError",
     "IdlSource",
     "IdlSyntaxError",
     "IdlTypeError",

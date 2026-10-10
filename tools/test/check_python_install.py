@@ -236,6 +236,15 @@ def check_install() -> None:
         node = idl.parse_isa(text, label=name)
         assert isinstance(node, idl.Isa)
 
+    from udb.idl.symbols import IdlEnvironment, SymbolTable
+
+    expression_symtab = SymbolTable(IdlEnvironment())
+    expression_node = idl.parse_expression("4'b1010 + 1")
+    expression_node.type_check(expression_symtab, strict=False)
+    expression_type = expression_node.type(expression_symtab)
+    assert str(expression_type) == "const known Bits<4>"
+    assert expression_node.value(expression_symtab) == 11
+
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
