@@ -1,0 +1,4 @@
+input: "Bits<1 == (2 > 1)> x = 5;\n"
+root: function_body
+label: invalid-bits-template-ambiguity
+rejected: true

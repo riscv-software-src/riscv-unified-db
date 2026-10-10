@@ -1,0 +1,62 @@
+input: "a = 1 if b == 0;\n"
+root: function_body
+label: synthetic-fn-conditional-stmt
+expected:
+  kind: function_body
+  stmts:
+    - kind: conditional_stmt
+      condition:
+        kind: binary_operator_expr
+        op: ==
+        lhs:
+          kind: id
+          name: b
+          source:
+            file: synthetic-fn-conditional-stmt
+            begin: 9
+            end: 10
+        rhs:
+          kind: bits_literal
+          width: "1"
+          value: 0
+          signed: false
+          radix: 10
+          source:
+            file: synthetic-fn-conditional-stmt
+            begin: 14
+            end: 15
+        source:
+          file: synthetic-fn-conditional-stmt
+          begin: 9
+          end: 15
+      expr:
+        kind: var_assignment
+        var:
+          kind: id
+          name: a
+          source:
+            file: synthetic-fn-conditional-stmt
+            begin: 0
+            end: 1
+        value:
+          kind: bits_literal
+          width: "1"
+          value: 1
+          signed: false
+          radix: 10
+          source:
+            file: synthetic-fn-conditional-stmt
+            begin: 4
+            end: 5
+        source:
+          file: synthetic-fn-conditional-stmt
+          begin: 0
+          end: 5
+      source:
+        file: synthetic-fn-conditional-stmt
+        begin: 0
+        end: 16
+  source:
+    file: synthetic-fn-conditional-stmt
+    begin: 0
+    end: 17

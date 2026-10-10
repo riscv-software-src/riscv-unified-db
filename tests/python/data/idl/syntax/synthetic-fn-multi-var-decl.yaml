@@ -1,0 +1,47 @@
+input: "XReg a, b, c;\n"
+root: function_body
+label: synthetic-fn-multi-var-decl
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: multi_var_decl
+        names:
+          - kind: id
+            name: a
+            source:
+              file: synthetic-fn-multi-var-decl
+              begin: 5
+              end: 6
+          - kind: id
+            name: b
+            source:
+              file: synthetic-fn-multi-var-decl
+              begin: 8
+              end: 9
+          - kind: id
+            name: c
+            source:
+              file: synthetic-fn-multi-var-decl
+              begin: 11
+              end: 12
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: synthetic-fn-multi-var-decl
+            begin: 0
+            end: 4
+        source:
+          file: synthetic-fn-multi-var-decl
+          begin: 0
+          end: 12
+      source:
+        file: synthetic-fn-multi-var-decl
+        begin: 0
+        end: 13
+  source:
+    file: synthetic-fn-multi-var-decl
+    begin: 0
+    end: 14

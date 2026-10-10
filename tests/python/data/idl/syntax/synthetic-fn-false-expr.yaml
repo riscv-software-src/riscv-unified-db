@@ -1,0 +1,27 @@
+input: "return false;\n"
+root: function_body
+label: synthetic-fn-false-expr
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: "false"
+            source:
+              file: synthetic-fn-false-expr
+              begin: 7
+              end: 12
+        source:
+          file: synthetic-fn-false-expr
+          begin: 0
+          end: 12
+      source:
+        file: synthetic-fn-false-expr
+        begin: 0
+        end: 13
+  source:
+    file: synthetic-fn-false-expr
+    begin: 0
+    end: 14

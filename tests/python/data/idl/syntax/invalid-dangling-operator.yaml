@@ -1,0 +1,4 @@
+input: "1 + "
+root: expression
+label: invalid-dangling-operator
+rejected: true

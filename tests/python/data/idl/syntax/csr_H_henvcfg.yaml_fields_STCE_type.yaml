@@ -1,0 +1,64 @@
+input: "return (implemented?(ExtensionName::Sstc)) ? CsrFieldType::RO : CsrFieldType::RW;\n"
+root: function_body
+label: csr/H/henvcfg.yaml#fields/STCE/type()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: ternary_operator_expr
+            condition:
+              kind: paren_expr
+              expr:
+                kind: funcall_expr
+                func: implemented?
+                args:
+                  - kind: enum_reference_expr
+                    enum_class: ExtensionName
+                    member_name: Sstc
+                    source:
+                      file: csr/H/henvcfg.yaml#fields/STCE/type()
+                      begin: 21
+                      end: 40
+                source:
+                  file: csr/H/henvcfg.yaml#fields/STCE/type()
+                  begin: 8
+                  end: 41
+              source:
+                file: csr/H/henvcfg.yaml#fields/STCE/type()
+                begin: 7
+                end: 42
+            true_expression:
+              kind: enum_reference_expr
+              enum_class: CsrFieldType
+              member_name: RO
+              source:
+                file: csr/H/henvcfg.yaml#fields/STCE/type()
+                begin: 45
+                end: 61
+            false_expression:
+              kind: enum_reference_expr
+              enum_class: CsrFieldType
+              member_name: RW
+              source:
+                file: csr/H/henvcfg.yaml#fields/STCE/type()
+                begin: 64
+                end: 80
+            source:
+              file: csr/H/henvcfg.yaml#fields/STCE/type()
+              begin: 7
+              end: 80
+        source:
+          file: csr/H/henvcfg.yaml#fields/STCE/type()
+          begin: 0
+          end: 80
+      source:
+        file: csr/H/henvcfg.yaml#fields/STCE/type()
+        begin: 0
+        end: 81
+  source:
+    file: csr/H/henvcfg.yaml#fields/STCE/type()
+    begin: 0
+    end: 82

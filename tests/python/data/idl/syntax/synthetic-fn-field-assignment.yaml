@@ -1,0 +1,39 @@
+input: "mystruct.field1 = 5;\n"
+root: function_body
+label: synthetic-fn-field-assignment
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: field_assignment
+        var:
+          kind: id
+          name: mystruct
+          source:
+            file: synthetic-fn-field-assignment
+            begin: 0
+            end: 8
+        field_name: field1
+        value:
+          kind: bits_literal
+          width: "3"
+          value: 5
+          signed: false
+          radix: 10
+          source:
+            file: synthetic-fn-field-assignment
+            begin: 18
+            end: 19
+        source:
+          file: synthetic-fn-field-assignment
+          begin: 0
+          end: 19
+      source:
+        file: synthetic-fn-field-assignment
+        begin: 0
+        end: 20
+  source:
+    file: synthetic-fn-field-assignment
+    begin: 0
+    end: 21

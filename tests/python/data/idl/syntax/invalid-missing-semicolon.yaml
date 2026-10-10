@@ -1,0 +1,4 @@
+input: XReg a = 1
+root: function_body
+label: invalid-missing-semicolon
+rejected: true

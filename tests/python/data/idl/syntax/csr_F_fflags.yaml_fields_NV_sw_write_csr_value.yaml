@@ -1,0 +1,74 @@
+input: "CSR[fcsr].NV = csr_value.NV;\nreturn csr_value.NV;\n"
+root: function_body
+label: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: csr_field_assignment
+        csr_field:
+          kind: csr_field_read_expr
+          csr:
+            kind: csr_read_expr
+            csr_name: fcsr
+            source:
+              file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+              begin: 0
+              end: 9
+          field_name: NV
+          source:
+            file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+            begin: 0
+            end: 12
+        value:
+          kind: field_access_expr
+          expr:
+            kind: id
+            name: csr_value
+            source:
+              file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+              begin: 15
+              end: 24
+          field_name: NV
+          source:
+            file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+            begin: 15
+            end: 27
+        source:
+          file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+          begin: 0
+          end: 27
+      source:
+        file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+        begin: 0
+        end: 28
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: field_access_expr
+            expr:
+              kind: id
+              name: csr_value
+              source:
+                file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+                begin: 36
+                end: 45
+            field_name: NV
+            source:
+              file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+              begin: 36
+              end: 48
+        source:
+          file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+          begin: 29
+          end: 48
+      source:
+        file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+        begin: 29
+        end: 49
+  source:
+    file: csr/F/fflags.yaml#fields/NV/sw_write(csr_value)
+    begin: 0
+    end: 50
