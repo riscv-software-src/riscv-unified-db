@@ -39,15 +39,13 @@ name: amocas.<%= size %><%= aq_rl_suffix %>
 long_name: Atomic compare-and-swap <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
 description: |
   Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:
-<%- if size == "w" -%>
 
-    * Load the word at address _xs1_
+    * Load the <%= current_size[:name] %> at address _xs1_
+<%- if size == "w" -%>
     * Compare the loaded value with the least-significant word of register _xd_
     * If they are bitwise equal, write the least-significant word of register _xs2_ to the address in _xs1_
     * Write the sign-extended loaded value into _xd_
 <%- elsif size == "d" -%>
-
-    * Load the doubleword at address _xs1_
     * Compare the loaded value with the value held in _xd_ (RV64), or in the register pair _xd_ and _xd+1_ (RV32)
     * If they are bitwise equal, write the value held in _xs2_ (RV64), or in the register pair _xs2_ and _xs2+1_ (RV32), to the address in _xs1_
     * Write the loaded value into _xd_ (RV64), or into the register pair _xd_ and _xd+1_ (RV32)
