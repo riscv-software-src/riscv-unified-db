@@ -50,8 +50,6 @@ description: |
     * If they are bitwise equal, write the value held in _xs2_ (RV64), or in the register pair _xs2_ and _xs2+1_ (RV32), to the address in _xs1_
     * Write the loaded value into _xd_ (RV64), or into the register pair _xd_ and _xd+1_ (RV32)
 <%- else -%>
-
-    * Load the <%= current_size[:name] %> at address _xs1_
     * Write the <%= %w[b h w].include?(size) ? "sign-extended value" : "loaded value" %> into _xd_
     * Compare the loaded value with the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_
     * If equal, write the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2+1_ to the address in _xs1_
