@@ -182,6 +182,46 @@ def check_configuration_diagnostics(resolved: udb.ResolvedDatabase) -> None:
         assert "reason: This fixture requires a different machine width." in checked.stderr
 
 
+def check_configured_prose(resolved: udb.ResolvedDatabase) -> None:
+    from udb.prose import (
+        CapturedProse,
+        ProseError,
+        ProseInputs,
+        render_legacy,
+        render_native,
+        resolve_all_exception_records,
+    )
+
+    inputs = ProseInputs.from_database(resolved, udb.Configuration.builtin("rv64"))
+    stvec = CapturedProse.from_record(
+        resolved, resolved.csr("stvec"), "fields", "BASE", "description"
+    )
+    rendered_stvec = render_legacy(stvec, inputs)
+    assert "[SXLEN-1:39]" in rendered_stvec and "bit 38" in rendered_stvec
+    assert "<%" not in rendered_stvec and stvec.span is not None
+    assert stvec.source_text is not None
+
+    load_reserved = CapturedProse.from_record(resolved, resolved.instruction("lr.w"), "description")
+    rendered_load_reserved = render_legacy(load_reserved, inputs)
+    assert "The 32-bit load result is sign-extended to 64-bits." in rendered_load_reserved
+    assert "<%" not in rendered_load_reserved
+
+    assert render_native(CapturedProse("{{ params.MXLEN }}"), {"params": {"MXLEN": 64}}) == "64"
+    names = resolve_all_exception_records(resolved, inputs)
+    assert names and all(isinstance(item["ext"], str) for item in names)
+    json.dumps([dict(item) for item in names])
+
+    cache = CapturedProse.from_record(resolved, resolved.instruction("cbo.flush"), "description")
+    try:
+        render_legacy(cache, inputs)
+    except ProseError as error:
+        assert error.diagnostic.legacy_error_class == "NoMethodError"
+        assert error.diagnostic.prose is cache
+        assert error.diagnostic.tag in cache.text
+    else:
+        raise AssertionError("unknown cache parameters must not become successful prose")
+
+
 def check_profile_configurations(resolved: udb.ResolvedDatabase) -> None:
     from udb.profile_configs import profile_configuration, profile_configuration_plan
 
@@ -319,6 +359,7 @@ def check_install() -> None:
     assert rv64_arch.check().status is udb.ArchitectureCheckStatus.VALID
     assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
     check_configuration_diagnostics(resolved)
+    check_configured_prose(resolved)
     check_config_headers(resolved)
     check_profile_configurations(resolved)
 
