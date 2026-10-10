@@ -1,0 +1,48 @@
+---
+title: MMR description (v0.1)
+sidebar_label: MMR description
+custom_edit_url: null
+# This file is auto-generated from mmr_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+# MMR description
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`mmr_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/mmr_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+A memory-mapped register specification
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ | Path to schema, relative to &lt;UDB ROOT&gt;/schemas |
+| `kind` | `any` | ✓ | Object type |
+| `name` | `string` | ✓ | MMR name |
+| `long_name` | `string` | ✓ | One line description for the MMR |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; | ✓ | Function of the register |
+| `definedBy` | A condition (YAML structure or IDL function). See the conditions reference for details. | ✓ | Extension(s) that define the MMR |
+| `physical_address` | `integer` | ✓ | Physical memory address of the register |
+| `writable` | `boolean` | ✓ | Whether or not the register can be written by software |
+| `length` | `8` \| `16` \| `32` \| `64` \| `128` | ✓ | Length, in bits, of the register. Must be a fixed integer (no XLEN-dependent lengths for MMIO). |
+| `fields` | `object` |  | fields of this MMR |
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

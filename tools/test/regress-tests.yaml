@@ -670,8 +670,8 @@ tests:
     checkout_with:
       fetch-depth: 0
     test:
-      - name: Generate schema documentation
-        run: ./bin/chore gen -f schema-docs
+      - name: Check schema documentation without rewriting released pages
+        run: ./bin/python -m udb generate schema-docs --schemas spec/schemas --out doc/docs/schemas --check
       - name: Check old schema MDX files were not modified
         run: |
           base="$(git merge-base origin/main HEAD)"

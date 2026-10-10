@@ -1,0 +1,122 @@
+---
+title: Prm Schema (v0.1)
+sidebar_label: Prm Schema
+custom_edit_url: null
+# This file is auto-generated from prm_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Prm Schema
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`prm_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/prm_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Definitions
+
+<details>
+<summary><a id="identifier"></a><strong><code>identifier</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="specification-name"></a><strong><code>specification_name</code></strong></summary>
+
+**Type:** `string`
+
+</details>
+
+<details>
+<summary><a id="prm-chapter"></a><strong><code>prm_chapter</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `id` | [`identifier`](#identifier) | ✓ | Unique identifier for the chapter |
+| `title` | `string` | ✓ | Human-readable title for the chapter |
+| `description` | `string` |  | Optional description of the chapter |
+| `level` | `integer` |  | AsciiDoc heading level (1-6) |
+| `type` | `standard` \| `appendix` |  | Type of chapter - standard or appendix |
+| `auto_generate` | Array&lt;`instructions` \| `csrs`&gt; |  | Auto-generate reference content for instructions and/or CSRs |
+| `external_documentation` | Array&lt;[`external_documentation`](#external-documentation)&gt; |  | External documentation sources to include |
+| `non_isa_specifications` | Array&lt;[`non_isa_specification`](#non-isa-specification)&gt; |  | UDB non-ISA specification references |
+
+</details>
+
+<details>
+<summary><a id="external-documentation"></a><strong><code>external_documentation</code></strong> — External documentation source (ISA manuals, external specs, etc.)</summary>
+
+External documentation source (ISA manuals, external specs, etc.)
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `source` | `string` | ✓ | Source identifier (e.g., 'riscv-isa-manual', 'riscv-elf-psabi-doc') |
+| `type` | `isa_manual` \| `external_spec` | ✓ | Type of external documentation |
+| `path` | `string` | ✓ | Relative path from workspace root to documentation directory |
+| `version` | Version requirement or list of requirements (e.g., `>= 2.0` or `['>= 2.0', '< 3.0']`) |  | Version requirement |
+| `chapters` | Array&lt;[`external_chapter`](#external-chapter)&gt; |  | Specific chapters or sections to include |
+| `resolve_includes` | `boolean` |  | Resolve AsciiDoc include directives |
+
+</details>
+
+<details>
+<summary><a id="non-isa-specification"></a><strong><code>non_isa_specification</code></strong> — UDB non-ISA specification reference</summary>
+
+UDB non-ISA specification reference
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | [`specification_name`](#specification-name) | ✓ | Name of the UDB non-ISA specification |
+| `version` | Version requirement or list of requirements (e.g., `>= 2.0` or `['>= 2.0', '< 3.0']`) | ✓ | Version requirement for the specification |
+
+</details>
+
+<details>
+<summary><a id="external-chapter"></a><strong><code>external_chapter</code></strong> — Reference to external chapter or section</summary>
+
+Reference to external chapter or section
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `file` | `string` | ✓ | Filename to include (e.g., 'riscv-cc.adoc', 'rv32.adoc') |
+| `title` | `string` |  | Custom title for this chapter |
+| `exclude_content` | Array&lt;`string`&gt; |  | Content IDs to exclude (excludes entire sections/chapters and their subsections by AsciiDoc ID) |
+| `level_offset` | `integer` |  | Heading level offset |
+
+</details>
+
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ |  |
+| `kind` | `any` | ✓ |  |
+| `name` | [`specification_name`](#specification-name) | ✓ | Name (database key) of this PRM |
+| `description` | `string` | ✓ | Brief description of this PRM |
+| `processor_config` | `object` | ✓ |  |
+| `chapters` | Array&lt;[`prm_chapter`](#prm-chapter)&gt; | ✓ | Ordered list of chapters in the PRM |
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

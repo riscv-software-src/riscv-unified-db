@@ -1,0 +1,75 @@
+---
+title: Register File Schema (v0.1)
+sidebar_label: Register File Schema
+custom_edit_url: null
+# This file is auto-generated from register_file_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Register File Schema
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`register_file_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/register_file_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+Schema for describing a register file
+
+
+## Definitions
+
+<details>
+<summary><a id="register-entry"></a><strong><code>register_entry</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | Register name | ✓ |  |
+| `abi_mnemonics` | Array&lt;Register alias or ABI mnemonic&gt; |  | ABI mnemonic names for the register |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; |  |  |
+| `when` | A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement \| `object` |  |  |
+| `reset_value` | `string` |  | IDL literal expression for the reset value (e.g., '0'). Omit if reset state is unknown. |
+| `arch_read()` | `string` |  | Function describing the architecturally defined read behavior. Use this for architecturally mandated effects (e.g., x0 always reads as zero). |
+| `arch_write(value)` | `string` |  | Function describing the architecturally defined write behavior. Given a 'value', return the architecturally required result (e.g., x0 ignores writes and always yields zero). |
+| `caller_saved` | `boolean` |  | Whether the register is caller-saved |
+| `callee_saved` | `boolean` |  | Whether the register is callee-saved |
+| `roles` | Array&lt;`zero` \| `return_address` \| `alternate_link_register` \| `stack_pointer` \| `global_pointer` \| `thread_pointer` \| `frame_pointer` \| `return_value` \| `argument` \| `temporary`&gt; |  |  |
+
+</details>
+
+<details>
+<summary><a id="register-file"></a><strong><code>register_file</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ | Path to schema, relative to &lt;UDB ROOT&gt;/schemas |
+| `kind` | `any` | ✓ |  |
+| `name` | Register file name | ✓ |  |
+| `long_name` | `string` | ✓ |  |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; | ✓ |  |
+| `register_length()` | `string` | ✓ | IDL function body returning the register width in bits. May reference params (MXLEN, VLEN) or implemented?(). Example: 'return MXLEN;' |
+| `registers` | Array&lt;[`register_entry`](#register-entry)&gt; | ✓ |  |
+| `definedBy` | A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement \| `object` |  |  |
+| `register_class` | `general_purpose` \| `floating_point` \| `vector` |  |  |
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |
