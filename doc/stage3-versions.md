@@ -31,7 +31,8 @@ work. It does not resolve configurations or initialize a solver.
 The extension schema adds the documented `breaking` boolean and advances `ext_schema.json` from
 `v0.1` to `v0.2`. The shared requirement schema now accepts `!=`, accepts only the RISC-V `-pre`
 suffix, and describes RISC-V compatibility rather than RubyGems pessimistic constraints;
-`schema_defs.json` advances from `v0.2` to `v0.3`.
+the version work originally advanced `schema_defs.json` from `v0.2` to `v0.3`; the condition slice
+subsequently advances it to `v0.4` to admit Boolean condition identities.
 
 ## Test mapping
 
