@@ -20,6 +20,7 @@ from .database import (
     Profile,
     ResolvedDatabase,
 )
+from .domains import DomainError, EnumerationLimitError, ParameterDomain
 from .errors import (
     AuthoringError,
     DataError,
@@ -72,6 +73,8 @@ __all__ = [
     "DataReference",
     "Database",
     "DatabaseObject",
+    "DomainError",
+    "EnumerationLimitError",
     "Extension",
     "ExtensionSelection",
     "ExtensionVersion",
@@ -81,6 +84,7 @@ __all__ = [
     "LayoutError",
     "LayoutJob",
     "ObjectNotFoundError",
+    "ParameterDomain",
     "Presence",
     "Profile",
     "Reference",

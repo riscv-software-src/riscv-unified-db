@@ -9,7 +9,7 @@
 | Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
 | Stage 2b: schema validation | Complete locally; CI pending |
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
-| Stage 3: versions, configurations, conditions, and solving | Pending |
+| Stage 3: versions, configurations, conditions, and solving | In progress: version/configuration/domain foundations implemented; solving and configured queries underway |
 | Stage 4: IDL compiler and semantic passes | Pending |
 | Stage 5: generators, templates, and document rendering | Pending |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
@@ -55,6 +55,9 @@ These are local branches until publication of the PR stack.
 | `migration/python-04-serialization` | `migration/python-03-schema` | Deterministic resolved data and schema publication |
 | `migration/python-05-layout` | `migration/python-04-serialization` | Python layout authoring and publication fixes |
 | `migration/python-06-source-maps` | `migration/python-05-layout` | Source provenance, lazy references, and combined installed-package gate |
+| `migration/python-07-versions` | `migration/python-06-source-maps` | Immutable RISC-V versions and release requirements |
+| `migration/python-08-configurations` | `migration/python-07-versions` | Immutable configurations and bundled generic configurations |
+| `migration/python-09-domains` | `migration/python-08-configurations` | Offline JSON Schema parameter domains and combined foundation gates |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -739,3 +742,39 @@ generation use Python by default. No generator has been removed. Schema defaults
 remain annotations, matching the confirmed resolver policy; configuration
 defaulting and satisfiability belong to Stage 3. The next capability is versions,
 configurations, conditions, and solving, followed by IDL and generator cutovers.
+
+### 2026-09-29: Stage 3 foundations
+
+- Added immutable RISC-V versions, requirements, release metadata, and extension
+  version queries. `ext_schema.json` advances to `v0.2` for documented breaking
+  releases; `schema_defs.json` advances to `v0.3` for the supported requirement
+  grammar and corrected compatibility documentation.
+- Added immutable configuration parsing, including the three bundled generic
+  configurations, mandatory/optional/prohibited selections, full exact versions,
+  and necessary machine-width inference. The retained Ruby profile-config
+  generator now emits valid string descriptions, and all ten profile outputs
+  were regenerated. Live parsing comparisons cover all 23 repository configs.
+- Added typed, immutable parameter domains for all 271 standard parameter
+  schemas, with local references, intersections, arrays, bounds, membership,
+  and explicitly bounded complete enumeration. Domain analysis limits are
+  documented in [the domain contract](stage3-domains.md).
+- The initial combined foundation suite passed **250 tests** with live Ruby
+  comparisons. Clean wheel and build-isolated sdist installations passed the
+  expanded durable gate from outside the checkout, with indexes and the package
+  cache disabled and Ruby/Git absent from `PATH` (Linux AArch64, Python 3.14.7).
+  Both installations validated generic configurations and all parameter domains,
+  alongside every earlier package gate. These results precede the independent
+  domain review fixes and are not a Stage 3 completion claim.
+- Fresh independent domain review reproduced seven additional Python defects
+  beyond the initial corpus. Corrections and another review gate are in progress.
+  Confirmed Ruby corrections are separately recorded as entries 10–17 in the
+  running bug log; new Python defects are not counted there.
+- Dedicated version, configuration, and domain differential regressions are
+  generated from `tools/test/regress-tests.yaml`. The default Python unit and
+  installed-package jobs exercise the new Python APIs.
+
+Conditions, symbolic solving, configured queries, conflict checks, and their
+acceptance gates are still in progress. Ruby callers remain the configured
+architecture/IDL resolver, existing object-model consumers, and every later-stage
+generator and renderer. No generator has been removed. Full repository regression
+and remote CI remain pending.
