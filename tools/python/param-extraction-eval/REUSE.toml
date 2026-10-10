@@ -1,0 +1,7 @@
+version = 1
+
+# Fixture text and expectation files for the parameter-extraction evaluation set.
+[[annotations]]
+path = ["cases/**"]
+SPDX-FileCopyrightText = "2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>"
+SPDX-License-Identifier = "BSD-3-Clause-Clear"

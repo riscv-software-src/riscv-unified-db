@@ -1,0 +1,26 @@
+Source: text as supplied in the LFX Fall 2026 Part II coding challenge, which
+  labelled it "Privileged Spec 19.3.1". That label names the wrong volume and
+  the wrong subsection.
+Actual location: RISC-V Unprivileged ISA Manual, CMO Extensions, under
+  Background > Memory and Caches. That is src/unpriv/cmo.adoc lines 86-93,
+  identically at ext/riscv-isa-manual b2e69ab2, the revision this branch pins,
+  and at 310a111, the revision main pins. src/cmo.adoc exists at neither.
+Section number, which depends on the rendering: modules/unpriv/nav.adoc labels
+  cmo.adoc "Chapter 19", and under that page numbering the heading nesting puts
+  this passage at 19.2.1, with 19.3.1 being "Memory Ordering". In the monolithic
+  build there is no leveloffset on the include chain, so cmo.adoc is a section
+  inside the "Scalar Integer Extensions" chapter and the numbers differ. The
+  volume is Unprivileged under either reading.
+Fidelity: the prose below is the challenge's, with asciidoc markup removed.
+  Against the manual it differs only by "(or NAPOT)", where the manual reads
+  "(NAPOT)".
+
+Caches organize copies of data into cache blocks, each of which represents a
+contiguous, naturally aligned power-of-two (or NAPOT) range of memory
+locations. A cache block is identified by any of the physical addresses
+corresponding to the underlying memory locations. The capacity and
+organization of a cache and the size of a cache block are both
+implementation-specific, and the execution environment provides software a
+means to discover information about the caches and cache blocks in a system.
+In the initial set of CMO extensions, the size of a cache block shall be
+uniform throughout the system.

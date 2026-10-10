@@ -1,0 +1,12 @@
+kind: parameter
+name: MTVEC_MODES
+class: NORM_CSR_WARL
+schema:
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+  minItems: 1
+  uniqueItems: true
