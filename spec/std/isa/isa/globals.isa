@@ -3014,6 +3014,94 @@ function store_conditional {
   }
 }
 
+function amo_cas {
+  returns Bits<64>           # the value held in memory when the comparison was made
+  arguments
+    U32 N,                  # number of bits being compared/swapped (32 or 64)
+    XReg virtual_address,   # the virtual address of the memory operand
+    Bits<64> compare_value, # the value the memory operand is compared against
+    Bits<64> swap_value,    # the value written when the comparison succeeds
+    Bits<1>    aq,          # acquire semantics? 0=no, 1=yes
+    Bits<1>    rl,          # release semantics? 0=no, 1=yes
+    Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
+  description {
+    Atomically compare the N-bit operand at virtual_address with +compare_value+ and,
+    when the two are bitwise equal, replace it with +swap_value+.
+
+    Returns the value that was held in memory when the comparison was made, whether or
+    not the swap occurred.
+
+    If +aq+ is 1, then the operation also acts as a memory model acquire, whether or not
+    the swap occurred. If +rl+ is 1, then a successful operation also acts as a memory
+    model release; an unsuccessful one never does.
+  }
+  body {
+    # amocas requires a naturally aligned address, with the same exception options that
+    # apply to the other AMOs when it is not
+    if (!is_naturally_aligned(N, virtual_address)) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned, mode(), virtual_address);
+    }
+
+    Bits<PHYS_ADDR_WIDTH> physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::ReadModifyWrite, effective_ldst_mode(), encoding).paddr
+        : virtual_address;
+
+    # amocas always requires write permission, whether or not the swap occurs, and needs
+    # the same atomicity support from the PMA as an amoswap
+    if (pma_applies?(PmaAttribute::AmoNone, physical_address, N)) {
+      raise (ExceptionCode::StoreAmoAccessFault, mode(), virtual_address);
+    }
+    if (!pma_applies?(PmaAttribute::AmoSwap, physical_address, N)) {
+      raise (ExceptionCode::StoreAmoAccessFault, mode(), virtual_address);
+    }
+
+    # The comparison and the conditional store are performed atomically by
+    # atomic_check_then_write_{32,64}. The read below supplies the value amocas returns
+    # in xd and decides whether the release is performed, since the spec ties the release
+    # to the success of the operation.
+    Bits<64> original_value = 0;
+    if (N == 32) {
+      original_value = read_physical_memory_32(physical_address);
+    } else {
+      original_value = read_physical_memory_64(physical_address);
+    }
+
+    Boolean equal = (original_value == compare_value);
+
+    # An unsuccessful amocas does not have release semantics, regardless of rl
+    if (equal && (rl == 1)) {
+      memory_model_release();
+    }
+
+    Boolean swapped = false;
+    if (equal) {
+      if (N == 32) {
+        swapped = atomic_check_then_write_32(physical_address, compare_value[31:0], swap_value[31:0]);
+      } else {
+        swapped = atomic_check_then_write_64(physical_address, compare_value, swap_value);
+      }
+    }
+
+    if (equal && !swapped) {
+      # the location changed between the read and the compare-and-swap, so report what the
+      # atomic operation itself observed
+      if (N == 32) {
+        original_value = read_physical_memory_32(physical_address);
+      } else {
+        original_value = read_physical_memory_64(physical_address);
+      }
+    }
+
+    # An amocas has acquire semantics whether or not it succeeded
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+
+    return original_value;
+  }
+}
+
 function amo {
   returns XReg
   arguments

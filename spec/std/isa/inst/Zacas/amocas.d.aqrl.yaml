@@ -15,9 +15,9 @@ description: |
   Atomically with acquire and release ordering:
 
     * Load the doubleword at address _xs1_
-    * Write the loaded value into _xd_
-    * Compare the loaded value with the value of register _xs2_
-    * If equal, write the value of register _xs2+1_ to the address in _xs1_
+    * Compare the loaded value with the value held in _xd_ (RV64), or in the register pair _xd_ and _xd+1_ (RV32)
+    * If they are bitwise equal, write the value held in _xs2_ (RV64), or in the register pair _xs2_ and _xs2+1_ (RV32), to the address in _xs1_
+    * Write the loaded value into _xd_ (RV64), or into the register pair _xd_ and _xd+1_ (RV32)
 definedBy:
   extension:
     name: Zacas
@@ -37,14 +37,26 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (!implemented?(ExtensionName::Zacas)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
-  memory_model_acquire();
-
   XReg virtual_address = X[xs1];
-  # TODO
-  # X[xd] = amocas64(virtual_address, X[xs2], X[xd], 1'b1, 1'b1, $encoding);
 
-  memory_model_release();
+  if (xlen() == 32) {
+    # the first register of each pair must be even numbered; odd encodings are reserved
+    if ((xd[0] == 1) || (xs2[0] == 1)) {
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+
+    # when the first register of a source pair is x0, both halves of the pair read as zero
+    Bits<64> compare_value = (xd == 0)  ? 64'h0 : {X[xd + 1], X[xd]};
+    Bits<64> swap_value    = (xs2 == 0) ? 64'h0 : {X[xs2 + 1], X[xs2]};
+
+    Bits<64> original_value =
+      amo_cas(64, virtual_address, compare_value, swap_value, 1'b1, 1'b1, $encoding);
+
+    # when the first register of the destination pair is x0, the result is discarded
+    if (xd != 0) {
+      X[xd]     = original_value[31:0];
+      X[xd + 1] = original_value[63:32];
+    }
+  } else {
+    X[xd] = amo_cas(64, virtual_address, X[xd], X[xs2], 1'b1, 1'b1, $encoding);
+  }

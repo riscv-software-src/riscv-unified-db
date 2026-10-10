@@ -2985,9 +2985,9 @@ Description::
 Atomically:
 
   * Load the doubleword at address _xs1_
-  * Write the loaded value into _xd_
-  * Compare the loaded value with the value of register _xs2_
-  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the value held in _xd_ (RV64), or in the register pair _xd_ and _xd+1_ (RV32)
+  * If they are bitwise equal, write the value held in _xs2_ (RV64), or in the register pair _xs2_ and _xs2+1_ (RV32), to the address in _xs1_
+  * Write the loaded value into _xd_ (RV64), or into the register pair _xd_ and _xd+1_ (RV32)
 
 
 Decode Variables::
@@ -3042,9 +3042,9 @@ Description::
 Atomically with acquire ordering:
 
   * Load the doubleword at address _xs1_
-  * Write the loaded value into _xd_
-  * Compare the loaded value with the value of register _xs2_
-  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the value held in _xd_ (RV64), or in the register pair _xd_ and _xd+1_ (RV32)
+  * If they are bitwise equal, write the value held in _xs2_ (RV64), or in the register pair _xs2_ and _xs2+1_ (RV32), to the address in _xs1_
+  * Write the loaded value into _xd_ (RV64), or into the register pair _xd_ and _xd+1_ (RV32)
 
 
 Decode Variables::
@@ -3099,9 +3099,9 @@ Description::
 Atomically with acquire and release ordering:
 
   * Load the doubleword at address _xs1_
-  * Write the loaded value into _xd_
-  * Compare the loaded value with the value of register _xs2_
-  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the value held in _xd_ (RV64), or in the register pair _xd_ and _xd+1_ (RV32)
+  * If they are bitwise equal, write the value held in _xs2_ (RV64), or in the register pair _xs2_ and _xs2+1_ (RV32), to the address in _xs1_
+  * Write the loaded value into _xd_ (RV64), or into the register pair _xd_ and _xd+1_ (RV32)
 
 
 Decode Variables::
@@ -3156,9 +3156,9 @@ Description::
 Atomically with release ordering:
 
   * Load the doubleword at address _xs1_
-  * Write the loaded value into _xd_
-  * Compare the loaded value with the value of register _xs2_
-  * If equal, write the value of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the value held in _xd_ (RV64), or in the register pair _xd_ and _xd+1_ (RV32)
+  * If they are bitwise equal, write the value held in _xs2_ (RV64), or in the register pair _xs2_ and _xs2+1_ (RV32), to the address in _xs1_
+  * Write the loaded value into _xd_ (RV64), or into the register pair _xd_ and _xd+1_ (RV32)
 
 
 Decode Variables::
@@ -3681,9 +3681,9 @@ Description::
 Atomically:
 
   * Load the word at address _xs1_
-  * Write the sign-extended value into _xd_
-  * Compare the loaded value with the least-significant word of register _xs2_
-  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the least-significant word of register _xd_
+  * If they are bitwise equal, write the least-significant word of register _xs2_ to the address in _xs1_
+  * Write the sign-extended loaded value into _xd_
 
 
 Decode Variables::
@@ -3738,9 +3738,9 @@ Description::
 Atomically with acquire ordering:
 
   * Load the word at address _xs1_
-  * Write the sign-extended value into _xd_
-  * Compare the loaded value with the least-significant word of register _xs2_
-  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the least-significant word of register _xd_
+  * If they are bitwise equal, write the least-significant word of register _xs2_ to the address in _xs1_
+  * Write the sign-extended loaded value into _xd_
 
 
 Decode Variables::
@@ -3795,9 +3795,9 @@ Description::
 Atomically with acquire and release ordering:
 
   * Load the word at address _xs1_
-  * Write the sign-extended value into _xd_
-  * Compare the loaded value with the least-significant word of register _xs2_
-  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the least-significant word of register _xd_
+  * If they are bitwise equal, write the least-significant word of register _xs2_ to the address in _xs1_
+  * Write the sign-extended loaded value into _xd_
 
 
 Decode Variables::
@@ -3852,9 +3852,9 @@ Description::
 Atomically with release ordering:
 
   * Load the word at address _xs1_
-  * Write the sign-extended value into _xd_
-  * Compare the loaded value with the least-significant word of register _xs2_
-  * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+  * Compare the loaded value with the least-significant word of register _xd_
+  * If they are bitwise equal, write the least-significant word of register _xs2_ to the address in _xs1_
+  * Write the sign-extended loaded value into _xd_
 
 
 Decode Variables::

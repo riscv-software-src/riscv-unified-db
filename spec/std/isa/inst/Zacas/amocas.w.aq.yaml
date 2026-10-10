@@ -15,9 +15,9 @@ description: |
   Atomically with acquire ordering:
 
     * Load the word at address _xs1_
-    * Write the sign-extended value into _xd_
-    * Compare the loaded value with the least-significant word of register _xs2_
-    * If equal, write the least-significant word of register _xs2+1_ to the address in _xs1_
+    * Compare the loaded value with the least-significant word of register _xd_
+    * If they are bitwise equal, write the least-significant word of register _xs2_ to the address in _xs1_
+    * Write the sign-extended loaded value into _xd_
 definedBy:
   extension:
     name: Zacas
@@ -37,12 +37,9 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (!implemented?(ExtensionName::Zacas)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
-  memory_model_acquire();
-
   XReg virtual_address = X[xs1];
-  # TODO
-  # X[xd] = amocas32(virtual_address, X[xs2][31:0], X[xd][31:0], 1'b1, 1'b0, $encoding);
+
+  Bits<64> original_value =
+    amo_cas(32, virtual_address, X[xd][31:0], X[xs2][31:0], 1'b1, 1'b0, $encoding);
+
+  X[xd] = sext(original_value[31:0], 32);
