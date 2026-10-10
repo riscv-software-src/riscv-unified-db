@@ -15,7 +15,7 @@ The distribution name is `udb`, so a future published release can be installed w
 `python -m pip install udb`. This project has not yet established that the name is published or
 available from the Python Package Index.
 
-This first release supports querying the bundled, raw standard ISA records and schemas. The data
+The package supports querying the bundled, raw standard ISA records and schemas. The data
 is the unconfigured source database: it has not been resolved for an XLEN, extension set, or named
 configuration. Configuration resolution and the full behavior of the existing Ruby implementation
 are still being ported.
@@ -38,8 +38,26 @@ returns all records, and `get(kind, name)` returns a single record. The convenie
 views of the common record kinds. Records are immutable mappings; their source path is available as
 `record.path`, and `record.to_dict()` returns a mutable copy.
 
-The alpha API does not yet provide a resolved architecture model or evaluate `$inherits`, overlays,
-configurations, `$ref`, conditions, IDL, or Z3 semantics.
+Resolve YAML inheritance and apply custom overlays with `Database.resolve()`:
+
+```python
+resolved = db.resolve()
+print(resolved.profile("RVI20U64")["extensions"]["I"]["presence"])
+
+# Overlay directories use the same relative paths as the standard ISA tree.
+custom = db.resolve(overlays=["my-isa-overlay"])
+```
+
+The result is an immutable `ResolvedDatabase` with the same query methods. Overlay files may be
+partial records. Overlays apply in the supplied order using JSON Merge Patch: maps merge, arrays
+and scalars replace, and null removes a key. Inheritance then expands `$inherits`, merges parents
+in order followed by child overrides, and applies `$remove`. Null in an inheritance override
+remains null. The source database and files are unchanged.
+
+`resolved.documents` exposes the resolved mappings keyed by relative source path. `$child_of`
+and `$parent_of` record inheritance relationships. Data `$ref` links remain references; they are
+not expanded. Resolution does not apply schema defaults, choose extension versions, evaluate
+configurations or conditions, or compile IDL. It does not yet provide a configured architecture.
 
 The package also installs a small command-line interface for inspecting raw records:
 
@@ -47,6 +65,8 @@ The package also installs a small command-line interface for inspecting raw reco
 udb list extension
 udb show extension Zvkg
 udb --path spec/std/isa list extension
+udb --resolved show profile RVI20U64
+udb --resolved --overlay my-isa-overlay show profile RVI20U64
 ```
 
 The same commands are available through `python -m udb`.

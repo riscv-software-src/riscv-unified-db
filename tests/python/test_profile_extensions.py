@@ -46,3 +46,22 @@ extensions:
     assert result.returncode == 0, result.stderr
     assert result.stdout == "Demo:\n- A ~> 2.1 mandatory\n- Zoptional any optional\n"
     assert "$child_of" in (profile_dir / "Demo.yaml").read_text(encoding="utf-8")
+
+
+def test_profile_extensions_uses_bundled_resolved_database_by_default(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(REPO_ROOT / "src")
+
+    result = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "tools" / "python" / "profile_extensions.py")],
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+        cwd=tmp_path,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == (REPO_ROOT / "tests/golden/profile_extensions.golden").read_text(
+        encoding="utf-8"
+    )

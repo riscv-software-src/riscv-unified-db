@@ -12,6 +12,10 @@ class DataError(UdbError):
     """A UDB YAML document is malformed or internally inconsistent."""
 
 
+class ResolutionError(DataError):
+    """Inheritance or overlay resolution failed."""
+
+
 class UnknownKindError(UdbError, KeyError):
     """The requested object kind is not present in the database."""
 
