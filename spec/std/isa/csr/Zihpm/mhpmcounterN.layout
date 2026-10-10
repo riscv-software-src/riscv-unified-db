@@ -2,13 +2,12 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
-<%- raise("'hpm_num' must be defined") if hpm_num.nil? -%>
 
 $schema: csr_schema.json#
 kind: csr
-name: <%= "mhpmcounter#{hpm_num}" %>
-long_name: Machine Hardware Performance Counter <%= hpm_num %>
-address: <%= "0x" + (0xB00 + hpm_num).to_s(16).upcase %>
+name: {{ mhpmcounter_name }}
+long_name: Machine Hardware Performance Counter {{ hpm_num }}
+address: {{ address }}
 writable: true
 priv_mode: M
 length: 64
@@ -18,26 +17,26 @@ definedBy:
         name: Sm
     - param:
         name: HPM_COUNTER_EN
-        index: <%= hpm_num %>
+        index: {{ hpm_num }}
         equal: true
 description: |
   Programmable hardware performance counter.
 
-  The `hpmcounter<%= hpm_num %>` CSR is a read-only shadow of this CSR. Access to `hpmcounter<%= hpm_num %>`
-  is controlled with `mcounteren.HPM<%= hpm_num %>`
-  <%%- if ext?(:S) -%>
-  , `scounteren.HPM<%= hpm_num %>`
-  <%%- if ext?(:H) -%>
-  , and `hcounteren.HPM<%= hpm_num %>`
-  <%%- end -%>
-  <%%- end -%>
+  The `hpmcounter{{ hpm_num }}` CSR is a read-only shadow of this CSR. Access to `hpmcounter{{ hpm_num }}`
+  is controlled with `mcounteren.HPM{{ hpm_num }}`
+  <%- if ext?(:S) -%>
+  , `scounteren.HPM{{ hpm_num }}`
+  <%- if ext?(:H) -%>
+  , and `hcounteren.HPM{{ hpm_num }}`
+  <%- end -%>
+  <%- end -%>
   as follows:
 
-  <%%- if ext?(:H) -%>
+  <%- if ext?(:H) -%>
   [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
   !===
-  .2+h![.rotate]#`mcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`scounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`hcounteren.HPM<%= hpm_num %>`#
-  4+^.>h! `hpmcounter<%= hpm_num %>` behavior
+  .2+h![.rotate]#`mcounteren.HPM{{ hpm_num }}`# .2+h! [.rotate]#`scounteren.HPM{{ hpm_num }}`# .2+h! [.rotate]#`hcounteren.HPM{{ hpm_num }}`#
+  4+^.>h! `hpmcounter{{ hpm_num }}` behavior
   .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
   ! 0 ! - ! - ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction`
@@ -46,64 +45,64 @@ description: |
   ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction`
   ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
   !===
-  <%%- elsif ext?(:S) -%>
+  <%- elsif ext?(:S) -%>
   [%autowidth,cols="1,1,1,1",separator="!"]
   !===
-  .2+h![.rotate]#`mcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`scounteren.HPM<%= hpm_num %>`#
-  2+^.>h! `hpmcounter<%= hpm_num %>` behavior
+  .2+h![.rotate]#`mcounteren.HPM{{ hpm_num }}`# .2+h! [.rotate]#`scounteren.HPM{{ hpm_num }}`#
+  2+^.>h! `hpmcounter{{ hpm_num }}` behavior
   .^h! S-mode .^h! U-mode
 
   ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
   ! 1 ! 0 ! read-only ! `IllegalInstruction`
   ! 1 ! 1 ! read-only ! read-only
   !===
-  <%%- else -%>
+  <%- else -%>
   [%autowidth,cols="1,1",separator="!"]
   !===
-  .2+h![.rotate]#`mcounteren.HPM<%= hpm_num %>`#
-  ^.>h! `hpmcounter<%= hpm_num %>` behavior
+  .2+h![.rotate]#`mcounteren.HPM{{ hpm_num }}`#
+  ^.>h! `hpmcounter{{ hpm_num }}` behavior
   .^h! U-mode
 
   ! 0 ! `IllegalInstruction`
   ! 1 ! read-only
   !===
-  <%%- end -%>
+  <%- end -%>
 fields:
   COUNT:
     location: 63-0
     description: |
-      [when="HPM_COUNTER_EN[<%= hpm_num %>] == true"]
+      [when="HPM_COUNTER_EN[{{ hpm_num }}] == true"]
       --
-      Performance counter for event selected in `mhpmevent<%= hpm_num %>.EVENT`.
+      Performance counter for event selected in `mhpmevent{{ hpm_num }}.EVENT`.
 
       Increments every time event occurs unless:
 
-        * `mcountinhibit.HPM<%= hpm_num %>` <%%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.HPM<%= hpm_num %>`<%%- end -%> is set
-        <%%- if ext?(:Sscofpmf) -%>
-        * `mhpmevent<%= hpm_num %>.MINH` is set and the current privilege level is M
-        <%%- if ext?(:S) -%>
-        * `mhpmevent<%= hpm_num %>.SINH` <%%- if ext?(:Ssccfg) -%>or its alias `hpmevent<%= hpm_num %>.SINH`<%%- end -%> is set and the current privilege level is (H)S
-        <%%- end -%>
-        <%%- if ext?(:U) -%>
-        * `mhpmevent<%= hpm_num %>.UINH` <%%- if ext?(:Ssccfg) -%>or its alias `hpmevent<%= hpm_num %>.UINH`<%%- end -%> is set and the current privilege level is U
-        <%%- end -%>
-        <%%- if ext?(:H) -%>
-        * `mhpmevent<%= hpm_num %>.VSINH` <%%- if ext?(:Ssccfg) -%>or its alias `hpmevent<%= hpm_num %>.VSINH`<%%- end -%> is set and the current privilege level is VS
-        * `mhpmevent<%= hpm_num %>.VUINH` <%%- if ext?(:Ssccfg) -%>or its alias `hpmevent<%= hpm_num %>.VUINH`<%%- end -%> is set and the current privilege level is VU
-        <%%- end -%>
-        <%%- end -%>
+        * `mcountinhibit.HPM{{ hpm_num }}` <%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.HPM{{ hpm_num }}`<%- end -%> is set
+        <%- if ext?(:Sscofpmf) -%>
+        * `mhpmevent{{ hpm_num }}.MINH` is set and the current privilege level is M
+        <%- if ext?(:S) -%>
+        * `mhpmevent{{ hpm_num }}.SINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent{{ hpm_num }}.SINH`<%- end -%> is set and the current privilege level is (H)S
+        <%- end -%>
+        <%- if ext?(:U) -%>
+        * `mhpmevent{{ hpm_num }}.UINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent{{ hpm_num }}.UINH`<%- end -%> is set and the current privilege level is U
+        <%- end -%>
+        <%- if ext?(:H) -%>
+        * `mhpmevent{{ hpm_num }}.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent{{ hpm_num }}.VSINH`<%- end -%> is set and the current privilege level is VS
+        * `mhpmevent{{ hpm_num }}.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent{{ hpm_num }}.VUINH`<%- end -%> is set and the current privilege level is VU
+        <%- end -%>
+        <%- end -%>
       --
 
-      [when="HPM_COUNTER_EN[<%= hpm_num %>] == false"]
+      [when="HPM_COUNTER_EN[{{ hpm_num }}] == false"]
       Unimplemented performance counter. Must be read-only 0 (access does not cause trap).
 
     type(): |
-      return (HPM_COUNTER_EN[<%= hpm_num %>]) ? CsrFieldType::RWH : CsrFieldType::RO;
+      return (HPM_COUNTER_EN[{{ hpm_num }}]) ? CsrFieldType::RWH : CsrFieldType::RO;
     reset_value(): |
-      return (HPM_COUNTER_EN[<%= hpm_num %>]) ? UNDEFINED_LEGAL : 0;
+      return (HPM_COUNTER_EN[{{ hpm_num }}]) ? UNDEFINED_LEGAL : 0;
 sw_read(): |
-  if (HPM_COUNTER_EN[<%= hpm_num %>]) {
-    return read_hpm_counter(<%= hpm_num %>);
+  if (HPM_COUNTER_EN[{{ hpm_num }}]) {
+    return read_hpm_counter({{ hpm_num }});
   } else {
     return 0;
   }

@@ -20,6 +20,14 @@ class SerializationError(DataError):
     """UDB data cannot be serialized deterministically or portably."""
 
 
+class AuthoringError(UdbError):
+    """Generated output ownership or filesystem safety is invalid."""
+
+
+class LayoutError(UdbError):
+    """A source layout cannot be rendered or written safely."""
+
+
 class UnknownKindError(UdbError, KeyError):
     """The requested object kind is not present in the database."""
 

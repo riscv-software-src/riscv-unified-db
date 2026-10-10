@@ -382,6 +382,16 @@ jobs:
       - name: Compare Python and Ruby YAML resolution on the standard database
         run: UDB_TEST_RUBY=1 uv run --locked python -m pytest tests/python/test_resolution_parity.py
 
+  regress-python-layout-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Check layout-derived architecture files
+        run: uv run --locked udb generate-layouts --root . --check
+
   regress-python-unit:
     runs-on: ubuntu-latest
     steps:
@@ -1063,6 +1073,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - regress-python-resolution-parity
+      - regress-python-layout-drift
       - regress-python-unit
       - regress-scripts-unit
       - regress-idlc-unit
