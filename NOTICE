@@ -1,0 +1,12 @@
+SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
+SPDX-License-Identifier: BSD-3-Clause-Clear
+
+RISC-V Unified Database Python distribution
+
+The files installed under udb/_data/isa are copied from spec/std/isa and retain
+their source copyright and SPDX license notices.
+
+The files installed under udb/_data/schemas are copied from spec/schemas. The
+REUSE.toml shipped with this distribution records their repository-level
+copyright and BSD-3-Clause-Clear license annotations, including the additional
+Synopsys, Inc. attribution for prm_schema.json.
