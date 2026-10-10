@@ -9,7 +9,7 @@ name: PMP_TOR_SUPPORTED
 description: |
   Whether or not the Top-of-Range (TOR) PMP address matching mode is supported.
 
-long_name: PMP TOR mode supported
+long_name: Support for TOR PMP Mode
 schema:
   type: boolean
 definedBy:

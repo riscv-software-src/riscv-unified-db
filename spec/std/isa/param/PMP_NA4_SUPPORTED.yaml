@@ -10,7 +10,7 @@ description: |
   Whether or not the Naturally Aligned four-byte (NA4) PMP address matching
   mode is supported.
 
-long_name: PMP NA4 mode supported
+long_name: Support for NA4 PMP Mode
 schema:
   type: boolean
 definedBy:
