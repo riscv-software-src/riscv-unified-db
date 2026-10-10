@@ -1,0 +1,12 @@
+cases:
+  - name: integer-r-add
+    cfg: rv64
+    extension: I
+    instruction: add
+    expected: integer/add.expected.json
+
+  - name: integer-i-addi
+    cfg: rv64
+    extension: I
+    instruction: addi
+    expected: integer/addi.expected.json
