@@ -14,6 +14,7 @@ from .database import (
 )
 from .errors import DataError, ObjectNotFoundError, ResolutionError, UdbError, UnknownKindError
 from .resolver import YamlResolver, merge_patch
+from .schema import SchemaError, SchemaStore
 
 __all__ = [
     "Csr",
@@ -26,6 +27,8 @@ __all__ = [
     "Profile",
     "ResolutionError",
     "ResolvedDatabase",
+    "SchemaError",
+    "SchemaStore",
     "UdbError",
     "UnknownKindError",
     "YamlResolver",
