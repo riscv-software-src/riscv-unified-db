@@ -63,9 +63,20 @@ build_eqntott_with_docker() {
 
     local temp_dir
     temp_dir=$(mktemp -d -t eqntott-build-XXXXXX)
-    trap "rm -rf '$temp_dir'" EXIT
-
     info "Using temporary directory: $temp_dir"
+
+    local container_name=""
+    local image_name=""
+    cleanup() {
+        if [[ -n "$container_name" ]]; then
+            docker rm "$container_name" >/dev/null 2>&1 || true
+        fi
+        if [[ -n "$image_name" ]]; then
+            docker rmi "$image_name" >/dev/null 2>&1 || true
+        fi
+        rm -rf "$temp_dir"
+    }
+    trap cleanup EXIT
 
     # Write Dockerfile - EQNTOTT_COMMIT is baked in at image-build time via ARG
     cat > "$temp_dir/Dockerfile" << 'EOF'
@@ -105,7 +116,7 @@ RUN ./configure CC="/usr/local/musl/bin/musl-gcc" LDFLAGS="-static" && \
 RUN touch /build/BUILD_SUCCESS
 EOF
 
-    local image_name="eqntott-builder-$$"
+    image_name="eqntott-builder-$$"
     info "Building Docker image for $docker_platform..."
     docker build \
         --platform="$docker_platform" \
@@ -115,12 +126,10 @@ EOF
         "$temp_dir" \
         || error "Docker build failed"
 
-    local container_name="eqntott-extract-$$"
+    container_name="eqntott-extract-$$"
     docker create --name "$container_name" "$image_name" || error "Failed to create container"
 
     if ! docker cp "$container_name:/build/BUILD_SUCCESS" "$temp_dir/" 2>/dev/null; then
-        docker rm "$container_name" >/dev/null 2>&1 || true
-        docker rmi "$image_name" >/dev/null 2>&1 || true
         error "eqntott build failed - BUILD_SUCCESS marker not found"
     fi
 
@@ -128,9 +137,6 @@ EOF
     docker cp "$container_name:/build/eqntott/src/eqntott" "$output_dir/eqntott" \
         || error "Failed to extract eqntott binary"
     chmod +x "$output_dir/eqntott"
-
-    docker rm "$container_name" >/dev/null 2>&1 || true
-    docker rmi "$image_name" >/dev/null 2>&1 || true
 
     info "Build completed successfully!"
     info "Binary: $output_dir/eqntott"
