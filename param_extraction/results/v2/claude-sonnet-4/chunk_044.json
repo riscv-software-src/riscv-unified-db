@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_044",
+  "source_file": "scalar-crypto.adoc",
+  "start_line": 1,
+  "end_line": 3452,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The entropy source extension defines the `seed` CSR at address `0x015`.",
+      "line_number": 372,
+      "parameter_name": "SEED_CSR_ADDRESS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The CSR address 0x015 for the seed CSR is a fixed architectural choice. While the text says 'defines', this is specifying where implementers must place this CSR if they implement the Zkr extension."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "A core which implements `Zkn` must implement all of the above extensions.",
+      "line_number": 395,
+      "reason": "This is a fixed requirement ('must implement') that applies to all implementations of Zkn. There is no implementation choice here."
+    },
+    {
+      "excerpt": "This instruction must _always_ be implemented such that its execution latency does not depend on the data being operated on.",
+      "line_number": 456,
+      "reason": "This is a fixed requirement ('must always') for constant-time execution. All implementations must satisfy this - it's not a parameter."
+    },
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1944,
+      "reason": "This describes a fixed encoding constraint, not an implementation choice. The reservation is mandatory for all RV32 implementations."
+    },
+    {
+      "excerpt": "Note that `rnum` must be in the range `0x0..0xA`. The values `0xB..0xF` are reserved.",
+      "line_number": 1006,
+      "reason": "This describes fixed encoding constraints and reserved values, not implementation choices. All implementations must enforce these ranges."
+    },
+    {
+      "excerpt": "This instruction is available only on RV32.",
+      "line_number": 2816,
+      "reason": "This describes which base architectures support the instruction, which is a fixed specification requirement, not an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The entropy source extension defines the `seed` CSR at address `0x015`.\",\n      \"line_number\": 372,\n      \"parameter_name\": \"SEED_CSR_ADDRESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The CSR address 0x015 for the seed CSR is a fixed architectural choice. While the text says 'defines', this is specifying where implementers must place this CSR if they implement the Zkr extension.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"A core which implements `Zkn` must implement all of the above extensions.\",\n      \"line_number\": 395,\n      \"reason\": \"This is a fixed requirement ('must implement') that applies to all implementations of Zkn. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"This instruction must _always_ be implemented such that its execution latency does not depend on the data being operated on.\",\n      \"line_number\": 456,\n      \"reason\": \"This is a fixed requirement ('must always') for constant-time execution. All implementations must satisfy this - it's not a parameter.\"\n    },\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1944,\n      \"reason\": \"This describes a fixed encoding constraint, not an implementation choice. The reservation is mandatory for all RV32 implementations.\"\n    },\n    {\n      \"excerpt\": \"Note that `rnum` must be in the range `0x0..0xA`. The values `0xB..0xF` are reserved.\",\n      \"line_number\": 1006,\n      \"reason\": \"This describes fixed encoding constraints and reserved values, not implementation choices. All implementations must enforce these ranges.\"\n    },\n    {\n      \"excerpt\": \"This instruction is available only on RV32.\",\n      \"line_number\": 2816,\n      \"reason\": \"This describes which base architectures support the instruction, which is a fixed specification requirement, not an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 36972,
+  "output_tokens": 555,
+  "latency_ms": 15664,
+  "timestamp": "2026-05-25T21:13:10.792133+00:00",
+  "error": null,
+  "retry_count": 0
+}

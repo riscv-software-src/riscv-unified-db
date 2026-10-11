@@ -1,0 +1,59 @@
+{
+  "chunk_id": "chunk_071",
+  "source_file": "zicond.adoc",
+  "start_line": 1,
+  "end_line": 187,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in _rs1_ and _rs2_.",
+      "line_number": 49,
+      "parameter_name": "ZKT_EXTENSION_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Zkt extension is implemented is an implementation choice that affects the timing behavior of czero.eqz. The spec says 'if the Zkt extension is implemented', indicating this is optional."
+    },
+    {
+      "excerpt": "Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in _rs1_ and _rs2_.",
+      "line_number": 85,
+      "parameter_name": "ZKT_EXTENSION_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Same parameter as above - whether the Zkt extension is implemented affects the timing behavior of czero.nez. This is the same implementation choice mentioned for both instructions."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "If _rs2_ contains the value zero, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.",
+      "line_number": 43,
+      "reason": "This describes the fixed behavior of the czero.eqz instruction. All implementations must behave this way - it is not a parameter."
+    },
+    {
+      "excerpt": "If _rs2_ contains a nonzero value, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.",
+      "line_number": 79,
+      "reason": "This describes the fixed behavior of the czero.nez instruction. All implementations must behave this way - it is not a parameter."
+    },
+    {
+      "excerpt": "This instruction carries a syntactic dependency from both _rs1_ and _rs2_ to _rd_.",
+      "line_number": 46,
+      "reason": "This is a fixed requirement that applies to all implementations. The syntactic dependency is mandatory, not optional."
+    },
+    {
+      "excerpt": "The Zicond extension defines two R-type instructions that support branchless conditional operations.",
+      "line_number": 4,
+      "reason": "This is a fixed definition of what the extension provides. All implementations of Zicond must provide these two instructions."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in _rs1_ and _rs2_.\",\n      \"line_number\": 49,\n      \"parameter_name\": \"ZKT_EXTENSION_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Zkt extension is implemented is an implementation choice that affects the timing behavior of czero.eqz. The spec says 'if the Zkt extension is implemented', indicating this is optional.\"\n    },\n    {\n      \"excerpt\": \"Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in _rs1_ and _rs2_.\",\n      \"line_number\": 85,\n      \"parameter_name\": \"ZKT_EXTENSION_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Same parameter as above - whether the Zkt extension is implemented affects the timing behavior of czero.nez. This is the same implementation choice mentioned for both instructions.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"If _rs2_ contains the value zero, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.\",\n      \"line_number\": 43,\n      \"reason\": \"This describes the fixed behavior of the czero.eqz instruction. All implementations must behave this way - it is not a parameter.\"\n    },\n    {\n      \"excerpt\": \"If _rs2_ contains a nonzero value, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.\",\n      \"line_number\": 79,\n      \"reason\": \"This describes the fixed behavior of the czero.nez instruction. All implementations must behave this way - it is not a parameter.\"\n    },\n    {\n      \"excerpt\": \"This instruction carries a syntactic dependency from both _rs1_ and _rs2_ to _rd_.\",\n      \"line_number\": 46,\n      \"reason\": \"This is a fixed requirement that applies to all implementations. The syntactic dependency is mandatory, not optional.\"\n    },\n    {\n      \"excerpt\": \"The Zicond extension defines two R-type instructions that support branchless conditional operations.\",\n      \"line_number\": 4,\n      \"reason\": \"This is a fixed definition of what the extension provides. All implementations of Zicond must provide these two instructions.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9382,
+  "output_tokens": 688,
+  "latency_ms": 12534,
+  "timestamp": "2026-05-25T21:24:40.568383+00:00",
+  "error": null,
+  "retry_count": 0
+}

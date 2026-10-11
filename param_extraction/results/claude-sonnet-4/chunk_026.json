@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_026",
+  "source_file": "naming.adoc",
+  "start_line": 1,
+  "end_line": 222,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The ISA naming strings are case insensitive.",
+      "line_number": 16,
+      "reason": "This is a fixed requirement about naming convention, not an implementation choice. All implementations must follow this rule."
+    },
+    {
+      "excerpt": "RISC-V ISA strings begin with either RV32I, RV32E, RV64I, or RV64E, indicating the supported address space size in bits for the base integer ISA.",
+      "line_number": 18,
+      "reason": "This describes the naming format for ISA strings, not an implementation parameter. The choice of which base ISA to implement is covered by other parameters like MXLEN."
+    },
+    {
+      "excerpt": "Standard ISA extensions are given a name consisting of a single letter.",
+      "line_number": 23,
+      "reason": "This is a naming convention rule that all implementations must follow, not an implementation choice."
+    },
+    {
+      "excerpt": "Underscores \"_\" may be used to separate ISA extensions to improve readability and to provide disambiguation",
+      "line_number": 44,
+      "reason": "This describes optional formatting in ISA naming strings for readability, not an architectural implementation parameter."
+    },
+    {
+      "excerpt": "The RISC-V ISA is designed to support a wide variety of implementations with various experimental instruction-set extensions.",
+      "line_number": 8,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The ISA naming strings are case insensitive.\",\n      \"line_number\": 16,\n      \"reason\": \"This is a fixed requirement about naming convention, not an implementation choice. All implementations must follow this rule.\"\n    },\n    {\n      \"excerpt\": \"RISC-V ISA strings begin with either RV32I, RV32E, RV64I, or RV64E, indicating the supported address space size in bits for the base integer ISA.\",\n      \"line_number\": 18,\n      \"reason\": \"This describes the naming format for ISA strings, not an implementation parameter. The choice of which base ISA to implement is covered by other parameters like MXLEN.\"\n    },\n    {\n      \"excerpt\": \"Standard ISA extensions are given a name consisting of a single letter.\",\n      \"line_number\": 23,\n      \"reason\": \"This is a naming convention rule that all implementations must follow, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Underscores \\\"_\\\" may be used to separate ISA extensions to improve readability and to provide disambiguation\",\n      \"line_number\": 44,\n      \"reason\": \"This describes optional formatting in ISA naming strings for readability, not an architectural implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"The RISC-V ISA is designed to support a wide variety of implementations with various experimental instruction-set extensions.\",\n      \"line_number\": 8,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7881,
+  "output_tokens": 409,
+  "latency_ms": 10484,
+  "timestamp": "2026-05-25T20:43:58.348440+00:00",
+  "error": null,
+  "retry_count": 0
+}

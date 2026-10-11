@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_004",
+  "source_file": "bfloat16.adoc",
+  "start_line": 1,
+  "end_line": 790,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "All of the BF16 instructions in the extensions defined in this specification (i.e., Zfbfmin, Zvfbfmin, and Zvfbfwma) fully support subnormal numbers. That is, instructions are able to accept subnormal values as inputs and they can produce subnormal results.",
+      "line_number": 139,
+      "parameter_name": "BF16_SUBNORMAL_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The specification explicitly states that BF16 instructions fully support subnormal numbers, but the NOTE indicates future extensions may choose not to support them, making this an implementation choice."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Future floating-point extensions, including those that operate on BF16 values, may chose not to support subnormal numbers. The comments about supporting subnormal BF16 values are limited to those instructions defined in this specification.",
+      "line_number": 144,
+      "reason": "This is inside a [NOTE] block, which is non-normative and therefore not a parameter definition."
+    },
+    {
+      "excerpt": "For BF16 these values are: radix (b) 2, significand (p) 8, emax 127",
+      "line_number": 105,
+      "reason": "These are fixed format parameters that define what BF16 is, not implementation choices. All BF16 implementations must use these exact values."
+    },
+    {
+      "excerpt": "This extension depends upon the single-precision floating-point extension `F`.",
+      "line_number": 244,
+      "reason": "This is a fixed dependency requirement, not an implementation choice. All implementations of this extension must satisfy this dependency."
+    },
+    {
+      "excerpt": "SEW is any value other than 16",
+      "line_number": 549,
+      "reason": "This describes a reserved encoding constraint, not an implementation parameter. It's a fixed rule about what values are not allowed."
+    },
+    {
+      "excerpt": "Narrowing convert FP32 value to a BF16 value. Round according to the RM field.",
+      "line_number": 456,
+      "reason": "This describes the operation behavior, not an implementation choice. The rounding is controlled by the RM field value at runtime, not by an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"All of the BF16 instructions in the extensions defined in this specification (i.e., Zfbfmin, Zvfbfmin, and Zvfbfwma) fully support subnormal numbers. That is, instructions are able to accept subnormal values as inputs and they can produce subnormal results.\",\n      \"line_number\": 139,\n      \"parameter_name\": \"BF16_SUBNORMAL_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The specification explicitly states that BF16 instructions fully support subnormal numbers, but the NOTE indicates future extensions may choose not to support them, making this an implementation choice.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Future floating-point extensions, including those that operate on BF16 values, may chose not to support subnormal numbers. The comments about supporting subnormal BF16 values are limited to those instructions defined in this specification.\",\n      \"line_number\": 144,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative and therefore not a parameter definition.\"\n    },\n    {\n      \"excerpt\": \"For BF16 these values are: radix (b) 2, significand (p) 8, emax 127\",\n      \"line_number\": 105,\n      \"reason\": \"These are fixed format parameters that define what BF16 is, not implementation choices. All BF16 implementations must use these exact values.\"\n    },\n    {\n      \"excerpt\": \"This extension depends upon the single-precision floating-point extension `F`.\",\n      \"line_number\": 244,\n      \"reason\": \"This is a fixed dependency requirement, not an implementation choice. All implementations of this extension must satisfy this dependency.\"\n    },\n    {\n      \"excerpt\": \"SEW is any value other than 16\",\n      \"line_number\": 549,\n      \"reason\": \"This describes a reserved encoding constraint, not an implementation parameter. It's a fixed rule about what values are not allowed.\"\n    },\n    {\n      \"excerpt\": \"Narrowing convert FP32 value to a BF16 value. Round according to the RM field.\",\n      \"line_number\": 456,\n      \"reason\": \"This describes the operation behavior, not an implementation choice. The rounding is controlled by the RM field value at runtime, not by an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 13951,
+  "output_tokens": 632,
+  "latency_ms": 15626,
+  "timestamp": "2026-05-25T20:40:06.863477+00:00",
+  "error": null,
+  "retry_count": 0
+}

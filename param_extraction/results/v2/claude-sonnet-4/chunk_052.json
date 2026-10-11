@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_052",
+  "source_file": "sscofpmf.adoc",
+  "start_line": 1,
+  "end_line": 129,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "For each ``x``INH bit, if the associated privilege mode is not implemented, the bit is read-only zero.",
+      "line_number": 48,
+      "parameter_name": "MHPMEVENT_INH_BITS_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "Which xINH bits in mhpmevent are writable depends on which privilege modes are implemented. Unimplemented modes have read-only-zero bits. This controls the RW nature of specific bits in the WARL register."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The OF bit is set when the corresponding hpmcounter overflows, and remains set until written by software.",
+      "line_number": 54,
+      "reason": "This describes the behavior of the OF bit, not an implementation choice. The behavior is fixed by the specification."
+    },
+    {
+      "excerpt": "Since hpmcounter values are unsigned values, overflow is defined as unsigned overflow of the implemented counter bits.",
+      "line_number": 55,
+      "reason": "This defines what overflow means - it's a fixed definition, not an implementation parameter."
+    },
+    {
+      "excerpt": "If an hpmcounter overflows while the associated OF bit is zero, then a \"count overflow interrupt request\" is generated.",
+      "line_number": 61,
+      "reason": "This describes the fixed behavior when overflow occurs with OF=0. The behavior is deterministic, not implementation-defined."
+    },
+    {
+      "excerpt": "This count-overflow-interrupt-request signal is treated as a standard local interrupt that corresponds to bit 13 in the `mip`/`mie`/`sip`/`sie` registers.",
+      "line_number": 69,
+      "reason": "This assigns a fixed bit position (13) for the interrupt. It's a specification requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "Read access to bit _X_ is subject to the same mcounteren (or mcounteren and hcounteren) CSRs that mediate access to the hpmcounter CSRs by S-mode (or VS-mode).",
+      "line_number": 115,
+      "reason": "This describes how access control works based on existing CSR values. The access control mechanism is fixed, not implementation-defined."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"For each ``x``INH bit, if the associated privilege mode is not implemented, the bit is read-only zero.\",\n      \"line_number\": 48,\n      \"parameter_name\": \"MHPMEVENT_INH_BITS_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Which xINH bits in mhpmevent are writable depends on which privilege modes are implemented. Unimplemented modes have read-only-zero bits. This controls the RW nature of specific bits in the WARL register.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The OF bit is set when the corresponding hpmcounter overflows, and remains set until written by software.\",\n      \"line_number\": 54,\n      \"reason\": \"This describes the behavior of the OF bit, not an implementation choice. The behavior is fixed by the specification.\"\n    },\n    {\n      \"excerpt\": \"Since hpmcounter values are unsigned values, overflow is defined as unsigned overflow of the implemented counter bits.\",\n      \"line_number\": 55,\n      \"reason\": \"This defines what overflow means - it's a fixed definition, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"If an hpmcounter overflows while the associated OF bit is zero, then a \\\"count overflow interrupt request\\\" is generated.\",\n      \"line_number\": 61,\n      \"reason\": \"This describes the fixed behavior when overflow occurs with OF=0. The behavior is deterministic, not implementation-defined.\"\n    },\n    {\n      \"excerpt\": \"This count-overflow-interrupt-request signal is treated as a standard local interrupt that corresponds to bit 13 in the `mip`/`mie`/`sip`/`sie` registers.\",\n      \"line_number\": 69,\n      \"reason\": \"This assigns a fixed bit position (13) for the interrupt. It's a specification requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Read access to bit _X_ is subject to the same mcounteren (or mcounteren and hcounteren) CSRs that mediate access to the hpmcounter CSRs by S-mode (or VS-mode).\",\n      \"line_number\": 115,\n      \"reason\": \"This describes how access control works based on existing CSR values. The access control mechanism is fixed, not implementation-defined.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9296,
+  "output_tokens": 633,
+  "latency_ms": 13409,
+  "timestamp": "2026-05-25T21:16:29.091939+00:00",
+  "error": null,
+  "retry_count": 0
+}

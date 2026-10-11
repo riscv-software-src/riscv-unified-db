@@ -1,0 +1,104 @@
+{
+  "chunk_id": "chunk_027",
+  "source_file": "priv-cfi.adoc",
+  "start_line": 1,
+  "end_line": 373,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.",
+      "line_number": 82,
+      "parameter_name": "REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The spec mentions software-check exceptions with mtval set to 'landing pad fault (code=2)' but doesn't explicitly state whether mtval reporting is implementation-defined. However, this follows the pattern of other tval reporting parameters."
+    },
+    {
+      "excerpt": "When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.",
+      "line_number": 82,
+      "parameter_name": "REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Similar to mtval, stval reporting for landing pad software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters."
+    },
+    {
+      "excerpt": "When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.",
+      "line_number": 82,
+      "parameter_name": "REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Similar to mtval and stval, vstval reporting for landing pad software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters."
+    },
+    {
+      "excerpt": "If a shadow stack (SS) instruction raises an access-fault, page-fault, or guest-page-fault exception that is supposed to indicate the original instruction type (load or store/AMO), then the reported exception cause is respectively a store/AMO access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page fault (code 23).",
+      "line_number": 268,
+      "parameter_name": "REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "While the spec defines the exception codes for shadow stack faults, it doesn't explicitly state whether mtval reporting is implementation-defined. However, this follows the pattern of other tval reporting parameters for specific exception types."
+    },
+    {
+      "excerpt": "If a shadow stack (SS) instruction raises an access-fault, page-fault, or guest-page-fault exception that is supposed to indicate the original instruction type (load or store/AMO), then the reported exception cause is respectively a store/AMO access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page fault (code 23).",
+      "line_number": 268,
+      "parameter_name": "REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Similar to mtval, stval reporting for shadow stack software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters."
+    },
+    {
+      "excerpt": "If a shadow stack (SS) instruction raises an access-fault, page-fault, or guest-page-fault exception that is supposed to indicate the original instruction type (load or store/AMO), then the reported exception cause is respectively a store/AMO access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page fault (code 23).",
+      "line_number": 268,
+      "parameter_name": "REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Similar to mtval and stval, vstval reporting for shadow stack software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The Zicfilp must be explicitly enabled for use at each privilege mode.",
+      "line_number": 44,
+      "reason": "This is inside a [NOTE] block, which is non-normative. Parameters are not extracted from NOTE blocks."
+    },
+    {
+      "excerpt": "When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.",
+      "line_number": 0,
+      "reason": "This describes behavior when a CSR field has a specific value, not an implementation choice. The parameter would be which MODE values are supported, not this behavioral description."
+    },
+    {
+      "excerpt": "The software-check exception caused by Zicfilp has higher priority than an illegal-instruction exception but lower priority than instruction access-fault.",
+      "line_number": 64,
+      "reason": "This is a fixed requirement that defines exception priority ordering. All implementations must follow this priority, so it is not a parameter."
+    },
+    {
+      "excerpt": "The encoding `R=0`, `W=1`, and `X=0`, is defined to represent an SS page.",
+      "line_number": 178,
+      "reason": "This defines a fixed encoding that all implementations must use. It is not an implementation choice but a specification requirement."
+    },
+    {
+      "excerpt": "When `menvcfg.SSE=0`, this encoding remains reserved.",
+      "line_number": 179,
+      "reason": "This describes behavior when a CSR field has a specific value (SSE=0). The behavior is determined by the CSR field value at runtime, not by an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The spec mentions software-check exceptions with mtval set to 'landing pad fault (code=2)' but doesn't explicitly state whether mtval reporting is implementation-defined. However, this follows the pattern of other tval reporting parameters.\"\n    },\n    {\n      \"excerpt\": \"When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Similar to mtval, stval reporting for landing pad software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters.\"\n    },\n    {\n      \"excerpt\": \"When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Similar to mtval and stval, vstval reporting for landing pad software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters.\"\n    },\n    {\n      \"excerpt\": \"If a shadow stack (SS) instruction raises an access-fault, page-fault, or guest-page-fault exception that is supposed to indicate the original instruction type (load or store/AMO), then the reported exception cause is respectively a store/AMO access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page fault (code 23).\",\n      \"line_number\": 268,\n      \"parameter_name\": \"REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"While the spec defines the exception codes for shadow stack faults, it doesn't explicitly state whether mtval reporting is implementation-defined. However, this follows the pattern of other tval reporting parameters for specific exception types.\"\n    },\n    {\n      \"excerpt\": \"If a shadow stack (SS) instruction raises an access-fault, page-fault, or guest-page-fault exception that is supposed to indicate the original instruction type (load or store/AMO), then the reported exception cause is respectively a store/AMO access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page fault (code 23).\",\n      \"line_number\": 268,\n      \"parameter_name\": \"REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Similar to mtval, stval reporting for shadow stack software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters.\"\n    },\n    {\n      \"excerpt\": \"If a shadow stack (SS) instruction raises an access-fault, page-fault, or guest-page-fault exception that is supposed to indicate the original instruction type (load or store/AMO), then the reported exception cause is respectively a store/AMO access fault (code 7), a store/AMO page fault (code 15), or a store/AMO guest-page fault (code 23).\",\n      \"line_number\": 268,\n      \"parameter_name\": \"REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Similar to mtval and stval, vstval reporting for shadow stack software-check exceptions is likely implementation-defined, following the pattern of other tval reporting parameters.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The Zicfilp must be explicitly enabled for use at each privilege mode.\",\n      \"line_number\": 44,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative. Parameters are not extracted from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.\",\n      \"line_number\": 0,\n      \"reason\": \"This describes behavior when a CSR field has a specific value, not an implementation choice. The parameter would be which MODE values are supported, not this behavioral description.\"\n    },\n    {\n      \"excerpt\": \"The software-check exception caused by Zicfilp has higher priority than an illegal-instruction exception but lower priority than instruction access-fault.\",\n      \"line_number\": 64,\n      \"reason\": \"This is a fixed requirement that defines exception priority ordering. All implementations must follow this priority, so it is not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The encoding `R=0`, `W=1`, and `X=0`, is defined to represent an SS page.\",\n      \"line_number\": 178,\n      \"reason\": \"This defines a fixed encoding that all implementations must use. It is not an implementation choice but a specification requirement.\"\n    },\n    {\n      \"excerpt\": \"When `menvcfg.SSE=0`, this encoding remains reserved.\",\n      \"line_number\": 179,\n      \"reason\": \"This describes behavior when a CSR field has a specific value (SSE=0). The behavior is determined by the CSR field value at runtime, not by an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 12738,
+  "output_tokens": 1805,
+  "latency_ms": 28210,
+  "timestamp": "2026-05-25T21:10:20.477622+00:00",
+  "error": null,
+  "retry_count": 0
+}

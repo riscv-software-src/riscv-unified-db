@@ -1,0 +1,74 @@
+{
+  "chunk_id": "chunk_013",
+  "source_file": "f-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 524,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The behavior of floating-point instructions that depend on rounding mode when executed with a reserved rounding mode is _reserved_, including both static reserved rounding modes (101-110) and dynamic reserved rounding modes (101-111).",
+      "line_number": 119,
+      "parameter_name": "TRAP_ON_RESERVED_ROUNDING_MODE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The behavior when encountering reserved rounding modes is implementation-defined ('reserved'). The implementation can choose to trap, ignore, or handle it in other ways."
+    },
+    {
+      "excerpt": "Except when otherwise stated, if the result of a floating-point operation is NaN, it is the canonical NaN.",
+      "line_number": 158,
+      "parameter_name": "F_CANONICAL_NAN",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The spec states this is the required behavior 'except when otherwise stated', implying implementations could choose different NaN generation schemes in specific cases. The canonical NaN pattern is specified but the choice to use it is implementation-defined."
+    },
+    {
+      "excerpt": "As described in <<ldst>>, the execution environment defines whether misaligned floating-point loads and stores are handled invisibly or raise a contained or fatal trap.",
+      "line_number": 226,
+      "parameter_name": "MISALIGNED_FP_LDST",
+      "existing_udb_name": "MISALIGNED_LDST",
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The execution environment (implementation) defines how misaligned floating-point loads/stores are handled - invisibly, contained trap, or fatal trap. This is a direct implementation choice."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The F extension adds 32 floating-point registers, `f0-f31`, each 32 bits wide",
+      "line_number": 11,
+      "reason": "This is a fixed requirement of the F extension - all implementations must provide exactly 32 floating-point registers of 32 bits each. No implementation choice."
+    },
+    {
+      "excerpt": "The floating-point control and status register, `fcsr`, is a RISC-V control and status register (CSR). It is a 32-bit read/write register",
+      "line_number": 75,
+      "reason": "This describes the fixed structure and size of the fcsr register, which is mandatory for all F extension implementations. No implementation choice."
+    },
+    {
+      "excerpt": "FADD.S and FMUL.S perform single-precision floating-point addition and multiplication respectively, between _rs1_ and _rs2_",
+      "line_number": 234,
+      "reason": "This describes the fixed behavior of specific instructions. All implementations must implement these operations identically. No implementation choice."
+    },
+    {
+      "excerpt": "For the purposes of these instructions only, the value \u22120.0 is considered to be less than the value +0.0",
+      "line_number": 252,
+      "reason": "This is a fixed requirement for FMIN.S/FMAX.S instructions. All implementations must handle signed zero comparison this way. No implementation choice."
+    },
+    {
+      "excerpt": "We considered propagating NaN payloads, as is recommended by the standard, but this decision would have increased hardware cost.",
+      "line_number": 164,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It explains design rationale but does not define implementation requirements."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The behavior of floating-point instructions that depend on rounding mode when executed with a reserved rounding mode is _reserved_, including both static reserved rounding modes (101-110) and dynamic reserved rounding modes (101-111).\",\n      \"line_number\": 119,\n      \"parameter_name\": \"TRAP_ON_RESERVED_ROUNDING_MODE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The behavior when encountering reserved rounding modes is implementation-defined ('reserved'). The implementation can choose to trap, ignore, or handle it in other ways.\"\n    },\n    {\n      \"excerpt\": \"Except when otherwise stated, if the result of a floating-point operation is NaN, it is the canonical NaN.\",\n      \"line_number\": 158,\n      \"parameter_name\": \"F_CANONICAL_NAN\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The spec states this is the required behavior 'except when otherwise stated', implying implementations could choose different NaN generation schemes in specific cases. The canonical NaN pattern is specified but the choice to use it is implementation-defined.\"\n    },\n    {\n      \"excerpt\": \"As described in <<ldst>>, the execution environment defines whether misaligned floating-point loads and stores are handled invisibly or raise a contained or fatal trap.\",\n      \"line_number\": 226,\n      \"parameter_name\": \"MISALIGNED_FP_LDST\",\n      \"existing_udb_name\": \"MISALIGNED_LDST\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The execution environment (implementation) defines how misaligned floating-point loads/stores are handled - invisibly, contained trap, or fatal trap. This is a direct implementation choice.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The F extension adds 32 floating-point registers, `f0-f31`, each 32 bits wide\",\n      \"line_number\": 11,\n      \"reason\": \"This is a fixed requirement of the F extension - all implementations must provide exactly 32 floating-point registers of 32 bits each. No implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The floating-point control and status register, `fcsr`, is a RISC-V control and status register (CSR). It is a 32-bit read/write register\",\n      \"line_number\": 75,\n      \"reason\": \"This describes the fixed structure and size of the fcsr register, which is mandatory for all F extension implementations. No implementation choice.\"\n    },\n    {\n      \"excerpt\": \"FADD.S and FMUL.S perform single-precision floating-point addition and multiplication respectively, between _rs1_ and _rs2_\",\n      \"line_number\": 234,\n      \"reason\": \"This describes the fixed behavior of specific instructions. All implementations must implement these operations identically. No implementation choice.\"\n    },\n    {\n      \"excerpt\": \"For the purposes of these instructions only, the value \u22120.0 is considered to be less than the value +0.0\",\n      \"line_number\": 252,\n      \"reason\": \"This is a fixed requirement for FMIN.S/FMAX.S instructions. All implementations must handle signed zero comparison this way. No implementation choice.\"\n    },\n    {\n      \"excerpt\": \"We considered propagating NaN payloads, as is recommended by the standard, but this decision would have increased hardware cost.\",\n      \"line_number\": 164,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It explains design rationale but does not define implementation requirements.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 14986,
+  "output_tokens": 974,
+  "latency_ms": 22259,
+  "timestamp": "2026-05-25T21:03:19.643800+00:00",
+  "error": null,
+  "retry_count": 0
+}

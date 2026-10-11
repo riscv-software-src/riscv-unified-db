@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_013",
+  "source_file": "f-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 524,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The behavior of floating-point instructions that depend on rounding mode when executed with a reserved rounding mode is _reserved_, including both static reserved rounding modes (101-110) and dynamic reserved rounding modes (101-111).",
+      "line_number": 119,
+      "parameter_name": "RESERVED_ROUNDING_MODE_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "The behavior when encountering reserved rounding modes is implementation-defined ('reserved' means implementation-defined behavior). Implementations can choose to trap, ignore, or handle these cases differently."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The F extension adds 32 floating-point registers, `f0-f31`, each 32 bits wide",
+      "line_number": 13,
+      "reason": "This is a fixed requirement of the F extension - all implementations must provide exactly 32 floating-point registers of 32 bits each. No implementation choice."
+    },
+    {
+      "excerpt": "We use the term FLEN to describe the width of the floating-point registers in the RISC-V ISA, and FLEN=32 for the F single-precision floating-point extension.",
+      "line_number": 17,
+      "reason": "FLEN=32 is a fixed constant for the F extension, not a parameter. The general concept of FLEN as a parameter applies to other extensions but is fixed here."
+    },
+    {
+      "excerpt": "The floating-point control and status register, `fcsr`, is a RISC-V control and status register (CSR). It is a 32-bit read/write register",
+      "line_number": 75,
+      "reason": "This describes the fixed structure of the fcsr register - it must be 32 bits and read/write. No implementation choice is provided."
+    },
+    {
+      "excerpt": "If these extensions are not present, implementations shall ignore writes to these bits and supply a zero value when read.",
+      "line_number": 103,
+      "reason": "This is a fixed requirement ('shall ignore writes') that applies to all implementations when certain extensions are not present. No choice is given."
+    },
+    {
+      "excerpt": "The canonical NaN has a positive sign and all significand bits clear except the MSB, a.k.a. the quiet bit. For single-precision floating-point, this corresponds to the pattern `0x7fc00000`.",
+      "line_number": 158,
+      "reason": "This defines the fixed format of the canonical NaN - all implementations must use this specific bit pattern. No implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The behavior of floating-point instructions that depend on rounding mode when executed with a reserved rounding mode is _reserved_, including both static reserved rounding modes (101-110) and dynamic reserved rounding modes (101-111).\",\n      \"line_number\": 119,\n      \"parameter_name\": \"RESERVED_ROUNDING_MODE_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The behavior when encountering reserved rounding modes is implementation-defined ('reserved' means implementation-defined behavior). Implementations can choose to trap, ignore, or handle these cases differently.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The F extension adds 32 floating-point registers, `f0-f31`, each 32 bits wide\",\n      \"line_number\": 13,\n      \"reason\": \"This is a fixed requirement of the F extension - all implementations must provide exactly 32 floating-point registers of 32 bits each. No implementation choice.\"\n    },\n    {\n      \"excerpt\": \"We use the term FLEN to describe the width of the floating-point registers in the RISC-V ISA, and FLEN=32 for the F single-precision floating-point extension.\",\n      \"line_number\": 17,\n      \"reason\": \"FLEN=32 is a fixed constant for the F extension, not a parameter. The general concept of FLEN as a parameter applies to other extensions but is fixed here.\"\n    },\n    {\n      \"excerpt\": \"The floating-point control and status register, `fcsr`, is a RISC-V control and status register (CSR). It is a 32-bit read/write register\",\n      \"line_number\": 75,\n      \"reason\": \"This describes the fixed structure of the fcsr register - it must be 32 bits and read/write. No implementation choice is provided.\"\n    },\n    {\n      \"excerpt\": \"If these extensions are not present, implementations shall ignore writes to these bits and supply a zero value when read.\",\n      \"line_number\": 103,\n      \"reason\": \"This is a fixed requirement ('shall ignore writes') that applies to all implementations when certain extensions are not present. No choice is given.\"\n    },\n    {\n      \"excerpt\": \"The canonical NaN has a positive sign and all significand bits clear except the MSB, a.k.a. the quiet bit. For single-precision floating-point, this corresponds to the pattern `0x7fc00000`.\",\n      \"line_number\": 158,\n      \"reason\": \"This defines the fixed format of the canonical NaN - all implementations must use this specific bit pattern. No implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 13127,
+  "output_tokens": 685,
+  "latency_ms": 16188,
+  "timestamp": "2026-05-25T20:41:51.010796+00:00",
+  "error": null,
+  "retry_count": 0
+}

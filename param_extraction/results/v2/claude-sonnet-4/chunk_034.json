@@ -1,0 +1,49 @@
+{
+  "chunk_id": "chunk_034",
+  "source_file": "q-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 120,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The floating-point registers are now extended to hold either a single, double, or quad-precision floating-point value (FLEN=128).",
+      "line_number": 7,
+      "parameter_name": "FLEN",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "FLEN=128 is a direct implementation parameter that defines the width of floating-point registers when the Q extension is implemented. This is a design-time choice that affects the register file architecture."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "FLQ and FSQ are only guaranteed to execute atomically if the effective address is naturally aligned and XLEN=128.",
+      "line_number": 23,
+      "reason": "This describes a conditional guarantee about atomic execution based on alignment and XLEN value. It is a behavioral specification, not an implementation choice."
+    },
+    {
+      "excerpt": "FLQ and FSQ do not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.",
+      "line_number": 26,
+      "reason": "This is a fixed requirement that all implementations must satisfy. There is no implementation choice - all implementations must preserve NaN payloads."
+    },
+    {
+      "excerpt": "FCVT.L[U].Q and FCVT.Q.L[U] are RV64-only instructions.",
+      "line_number": 60,
+      "reason": "This states which instructions are available in RV64 vs RV32. It is a fixed architectural rule based on the base ISA, not an implementation parameter."
+    },
+    {
+      "excerpt": "FMV.X.Q and FMV.Q.X instructions are not provided in RV32 or RV64, so quad-precision bit patterns must be moved to the integer registers via memory.",
+      "line_number": 82,
+      "reason": "This states that certain instructions are not provided in any current base ISA. It is a fixed architectural limitation, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The floating-point registers are now extended to hold either a single, double, or quad-precision floating-point value (FLEN=128).\",\n      \"line_number\": 7,\n      \"parameter_name\": \"FLEN\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"FLEN=128 is a direct implementation parameter that defines the width of floating-point registers when the Q extension is implemented. This is a design-time choice that affects the register file architecture.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"FLQ and FSQ are only guaranteed to execute atomically if the effective address is naturally aligned and XLEN=128.\",\n      \"line_number\": 23,\n      \"reason\": \"This describes a conditional guarantee about atomic execution based on alignment and XLEN value. It is a behavioral specification, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"FLQ and FSQ do not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.\",\n      \"line_number\": 26,\n      \"reason\": \"This is a fixed requirement that all implementations must satisfy. There is no implementation choice - all implementations must preserve NaN payloads.\"\n    },\n    {\n      \"excerpt\": \"FCVT.L[U].Q and FCVT.Q.L[U] are RV64-only instructions.\",\n      \"line_number\": 60,\n      \"reason\": \"This states which instructions are available in RV64 vs RV32. It is a fixed architectural rule based on the base ISA, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"FMV.X.Q and FMV.Q.X instructions are not provided in RV32 or RV64, so quad-precision bit patterns must be moved to the integer registers via memory.\",\n      \"line_number\": 82,\n      \"reason\": \"This states that certain instructions are not provided in any current base ISA. It is a fixed architectural limitation, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9086,
+  "output_tokens": 550,
+  "latency_ms": 13033,
+  "timestamp": "2026-05-25T21:11:07.671769+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,59 @@
+{
+  "chunk_id": "chunk_031",
+  "source_file": "priv-intro.adoc",
+  "start_line": 1,
+  "end_line": 217,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Implementations might provide anywhere from 1 to 3 privilege modes",
+      "line_number": 134,
+      "parameter_name": "NUM_PRIVILEGE_MODES",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "range",
+      "confidence": "high",
+      "reasoning": "The number of privilege modes (1, 2, or 3) is a direct implementation choice that determines the protection model. This is not controlled by any CSR field but is a fundamental architectural decision."
+    },
+    {
+      "excerpt": "Implementations may also include a debug mode to support off-chip debugging and/or manufacturing test.",
+      "line_number": 185,
+      "parameter_name": "DEBUG_MODE_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether debug mode is implemented is optional ('may also include'). This is a binary choice about whether the implementation supports debug mode as an additional privilege level."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Three RISC-V privilege levels are currently defined",
+      "line_number": 89,
+      "reason": "This describes the fixed specification of privilege levels, not an implementation choice. All implementations use the same encoding table."
+    },
+    {
+      "excerpt": "All hardware implementations must provide M-mode",
+      "line_number": 145,
+      "reason": "This is a fixed requirement ('must provide') that applies to all implementations, not an optional parameter."
+    },
+    {
+      "excerpt": "attempts to perform operations not permitted by the current privilege mode will cause an exception to be raised",
+      "line_number": 100,
+      "reason": "This describes mandatory behavior that all implementations must follow, not an implementation choice."
+    },
+    {
+      "excerpt": "The machine level has the highest privileges and is the only mandatory privilege level for a RISC-V hardware platform.",
+      "line_number": 118,
+      "reason": "This states a fixed architectural requirement about M-mode being mandatory, not an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Implementations might provide anywhere from 1 to 3 privilege modes\",\n      \"line_number\": 134,\n      \"parameter_name\": \"NUM_PRIVILEGE_MODES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"range\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The number of privilege modes (1, 2, or 3) is a direct implementation choice that determines the protection model. This is not controlled by any CSR field but is a fundamental architectural decision.\"\n    },\n    {\n      \"excerpt\": \"Implementations may also include a debug mode to support off-chip debugging and/or manufacturing test.\",\n      \"line_number\": 185,\n      \"parameter_name\": \"DEBUG_MODE_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether debug mode is implemented is optional ('may also include'). This is a binary choice about whether the implementation supports debug mode as an additional privilege level.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Three RISC-V privilege levels are currently defined\",\n      \"line_number\": 89,\n      \"reason\": \"This describes the fixed specification of privilege levels, not an implementation choice. All implementations use the same encoding table.\"\n    },\n    {\n      \"excerpt\": \"All hardware implementations must provide M-mode\",\n      \"line_number\": 145,\n      \"reason\": \"This is a fixed requirement ('must provide') that applies to all implementations, not an optional parameter.\"\n    },\n    {\n      \"excerpt\": \"attempts to perform operations not permitted by the current privilege mode will cause an exception to be raised\",\n      \"line_number\": 100,\n      \"reason\": \"This describes mandatory behavior that all implementations must follow, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The machine level has the highest privileges and is the only mandatory privilege level for a RISC-V hardware platform.\",\n      \"line_number\": 118,\n      \"reason\": \"This states a fixed architectural requirement about M-mode being mandatory, not an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9692,
+  "output_tokens": 565,
+  "latency_ms": 11129,
+  "timestamp": "2026-05-25T21:10:54.109335+00:00",
+  "error": null,
+  "retry_count": 0
+}

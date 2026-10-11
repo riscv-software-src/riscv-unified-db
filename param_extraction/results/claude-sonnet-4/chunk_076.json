@@ -1,0 +1,64 @@
+{
+  "chunk_id": "chunk_076",
+  "source_file": "zilsd.adoc",
+  "start_line": 1,
+  "end_line": 315,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Even if naturally aligned, the memory access might not be performed atomically.",
+      "line_number": 33,
+      "parameter_name": "ZILSD_8BYTE_ATOMIC",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether 8-byte aligned accesses are performed atomically or not. This is a direct implementation choice not controlled by any CSR field."
+    },
+    {
+      "excerpt": "If the effective address is a multiple of 4, then each word access is required to be performed atomically.",
+      "line_number": 35,
+      "parameter_name": "ZILSD_4BYTE_WORD_ATOMIC",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "While this states a requirement, the implementation must choose how to achieve this atomicity guarantee for 4-byte aligned accesses. The parameter is whether the implementation provides this atomicity through hardware mechanisms."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Operands containing `src` for store instructions and `dest` for load instructions are held in aligned `x`-register pairs, i.e., register numbers must be even.",
+      "line_number": 6,
+      "reason": "This is a fixed requirement that all implementations must follow - register pairs must be even-numbered. There is no implementation choice here."
+    },
+    {
+      "excerpt": "As the access size is 64-bit, accesses are only considered naturally aligned for effective addresses that are a multiple of 8. In this case, these instructions are guaranteed to not raise an address-misaligned exception.",
+      "line_number": 31,
+      "reason": "This describes the fixed definition of natural alignment and exception behavior. All implementations must follow this rule - it's not a parameter."
+    },
+    {
+      "excerpt": "To ensure resumable trap handling is possible for the load instructions, the base register must have its original value if a trap is taken.",
+      "line_number": 45,
+      "reason": "This is a fixed requirement for trap handling that all implementations must satisfy. There is no implementation choice here."
+    },
+    {
+      "excerpt": "For C.LDSP, usage of `x0` as the destination is reserved.",
+      "line_number": 78,
+      "reason": "This describes reserved encoding behavior, which is a fixed specification rule, not an implementation parameter."
+    },
+    {
+      "excerpt": "If an implementation performs a doubleword load access atomically and the register file implements write-back for even/odd register pairs, the mentioned atomicity requirements are inherently fulfilled.",
+      "line_number": 48,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It provides implementation guidance but does not define architectural parameters."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Even if naturally aligned, the memory access might not be performed atomically.\",\n      \"line_number\": 33,\n      \"parameter_name\": \"ZILSD_8BYTE_ATOMIC\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether 8-byte aligned accesses are performed atomically or not. This is a direct implementation choice not controlled by any CSR field.\"\n    },\n    {\n      \"excerpt\": \"If the effective address is a multiple of 4, then each word access is required to be performed atomically.\",\n      \"line_number\": 35,\n      \"parameter_name\": \"ZILSD_4BYTE_WORD_ATOMIC\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"While this states a requirement, the implementation must choose how to achieve this atomicity guarantee for 4-byte aligned accesses. The parameter is whether the implementation provides this atomicity through hardware mechanisms.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Operands containing `src` for store instructions and `dest` for load instructions are held in aligned `x`-register pairs, i.e., register numbers must be even.\",\n      \"line_number\": 6,\n      \"reason\": \"This is a fixed requirement that all implementations must follow - register pairs must be even-numbered. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"As the access size is 64-bit, accesses are only considered naturally aligned for effective addresses that are a multiple of 8. In this case, these instructions are guaranteed to not raise an address-misaligned exception.\",\n      \"line_number\": 31,\n      \"reason\": \"This describes the fixed definition of natural alignment and exception behavior. All implementations must follow this rule - it's not a parameter.\"\n    },\n    {\n      \"excerpt\": \"To ensure resumable trap handling is possible for the load instructions, the base register must have its original value if a trap is taken.\",\n      \"line_number\": 45,\n      \"reason\": \"This is a fixed requirement for trap handling that all implementations must satisfy. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"For C.LDSP, usage of `x0` as the destination is reserved.\",\n      \"line_number\": 78,\n      \"reason\": \"This describes reserved encoding behavior, which is a fixed specification rule, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"If an implementation performs a doubleword load access atomically and the register file implements write-back for even/odd register pairs, the mentioned atomicity requirements are inherently fulfilled.\",\n      \"line_number\": 48,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It provides implementation guidance but does not define architectural parameters.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9209,
+  "output_tokens": 752,
+  "latency_ms": 19480,
+  "timestamp": "2026-05-25T20:58:02.895863+00:00",
+  "error": null,
+  "retry_count": 0
+}

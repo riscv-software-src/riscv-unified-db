@@ -1,0 +1,408 @@
+type,llm_name,udb_name,match_score,llm_class,udb_class,source_file,notes
+NAMING_MISMATCH,TRAP_ON_RESERVED_ROUNDING_MODE,TRAP_ON_RESERVED_INSTRUCTION,0.5,NORM_DIRECT,NORM_DIRECT,f-st-ext.adoc,
+NAMING_MISMATCH,TRAP_ON_UNIMPLEMENTED_HPM_COUNTER,TRAP_ON_UNIMPLEMENTED_CSR,0.5,NORM_DIRECT,NORM_DIRECT,counters.adoc,
+NAMING_MISMATCH,TRAP_ON_UNIMPLEMENTED_HPM_COUNTER,TRAP_ON_UNIMPLEMENTED_INSTRUCTION,0.5,NORM_DIRECT,NORM_DIRECT,counters.adoc,
+CLASS_DISAGREEMENT,FORCE_UPGRADE_CBO_INVAL_TO_FLUSH,FORCE_UPGRADE_CBO_INVAL_TO_FLUSH,1.0,NORM_DIRECT,NORM_CSR_WARL,cmo.adoc,"LLM says NORM_DIRECT, UDB says NORM_CSR_WARL"
+CLASS_DISAGREEMENT,HPM_COUNTER_EN,HPM_COUNTER_EN,1.0,NORM_DIRECT,NORM_CSR_RW,counters.adoc,"LLM says NORM_DIRECT, UDB says NORM_CSR_RW"
+CLASS_DISAGREEMENT,HPM_EVENTS,HPM_EVENTS,1.0,NORM_DIRECT,NORM_CSR_WARL,counters.adoc,"LLM says NORM_DIRECT, UDB says NORM_CSR_WARL"
+CLASS_DISAGREEMENT,JVT_ACCESS,JVT_READ_ONLY,1.0,NORM_CSR_RW,NORM_CSR_WARL,zc.adoc,"LLM says NORM_CSR_RW, UDB says NORM_CSR_WARL"
+CLASS_DISAGREEMENT,MARCHID_IMPLEMENTED,MARCHID_IMPLEMENTED,1.0,NORM_CSR_RW,NORM_DIRECT,machine.adoc,"LLM says NORM_CSR_RW, UDB says NORM_DIRECT"
+CLASS_DISAGREEMENT,MIMPID_IMPLEMENTED,MIMPID_IMPLEMENTED,1.0,NORM_CSR_RW,NORM_DIRECT,machine.adoc,"LLM says NORM_CSR_RW, UDB says NORM_DIRECT"
+CLASS_DISAGREEMENT,MISA_CSR_IMPLEMENTED,MISA_CSR_IMPLEMENTED,1.0,NORM_CSR_RW,NORM_DIRECT,machine.adoc,"LLM says NORM_CSR_RW, UDB says NORM_DIRECT"
+CLASS_DISAGREEMENT,M_MODE_ENDIANNESS,M_MODE_ENDIANNESS,1.0,NORM_CSR_WARL,NORM_CSR_RW,machine.adoc,"LLM says NORM_CSR_WARL, UDB says NORM_CSR_RW"
+CLASS_DISAGREEMENT,SXLEN,SXLEN,1.0,NORM_CSR_WARL,NORM_DIRECT,machine.adoc,"LLM says NORM_CSR_WARL, UDB says NORM_DIRECT"
+CLASS_DISAGREEMENT,UXLEN,UXLEN,1.0,NORM_CSR_WARL,NORM_DIRECT,machine.adoc,"LLM says NORM_CSR_WARL, UDB says NORM_DIRECT"
+UDB_RECALL_MISS_DEBUG,,DBG_HCONTEXT_WIDTH,0.0,,NORM_CSR_WARL,,Specifies the size of HCONTEXT
+UDB_RECALL_MISS_DEBUG,,DBG_SCONTEXT_WIDTH,0.0,,NORM_CSR_WARL,,Specifies the size of SCONTEXT
+UDB_RECALL_MISS_DEBUG,,DCSR_MPRVEN_TYPE,0.0,,NORM_CSR_RW,,"Implementation of dcsr.MPRVEN is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr.MP"
+UDB_RECALL_MISS_DEBUG,,DCSR_STEPIE_TYPE,0.0,,NORM_CSR_RW,,"Implementation of dcsr.STEPIE is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr.ST"
+UDB_RECALL_MISS_DEBUG,,DCSR_STOPCOUNT_TYPE,0.0,,NORM_CSR_RW,,"Implementation of dcsr.STOPCOUNT is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr"
+UDB_RECALL_MISS_DEBUG,,DCSR_STOPTIME_TYPE,0.0,,NORM_CSR_RW,,"Implementation of dcsr.STOPTIME is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr."
+UDB_RECALL_MISS,,FOLLOW_VTYPE_RESET_RECOMMENDATION,0.0,,NORM_DIRECT,,"It is recommended that at reset, vtype.vill is set, the remaining bits in vtype are zero, and vl is "
+UDB_RECALL_MISS_DEBUG,,HCONTEXT_AVAILABLE,0.0,,NORM_DIRECT,,Specifies if HCONTEXT is available
+UDB_RECALL_MISS,,HCOUNTENABLE_EN,0.0,,NORM_CSR_RW,,"Indicates which counters can delegated via `hcounteren`
+
+An unimplemented counter cannot be specifie"
+UDB_RECALL_MISS,,HSTATEEN_JVT_TYPE,0.0,,NORM_CSR_RW,,"Behavior of the hstateen0.JVT bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  "
+UDB_RECALL_MISS,,IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO,0.0,,NORM_CSR_WARL,,"Whether writes from M-mode, U-mode, or S-mode to vsatp with an illegal mode setting are
+ignored (as "
+UDB_RECALL_MISS,,MCID_WIDTH,0.0,,NORM_CSR_WARL,,"Number of bits used for the Monitoring Counter ID field (MCID).
+Default is 12."
+UDB_RECALL_MISS_DEBUG,,MCONTEXT_AVAILABLE,0.0,,NORM_DIRECT,,Specifies if MCONTEXT is available
+UDB_RECALL_MISS,,MISALIGNED_LDST_EXCEPTION_PRIORITY,0.0,,NORM_DIRECT,,"The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
+or access-fault ex"
+UDB_RECALL_MISS,,MSTATUS_TVM_IMPLEMENTED,0.0,,NORM_DIRECT,,"Whether or not mstatus.TVM is implemented.
+
+When not implemented mstatus.TVM will be read-only-zero."
+UDB_RECALL_MISS,,MTVAL_WIDTH,0.0,,NORM_DIRECT,,"The number of implemented bits in the `mtval` CSR.
+This is the CSR that may be written when a trap i"
+UDB_RECALL_MISS,,MTVEC_ILLEGAL_WRITE_BEHAVIOR,0.0,,NORM_CSR_WARL,,"Options:
+
+  retain::
+    When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will retain it"
+UDB_RECALL_MISS,,NUM_EXTERNAL_GUEST_INTERRUPTS,0.0,,NORM_DIRECT,,"Number of supported virtualized guest interrupts
+
+Corresponds to the `GEILEN` parameter in the RVI s"
+UDB_RECALL_MISS,,PHYS_ADDR_WIDTH,0.0,,NORM_DIRECT,,Implementation-defined size of the physical address space.
+UDB_RECALL_MISS,,PMA_GRANULARITY,0.0,,NORM_DIRECT,,"Generally, for systems with an MMU, should not be smaller than 12,
+as that would preclude caching PM"
+UDB_RECALL_MISS,,PRECISE_SYNCHRONOUS_EXCEPTIONS,0.0,,NORM_DIRECT,,"If false, any exception not otherwise mandated to precise (e.g., PMP violation)
+will cause execution"
+UDB_RECALL_MISS,,RCID_WIDTH,0.0,,NORM_CSR_WARL,,"Number of bits used for the Resource Control ID field (RCID).
+Default is 12."
+UDB_RECALL_MISS,,RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX,0.0,,NORM_DIRECT,,The value assigned to VL when AVL < 2*VLMAX.
+UDB_RECALL_MISS,,SCOUNTENABLE_EN,0.0,,NORM_CSR_RW,,"Indicates which counters can delegated via `scounteren`
+
+An unimplemented counter cannot be specifie"
+UDB_RECALL_MISS,,STVAL_WIDTH,0.0,,NORM_DIRECT,,"The number of implemented bits in `stval`.
+
+Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`"
+UDB_RECALL_MISS,,STVEC_MODE_DIRECT,0.0,,NORM_CSR_WARL,,Whether or not `stvec.MODE` supports Direct (0).
+UDB_RECALL_MISS,,STVEC_MODE_VECTORED,0.0,,NORM_CSR_WARL,,Whether or not `stvec.MODE` supports Vectored (1).
+UDB_RECALL_MISS,,SV32X4_TRANSLATION,0.0,,NORM_CSR_WARL,,Whether or not Sv32x4 translation mode is supported.
+UDB_RECALL_MISS,,SV32_VSMODE_TRANSLATION,0.0,,NORM_DIRECT,,"Whether or not Sv32 translation is supported in first-stage (VS-stage)
+translation."
+UDB_RECALL_MISS,,SV39X4_TRANSLATION,0.0,,NORM_CSR_WARL,,Whether or not Sv39x4 translation mode is supported.
+UDB_RECALL_MISS,,SV39_VSMODE_TRANSLATION,0.0,,NORM_DIRECT,,"Whether or not Sv39 translation is supported in first-stage (VS-stage)
+translation."
+UDB_RECALL_MISS,,SV48X4_TRANSLATION,0.0,,NORM_CSR_WARL,,Whether or not Sv48x4 translation mode is supported.
+UDB_RECALL_MISS,,SV48_VSMODE_TRANSLATION,0.0,,NORM_DIRECT,,"Whether or not Sv48 translation is supported in first-stage (VS-stage)
+translation."
+UDB_RECALL_MISS,,SV57X4_TRANSLATION,0.0,,NORM_CSR_WARL,,Whether or not Sv57x4 translation mode is supported.
+UDB_RECALL_MISS,,SV57_VSMODE_TRANSLATION,0.0,,NORM_DIRECT,,"Whether or not Sv57 translation is supported in first-stage (VS-stage)
+translation."
+UDB_RECALL_MISS,,TINST_VALUE_ON_BREAKPOINT,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a Breakpoint exception from VU/VS-mode.
+
+Possible values:
+  * ""a"
+UDB_RECALL_MISS,,TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT,0.0,,NORM_CSR_RW,,"Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+Possible "
+UDB_RECALL_MISS,,TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT,0.0,,NORM_CSR_RW,,"Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+Possible "
+UDB_RECALL_MISS,,TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT,0.0,,NORM_CSR_RW,,"Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+Possible "
+UDB_RECALL_MISS,,TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst when there is an instruction address misaligned exception.
+
+Possibl"
+UDB_RECALL_MISS,,TINST_VALUE_ON_LOAD_ACCESS_FAULT,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+Possible values:
+  * "
+UDB_RECALL_MISS,,TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+Possible values"
+UDB_RECALL_MISS,,TINST_VALUE_ON_LOAD_PAGE_FAULT,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a LoadPageFault exception from VU/VS-mode.
+
+Possible values:
+  *"
+UDB_RECALL_MISS,,TINST_VALUE_ON_MCALL,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a MCall exception from VU/VS-mode.
+
+Possible values:
+  * ""always"
+UDB_RECALL_MISS,,TINST_VALUE_ON_SCALL,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a SCall exception from VU/VS-mode.
+
+Possible values:
+  * ""always"
+UDB_RECALL_MISS,,TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+Possible values:
+  * "
+UDB_RECALL_MISS,,TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+Possible values"
+UDB_RECALL_MISS,,TINST_VALUE_ON_STORE_AMO_PAGE_FAULT,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a StoreAmoPageFault exception from VU/VS-mode.
+
+Possible values:"
+UDB_RECALL_MISS,,TINST_VALUE_ON_UCALL,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a UCall exception from VU/VS-mode.
+
+Possible values:
+  * ""always"
+UDB_RECALL_MISS,,TINST_VALUE_ON_VIRTUAL_INSTRUCTION,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+Possible values"
+UDB_RECALL_MISS,,TINST_VALUE_ON_VSCALL,0.0,,NORM_CSR_RW,,"Value written into htinst/mtinst on a VSCall exception from VU/VS-mode.
+
+Possible values:
+  * ""alway"
+UDB_RECALL_MISS,,TRAP_ON_EBREAK,0.0,,NORM_DIRECT,,"The spec states that implementations may handle EBREAKs transparently
+without raising a trap, in whi"
+UDB_RECALL_MISS,,VSSTAGE_MODE_BARE,0.0,,NORM_DIRECT,,Whether or not writing mode=Bare is supported in the `vsatp` register.
+UDB_RECALL_MISS,,VSTVEC_MODE_DIRECT,0.0,,NORM_CSR_WARL,,Whether or not `vstvec.MODE` supports Direct (0).
+UDB_RECALL_MISS,,VSTVEC_MODE_VECTORED,0.0,,NORM_CSR_WARL,,Whether or not `stvec.MODE` supports Vectored (1).
+UDB_RECALL_MISS,,VUXLEN,0.0,,NORM_DIRECT,,"Set of XLENs supported in VU-mode. When both 32 and 64 are supported, VUXLEN can be changed
+via `vss"
+LLM_NEW_HIGH_CONF,BASE_INTEGER_VARIANT,,0.0,NORM_DIRECT,,intro.adoc,"There are two primary base integer variants, RV32I and RV64I, described in <<rv32>> and <<rv64>>, wh"
+LLM_NEW_HIGH_CONF,BCLRI_SHAMT_RSV_RV32,,0.0,NORM_DIRECT,,b-st-ext.adoc,"For RV32, the encodings corresponding to shamt[5]=1 are reserved."
+LLM_NEW_HIGH_CONF,BEXTI_SHAMT_RSV_RV32,,0.0,NORM_DIRECT,,b-st-ext.adoc,"For RV32, the encodings corresponding to shamt[5]=1 are reserved."
+LLM_NEW_HIGH_CONF,BF16_SUBNORMAL_SUPPORT,,0.0,NORM_DIRECT,,bfloat16.adoc,"All of the BF16 instructions in the extensions defined in this specification (i.e., Zfbfmin, Zvfbfmi"
+LLM_NEW_HIGH_CONF,BINVI_SHAMT_RSV_RV32,,0.0,NORM_DIRECT,,b-st-ext.adoc,"For RV32, the encodings corresponding to shamt[5]=1 are reserved."
+LLM_NEW_HIGH_CONF,BSETI_SHAMT_RSV_RV32,,0.0,NORM_DIRECT,,b-st-ext.adoc,"For RV32, the encodings corresponding to shamt[5]=1 are reserved."
+LLM_NEW_HIGH_CONF,CBM_ACCESS_ON_IFETCH_ONLY,,0.0,NORM_DIRECT,,cmo.adoc,"If neither a load instruction nor store instruction is permitted to access the physical addresses, b"
+LLM_NEW_MEDIUM_CONF,CBO_BEHAVIOR_ON_CONSTRAINT_VIOLATION,,0.0,NORM_DIRECT,,cmo.adoc,"If the above constraints are not met, the behavior of a CBO instruction is UNSPECIFIED."
+LLM_NEW_HIGH_CONF,CBO_ZERO_ATOMICITY,,0.0,NORM_DIRECT,,cmo.adoc,An implementation may or may not update the entire set of bytes atomically.
+LLM_NEW_HIGH_CONF,CBO_ZERO_GRANULARITY,,0.0,NORM_DIRECT,,cmo.adoc,"An implementation may update the bytes in any order and with any granularity and atomicity, includin"
+LLM_NEW_HIGH_CONF,CCE_WIDTH,,0.0,NORM_CSR_RW,,smctr.adoc,"An implementation that supports cycle counting must implement CCV and all CCM bits, but may implemen"
+LLM_NEW_HIGH_CONF,COMPRESSED_ALL_ZERO_ILLEGAL,,0.0,NORM_DIRECT,,c-st-ext.adoc,A 16-bit instruction with all bits zero is permanently reserved as an illegal instruction.
+LLM_NEW_HIGH_CONF,COMPRESSED_FP_REGISTER_SET,,0.0,NORM_DIRECT,,c-st-ext.adoc,Compressed register-based floating-point loads and stores also use the CL and CS formats respectivel
+LLM_NEW_HIGH_CONF,COMPRESSED_REGISTER_SET,,0.0,NORM_DIRECT,,c-st-ext.adoc,"CIW, CL, CS, CA, and CB are limited to just 8 of them."
+LLM_NEW_HIGH_CONF,CSR_DUAL_ACCESS_SUPPORT,,0.0,NORM_DIRECT,,indirect-csr.adoc,A CSR accessible via one method may or may not be accessible via the other method.
+LLM_NEW_HIGH_CONF,CSR_STRONGLY_ORDERED,,0.0,NORM_DIRECT,,zicsr.adoc,"The hardware platform may define that accesses to certain CSRs are strongly ordered, as defined by t"
+LLM_NEW_HIGH_CONF,CTRDATA_FIELD_SUPPORT,,0.0,NORM_CSR_RW,,smctr.adoc,"This register must be implemented, though all fields within it are optional. Unimplemented fields ar"
+LLM_NEW_HIGH_CONF,CTRDATA_TYPE_SUPPORT,,0.0,NORM_CSR_RW,,smctr.adoc,Implementations that do not support this field will report 0.
+LLM_NEW_HIGH_CONF,CTRTARGET_MISP_SUPPORT,,0.0,NORM_CSR_RW,,smctr.adoc,The optional MISP bit is set by the hardware when the recorded transfer is an instruction whose targ
+LLM_NEW_HIGH_CONF,CTR_MAX_DEPTH,,0.0,NORM_DIRECT,,smctr.adoc,The number of records that can be held in the buffer depends upon both the implementation (the maxim
+LLM_NEW_HIGH_CONF,CYCLE_COUNTING_SUPPORT,,0.0,NORM_DIRECT,,smctr.adoc,The `ctrdata` register may optionally include a count of CPU cycles elapsed since the prior CTR reco
+LLM_NEW_MEDIUM_CONF,DEBUG_CSR_ACCESS_CONTROL,,0.0,NORM_DIRECT,,priv-csrs.adoc,Implementations should raise illegal-instruction exceptions on machine-mode access to the latter set
+LLM_NEW_HIGH_CONF,DEBUG_MODE_IMPLEMENTED,,0.0,NORM_DIRECT,,priv-intro.adoc,Implementations may also include a debug mode to support off-chip debugging and/or manufacturing tes
+LLM_NEW_HIGH_CONF,EGS_GE_VLMAX_RSV,,0.0,NORM_DIRECT,,v-st-ext.adoc,Vector instructions with EGS > VLMAX are reserved.
+LLM_NEW_HIGH_CONF,EGS_VL_AVL,,0.0,NORM_DIRECT,,v-st-ext.adoc,"When AVL > VLMAX, the value of `vl` must be set to either VLMAX or a positive integer multiple of EG"
+LLM_NEW_HIGH_CONF,EGS_VL_RSV,,0.0,NORM_DIRECT,,v-st-ext.adoc,"When an operand is a vector of element groups, the `vl` setting must correspond to an integer multip"
+LLM_NEW_HIGH_CONF,ENDIANNESS_LITTLE_OR_BIG,,0.0,NON_ISA,,rv32.adoc,The EEI will define whether the memory system is little-endian or big-endian.
+LLM_NEW_MEDIUM_CONF,EXECUTION_ENVIRONMENT_IMPLEMENTATION,,0.0,NORM_DIRECT,,intro.adoc,"The implementation of a RISC-V execution environment can be pure hardware, pure software, or a combi"
+LLM_NEW_HIGH_CONF,EXTERNAL_TRAP_RECORDING_SUPPORT,,0.0,NORM_DIRECT,,smctr.adoc,"If external trap recording is implemented, `mctrctl`.MTE and `sctrctl`.STE must be implemented, whil"
+LLM_NEW_MEDIUM_CONF,FCVTMOD_RM_RESERVED_BEHAVIOR,,0.0,NORM_DIRECT,,zfa.adoc,Other _rm_ values are _reserved_.
+LLM_NEW_HIGH_CONF,FENCE_I_RESERVED_FIELD_BEHAVIOR,,0.0,NORM_DIRECT,,zifencei.adoc,"For forward compatibility, base implementations shall ignore these fields, and standard software sha"
+LLM_NEW_HIGH_CONF,FLEN,,0.0,NORM_DIRECT,,d-st-ext.adoc,"The D extension widens the 32 floating-point registers, `f0-f31`, to 64 bits (FLEN=64 in <<fprs>>)."
+LLM_NEW_HIGH_CONF,FORCE_UPGRADE_CBO_CLEAN_TO_FLUSH,,0.0,NORM_DIRECT,,cmo.adoc,"When executing a *cbo.clean* instruction, an implementation may instead perform a flush operation, s"
+LLM_NEW_HIGH_CONF,FP_LDST_DECOMPOSITION_STRATEGY,,0.0,NORM_DIRECT,,rvwmo.adoc,A floating-point load or store of more than XLEN bits may also be decomposed into a set of component
+LLM_NEW_HIGH_CONF,F_CANONICAL_NAN,,0.0,NORM_DIRECT,,f-st-ext.adoc,"Except when otherwise stated, if the result of a floating-point operation is NaN, it is the canonica"
+LLM_NEW_HIGH_CONF,GEILEN,,0.0,NORM_DIRECT,,hypervisor.adoc,"GEILEN may be zero, in which case VGEIN may be read-only zero"
+LLM_NEW_HIGH_CONF,HGATP_MODES_SUPPORTED,,0.0,NORM_CSR_WARL,,hypervisor.adoc,Implementations are not required to support all defined MODE settings when HSXLEN=64
+LLM_NEW_HIGH_CONF,HGATP_VMID_LSBS,,0.0,NORM_CSR_RW,,hypervisor.adoc,"The least-significant bits of VMID are implemented first: that is, if VMIDLEN > 0, VMID[VMIDLEN-1:0]"
+LLM_NEW_HIGH_CONF,HINT_SXLEN_PARAM,,0.0,NORM_DIRECT,,supervisor.adoc,When such a HINT is executed with XLEN < SXLEN and bits SXLEN..XLEN of the destination register not 
+LLM_NEW_MEDIUM_CONF,HPM_MISCONFIGURED_BEHAVIOR,,0.0,NORM_DIRECT,,counters.adoc,"If the configuration used to select the events counted by a counter is misconfigured, the counter ma"
+LLM_NEW_HIGH_CONF,HVIEN_LCOFI_IMPLEMENTED,,0.0,NORM_CSR_RW,,smcdeleg.adoc,the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.
+LLM_NEW_HIGH_CONF,HVIP_LCOFI_IMPLEMENTED,,0.0,NORM_CSR_RW,,smcdeleg.adoc,the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.
+LLM_NEW_HIGH_CONF,HYPERVISOR_EXTENSION,,0.0,NORM_DIRECT,,ssdbltrp.adoc,"If the hypervisor extension is additionally implemented, then the extension adds the `henvcfg`.DTE ("
+LLM_NEW_HIGH_CONF,HYPERVISOR_IMPLEMENTED,,0.0,NORM_DIRECT,,supervisor.adoc,"If the hypervisor extension is additionally implemented, the `henvcfg`.ADUE field is also writable."
+LLM_NEW_HIGH_CONF,IALIGN,,0.0,NORM_DIRECT,,c-st-ext.adoc,"The C extension allows 16-bit instructions to be freely intermixed with 32-bit instructions, with th"
+LLM_NEW_HIGH_CONF,ILEN,,0.0,NORM_DIRECT,,intro.adoc,We use the term ILEN (measured in bits) to refer to the maximum instruction length supported by an i
+LLM_NEW_HIGH_CONF,INTERRUPTS_ALLOWED_IN_PUSHPOP,,0.0,NORM_DIRECT,,zc.adoc,It is implementation defined whether interrupts can also be taken during the sequence execution.
+LLM_NEW_HIGH_CONF,LMUL_SUPPORT,,0.0,NORM_DIRECT,,v-st-ext.adoc,"Implementations must support LMUL integer values of 1, 2, 4, and 8."
+LLM_NEW_HIGH_CONF,MCTRCTL_FIELD_SUPPORT,,0.0,NORM_CSR_RW,,smctr.adoc,"All fields are optional except for M, S, U, and BPFRZ. All unimplemented fields are read-only 0, whi"
+LLM_NEW_HIGH_CONF,MCTRCTL_LCOFIFRZ_CONDITIONAL,,0.0,NORM_CSR_RW,,smctr.adoc,"If the Sscofpmf extension is implemented, LCOFIFRZ must be writable."
+LLM_NEW_HIGH_CONF,MCYCLECFG_PRIVILEGE_MODE_BITS,,0.0,NORM_CSR_RW,,smcntrpmf.adoc,"For each bit in 61:58, if the associated privilege mode is not implemented, the bit is read-only zer"
+LLM_NEW_HIGH_CONF,MEDELEG_WARL_MASK,,0.0,NORM_CSR_WARL,,machine.adoc,"An implementation can choose to subset the delegatable traps, with the supported delegatable bits fo"
+LLM_NEW_HIGH_CONF,MEMORY_ENDIANNESS,,0.0,NORM_DIRECT,,intro.adoc,"RISC-V base ISAs have either little-endian or big-endian memory systems, with the privileged archite"
+LLM_NEW_HIGH_CONF,MENVCFG_ADUE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If Svadu is not implemented, ADUE is read-only zero"
+LLM_NEW_HIGH_CONF,MENVCFG_CBCFE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"When the Zicbom extension is not implemented, `CBCFE` is read-only zero"
+LLM_NEW_HIGH_CONF,MENVCFG_CBIE_LEGAL_VALUES,,0.0,NORM_CSR_WARL,,machine.adoc,The Zicbom extension adds the `CBIE` (Cache Block Invalidate instruction Enable) WARL field to `menv
+LLM_NEW_HIGH_CONF,MENVCFG_CBZE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"When the Zicboz extension is not implemented, `CBZE` is read-only zero"
+LLM_NEW_HIGH_CONF,MENVCFG_CDE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If Smcdeleg is not implemented, CDE is read-only zero"
+LLM_NEW_HIGH_CONF,MENVCFG_DTE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"When Ssdbltrp is not implemented `sstatus.SDT`, `vsstatus.SDT`, and `henvcfg.DTE` bits are read-only"
+LLM_NEW_HIGH_CONF,MENVCFG_FIOM_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If S-mode is not supported, or if `satp`.MODE is read-only zero (always Bare), the implementation ma"
+LLM_NEW_HIGH_CONF,MENVCFG_PBMTE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If Svpbmt is not implemented, PBMTE is read-only zero"
+LLM_NEW_HIGH_CONF,MENVCFG_PMM_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If Smnpm is not implemented, `PMM` is read-only zero. The `PMM` field is read-only zero for RV32"
+LLM_NEW_HIGH_CONF,MENVCFG_SSE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"When `menvcfg.SSE` is 0, the `henvcfg.SSE` and `senvcfg.SSE` fields are read-only zero"
+LLM_NEW_HIGH_CONF,MENVCFG_STCE_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"When the Sstc extension is not implemented, `STCE` is read-only zero"
+LLM_NEW_HIGH_CONF,MHPMEVENT_INH_BITS_IMPLEMENTED,,0.0,NORM_CSR_RW,,sscofpmf.adoc,"For each ``x``INH bit, if the associated privilege mode is not implemented, the bit is read-only zer"
+LLM_NEW_HIGH_CONF,MIDELEG_WARL_MASK,,0.0,NORM_CSR_WARL,,machine.adoc,"An implementation can choose to subset the delegatable traps, with the supported delegatable bits fo"
+LLM_NEW_HIGH_CONF,MIE_WRITABLE_MASK,,0.0,NORM_CSR_RW,,machine.adoc,A bit in `mie` must be writable if the corresponding interrupt can ever become pending
+LLM_NEW_HIGH_CONF,MIP_WRITABLE_MASK,,0.0,NORM_CSR_RW,,machine.adoc,Each individual bit in register `mip` may be writable or may be read-only
+LLM_NEW_HIGH_CONF,MISALIGNED_AMOCAS,,0.0,NORM_DIRECT,,zacas.adoc,`AMOCAS.W/D/Q` requires that the address held in `rs1` be naturally aligned to the size of the opera
+LLM_NEW_HIGH_CONF,MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP,,0.0,NON_ISA,,rv32.adoc,"When an EEI does not guarantee misaligned loads and stores are handled invisibly, the EEI must defin"
+LLM_NEW_HIGH_CONF,MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR,,0.0,NON_ISA,,rv32.adoc,"Loads and stores whose effective address is not naturally aligned to the referenced datatype (i.e., "
+LLM_NEW_HIGH_CONF,MISALIGNED_LDST_FULLY_HW_SUPPORTED,,0.0,NORM_DIRECT,,rv32.adoc,misaligned loads and stores can be handled in hardware
+LLM_NEW_HIGH_CONF,MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP,,0.0,NORM_DIRECT,,rv32.adoc,loads and stores that are not naturally aligned may either complete execution successfully or raise 
+LLM_NEW_HIGH_CONF,MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR,,0.0,NORM_DIRECT,,rv32.adoc,combination of hardware and invisible trap depending on address
+LLM_NEW_HIGH_CONF,MISALIGNED_LDST_INVISIBLE_TRAP,,0.0,NORM_DIRECT,,rv32.adoc,via an invisible trap into the execution environment implementation
+LLM_NEW_HIGH_CONF,MISA_V_OP,,0.0,NORM_DIRECT,,v-st-ext.adoc,The `misa.v` bit is set for implementations providing `misa` and supporting V.
+LLM_NEW_HIGH_CONF,MISELECT_ACCESS,,0.0,NORM_CSR_RW,,indirect-csr.adoc,The miselect register may be read-only zero if there are no extensions implemented that utilize it.
+LLM_NEW_HIGH_CONF,MISELECT_LEGAL_VALUES,,0.0,NORM_CSR_WARL,,indirect-csr.adoc,miselect is a WARL register.
+LLM_NEW_HIGH_CONF,MISELECT_WIDTH,,0.0,NORM_DIRECT,,indirect-csr.adoc,The miselect register implements at least enough bits to support all implemented miselect values (co
+LLM_NEW_HIGH_CONF,MNEPC_INVALID_ADDRESS_CONVERSION,,0.0,NORM_DIRECT,,rnmi.adoc,"Prior to writing `mnepc`, implementations may convert an invalid address into some other invalid add"
+LLM_NEW_MEDIUM_CONF,MNOISE_CSR_IDLE_VALUE,,0.0,NORM_DIRECT,,scalar-crypto.adoc,"When available, but `NOISE_TEST = 0`, `mnoise` can return a nonzero constant (e.g. `0x00000001`) but"
+LLM_NEW_MEDIUM_CONF,MNOISE_CSR_IMPLEMENTED,,0.0,NORM_DIRECT,,scalar-crypto.adoc,"When not implemented (e.g., in virtual machines), `mnoise` can permanently read zero (`0x00000000`) "
+LLM_NEW_HIGH_CONF,MSECCFG_MML_IMPLEMENTED,,0.0,NORM_CSR_RW,,smepmp.adoc,"this extension introduces the `RLB`, `MMWP`, and `MML` fields in the `mseccfg` CSR and their associa"
+LLM_NEW_HIGH_CONF,MSECCFG_MMWP_IMPLEMENTED,,0.0,NORM_CSR_RW,,smepmp.adoc,"this extension introduces the `RLB`, `MMWP`, and `MML` fields in the `mseccfg` CSR and their associa"
+LLM_NEW_HIGH_CONF,MSECCFG_PMM_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If Smmpm is not implemented, `PMM` is read-only zero. The `PMM` field is read-only zero for RV32"
+LLM_NEW_HIGH_CONF,MSECCFG_RLB_IMPLEMENTED,,0.0,NORM_CSR_RW,,smepmp.adoc,"this extension introduces the `RLB`, `MMWP`, and `MML` fields in the `mseccfg` CSR and their associa"
+LLM_NEW_HIGH_CONF,MSECCFG_SEED_FIELDS_IMPLEMENTED,,0.0,NORM_CSR_RW,,scalar-crypto.adoc,"Implementations may implement `mseccfg` such that `[s,u]seed` is a read-only constant value `0`."
+LLM_NEW_HIGH_CONF,MSECCFG_SSEED_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If Zkr or S-mode is not implemented, `SSEED` is read-only zero"
+LLM_NEW_HIGH_CONF,MSECCFG_USEED_IMPLEMENTED,,0.0,NORM_CSR_RW,,machine.adoc,"If Zkr or U-mode is not implemented, `USEED` is read-only zero"
+LLM_NEW_MEDIUM_CONF,MSISELECT_ALIASING,,0.0,NORM_DIRECT,,indirect-csr.adoc,Machine-level and Supervisor-level CSRs with the same select value may be defined by an extension as
+LLM_NEW_HIGH_CONF,MSTATUS_VS_EXISTS,,0.0,NORM_DIRECT,,v-st-ext.adoc,"Analogous to the way in which the floating-point unit is handled, the `mstatus.VS` field may exist e"
+LLM_NEW_HIGH_CONF,MTVAL2_TRAPVAL_PARAM,,0.0,NORM_DIRECT,,hypervisor.adoc,The `mtval2` register can optionally also be used to return the faulting guest physical address that
+LLM_NEW_HIGH_CONF,MTVAL_IMPLEMENTED,,0.0,NORM_CSR_RW,,hypervisor.adoc,CSR `mtval` must not be read-only zero
+LLM_NEW_HIGH_CONF,MVIEN_LCOFI_IMPLEMENTED,,0.0,NORM_CSR_RW,,smcdeleg.adoc,the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is impl
+LLM_NEW_HIGH_CONF,MVIP_LCOFI_IMPLEMENTED,,0.0,NORM_CSR_RW,,smcdeleg.adoc,the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is impl
+LLM_NEW_MEDIUM_CONF,NTL_TRAP_BEHAVIOR,,0.0,NORM_DIRECT,,zihintntl.adoc,"In the event that a trap is taken on the target instruction, implementations are discouraged from ap"
+LLM_NEW_HIGH_CONF,NUM_PRIVILEGE_MODES,,0.0,NORM_DIRECT,,priv-intro.adoc,Implementations might provide anywhere from 1 to 3 privilege modes
+LLM_NEW_HIGH_CONF,OTHER_VECCRYPTO_DEPEND_ZVE32X,,0.0,NORM_DIRECT,,vector-crypto.adoc,All of the other Vector Crypto Extensions depend on `Zve32x`.
+LLM_NEW_HIGH_CONF,PAUSE_DURATION,,0.0,NORM_DIRECT,,zihintpause.adoc,The duration of its effect must be bounded and may be zero.
+LLM_NEW_MEDIUM_CONF,PMLEN_PER_MODE_SUPPORT,,0.0,NORM_DIRECT,,zpm.adoc,the supported values of PMLEN may depend on the effective privilege mode.
+LLM_NEW_HIGH_CONF,PMPADDR_WARL_MASK,,0.0,NORM_CSR_WARL,,machine.adoc,"Not all physical address bits may be implemented, and so the `pmpaddr` registers are WARL."
+LLM_NEW_HIGH_CONF,PMP_CSR_FIELDS_WARL,,0.0,NORM_CSR_RW,,machine.adoc,All PMP CSR fields are WARL and may be read-only zero.
+LLM_NEW_HIGH_CONF,PMP_GRAIN_G,,0.0,NORM_DIRECT,,machine.adoc,"Although the PMP mechanism supports regions as small as four bytes, platforms may specify coarser PM"
+LLM_NEW_MEDIUM_CONF,PMP_HARDWIRED_REGIONS,,0.0,NORM_DIRECT,,machine.adoc,"Certain regions' privileges can be hardwired—for example, some regions might only ever be visible in"
+LLM_NEW_HIGH_CONF,PMP_MMODE_LOCKING,,0.0,NORM_DIRECT,,machine.adoc,"Optionally, PMP checks may additionally apply to M-mode accesses, in which case the PMP registers th"
+LLM_NEW_HIGH_CONF,PMP_RWX_WARL_VALUES,,0.0,NORM_CSR_WARL,,machine.adoc,"The R, W, and X fields form a collective WARL field for which the combinations with R=0 and W=1 are "
+LLM_NEW_HIGH_CONF,PM_ENABLE_WARL_BEHAVIOR,,0.0,NORM_CSR_WARL,,zpm.adoc,Trying to enable pointer masking in an unsupported scenario represents an illegal write to the corre
+LLM_NEW_HIGH_CONF,PM_TAG_CHECK_IMPLEMENTATION,,0.0,NORM_DIRECT,,zpm.adoc,The tag checks themselves can be implemented in software or hardware.
+LLM_NEW_HIGH_CONF,PUSHPOP_BUS_FAULT_HANDLING,,0.0,NORM_DIRECT,,zc.adoc,It is platform defined whether the core implementation waits for the bus responses before continuing
+LLM_NEW_HIGH_CONF,RASEMU_SUPPORT,,0.0,NORM_CSR_RW,,smctr.adoc,"When the optional `__x__ctrctl`.RASEMU bit is implemented and set to 1, transfer recording behavior "
+LLM_NEW_HIGH_CONF,RESERVED_VILL_SET,,0.0,NORM_DIRECT,,v-st-ext.adoc,Implementations may set `vill` in either case.
+LLM_NEW_HIGH_CONF,RNMI_CAUSE_CODES_SUPPORTED,,0.0,NORM_DIRECT,,rnmi.adoc,"If the reason is an interrupt and RNMI causes are not supported, bit MXLEN-1 is set to 1, and zero i"
+LLM_NEW_HIGH_CONF,RNMI_TRAP_HANDLER_ADDRESS,,0.0,NON_ISA,,rnmi.adoc,The RNMI interrupt trap handler address is implementation-defined.
+LLM_NEW_HIGH_CONF,RV32C_SLLI_SHAMT5_RESTRICTION,,0.0,NORM_DIRECT,,c-st-ext.adoc,"For RV32C, _shamt[5]_ must be zero; the code points with _shamt[5]_=1 are designated for custom exte"
+LLM_NEW_HIGH_CONF,RV32C_SRLI_SHAMT5_RESTRICTION,,0.0,NORM_DIRECT,,c-st-ext.adoc,"For RV32C, _shamt[5]_ must be zero; the code points with _shamt[5]_=1 are designated for custom exte"
+LLM_NEW_HIGH_CONF,RV64_W_INSTRUCTION_BEHAVIOR,,0.0,NORM_DIRECT,,rv64.adoc,"These ""*W"" instructions ignore the upper 32 bits of their inputs and always produce 32-bit signed va"
+LLM_NEW_MEDIUM_CONF,RVC_HINT_SUPPORT,,0.0,NORM_DIRECT,,c-st-ext.adoc,A portion of the RVC encoding space is reserved for microarchitectural HINTs.
+LLM_NEW_HIGH_CONF,RVC_OFFSET_ALIGNMENT,,0.0,NORM_DIRECT,,c-st-ext.adoc,"As with base RVI instructions, the offsets of all RVC control transfer instructions are in multiples"
+LLM_NEW_HIGH_CONF,SCAUSE_EXCEPTION_CODE_WARL_VALUES,,0.0,NORM_CSR_WARL,,supervisor.adoc,"The Exception Code is a *WLRL* field. It is required to hold the values 0–31 (i.e., bits 4–0 must be"
+LLM_NEW_HIGH_CONF,SCOUNTEREN_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,"`scounteren` must be implemented. However, any of the bits may be read-only zero, indicating reads t"
+LLM_NEW_HIGH_CONF,SCTRDEPTH_SUPPORTED_VALUES,,0.0,NORM_CSR_WARL,,smctr.adoc,It is implementation-specific which DEPTH value(s) are supported.
+LLM_NEW_HIGH_CONF,SEED_CSR_ACCESS_CONTROL,,0.0,NORM_DIRECT,,scalar-crypto.adoc,Attempts to access the `seed` CSR using a read-only CSR-access instruction (`CSRRS`/`CSRRC` with _rs
+LLM_NEW_HIGH_CONF,SEED_CSR_ADDRESS,,0.0,NORM_DIRECT,,scalar-crypto.adoc,The entropy source extension defines the `seed` CSR at address `0x015`.
+LLM_NEW_HIGH_CONF,SEED_CSR_MODE_ACCESS,,0.0,NORM_DIRECT,,scalar-crypto.adoc,"The `seed` CSR is also access controlled by execution mode, and attempted read or write access will "
+LLM_NEW_MEDIUM_CONF,SEED_CSR_RESERVED_BITS,,0.0,NORM_DIRECT,,scalar-crypto.adoc,An implementation may safely set reserved and custom bits to zeros.
+LLM_NEW_HIGH_CONF,SENVCFG_CBCFE_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,"When the Zicbom extension is not implemented, `CBCFE` is read-only zero."
+LLM_NEW_HIGH_CONF,SENVCFG_CBIE_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,"When the Zicbom extension is not implemented, `CBIE` is read-only zero."
+LLM_NEW_HIGH_CONF,SENVCFG_CBZE_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,"When the Zicboz extension is not implemented, `CBZE` is read-only zero."
+LLM_NEW_HIGH_CONF,SENVCFG_FIOM_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,"If `satp`.MODE is read-only zero (always Bare), the implementation may make FIOM read-only zero."
+LLM_NEW_HIGH_CONF,SENVCFG_PMM_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,"If Ssnpm is not implemented, `PMM` is read-only zero. The `PMM` field is read-only zero for RV32."
+LLM_NEW_HIGH_CONF,SEPC_WARL_VALUES,,0.0,NORM_CSR_WARL,,supervisor.adoc,`sepc` is a *WARL* register that must be able to hold all valid virtual addresses. It need not be ca
+LLM_NEW_HIGH_CONF,SIE_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,A bit in `sie` must be writable if the corresponding interrupt can ever become pending. Bits of `sie
+LLM_NEW_HIGH_CONF,SIGNED_INTEGER_REPRESENTATION,,0.0,NORM_DIRECT,,intro.adoc,The base integer instruction sets use a two's-complement representation for signed integer values.
+LLM_NEW_HIGH_CONF,SIP_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,Each individual bit in register `sip` may be writable or may be read-only.
+LLM_NEW_HIGH_CONF,SIP_SIE_UNIMPL,,0.0,NORM_CSR_RW,,supervisor.adoc,"Each standard interrupt type (SEI, STI, SSI, or LCOFI) may not be implemented, in which case the cor"
+LLM_NEW_HIGH_CONF,SISELECT_MIN_RANGE,,0.0,NORM_CSR_WARL,,indirect-csr.adoc,The siselect register will support the value range 0..0xFFF at a minimum.
+LLM_NEW_MEDIUM_CONF,SLLIW_SRLIW_SRAIW_IMM5_HANDLING,,0.0,NORM_DIRECT,,rv64.adoc,"SLLIW, SRLIW, and SRAIW encodings with _imm[5] {ne} 0_ are reserved."
+LLM_NEW_HIGH_CONF,SMCDELEG_SSCCFG_SUPPORT,,0.0,NORM_DIRECT,,smcdeleg.adoc,"When the Smcdeleg/Ssccfg extensions are enabled (`menvcfg`.CDE=1), it further allows M-mode to deleg"
+LLM_NEW_HIGH_CONF,SMCNTRPMF_SUPPORT,,0.0,NORM_DIRECT,,smcdeleg.adoc,"If any extension upon which the underlying state depends is not implemented, an attempt from M or S "
+LLM_NEW_MEDIUM_CONF,SMDBLTRP_DEBUG_MODE_ON_CRITICAL_ERROR,,0.0,NORM_DIRECT,,smdbltrp.adoc,The extension introduces a mechanism to enter Debug Mode instead of asserting a critical-error signa
+LLM_NEW_HIGH_CONF,SMEPMP_EXTENSION_IMPLEMENTED,,0.0,NORM_DIRECT,,smepmp.adoc,Since all fields defined in ``mseccfg`` as part of this extension are locked when set (``MMWP``/``MM
+LLM_NEW_HIGH_CONF,SRMCFG_MCID_WARL_VALUES,,0.0,NORM_CSR_WARL,,supervisor.adoc,Both `RCID` and `MCID` are WARL fields.
+LLM_NEW_HIGH_CONF,SRMCFG_RCID_WARL_VALUES,,0.0,NORM_CSR_WARL,,supervisor.adoc,Both `RCID` and `MCID` are WARL fields.
+LLM_NEW_HIGH_CONF,SSCOFPMF_SUPPORT,,0.0,NORM_DIRECT,,smcdeleg.adoc,"If any extension upon which the underlying state depends is not implemented, an attempt from M or S "
+LLM_NEW_HIGH_CONF,SSDBLTRP_EXTENSION,,0.0,NORM_DIRECT,,ssdbltrp.adoc,The Ssdbltrp extension adds the `menvcfg`.DTE (See <<sec:menvcfg>>) and the `sstatus`.SDT fields (Se
+LLM_NEW_HIGH_CONF,SSP_ALIGNMENT_BITS,,0.0,NORM_CSR_RW,,unpriv-cfi.adoc,"The bits 1:0 of `ssp` are read-only zero. If the UXLEN or SXLEN may never be 32, then the bit 2 is a"
+LLM_NEW_HIGH_CONF,SSP_CSR_ACCESS,,0.0,NORM_CSR_RW,,unpriv-cfi.adoc,The `ssp` CSR is an unprivileged read-write (URW) CSR that reads and writes `XLEN` low order bits of
+LLM_NEW_HIGH_CONF,SSP_CSR_ADDRESS,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,The CSR address is 0x011.
+LLM_NEW_HIGH_CONF,SSP_CSR_WIDTH,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,There is no high CSR defined as the `ssp` is always as wide as the `XLEN` of the current privilege m
+LLM_NEW_HIGH_CONF,SSTATUS_SDT_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,The S-mode-disable-trap (`SDT`) bit is a WARL field introduced by the Ssdbltrp extension to address 
+LLM_NEW_HIGH_CONF,SSTATUS_SUM_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,SUM is read-only 0 if `satp`.MODE is read-only 0.
+LLM_NEW_HIGH_CONF,SSTATUS_UBE_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,The UBE bit is a *WARL* field that controls the endianness of explicit memory accesses made from U-m
+LLM_NEW_HIGH_CONF,SSTATUS_UXL_ACCESS,,0.0,NORM_CSR_RW,,supervisor.adoc,"When SXLEN=64, it is a *WARL* field that encodes the current value of UXLEN. In particular, an imple"
+LLM_NEW_HIGH_CONF,STCE_BIT_IMPLEMENTED,,0.0,NORM_DIRECT,,sstc.adoc,This extension adds the `STCE` bit to the `menvcfg` (<<sec:menvcfg>>) and `henvcfg` (<<sec:henvcfg>>
+LLM_NEW_HIGH_CONF,STIMECMP_IMPLEMENTED,,0.0,NORM_DIRECT,,sstc.adoc,This extension adds the S-level `stimecmp` CSR (<<stimecmp>>)
+LLM_NEW_HIGH_CONF,STVAL_WARL_VALUES,,0.0,NORM_CSR_WARL,,supervisor.adoc,`stval` is a *WARL* register that must be able to hold all valid virtual addresses and the value 0. 
+LLM_NEW_HIGH_CONF,SVADU_IMPLEMENTED,,0.0,NORM_DIRECT,,supervisor.adoc,"If the Svadu extension is implemented, the `menvcfg`.ADUE field is writable."
+LLM_NEW_HIGH_CONF,SVNAPOT_IMPLEMENTED,,0.0,NORM_DIRECT,,supervisor.adoc,"If Svnapot is not implemented, bit 63 remains reserved and must be zeroed by software for forward co"
+LLM_NEW_HIGH_CONF,SVPBMT_IMPLEMENTED,,0.0,NORM_DIRECT,,supervisor.adoc,"If Svpbmt is not implemented, bits 62-61 remain reserved and must be zeroed by software for forward "
+LLM_NEW_MEDIUM_CONF,SVPBMT_IMPL_MAY_OVERRIDE_PMAS,,0.0,NORM_DIRECT,,supervisor.adoc,Implementations may override additional PMAs not explicitly listed in <<pbmt>>.
+LLM_NEW_HIGH_CONF,TRANSFER_TYPE_FILTER_SUPPORT,,0.0,NORM_CSR_RW,,smctr.adoc,All transfer type filter bits are optional.
+LLM_NEW_HIGH_CONF,UNIFORM_CACHE_BLOCK_SIZE,,0.0,NORM_DIRECT,,cmo.adoc,"In the initial set of CMO extensions, the size of a cache block shall be uniform throughout the syst"
+LLM_NEW_HIGH_CONF,VECCRYPTO_EEW_EQUALS_SEW,,0.0,NORM_DIRECT,,vector-crypto.adoc,"For all of the vector crypto instructions in this specification, `EEW`=`SEW`."
+LLM_NEW_HIGH_CONF,VECCRYPTO_INDEPENDENT_ZKT,,0.0,NORM_DIRECT,,vector-crypto.adoc,It is important to note that the Vector Crypto instructions are independent of the implementation of
+LLM_NEW_HIGH_CONF,VECCRYPTO_LMUL_VLEN_EGW_CONSTRAINT,,0.0,NORM_DIRECT,,vector-crypto.adoc,"For element-group instructions, `LMUL`*`VLEN` must always be at least as large as `EGW`, otherwise a"
+LLM_NEW_HIGH_CONF,VECCRYPTO_SEW_SPECIFIC_RESERVED,,0.0,NORM_DIRECT,,vector-crypto.adoc,Some Vector Crypto instructions are only defined for a specific `SEW`. In such a case all other `SEW
+LLM_NEW_HIGH_CONF,VECCRYPTO_VL_VSTART_EGS_CONSTRAINT,,0.0,NORM_DIRECT,,vector-crypto.adoc,"Since `vl` and `vstart` refer to elements, Vector Crypto instructions that use elements groups (See "
+LLM_NEW_HIGH_CONF,VECCRYPTO_VL_VSTART_VIOLATION_RESERVED,,0.0,NORM_DIRECT,,vector-crypto.adoc,Instructions that violate the `vl` or `vstart` requirements are _reserved_.
+LLM_NEW_HIGH_CONF,VECCRYPTO_VS_INSTRUCTIONS_KEY_APPLICATION,,0.0,NORM_DIRECT,,vector-crypto.adoc,"These instructions enable a single key, specified as a scalar element group in `vs2`, to be applied "
+LLM_NEW_HIGH_CONF,VECCRYPTO_VS_INSTRUCTIONS_VD_VECTOR_RESULT,,0.0,NORM_DIRECT,,vector-crypto.adoc,"they return _vector_ results to `vd`, which is also a source vector operand."
+LLM_NEW_HIGH_CONF,VECCRYPTO_VS_INSTRUCTIONS_VD_VS2_OVERLAP,,0.0,NORM_DIRECT,,vector-crypto.adoc,"For implementations with `VLEN` ≥ 128, `vs2` refers to a single register. Thus, the `vd` register gr"
+LLM_NEW_HIGH_CONF,VECCRYPTO_VS_INSTRUCTIONS_VS2_128BIT,,0.0,NORM_DIRECT,,vector-crypto.adoc,"In the case of the `.vs` instructions defined in this specification, `vs2` holds a 128-bit scalar el"
+LLM_NEW_HIGH_CONF,VECTOR_FF_PAST_TRAP,,0.0,NORM_DIRECT,,v-st-ext.adoc,"Similarly, fault-only-first load instructions may update active destination elements past the elemen"
+LLM_NEW_HIGH_CONF,VECTOR_FF_SEG_PARTIAL_ACCESS,,0.0,NORM_DIRECT,,v-st-ext.adoc,"In both cases, it is implementation-defined whether a subset of the segment is loaded."
+LLM_NEW_HIGH_CONF,VECTOR_LS_MISSALIGNED_EXCEPTION,,0.0,NORM_DIRECT,,v-st-ext.adoc,If an element accessed by a vector memory instruction is not naturally aligned to the size of the el
+LLM_NEW_HIGH_CONF,VECTOR_LS_OVERWRITE_PAST_TRAP,,0.0,NORM_DIRECT,,v-st-ext.adoc,Load instructions may overwrite active destination vector register group elements past the element i
+LLM_NEW_HIGH_CONF,VECTOR_LS_SEG_FF_OVERLOAD,,0.0,NORM_DIRECT,,v-st-ext.adoc,These instructions may overwrite destination vector register group elements past the point at which 
+LLM_NEW_HIGH_CONF,VECTOR_LS_SEG_PARTIAL_ACCESS,,0.0,NORM_DIRECT,,v-st-ext.adoc,"If a trap occurs during access to a segment, it is implementation-defined whether a subset of the fa"
+LLM_NEW_MEDIUM_CONF,VECTOR_LS_VSTART,,0.0,NORM_DIRECT,,v-st-ext.adoc,All vector loads and stores may generate and accept a non-zero `vstart` value.
+LLM_NEW_HIGH_CONF,VECTOR_LS_WHOLEREG_MISSALIGNED_EXCEPTION,,0.0,NORM_DIRECT,,v-st-ext.adoc,Implementations are allowed to raise a misaligned address exception on whole register loads and stor
+LLM_NEW_HIGH_CONF,VFNCVTBF16_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,bfloat16.adoc,SEW is any value other than 16
+LLM_NEW_HIGH_CONF,VFWCVTBF16_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,bfloat16.adoc,SEW is any value other than 16
+LLM_NEW_HIGH_CONF,VFWMACCBF16_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,bfloat16.adoc,SEW is any value other than 16
+LLM_NEW_MEDIUM_CONF,VILL_IMPLICIT_ENCODING,,0.0,NORM_DIRECT,,v-st-ext.adoc,A small implementation supporting ELEN=32 requires only seven bits of state in `vtype`: two bits for
+LLM_NEW_HIGH_CONF,VM_MODES_SUPPORTED,,0.0,NORM_DIRECT,,hypervisor.adoc,"standard page-based address translation must be supported, either Sv32 for RV32, or a minimum of Sv3"
+LLM_NEW_HIGH_CONF,VREG_OFFGROUP_LMUL2_RSV,,0.0,NORM_DIRECT,,v-st-ext.adoc,Instructions specifying an LMUL=2 vector register group with an odd-numbered vector register are res
+LLM_NEW_HIGH_CONF,VREG_OFFGROUP_LMUL4_RSV,,0.0,NORM_DIRECT,,v-st-ext.adoc,instructions specifying an LMUL=4 vector register group using vector register numbers that are not m
+LLM_NEW_HIGH_CONF,VREG_OFFGROUP_LMUL8_RSV,,0.0,NORM_DIRECT,,v-st-ext.adoc,instructions specifying an LMUL=8 vector register group using register numbers that are not multiple
+LLM_NEW_HIGH_CONF,VSATP_MODE_UNSUPPORTED_V0,,0.0,NORM_DIRECT,,hypervisor.adoc,"When V=0, a write to `vsatp` with an unsupported MODE value is either ignored as it is for `satp`, o"
+LLM_NEW_HIGH_CONF,VSATP_MODE_UNSUPPORTED_V1,,0.0,NORM_DIRECT,,hypervisor.adoc,"However, when V=1, a write to `satp` with an unsupported MODE value _is_ ignored and no write to `vs"
+LLM_NEW_HIGH_CONF,VSHA2MS_ZVKNHA_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,vector-crypto.adoc,`zvknha`: `SEW` is any value other than 32
+LLM_NEW_HIGH_CONF,VSHA2MS_ZVKNHB_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,vector-crypto.adoc,`zvknhb`: `SEW` is any value other than 32 or 64
+LLM_NEW_HIGH_CONF,VSISELECT_MIN_RANGE,,0.0,NORM_CSR_WARL,,indirect-csr.adoc,The vsiselect register will support the value range 0..0xFFF at a minimum.
+LLM_NEW_HIGH_CONF,VSM3C_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,vector-crypto.adoc,`SEW` is any value other than 32
+LLM_NEW_HIGH_CONF,VSM3ME_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,vector-crypto.adoc,`SEW` is any value other than 32
+LLM_NEW_HIGH_CONF,VSM4K_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,vector-crypto.adoc,`SEW` is any value other than 32
+LLM_NEW_HIGH_CONF,VSM4R_SEW_SUPPORT,,0.0,NORM_CSR_WARL,,vector-crypto.adoc,`SEW` is any value other than 32
+LLM_NEW_HIGH_CONF,VSSTATUS_UBE_PARAM,,0.0,NORM_CSR_RW,,hypervisor.adoc,An implementation may make field UBE be a read-only copy of `hstatus`.VSBE
+LLM_NEW_HIGH_CONF,VSSTATUS_VS_EXISTS,,0.0,NORM_DIRECT,,v-st-ext.adoc,"For implementations with a writable `misa.V` field, the `vsstatus.VS` field may exist even if `misa."
+LLM_NEW_HIGH_CONF,VSTIMECMP_IMPLEMENTED,,0.0,NORM_DIRECT,,sstc.adoc,and the VS-level `vstimecmp` CSR (<<vstimecmp>>).
+LLM_NEW_HIGH_CONF,VSXL_RO_PARAM,,0.0,NORM_CSR_RW,,hypervisor.adoc,an implementation may make VSXL be a read-only field whose value always ensures that VSXLEN=HSXLEN
+LLM_NEW_MEDIUM_CONF,VS_STAGE_SPECULATIVE_A_BIT,,0.0,NORM_DIRECT,,hypervisor.adoc,"when `vsatp` is active, VS-stage page-table entries' A bits must not be set as a result of speculati"
+LLM_NEW_HIGH_CONF,VTW_VIRTINSTR_PARAM,,0.0,NORM_DIRECT,,hypervisor.adoc,An implementation may have WFI always raise a virtual-instruction exception in VS-mode when VTW=1 (a
+LLM_NEW_HIGH_CONF,V_DEPENDENT_F_D,,0.0,DOC_RULE,,v-st-ext.adoc,The V extension depends upon the F and D extensions
+LLM_NEW_HIGH_CONF,V_DEPENDENT_ZVL128B_ZVE64D,,0.0,DOC_RULE,,v-st-ext.adoc,The V vector extension depends upon the Zvl128b and Zve64d extensions.
+LLM_NEW_HIGH_CONF,V_INSTR_LS_EEW64_NSUPPORTED_XLEN32,,0.0,NORM_DIRECT,,v-st-ext.adoc,The V extension does not support EEW=64 for index values when XLEN=32.
+LLM_NEW_HIGH_CONF,V_PRECISE_TRAPS,,0.0,NORM_DIRECT,,v-st-ext.adoc,The V vector extension has precise traps.
+LLM_NEW_HIGH_CONF,WPRI_FIELDS_IMPLEMENTATION,,0.0,NORM_CSR_RW,,priv-csrs.adoc,"For forward compatibility, implementations that do not furnish these fields must make them read-only"
+LLM_NEW_MEDIUM_CONF,WRS_EARLY_TERMINATION_POLICY,,0.0,NORM_DIRECT,,zawrs.adoc,"While stalled, an implementation is permitted to occasionally terminate the stall and complete execu"
+LLM_NEW_HIGH_CONF,WRS_NTO_TW_TIMEOUT_DURATION,,0.0,NORM_DIRECT,,zawrs.adoc,When the `TW` (Timeout Wait) bit in `mstatus` is set and `WRS.NTO` is executed in any privilege mode
+LLM_NEW_HIGH_CONF,WRS_NTO_VTW_TIMEOUT_DURATION,,0.0,NORM_DIRECT,,zawrs.adoc,"When executing in VS or VU mode, if the `VTW` bit is set in `hstatus`, the `TW` bit in `mstatus` is "
+LLM_NEW_HIGH_CONF,WRS_STO_TIMEOUT_DURATION,,0.0,NORM_DIRECT,,zawrs.adoc,`WRS.STO` (WRS-with-short-timeout) is provided that works like `WRS.NTO` but bounds the stall durati
+LLM_NEW_HIGH_CONF,XENVCFG_LEGAL_VALUES,,0.0,NORM_CSR_WARL,,cmo.adoc,"Each `x{csrname}` register is WARL; however, software should determine the legal values from the exe"
+LLM_NEW_MEDIUM_CONF,ZALASR_MISALIGNED_ATOMICITY_GRANULE,,0.0,NORM_DIRECT,,zalasr.adoc,"The misaligned atomicity granule PMA, defined in Volume II of this manual, optionally relaxes this a"
+LLM_NEW_HIGH_CONF,ZALASR_MISALIGNED_EXCEPTION_TYPE,,0.0,NORM_DIRECT,,zalasr.adoc,"If the address is not naturally aligned, an address-misaligned exception or an access-fault exceptio"
+LLM_NEW_HIGH_CONF,ZICFILP_ENABLED,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,"When Zicfilp is enabled, `LPAD` is the only instruction allowed to execute when the `ELP` state is `"
+LLM_NEW_HIGH_CONF,ZICFILP_LABEL_MISMATCH_EXCEPTION,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,The `ELP` is `LP_EXPECTED` and the `LPL` is not zero and the `LPL` does not match the expected landi
+LLM_NEW_HIGH_CONF,ZICFILP_LABEL_SUPPORT,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,"To support labeled landing pads, the indirect call/jump sites establish an expected landing pad labe"
+LLM_NEW_HIGH_CONF,ZICFILP_LPAD_ALIGNMENT_REQUIREMENT,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,The `pc` is not 4-byte aligned and `ELP` is `LP_EXPECTED`.
+LLM_NEW_HIGH_CONF,ZICFILP_LPAD_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,The `LPAD` instruction (See <<LP_INST>>) is encoded using the `AUIPC` major opcode with _rd_=`x0`.
+LLM_NEW_HIGH_CONF,ZICFILP_LPL_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,The `LPAD` instruction is encoded with a 20-bit immediate value called the landing-pad-label (`LPL`)
+LLM_NEW_HIGH_CONF,ZICFISS_C_SSPOPCHK_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,`C.SSPOPCHK x5` - encoded using `C.MOP.5`
+LLM_NEW_HIGH_CONF,ZICFISS_C_SSPUSH_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,`C.SSPUSH x1` - encoded using `C.MOP.1`
+LLM_NEW_HIGH_CONF,ZICFISS_ENABLED,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,"When Zicfiss is enabled, each function that needs to spill the link register, typically non-leaf fun"
+LLM_NEW_HIGH_CONF,ZICFISS_INSTRUCTION_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,"The Zicfiss instructions, except `SSAMOSWAP.W/D`, are encoded using a subset of May-Be-Operation ins"
+LLM_NEW_MEDIUM_CONF,ZICFISS_LINK_REG_RESTORE,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,"When such a function returns (the epilogue), the function loads the link register from the regular s"
+LLM_NEW_HIGH_CONF,ZICFISS_SSAMOSWAP_SUPPORT,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,Perform an atomic swap from a shadow stack location (See <<SSAMOSWAP>>)
+LLM_NEW_HIGH_CONF,ZICFISS_SSPOPCHK_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,`SSPOPCHK x1` and `SSPOPCHK x5` - encoded using `MOP.R.28`
+LLM_NEW_HIGH_CONF,ZICFISS_SSPUSH_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,`SSPUSH x1` and `SSPUSH x5` - encoded using `MOP.RR.7`
+LLM_NEW_HIGH_CONF,ZICFISS_SSRDP_ENCODING,,0.0,NORM_DIRECT,,unpriv-cfi.adoc,`SSRDP` - encoded using `MOP.R.28`
+LLM_NEW_HIGH_CONF,ZICNTR_SUPPORT,,0.0,NORM_DIRECT,,smcdeleg.adoc,"If any extension upon which the underlying state depends is not implemented, an attempt from M or S "
+LLM_NEW_HIGH_CONF,ZIHPM_SUPPORT,,0.0,NORM_DIRECT,,smcdeleg.adoc,"If any extension upon which the underlying state depends is not implemented, an attempt from M or S "
+LLM_NEW_MEDIUM_CONF,ZILSD_4BYTE_WORD_ATOMIC,,0.0,NORM_DIRECT,,zilsd.adoc,"If the effective address is a multiple of 4, then each word access is required to be performed atomi"
+LLM_NEW_HIGH_CONF,ZILSD_8BYTE_ATOMIC,,0.0,NORM_DIRECT,,zilsd.adoc,"Even if naturally aligned, the memory access might not be performed atomically."
+LLM_NEW_HIGH_CONF,ZKT_EXTENSION_IMPLEMENTED,,0.0,NORM_DIRECT,,zicond.adoc,"Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the da"
+LLM_NEW_HIGH_CONF,ZKT_IMPLEMENTED,,0.0,NORM_DIRECT,,scalar-crypto.adoc,The Zkt extension attests that the machine has data-independent execution time for a safe subset of 
+LLM_NEW_HIGH_CONF,ZKT_INSTRUCTION_SUBSET,,0.0,NORM_DIRECT,,scalar-crypto.adoc,"Vendors do not have to implement all of the list's instructions to be Zkt compliant; however, if the"
+LLM_NEW_HIGH_CONF,ZTSO_EXTENSION_IMPLEMENTED,,0.0,NORM_DIRECT,,ztso-st-ext.adoc,"Additionally, if the Ztso extension is implemented, then vector memory instructions in the V extensi"
+LLM_NEW_HIGH_CONF,ZVBC_SEW64_ONLY,,0.0,NORM_CSR_WARL,,vector-crypto.adoc,These instructions are only defined for `SEW`=64.
+LLM_NEW_HIGH_CONF,ZVE32F_ZVE64F_DEPENDENT_F,,0.0,DOC_RULE,,v-st-ext.adoc,The Zve32f and Zve64f extensions depend upon the F extension
+LLM_NEW_HIGH_CONF,ZVE32F_ZVE64X_DEPENDENT_ZVE32X,,0.0,DOC_RULE,,v-st-ext.adoc,The Zve32f and Zve64x extensions depend on the Zve32x extension.
+LLM_NEW_HIGH_CONF,ZVE32X_DEPENDENT_ZICSR,,0.0,DOC_RULE,,v-st-ext.adoc,The Zve32x extension depends on the Zicsr extension.
+LLM_NEW_HIGH_CONF,ZVE32X_ZVE64X_NSUPPORT_FREG,,0.0,NORM_DIRECT,,v-st-ext.adoc,"Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include tho"
+LLM_NEW_HIGH_CONF,ZVE64D_DEPENDENT_ZVE64F,,0.0,DOC_RULE,,v-st-ext.adoc,The Zve64d extension depends on the Zve64f extension.
+LLM_NEW_HIGH_CONF,ZVE64F_DEPENDENT_ZVE32F_ZVE64X,,0.0,DOC_RULE,,v-st-ext.adoc,The Zve64f extension depends on the Zve32f and Zve64x extensions.
+LLM_NEW_HIGH_CONF,ZVE64_EEW64_NSUPPORT_VMULH,,0.0,NORM_DIRECT,,v-st-ext.adoc,"the `vmulh` integer multiply variants that return the high word of the product (`vmulh.vv`, `vmulh.v"
+LLM_NEW_HIGH_CONF,ZVE64_EEW64_NSUPPORT_VSMUL,,0.0,NORM_DIRECT,,v-st-ext.adoc,`vsmul.vv` and `vsmul.vx` are not included in EEW=64 in Zve64*.
+LLM_NEW_HIGH_CONF,ZVE_EEW64_NSUPPORT_XLEN32,,0.0,NORM_DIRECT,,v-st-ext.adoc,All Zve* extensions do not support EEW=64 for index values when XLEN=32.
+LLM_NEW_HIGH_CONF,ZVE_PRECISE_TRAPS,,0.0,NORM_DIRECT,,v-st-ext.adoc,All Zve* extensions have precise traps.
+LLM_NEW_HIGH_CONF,ZVFHMIN_DEPENDENT_ZVE32F,,0.0,DOC_RULE,,v-st-ext.adoc,The Zvfhmin extension depends on the Zve32f extension.
+LLM_NEW_HIGH_CONF,ZVFH_DEPENDENT_ZVE32F_ZFHMIN,,0.0,DOC_RULE,,v-st-ext.adoc,The Zvfh extension depends on the Zve32f and Zfhmin extensions.
+LLM_NEW_HIGH_CONF,ZVKG_DATA_INDEPENDENT_TIMING,,0.0,NORM_DIRECT,,vector-crypto.adoc,"To help avoid side-channel timing attacks, these instructions shall be implemented with data-indepen"
+LLM_NEW_HIGH_CONF,ZVKG_EGW128B_ELEM32B,,0.0,NORM_DIRECT,,vector-crypto.adoc,All of these instructions work on 128-bit element groups comprised of four 32-bit elements.
+LLM_NEW_HIGH_CONF,ZVKG_VL_CONSTRAINT,,0.0,NORM_DIRECT,,vector-crypto.adoc,The number of element groups to be processed is `vl`/`EGS`. `vl` must be set to the number of `SEW=3
+LLM_NEW_HIGH_CONF,ZVKG_VSTART_CONSTRAINT,,0.0,NORM_DIRECT,,vector-crypto.adoc,"Likewise, `vstart` must be a multiple of `EGS=4`."
+LLM_NEW_HIGH_CONF,ZVKNHB_ZVBC_COMPOSITE_DEPEND_ZVE64X,,0.0,NORM_DIRECT,,vector-crypto.adoc,"The <<zvknh,Zvknhb>> and <<zvbc>> Vector Crypto Extensions --and accordingly the composite extension"

@@ -1,0 +1,64 @@
+{
+  "chunk_id": "chunk_076",
+  "source_file": "zilsd.adoc",
+  "start_line": 1,
+  "end_line": 315,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Even if naturally aligned, the memory access might not be performed atomically.",
+      "line_number": 35,
+      "parameter_name": "ZILSD_8BYTE_ATOMIC",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether 8-byte aligned LD/SD instructions are performed atomically is an implementation choice. The spec says they 'might not be' atomic, indicating this is optional."
+    },
+    {
+      "excerpt": "If the effective address is a multiple of 4, then each word access is required to be performed atomically.",
+      "line_number": 36,
+      "parameter_name": "ZILSD_4BYTE_WORD_ATOMIC",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This appears to be a requirement ('required to be'), but the implementation must choose how to decompose the 64-bit access into word accesses and ensure atomicity. The choice is in the decomposition strategy."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Operands containing `src` for store instructions and `dest` for load instructions are held in aligned `x`-register pairs, i.e., register numbers must be even.",
+      "line_number": 7,
+      "reason": "This is a fixed requirement that all implementations must follow - register pairs must be even-numbered. No implementation choice."
+    },
+    {
+      "excerpt": "Regardless of endianness, the lower-numbered register holds the low-order bits, and the higher-numbered register holds the high-order bits",
+      "line_number": 9,
+      "reason": "This is a fixed requirement about bit ordering in register pairs. All implementations must follow this rule."
+    },
+    {
+      "excerpt": "As the access size is 64-bit, accesses are only considered naturally aligned for effective addresses that are a multiple of 8. In this case, these instructions are guaranteed to not raise an address-misaligned exception.",
+      "line_number": 33,
+      "reason": "This defines what 'naturally aligned' means and guarantees no misaligned exception for 8-byte alignment. It's a fixed requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "To ensure resumable trap handling is possible for the load instructions, the base register must have its original value if a trap is taken.",
+      "line_number": 48,
+      "reason": "This is a fixed requirement for trap handling behavior. All implementations must preserve the base register value on traps."
+    },
+    {
+      "excerpt": "For C.LDSP, usage of `x0` as the destination is reserved.",
+      "line_number": 78,
+      "reason": "This is a fixed encoding rule - using x0 as destination for C.LDSP is reserved. Not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Even if naturally aligned, the memory access might not be performed atomically.\",\n      \"line_number\": 35,\n      \"parameter_name\": \"ZILSD_8BYTE_ATOMIC\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether 8-byte aligned LD/SD instructions are performed atomically is an implementation choice. The spec says they 'might not be' atomic, indicating this is optional.\"\n    },\n    {\n      \"excerpt\": \"If the effective address is a multiple of 4, then each word access is required to be performed atomically.\",\n      \"line_number\": 36,\n      \"parameter_name\": \"ZILSD_4BYTE_WORD_ATOMIC\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This appears to be a requirement ('required to be'), but the implementation must choose how to decompose the 64-bit access into word accesses and ensure atomicity. The choice is in the decomposition strategy.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Operands containing `src` for store instructions and `dest` for load instructions are held in aligned `x`-register pairs, i.e., register numbers must be even.\",\n      \"line_number\": 7,\n      \"reason\": \"This is a fixed requirement that all implementations must follow - register pairs must be even-numbered. No implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Regardless of endianness, the lower-numbered register holds the low-order bits, and the higher-numbered register holds the high-order bits\",\n      \"line_number\": 9,\n      \"reason\": \"This is a fixed requirement about bit ordering in register pairs. All implementations must follow this rule.\"\n    },\n    {\n      \"excerpt\": \"As the access size is 64-bit, accesses are only considered naturally aligned for effective addresses that are a multiple of 8. In this case, these instructions are guaranteed to not raise an address-misaligned exception.\",\n      \"line_number\": 33,\n      \"reason\": \"This defines what 'naturally aligned' means and guarantees no misaligned exception for 8-byte alignment. It's a fixed requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"To ensure resumable trap handling is possible for the load instructions, the base register must have its original value if a trap is taken.\",\n      \"line_number\": 48,\n      \"reason\": \"This is a fixed requirement for trap handling behavior. All implementations must preserve the base register value on traps.\"\n    },\n    {\n      \"excerpt\": \"For C.LDSP, usage of `x0` as the destination is reserved.\",\n      \"line_number\": 78,\n      \"reason\": \"This is a fixed encoding rule - using x0 as destination for C.LDSP is reserved. Not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 11068,
+  "output_tokens": 763,
+  "latency_ms": 18604,
+  "timestamp": "2026-05-25T21:25:51.753305+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,64 @@
+{
+  "chunk_id": "chunk_065",
+  "source_file": "zalasr.adoc",
+  "start_line": 1,
+  "end_line": 137,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "If the address is not naturally aligned, an address-misaligned exception or an access-fault exception will be generated.",
+      "line_number": 22,
+      "parameter_name": "ZALASR_MISALIGNED_EXCEPTION_TYPE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to generate an address-misaligned exception or an access-fault exception when a Zalasr instruction accesses a misaligned address. This is a direct implementation choice between two exception types."
+    },
+    {
+      "excerpt": "The misaligned atomicity granule PMA, defined in Volume II of this manual, optionally relaxes this alignment requirement.",
+      "line_number": 25,
+      "parameter_name": "ZALASR_MISALIGNED_ATOMICITY_GRANULE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "range",
+      "confidence": "medium",
+      "reasoning": "The misaligned atomicity granule size is implementation-defined. This PMA parameter determines the granularity within which misaligned atomic operations are allowed. The 'optionally relaxes' indicates this is an implementation choice."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The Zalasr instructions always sign-extend the value placed in rd",
+      "line_number": 18,
+      "reason": "This is a fixed behavioral requirement that all implementations must follow - not a parameter."
+    },
+    {
+      "excerpt": "The instructions in the Zalasr extension require that the address held in rs1 be naturally aligned to the size in bytes",
+      "line_number": 20,
+      "reason": "This is a fixed alignment requirement, not an implementation choice. The requirement itself is mandatory."
+    },
+    {
+      "excerpt": "This load must have the ordering annotation aq",
+      "line_number": 67,
+      "reason": "This describes a fixed encoding requirement for the load-acquire instruction, not an implementation parameter."
+    },
+    {
+      "excerpt": "The versions without the aq bit set are RESERVED",
+      "line_number": 71,
+      "reason": "This defines reserved encodings, which is a fixed specification rule, not an implementation choice."
+    },
+    {
+      "excerpt": "LD.{AQ, AQRL} is RV64-only",
+      "line_number": 72,
+      "reason": "This is a fixed ISA rule about which instruction widths are available in which base ISAs, not an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"If the address is not naturally aligned, an address-misaligned exception or an access-fault exception will be generated.\",\n      \"line_number\": 22,\n      \"parameter_name\": \"ZALASR_MISALIGNED_EXCEPTION_TYPE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to generate an address-misaligned exception or an access-fault exception when a Zalasr instruction accesses a misaligned address. This is a direct implementation choice between two exception types.\"\n    },\n    {\n      \"excerpt\": \"The misaligned atomicity granule PMA, defined in Volume II of this manual, optionally relaxes this alignment requirement.\",\n      \"line_number\": 25,\n      \"parameter_name\": \"ZALASR_MISALIGNED_ATOMICITY_GRANULE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"range\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The misaligned atomicity granule size is implementation-defined. This PMA parameter determines the granularity within which misaligned atomic operations are allowed. The 'optionally relaxes' indicates this is an implementation choice.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The Zalasr instructions always sign-extend the value placed in rd\",\n      \"line_number\": 18,\n      \"reason\": \"This is a fixed behavioral requirement that all implementations must follow - not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The instructions in the Zalasr extension require that the address held in rs1 be naturally aligned to the size in bytes\",\n      \"line_number\": 20,\n      \"reason\": \"This is a fixed alignment requirement, not an implementation choice. The requirement itself is mandatory.\"\n    },\n    {\n      \"excerpt\": \"This load must have the ordering annotation aq\",\n      \"line_number\": 67,\n      \"reason\": \"This describes a fixed encoding requirement for the load-acquire instruction, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"The versions without the aq bit set are RESERVED\",\n      \"line_number\": 71,\n      \"reason\": \"This defines reserved encodings, which is a fixed specification rule, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"LD.{AQ, AQRL} is RV64-only\",\n      \"line_number\": 72,\n      \"reason\": \"This is a fixed ISA rule about which instruction widths are available in which base ISAs, not an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9922,
+  "output_tokens": 688,
+  "latency_ms": 15018,
+  "timestamp": "2026-05-25T21:23:00.788490+00:00",
+  "error": null,
+  "retry_count": 0
+}

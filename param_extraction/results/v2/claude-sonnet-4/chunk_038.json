@@ -1,0 +1,84 @@
+{
+  "chunk_id": "chunk_038",
+  "source_file": "rnmi.adoc",
+  "start_line": 1,
+  "end_line": 166,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The RNMI interrupt trap handler address is implementation-defined.",
+      "line_number": 23,
+      "parameter_name": "RNMI_TRAP_HANDLER_ADDRESS",
+      "existing_udb_name": null,
+      "class": "NON_ISA",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "This is a platform-level address choice outside the ISA scope, similar to reset vector or NMI address parameters."
+    },
+    {
+      "excerpt": "RNMI also has an associated exception trap handler address, which is implementation defined.",
+      "line_number": 25,
+      "parameter_name": "RNMI_EXCEPTION_TRAP_HANDLER_ADDRESS",
+      "existing_udb_name": null,
+      "class": "NON_ISA",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "This is another platform-level address choice outside the ISA scope, for handling exceptions during RNMI processing."
+    },
+    {
+      "excerpt": "Prior to writing `mnepc`, implementations may convert an invalid address into some other invalid address that `mnepc` is capable of holding.",
+      "line_number": 62,
+      "parameter_name": "MNEPC_INVALID_ADDRESS_CONVERSION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to convert invalid addresses before writing to mnepc. This is a direct implementation choice not controlled by any CSR field."
+    },
+    {
+      "excerpt": "If the reason is an interrupt and RNMI causes are not supported, bit MXLEN-1 is set to 1, and zero is written to the least-significant bits.",
+      "line_number": 70,
+      "parameter_name": "RNMI_CAUSE_CODES_SUPPORTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to support RNMI cause codes. If not supported, zero is written to the cause field. This is a design-time choice."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The extension adds four new CSRs (`mnepc`, `mncause`, `mnstatus`, and `mnscratch`) to hold the interrupted state",
+      "line_number": 12,
+      "reason": "This is a fixed requirement of the extension - all implementations must add these CSRs. No implementation choice involved."
+    },
+    {
+      "excerpt": "These interrupts have higher priority than any other interrupt or exception on the hart",
+      "line_number": 18,
+      "reason": "This is a fixed behavioral requirement that all implementations must satisfy. The priority is mandated, not implementation-defined."
+    },
+    {
+      "excerpt": "The low bit of `mnepc` (`mnepc[0]`) is always zero.",
+      "line_number": 47,
+      "reason": "This is a fixed requirement for all implementations - mnepc[0] must always be zero. No implementation choice."
+    },
+    {
+      "excerpt": "When NMIE=1, non-maskable interrupts are enabled.",
+      "line_number": 86,
+      "reason": "This describes the behavior when NMIE has a specific value. The behavior is determined by the CSR field value at runtime, not by an implementation choice."
+    },
+    {
+      "excerpt": "Software can set NMIE to 1, but attempts to clear NMIE have no effect.",
+      "line_number": 95,
+      "reason": "This is a fixed behavioral requirement - all implementations must prevent software from clearing NMIE. No implementation choice involved."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The RNMI interrupt trap handler address is implementation-defined.\",\n      \"line_number\": 23,\n      \"parameter_name\": \"RNMI_TRAP_HANDLER_ADDRESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a platform-level address choice outside the ISA scope, similar to reset vector or NMI address parameters.\"\n    },\n    {\n      \"excerpt\": \"RNMI also has an associated exception trap handler address, which is implementation defined.\",\n      \"line_number\": 25,\n      \"parameter_name\": \"RNMI_EXCEPTION_TRAP_HANDLER_ADDRESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is another platform-level address choice outside the ISA scope, for handling exceptions during RNMI processing.\"\n    },\n    {\n      \"excerpt\": \"Prior to writing `mnepc`, implementations may convert an invalid address into some other invalid address that `mnepc` is capable of holding.\",\n      \"line_number\": 62,\n      \"parameter_name\": \"MNEPC_INVALID_ADDRESS_CONVERSION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to convert invalid addresses before writing to mnepc. This is a direct implementation choice not controlled by any CSR field.\"\n    },\n    {\n      \"excerpt\": \"If the reason is an interrupt and RNMI causes are not supported, bit MXLEN-1 is set to 1, and zero is written to the least-significant bits.\",\n      \"line_number\": 70,\n      \"parameter_name\": \"RNMI_CAUSE_CODES_SUPPORTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to support RNMI cause codes. If not supported, zero is written to the cause field. This is a design-time choice.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The extension adds four new CSRs (`mnepc`, `mncause`, `mnstatus`, and `mnscratch`) to hold the interrupted state\",\n      \"line_number\": 12,\n      \"reason\": \"This is a fixed requirement of the extension - all implementations must add these CSRs. No implementation choice involved.\"\n    },\n    {\n      \"excerpt\": \"These interrupts have higher priority than any other interrupt or exception on the hart\",\n      \"line_number\": 18,\n      \"reason\": \"This is a fixed behavioral requirement that all implementations must satisfy. The priority is mandated, not implementation-defined.\"\n    },\n    {\n      \"excerpt\": \"The low bit of `mnepc` (`mnepc[0]`) is always zero.\",\n      \"line_number\": 47,\n      \"reason\": \"This is a fixed requirement for all implementations - mnepc[0] must always be zero. No implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When NMIE=1, non-maskable interrupts are enabled.\",\n      \"line_number\": 86,\n      \"reason\": \"This describes the behavior when NMIE has a specific value. The behavior is determined by the CSR field value at runtime, not by an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Software can set NMIE to 1, but attempts to clear NMIE have no effect.\",\n      \"line_number\": 95,\n      \"reason\": \"This is a fixed behavioral requirement - all implementations must prevent software from clearing NMIE. No implementation choice involved.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 10173,
+  "output_tokens": 993,
+  "latency_ms": 21741,
+  "timestamp": "2026-05-25T21:11:29.937004+00:00",
+  "error": null,
+  "retry_count": 0
+}

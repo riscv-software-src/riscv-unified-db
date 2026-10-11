@@ -1,0 +1,134 @@
+{
+  "chunk_id": "chunk_009",
+  "source_file": "cmo.adoc",
+  "start_line": 1,
+  "end_line": 1094,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The capacity and organization of a cache and the size of a cache block are both _implementation-specific_, and the execution environment provides software a means to discover information about the caches and cache blocks in a system.",
+      "line_number": 103,
+      "parameter_name": "CACHE_BLOCK_SIZE",
+      "existing_udb_name": "CACHE_BLOCK_SIZE",
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The cache block size is explicitly stated as implementation-specific. This is a direct implementation choice not controlled by any CSR field."
+    },
+    {
+      "excerpt": "In the initial set of CMO extensions, the size of a cache block shall be uniform throughout the system.",
+      "line_number": 106,
+      "parameter_name": "UNIFORM_CACHE_BLOCK_SIZE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether cache block size is uniform is a design choice. The spec requires uniformity in initial extensions but implies this may be relaxed in future extensions."
+    },
+    {
+      "excerpt": "If the above constraints are not met, the behavior of a CBO instruction is UNSPECIFIED.",
+      "line_number": 334,
+      "parameter_name": "CBO_BEHAVIOR_ON_CONSTRAINT_VIOLATION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "When PMP/PMA constraints are not met, the implementation chooses what behavior to exhibit. The spec leaves this unspecified, making it an implementation parameter."
+    },
+    {
+      "excerpt": "If neither a load instruction nor store instruction is permitted to access the physical addresses, but an instruction fetch is permitted to access the physical addresses, whether a cache-block management instruction is permitted to access the cache block is UNSPECIFIED.",
+      "line_number": 359,
+      "parameter_name": "CBM_ACCESS_ON_IFETCH_ONLY",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether cache-block management instructions can access blocks when only instruction fetch is permitted is explicitly left as an implementation choice."
+    },
+    {
+      "excerpt": "Each `x{csrname}` register is WARL; however, software should determine the legal values from the execution environment discovery mechanism.",
+      "line_number": 598,
+      "parameter_name": "XENVCFG_LEGAL_VALUES",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The xenvcfg registers are WARL, meaning implementations can choose which values are legal for the CBIE, CBCFE, and CBZE fields."
+    },
+    {
+      "excerpt": "An implementation may update the bytes in any order and with any granularity and atomicity, including individual bytes.",
+      "line_number": 693,
+      "parameter_name": "CBO_ZERO_GRANULARITY",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses the granularity and atomicity of cache-block zero operations. This is a direct implementation choice about how the operation is performed."
+    },
+    {
+      "excerpt": "An implementation may or may not update the entire set of bytes atomically.",
+      "line_number": 1006,
+      "parameter_name": "CBO_ZERO_ATOMICITY",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether cbo.zero updates all bytes atomically or not is an implementation choice. The spec explicitly states this as 'may or may not'."
+    },
+    {
+      "excerpt": "When executing a *cbo.clean* instruction, an implementation may instead perform a flush operation, since the result of that operation is indistinguishable from the sequence of performing a clean operation just before deallocating all cached copies in the set of coherent caches.",
+      "line_number": 850,
+      "parameter_name": "FORCE_UPGRADE_CBO_CLEAN_TO_FLUSH",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation may choose to upgrade cbo.clean to perform a flush operation instead. This is an optional implementation behavior."
+    },
+    {
+      "excerpt": "When executing a *cbo.inval* instruction, an implementation may instead perform a flush operation, since the result of that operation is indistinguishable from the sequence of performing a write transfer to memory just before performing an invalidate operation.",
+      "line_number": 930,
+      "parameter_name": "FORCE_UPGRADE_CBO_INVAL_TO_FLUSH",
+      "existing_udb_name": "FORCE_UPGRADE_CBO_INVAL_TO_FLUSH",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation may choose to upgrade cbo.inval to perform a flush operation instead. This matches the known UDB parameter name."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "_The term CMO encompasses all operations on caches or resources related to caches. The term CBO represents a subset of CMOs that operate only on cache blocks. The first CMO extensions only define CBOs._",
+      "line_number": 44,
+      "reason": "This is inside a [NOTE] block, which is non-normative informational text."
+    },
+    {
+      "excerpt": "When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.",
+      "line_number": 254,
+      "reason": "This describes behavioral consequences of a CSR field value, not an implementation parameter. The behavior is determined at runtime by the MODE field value."
+    },
+    {
+      "excerpt": "The PMP access control bits shall be the same for _all_ physical addresses in the cache block",
+      "line_number": 325,
+      "reason": "This is a fixed requirement ('shall be the same') that all implementations must satisfy, not an implementation choice."
+    },
+    {
+      "excerpt": "CMO instructions do _not_ generate address-misaligned exceptions.",
+      "line_number": 430,
+      "reason": "This is a fixed requirement that applies to all implementations - CMO instructions never generate misaligned exceptions."
+    },
+    {
+      "excerpt": "A load operation (or _store operation_) is performed by an agent to consume (or modify) the data at a given memory location.",
+      "line_number": 67,
+      "reason": "This is a definition of terms, not an implementation parameter. It describes what load/store operations are conceptually."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The capacity and organization of a cache and the size of a cache block are both _implementation-specific_, and the execution environment provides software a means to discover information about the caches and cache blocks in a system.\",\n      \"line_number\": 103,\n      \"parameter_name\": \"CACHE_BLOCK_SIZE\",\n      \"existing_udb_name\": \"CACHE_BLOCK_SIZE\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The cache block size is explicitly stated as implementation-specific. This is a direct implementation choice not controlled by any CSR field.\"\n    },\n    {\n      \"excerpt\": \"In the initial set of CMO extensions, the size of a cache block shall be uniform throughout the system.\",\n      \"line_number\": 106,\n      \"parameter_name\": \"UNIFORM_CACHE_BLOCK_SIZE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether cache block size is uniform is a design choice. The spec requires uniformity in initial extensions but implies this may be relaxed in future extensions.\"\n    },\n    {\n      \"excerpt\": \"If the above constraints are not met, the behavior of a CBO instruction is UNSPECIFIED.\",\n      \"line_number\": 334,\n      \"parameter_name\": \"CBO_BEHAVIOR_ON_CONSTRAINT_VIOLATION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"When PMP/PMA constraints are not met, the implementation chooses what behavior to exhibit. The spec leaves this unspecified, making it an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"If neither a load instruction nor store instruction is permitted to access the physical addresses, but an instruction fetch is permitted to access the physical addresses, whether a cache-block management instruction is permitted to access the cache block is UNSPECIFIED.\",\n      \"line_number\": 359,\n      \"parameter_name\": \"CBM_ACCESS_ON_IFETCH_ONLY\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether cache-block management instructions can access blocks when only instruction fetch is permitted is explicitly left as an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Each `x{csrname}` register is WARL; however, software should determine the legal values from the execution environment discovery mechanism.\",\n      \"line_number\": 598,\n      \"parameter_name\": \"XENVCFG_LEGAL_VALUES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The xenvcfg registers are WARL, meaning implementations can choose which values are legal for the CBIE, CBCFE, and CBZE fields.\"\n    },\n    {\n      \"excerpt\": \"An implementation may update the bytes in any order and with any granularity and atomicity, including individual bytes.\",\n      \"line_number\": 693,\n      \"parameter_name\": \"CBO_ZERO_GRANULARITY\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses the granularity and atomicity of cache-block zero operations. This is a direct implementation choice about how the operation is performed.\"\n    },\n    {\n      \"excerpt\": \"An implementation may or may not update the entire set of bytes atomically.\",\n      \"line_number\": 1006,\n      \"parameter_name\": \"CBO_ZERO_ATOMICITY\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether cbo.zero updates all bytes atomically or not is an implementation choice. The spec explicitly states this as 'may or may not'.\"\n    },\n    {\n      \"excerpt\": \"When executing a *cbo.clean* instruction, an implementation may instead perform a flush operation, since the result of that operation is indistinguishable from the sequence of performing a clean operation just before deallocating all cached copies in the set of coherent caches.\",\n      \"line_number\": 850,\n      \"parameter_name\": \"FORCE_UPGRADE_CBO_CLEAN_TO_FLUSH\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation may choose to upgrade cbo.clean to perform a flush operation instead. This is an optional implementation behavior.\"\n    },\n    {\n      \"excerpt\": \"When executing a *cbo.inval* instruction, an implementation may instead perform a flush operation, since the result of that operation is indistinguishable from the sequence of performing a write transfer to memory just before performing an invalidate operation.\",\n      \"line_number\": 930,\n      \"parameter_name\": \"FORCE_UPGRADE_CBO_INVAL_TO_FLUSH\",\n      \"existing_udb_name\": \"FORCE_UPGRADE_CBO_INVAL_TO_FLUSH\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation may choose to upgrade cbo.inval to perform a flush operation instead. This matches the known UDB parameter name.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"_The term CMO encompasses all operations on caches or resources related to caches. The term CBO represents a subset of CMOs that operate only on cache blocks. The first CMO extensions only define CBOs._\",\n      \"line_number\": 44,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative informational text.\"\n    },\n    {\n      \"excerpt\": \"When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.\",\n      \"line_number\": 254,\n      \"reason\": \"This describes behavioral consequences of a CSR field value, not an implementation parameter. The behavior is determined at runtime by the MODE field value.\"\n    },\n    {\n      \"excerpt\": \"The PMP access control bits shall be the same for _all_ physical addresses in the cache block\",\n      \"line_number\": 325,\n      \"reason\": \"This is a fixed requirement ('shall be the same') that all implementations must satisfy, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"CMO instructions do _not_ generate address-misaligned exceptions.\",\n      \"line_number\": 430,\n      \"reason\": \"This is a fixed requirement that applies to all implementations - CMO instructions never generate misaligned exceptions.\"\n    },\n    {\n      \"excerpt\": \"A load operation (or _store operation_) is performed by an agent to consume (or modify) the data at a given memory location.\",\n      \"line_number\": 67,\n      \"reason\": \"This is a definition of terms, not an implementation parameter. It describes what load/store operations are conceptually.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 18932,
+  "output_tokens": 1841,
+  "latency_ms": 37114,
+  "timestamp": "2026-05-25T21:02:24.098131+00:00",
+  "error": null,
+  "retry_count": 0
+}

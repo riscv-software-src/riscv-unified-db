@@ -1,0 +1,49 @@
+{
+  "chunk_id": "chunk_079",
+  "source_file": "ztso-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 49,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Additionally, if the Ztso extension is implemented, then vector memory instructions in the V extension and Zve family of extensions follow RVTSO at the instruction level.",
+      "line_number": 35,
+      "parameter_name": "ZTSO_EXTENSION_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Ztso extension is implemented is a direct implementation choice. The text explicitly states 'if the Ztso extension is implemented', indicating this is an optional extension that implementers may choose to support or not."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "All load operations behave as if they have an acquire-RCpc annotation",
+      "line_number": 17,
+      "reason": "This describes the required behavior when Ztso is implemented, not an implementation choice. It is a fixed requirement for all Ztso implementations."
+    },
+    {
+      "excerpt": "All store operations behave as if they have a release-RCpc annotation.",
+      "line_number": 18,
+      "reason": "This describes the required behavior when Ztso is implemented, not an implementation choice. It is a fixed requirement for all Ztso implementations."
+    },
+    {
+      "excerpt": "All AMOs behave as if they have both acquire-RCsc and release-RCsc annotations.",
+      "line_number": 19,
+      "reason": "This describes the required behavior when Ztso is implemented, not an implementation choice. It is a fixed requirement for all Ztso implementations."
+    },
+    {
+      "excerpt": "The Ztso extension does not strengthen the ordering of intra-instruction element accesses.",
+      "line_number": 37,
+      "reason": "This is a fixed specification of what Ztso does NOT do, not an implementation choice. All Ztso implementations must follow this rule."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Additionally, if the Ztso extension is implemented, then vector memory instructions in the V extension and Zve family of extensions follow RVTSO at the instruction level.\",\n      \"line_number\": 35,\n      \"parameter_name\": \"ZTSO_EXTENSION_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Ztso extension is implemented is a direct implementation choice. The text explicitly states 'if the Ztso extension is implemented', indicating this is an optional extension that implementers may choose to support or not.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"All load operations behave as if they have an acquire-RCpc annotation\",\n      \"line_number\": 17,\n      \"reason\": \"This describes the required behavior when Ztso is implemented, not an implementation choice. It is a fixed requirement for all Ztso implementations.\"\n    },\n    {\n      \"excerpt\": \"All store operations behave as if they have a release-RCpc annotation.\",\n      \"line_number\": 18,\n      \"reason\": \"This describes the required behavior when Ztso is implemented, not an implementation choice. It is a fixed requirement for all Ztso implementations.\"\n    },\n    {\n      \"excerpt\": \"All AMOs behave as if they have both acquire-RCsc and release-RCsc annotations.\",\n      \"line_number\": 19,\n      \"reason\": \"This describes the required behavior when Ztso is implemented, not an implementation choice. It is a fixed requirement for all Ztso implementations.\"\n    },\n    {\n      \"excerpt\": \"The Ztso extension does not strengthen the ordering of intra-instruction element accesses.\",\n      \"line_number\": 37,\n      \"reason\": \"This is a fixed specification of what Ztso does NOT do, not an implementation choice. All Ztso implementations must follow this rule.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8119,
+  "output_tokens": 521,
+  "latency_ms": 8980,
+  "timestamp": "2026-05-25T21:26:30.179501+00:00",
+  "error": null,
+  "retry_count": 0
+}

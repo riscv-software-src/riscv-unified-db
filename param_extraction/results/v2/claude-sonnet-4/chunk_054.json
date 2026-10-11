@@ -1,0 +1,64 @@
+{
+  "chunk_id": "chunk_054",
+  "source_file": "sstc.adoc",
+  "start_line": 1,
+  "end_line": 24,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "This extension adds the S-level `stimecmp` CSR (<<stimecmp>>)",
+      "line_number": 21,
+      "parameter_name": "STIMECMP_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The Sstc extension is optional, so whether the stimecmp CSR is implemented is an implementation choice. This is a direct architectural parameter about feature presence."
+    },
+    {
+      "excerpt": "and the VS-level `vstimecmp` CSR (<<vstimecmp>>).",
+      "line_number": 21,
+      "parameter_name": "VSTIMECMP_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The vstimecmp CSR is part of the optional Sstc extension, so whether it is implemented is an implementation choice. This is a direct architectural parameter about feature presence."
+    },
+    {
+      "excerpt": "This extension adds the `STCE` bit to the `menvcfg` (<<sec:menvcfg>>) and `henvcfg` (<<sec:henvcfg>>) CSRs.",
+      "line_number": 22,
+      "parameter_name": "STCE_BIT_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The STCE bit in menvcfg and henvcfg is part of the optional Sstc extension, so whether these bits are implemented is an implementation choice. This is a direct architectural parameter about feature presence."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "This extension serves to provide supervisor mode with its own CSR-based timer interrupt facility that it can directly manage to provide its own timer service",
+      "line_number": 13,
+      "reason": "This describes the purpose and functionality of the extension, not an implementation choice or parameter."
+    },
+    {
+      "excerpt": "Further, this extension adds a similar facility to the Hypervisor extension for VS-mode.",
+      "line_number": 17,
+      "reason": "This describes what the extension provides but does not define any implementation-specific choices."
+    },
+    {
+      "excerpt": "The extension name is \"Sstc\"",
+      "line_number": 19,
+      "reason": "This is a fixed naming convention, not an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"This extension adds the S-level `stimecmp` CSR (<<stimecmp>>)\",\n      \"line_number\": 21,\n      \"parameter_name\": \"STIMECMP_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The Sstc extension is optional, so whether the stimecmp CSR is implemented is an implementation choice. This is a direct architectural parameter about feature presence.\"\n    },\n    {\n      \"excerpt\": \"and the VS-level `vstimecmp` CSR (<<vstimecmp>>).\",\n      \"line_number\": 21,\n      \"parameter_name\": \"VSTIMECMP_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The vstimecmp CSR is part of the optional Sstc extension, so whether it is implemented is an implementation choice. This is a direct architectural parameter about feature presence.\"\n    },\n    {\n      \"excerpt\": \"This extension adds the `STCE` bit to the `menvcfg` (<<sec:menvcfg>>) and `henvcfg` (<<sec:henvcfg>>) CSRs.\",\n      \"line_number\": 22,\n      \"parameter_name\": \"STCE_BIT_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The STCE bit in menvcfg and henvcfg is part of the optional Sstc extension, so whether these bits are implemented is an implementation choice. This is a direct architectural parameter about feature presence.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"This extension serves to provide supervisor mode with its own CSR-based timer interrupt facility that it can directly manage to provide its own timer service\",\n      \"line_number\": 13,\n      \"reason\": \"This describes the purpose and functionality of the extension, not an implementation choice or parameter.\"\n    },\n    {\n      \"excerpt\": \"Further, this extension adds a similar facility to the Hypervisor extension for VS-mode.\",\n      \"line_number\": 17,\n      \"reason\": \"This describes what the extension provides but does not define any implementation-specific choices.\"\n    },\n    {\n      \"excerpt\": \"The extension name is \\\"Sstc\\\"\",\n      \"line_number\": 19,\n      \"reason\": \"This is a fixed naming convention, not an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7936,
+  "output_tokens": 695,
+  "latency_ms": 10815,
+  "timestamp": "2026-05-25T21:16:50.531033+00:00",
+  "error": null,
+  "retry_count": 0
+}

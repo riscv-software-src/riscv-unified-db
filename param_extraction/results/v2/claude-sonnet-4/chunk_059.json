@@ -1,0 +1,239 @@
+{
+  "chunk_id": "chunk_059",
+  "source_file": "v-st-ext.adoc",
+  "start_line": 3386,
+  "end_line": 5396,
+  "content_start_line": 3394,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The Zve32f and Zve64x extensions depend on the Zve32x extension.",
+      "line_number": 5251,
+      "parameter_name": "ZVE32F_ZVE64X_DEPENDENT_ZVE32X",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "The Zve64f extension depends on the Zve32f and Zve64x extensions.",
+      "line_number": 5252,
+      "parameter_name": "ZVE64F_DEPENDENT_ZVE32F_ZVE64X",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "The Zve64d extension depends on the Zve64f extension.",
+      "line_number": 5253,
+      "parameter_name": "ZVE64D_DEPENDENT_ZVE64F",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "All Zve* extensions have precise traps.",
+      "line_number": 5255,
+      "parameter_name": "ZVE_PRECISE_TRAPS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a normative requirement that all Zve* extensions must provide precise traps, not imprecise ones. This is an architectural choice."
+    },
+    {
+      "excerpt": "All Zve* extensions do not support EEW=64 for index values when XLEN=32.",
+      "line_number": 5267,
+      "parameter_name": "ZVE_EEW64_NSUPPORT_XLEN32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies that Zve64* extensions do not support EEW=64 for index values when XLEN=32, which is an architectural limitation."
+    },
+    {
+      "excerpt": "the `vmulh` integer multiply variants that return the high word of the product (`vmulh.vv`, `vmulh.vx`, `vmulhu.vv`, `vmulhu.vx`, `vmulhsu.vv`, `vmulhsu.vx`) are not included for EEW=64 in Zve64*.",
+      "line_number": 5272,
+      "parameter_name": "ZVE64_EEW64_NSUPPORT_VMULH",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies that Zve64* extensions do not include vmulh variants for EEW=64, which is an architectural choice about instruction support."
+    },
+    {
+      "excerpt": "`vsmul.vv` and `vsmul.vx` are not included in EEW=64 in Zve64*.",
+      "line_number": 5280,
+      "parameter_name": "ZVE64_EEW64_NSUPPORT_VSMUL",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies that Zve64* extensions do not include vsmul instructions for EEW=64, which is an architectural choice about instruction support."
+    },
+    {
+      "excerpt": "Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include those with EEW=64 floating-point operands.",
+      "line_number": 5289,
+      "parameter_name": "ZVE32X_ZVE64X_NSUPPORT_FREG",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies which vector permutation instructions are not supported in certain Zve* extensions, which is an architectural choice about instruction support."
+    },
+    {
+      "excerpt": "The Zve32x extension depends on the Zicsr extension.",
+      "line_number": 5292,
+      "parameter_name": "ZVE32X_DEPENDENT_ZICSR",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "The Zve32f and Zve64f extensions depend upon the F extension",
+      "line_number": 5293,
+      "parameter_name": "ZVE32F_ZVE64F_DEPENDENT_F",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "The `misa.v` bit is set for implementations providing `misa` and supporting V.",
+      "line_number": 5306,
+      "parameter_name": "MISA_V_OP",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies that implementations supporting the V extension must set the misa.v bit, which is an architectural requirement."
+    },
+    {
+      "excerpt": "The V vector extension has precise traps.",
+      "line_number": 5308,
+      "parameter_name": "V_PRECISE_TRAPS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a normative requirement that the V extension must provide precise traps, not imprecise ones. This is an architectural choice."
+    },
+    {
+      "excerpt": "The V vector extension depends upon the Zvl128b and Zve64d extensions.",
+      "line_number": 5310,
+      "parameter_name": "V_DEPENDENT_ZVL128B_ZVE64D",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "The V extension does not support EEW=64 for index values when XLEN=32.",
+      "line_number": 5327,
+      "parameter_name": "V_INSTR_LS_EEW64_NSUPPORTED_XLEN32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies that the V extension does not support EEW=64 for index values when XLEN=32, which is an architectural limitation."
+    },
+    {
+      "excerpt": "The V extension depends upon the F and D extensions",
+      "line_number": 5344,
+      "parameter_name": "V_DEPENDENT_F_D",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "The Zvfhmin extension depends on the Zve32f extension.",
+      "line_number": 5363,
+      "parameter_name": "ZVFHMIN_DEPENDENT_ZVE32F",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "The Zvfh extension depends on the Zve32f and Zfhmin extensions.",
+      "line_number": 5381,
+      "parameter_name": "ZVFH_DEPENDENT_ZVE32F_ZFHMIN",
+      "existing_udb_name": null,
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This describes a documentation requirement about extension dependencies, not an architectural behavior choice."
+    },
+    {
+      "excerpt": "Vector instructions with EGS > VLMAX are reserved.",
+      "line_number": 5407,
+      "parameter_name": "EGS_GE_VLMAX_RSV",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies that vector instructions with element group size greater than VLMAX are reserved, which is an architectural constraint."
+    },
+    {
+      "excerpt": "When an operand is a vector of element groups, the `vl` setting must correspond to an integer multiple of the element group size, with other values of `vl` reserved.",
+      "line_number": 5420,
+      "parameter_name": "EGS_VL_RSV",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies a constraint on vl setting for element group instructions, which is an architectural requirement."
+    },
+    {
+      "excerpt": "When AVL > VLMAX, the value of `vl` must be set to either VLMAX or a positive integer multiple of EGSMAX.",
+      "line_number": 5427,
+      "parameter_name": "EGS_VL_AVL",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This specifies an additional constraint on vl setting when element group instructions are present, which is an architectural requirement."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "NOTE: The vector mask logical instructions are designed to be easily fused with a following masked vector operation to effectively expand the number of predicate registers by moving values into `v0` before use.",
+      "line_number": 4650,
+      "reason": "This is inside a NOTE block and is therefore non-normative. It describes implementation guidance, not an architectural requirement."
+    },
+    {
+      "excerpt": "When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.",
+      "line_number": 4000,
+      "reason": "This describes behavior when a CSR field has a specific value, not an implementation choice about which values are supported."
+    },
+    {
+      "excerpt": "The instruction copies a scalar `f` register value to all active elements of a vector register group.",
+      "line_number": 3700,
+      "reason": "This describes the fixed behavior of an instruction, not an implementation-defined choice."
+    },
+    {
+      "excerpt": "Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.",
+      "line_number": 4500,
+      "reason": "Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The Zve32f and Zve64x extensions depend on the Zve32x extension.\",\n      \"line_number\": 5251,\n      \"parameter_name\": \"ZVE32F_ZVE64X_DEPENDENT_ZVE32X\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"The Zve64f extension depends on the Zve32f and Zve64x extensions.\",\n      \"line_number\": 5252,\n      \"parameter_name\": \"ZVE64F_DEPENDENT_ZVE32F_ZVE64X\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"The Zve64d extension depends on the Zve64f extension.\",\n      \"line_number\": 5253,\n      \"parameter_name\": \"ZVE64D_DEPENDENT_ZVE64F\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"All Zve* extensions have precise traps.\",\n      \"line_number\": 5255,\n      \"parameter_name\": \"ZVE_PRECISE_TRAPS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a normative requirement that all Zve* extensions must provide precise traps, not imprecise ones. This is an architectural choice.\"\n    },\n    {\n      \"excerpt\": \"All Zve* extensions do not support EEW=64 for index values when XLEN=32.\",\n      \"line_number\": 5267,\n      \"parameter_name\": \"ZVE_EEW64_NSUPPORT_XLEN32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies that Zve64* extensions do not support EEW=64 for index values when XLEN=32, which is an architectural limitation.\"\n    },\n    {\n      \"excerpt\": \"the `vmulh` integer multiply variants that return the high word of the product (`vmulh.vv`, `vmulh.vx`, `vmulhu.vv`, `vmulhu.vx`, `vmulhsu.vv`, `vmulhsu.vx`) are not included for EEW=64 in Zve64*.\",\n      \"line_number\": 5272,\n      \"parameter_name\": \"ZVE64_EEW64_NSUPPORT_VMULH\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies that Zve64* extensions do not include vmulh variants for EEW=64, which is an architectural choice about instruction support.\"\n    },\n    {\n      \"excerpt\": \"`vsmul.vv` and `vsmul.vx` are not included in EEW=64 in Zve64*.\",\n      \"line_number\": 5280,\n      \"parameter_name\": \"ZVE64_EEW64_NSUPPORT_VSMUL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies that Zve64* extensions do not include vsmul instructions for EEW=64, which is an architectural choice about instruction support.\"\n    },\n    {\n      \"excerpt\": \"Zve32x and Zve64x do not include those with floating-point operands, and Zve64f does not include those with EEW=64 floating-point operands.\",\n      \"line_number\": 5289,\n      \"parameter_name\": \"ZVE32X_ZVE64X_NSUPPORT_FREG\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies which vector permutation instructions are not supported in certain Zve* extensions, which is an architectural choice about instruction support.\"\n    },\n    {\n      \"excerpt\": \"The Zve32x extension depends on the Zicsr extension.\",\n      \"line_number\": 5292,\n      \"parameter_name\": \"ZVE32X_DEPENDENT_ZICSR\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"The Zve32f and Zve64f extensions depend upon the F extension\",\n      \"line_number\": 5293,\n      \"parameter_name\": \"ZVE32F_ZVE64F_DEPENDENT_F\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"The `misa.v` bit is set for implementations providing `misa` and supporting V.\",\n      \"line_number\": 5306,\n      \"parameter_name\": \"MISA_V_OP\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies that implementations supporting the V extension must set the misa.v bit, which is an architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"The V vector extension has precise traps.\",\n      \"line_number\": 5308,\n      \"parameter_name\": \"V_PRECISE_TRAPS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a normative requirement that the V extension must provide precise traps, not imprecise ones. This is an architectural choice.\"\n    },\n    {\n      \"excerpt\": \"The V vector extension depends upon the Zvl128b and Zve64d extensions.\",\n      \"line_number\": 5310,\n      \"parameter_name\": \"V_DEPENDENT_ZVL128B_ZVE64D\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"The V extension does not support EEW=64 for index values when XLEN=32.\",\n      \"line_number\": 5327,\n      \"parameter_name\": \"V_INSTR_LS_EEW64_NSUPPORTED_XLEN32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies that the V extension does not support EEW=64 for index values when XLEN=32, which is an architectural limitation.\"\n    },\n    {\n      \"excerpt\": \"The V extension depends upon the F and D extensions\",\n      \"line_number\": 5344,\n      \"parameter_name\": \"V_DEPENDENT_F_D\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"The Zvfhmin extension depends on the Zve32f extension.\",\n      \"line_number\": 5363,\n      \"parameter_name\": \"ZVFHMIN_DEPENDENT_ZVE32F\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"The Zvfh extension depends on the Zve32f and Zfhmin extensions.\",\n      \"line_number\": 5381,\n      \"parameter_name\": \"ZVFH_DEPENDENT_ZVE32F_ZFHMIN\",\n      \"existing_udb_name\": null,\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This describes a documentation requirement about extension dependencies, not an architectural behavior choice.\"\n    },\n    {\n      \"excerpt\": \"Vector instructions with EGS > VLMAX are reserved.\",\n      \"line_number\": 5407,\n      \"parameter_name\": \"EGS_GE_VLMAX_RSV\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies that vector instructions with element group size greater than VLMAX are reserved, which is an architectural constraint.\"\n    },\n    {\n      \"excerpt\": \"When an operand is a vector of element groups, the `vl` setting must correspond to an integer multiple of the element group size, with other values of `vl` reserved.\",\n      \"line_number\": 5420,\n      \"parameter_name\": \"EGS_VL_RSV\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies a constraint on vl setting for element group instructions, which is an architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"When AVL > VLMAX, the value of `vl` must be set to either VLMAX or a positive integer multiple of EGSMAX.\",\n      \"line_number\": 5427,\n      \"parameter_name\": \"EGS_VL_AVL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This specifies an additional constraint on vl setting when element group instructions are present, which is an architectural requirement.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"NOTE: The vector mask logical instructions are designed to be easily fused with a following masked vector operation to effectively expand the number of predicate registers by moving values into `v0` before use.\",\n      \"line_number\": 4650,\n      \"reason\": \"This is inside a NOTE block and is therefore non-normative. It describes implementation guidance, not an architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.\",\n      \"line_number\": 4000,\n      \"reason\": \"This describes behavior when a CSR field has a specific value, not an implementation choice about which values are supported.\"\n    },\n    {\n      \"excerpt\": \"The instruction copies a scalar `f` register value to all active elements of a vector register group.\",\n      \"line_number\": 3700,\n      \"reason\": \"This describes the fixed behavior of an instruction, not an implementation-defined choice.\"\n    },\n    {\n      \"excerpt\": \"Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.\",\n      \"line_number\": 4500,\n      \"reason\": \"Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 36178,
+  "output_tokens": 3228,
+  "latency_ms": 46539,
+  "timestamp": "2026-05-25T21:21:09.075922+00:00",
+  "error": null,
+  "retry_count": 0
+}

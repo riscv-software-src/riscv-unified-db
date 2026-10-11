@@ -1,0 +1,119 @@
+{
+  "chunk_id": "chunk_045",
+  "source_file": "scalar-crypto.adoc",
+  "start_line": 3423,
+  "end_line": 5594,
+  "content_start_line": 3453,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Attempts to access the `seed` CSR using a read-only CSR-access instruction (`CSRRS`/`CSRRC` with _rs1_=`x0` or `CSRRSI`/`CSRRCI` with _uimm_=0) raise an illegal-instruction exception; any other CSR-access instruction may be used to access `seed`.",
+      "line_number": 3530,
+      "parameter_name": "SEED_CSR_ACCESS_CONTROL",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to raise illegal-instruction exceptions for read-only CSR access instructions to the seed CSR. This is a design-time choice about access control behavior."
+    },
+    {
+      "excerpt": "The `seed` CSR is also access controlled by execution mode, and attempted read or write access will raise an illegal-instruction exception outside M mode unless access is explicitly granted.",
+      "line_number": 3548,
+      "parameter_name": "SEED_CSR_MODE_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which execution modes can access the seed CSR. This is controlled by mseccfg fields but the basic access control policy is an implementation choice."
+    },
+    {
+      "excerpt": "An implementation may safely set reserved and custom bits to zeros.",
+      "line_number": 3567,
+      "parameter_name": "SEED_CSR_RESERVED_BITS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "bitmask",
+      "confidence": "medium",
+      "reasoning": "The implementation may choose what values to return for reserved and custom bits in the seed CSR. The spec permits setting them to zero but doesn't require it."
+    },
+    {
+      "excerpt": "Implementations may implement `mseccfg` such that `[s,u]seed` is a read-only constant value `0`.",
+      "line_number": 3754,
+      "parameter_name": "MSECCFG_SEED_FIELDS_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether the sseed and useed fields in mseccfg are read-only zero or actually writable. This controls the read-write nature of these CSR fields."
+    },
+    {
+      "excerpt": "The Zkt extension attests that the machine has data-independent execution time for a safe subset of instructions.",
+      "line_number": 3762,
+      "parameter_name": "ZKT_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to implement the Zkt extension, which provides data-independent execution time guarantees for cryptographic instructions."
+    },
+    {
+      "excerpt": "Vendors do not have to implement all of the list's instructions to be Zkt compliant; however, if they claim to have Zkt and implement any of the listed instructions, it must have data-independent latency.",
+      "line_number": 3810,
+      "parameter_name": "ZKT_INSTRUCTION_SUBSET",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which subset of the Zkt instruction list to implement. The parameter is the set of Zkt-listed instructions that are actually implemented with data-independent timing."
+    },
+    {
+      "excerpt": "When not implemented (e.g., in virtual machines), `mnoise` can permanently read zero (`0x00000000`) and ignore writes.",
+      "line_number": 5549,
+      "parameter_name": "MNOISE_CSR_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The implementation chooses whether to implement the mnoise test CSR. When not implemented, it reads zero and ignores writes."
+    },
+    {
+      "excerpt": "When available, but `NOISE_TEST = 0`, `mnoise` can return a nonzero constant (e.g. `0x00000001`) but no noise samples.",
+      "line_number": 5551,
+      "parameter_name": "MNOISE_CSR_IDLE_VALUE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "medium",
+      "reasoning": "When the mnoise CSR is implemented but not in test mode, the implementation chooses what constant value to return. The spec suggests 0x00000001 as an example."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "This instruction gathers bits from the high and low halves of the source word into odd/even bit positions in the destination word.",
+      "line_number": 3456,
+      "reason": "This describes the behavior of the zip instruction, not an implementation choice."
+    },
+    {
+      "excerpt": "The interface was designed to be simple so that a vendor- and device-independent driver component (e.g., in Linux kernel, embedded firmware, or a cryptographic library) may use `seed` to generate truly random bits.",
+      "line_number": 3497,
+      "reason": "This is design rationale explaining why the interface was designed a certain way, not an implementation parameter."
+    },
+    {
+      "excerpt": "Software normally uses the instruction `csrrw rd, seed, x0` to read the `seed` CSR.",
+      "line_number": 3540,
+      "reason": "This describes normal software usage, not an implementation choice."
+    },
+    {
+      "excerpt": "The entropy source can also be used to build RBG3 full entropy sources.",
+      "line_number": 3647,
+      "reason": "This describes a possible use case, not an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Attempts to access the `seed` CSR using a read-only CSR-access instruction (`CSRRS`/`CSRRC` with _rs1_=`x0` or `CSRRSI`/`CSRRCI` with _uimm_=0) raise an illegal-instruction exception; any other CSR-access instruction may be used to access `seed`.\",\n      \"line_number\": 3530,\n      \"parameter_name\": \"SEED_CSR_ACCESS_CONTROL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to raise illegal-instruction exceptions for read-only CSR access instructions to the seed CSR. This is a design-time choice about access control behavior.\"\n    },\n    {\n      \"excerpt\": \"The `seed` CSR is also access controlled by execution mode, and attempted read or write access will raise an illegal-instruction exception outside M mode unless access is explicitly granted.\",\n      \"line_number\": 3548,\n      \"parameter_name\": \"SEED_CSR_MODE_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which execution modes can access the seed CSR. This is controlled by mseccfg fields but the basic access control policy is an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"An implementation may safely set reserved and custom bits to zeros.\",\n      \"line_number\": 3567,\n      \"parameter_name\": \"SEED_CSR_RESERVED_BITS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation may choose what values to return for reserved and custom bits in the seed CSR. The spec permits setting them to zero but doesn't require it.\"\n    },\n    {\n      \"excerpt\": \"Implementations may implement `mseccfg` such that `[s,u]seed` is a read-only constant value `0`.\",\n      \"line_number\": 3754,\n      \"parameter_name\": \"MSECCFG_SEED_FIELDS_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether the sseed and useed fields in mseccfg are read-only zero or actually writable. This controls the read-write nature of these CSR fields.\"\n    },\n    {\n      \"excerpt\": \"The Zkt extension attests that the machine has data-independent execution time for a safe subset of instructions.\",\n      \"line_number\": 3762,\n      \"parameter_name\": \"ZKT_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to implement the Zkt extension, which provides data-independent execution time guarantees for cryptographic instructions.\"\n    },\n    {\n      \"excerpt\": \"Vendors do not have to implement all of the list's instructions to be Zkt compliant; however, if they claim to have Zkt and implement any of the listed instructions, it must have data-independent latency.\",\n      \"line_number\": 3810,\n      \"parameter_name\": \"ZKT_INSTRUCTION_SUBSET\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which subset of the Zkt instruction list to implement. The parameter is the set of Zkt-listed instructions that are actually implemented with data-independent timing.\"\n    },\n    {\n      \"excerpt\": \"When not implemented (e.g., in virtual machines), `mnoise` can permanently read zero (`0x00000000`) and ignore writes.\",\n      \"line_number\": 5549,\n      \"parameter_name\": \"MNOISE_CSR_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation chooses whether to implement the mnoise test CSR. When not implemented, it reads zero and ignores writes.\"\n    },\n    {\n      \"excerpt\": \"When available, but `NOISE_TEST = 0`, `mnoise` can return a nonzero constant (e.g. `0x00000001`) but no noise samples.\",\n      \"line_number\": 5551,\n      \"parameter_name\": \"MNOISE_CSR_IDLE_VALUE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"When the mnoise CSR is implemented but not in test mode, the implementation chooses what constant value to return. The spec suggests 0x00000001 as an example.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"This instruction gathers bits from the high and low halves of the source word into odd/even bit positions in the destination word.\",\n      \"line_number\": 3456,\n      \"reason\": \"This describes the behavior of the zip instruction, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The interface was designed to be simple so that a vendor- and device-independent driver component (e.g., in Linux kernel, embedded firmware, or a cryptographic library) may use `seed` to generate truly random bits.\",\n      \"line_number\": 3497,\n      \"reason\": \"This is design rationale explaining why the interface was designed a certain way, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"Software normally uses the instruction `csrrw rd, seed, x0` to read the `seed` CSR.\",\n      \"line_number\": 3540,\n      \"reason\": \"This describes normal software usage, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The entropy source can also be used to build RBG3 full entropy sources.\",\n      \"line_number\": 3647,\n      \"reason\": \"This describes a possible use case, not an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 38653,
+  "output_tokens": 1631,
+  "latency_ms": 37602,
+  "timestamp": "2026-05-25T21:13:48.919880+00:00",
+  "error": null,
+  "retry_count": 0
+}

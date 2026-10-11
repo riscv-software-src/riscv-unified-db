@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_074",
+  "source_file": "zihintntl.adoc",
+  "start_line": 1,
+  "end_line": 189,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "In the event that a trap is taken on the target instruction, implementations are discouraged from applying the NTL to the first instruction in the trap handler. Instead, implementations are recommended to ignore the HINT in this case.",
+      "line_number": 154,
+      "parameter_name": "NTL_TRAP_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The implementation chooses whether to apply NTL hints to the first instruction in a trap handler when a trap occurs on the target instruction. The spec 'discourages' and 'recommends' but leaves the choice to the implementation."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The NTL instructions can be used to avoid cache pollution when streaming data or traversing large data structures, or to reduce latency in producer-consumer interactions.",
+      "line_number": 26,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It describes potential uses but does not define implementation choices."
+    },
+    {
+      "excerpt": "The NTL instructions do not change architectural state, nor do they alter the architecturally visible effects of the target instruction.",
+      "line_number": 7,
+      "reason": "This is a fixed requirement that applies to all implementations. It defines what NTL instructions must not do, not an implementation choice."
+    },
+    {
+      "excerpt": "NTL.P1 is encoded as ADD x0, x0, x2.",
+      "line_number": 13,
+      "reason": "This is a fixed encoding requirement, not an implementation choice. All implementations must use this encoding for NTL.P1."
+    },
+    {
+      "excerpt": "The NTL instructions affect all memory-access instructions except the cache-management instructions in the Zicbom extension.",
+      "line_number": 89,
+      "reason": "This defines the fixed scope of NTL instructions - which instruction types they affect. It is not an implementation choice but a specification requirement."
+    },
+    {
+      "excerpt": "Software is discouraged from following an NTL instruction with an instruction that does not explicitly access memory.",
+      "line_number": 143,
+      "reason": "This is a software recommendation, not an implementation parameter. It describes what software should do, not what implementations may choose."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"In the event that a trap is taken on the target instruction, implementations are discouraged from applying the NTL to the first instruction in the trap handler. Instead, implementations are recommended to ignore the HINT in this case.\",\n      \"line_number\": 154,\n      \"parameter_name\": \"NTL_TRAP_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation chooses whether to apply NTL hints to the first instruction in a trap handler when a trap occurs on the target instruction. The spec 'discourages' and 'recommends' but leaves the choice to the implementation.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The NTL instructions can be used to avoid cache pollution when streaming data or traversing large data structures, or to reduce latency in producer-consumer interactions.\",\n      \"line_number\": 26,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It describes potential uses but does not define implementation choices.\"\n    },\n    {\n      \"excerpt\": \"The NTL instructions do not change architectural state, nor do they alter the architecturally visible effects of the target instruction.\",\n      \"line_number\": 7,\n      \"reason\": \"This is a fixed requirement that applies to all implementations. It defines what NTL instructions must not do, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"NTL.P1 is encoded as ADD x0, x0, x2.\",\n      \"line_number\": 13,\n      \"reason\": \"This is a fixed encoding requirement, not an implementation choice. All implementations must use this encoding for NTL.P1.\"\n    },\n    {\n      \"excerpt\": \"The NTL instructions affect all memory-access instructions except the cache-management instructions in the Zicbom extension.\",\n      \"line_number\": 89,\n      \"reason\": \"This defines the fixed scope of NTL instructions - which instruction types they affect. It is not an implementation choice but a specification requirement.\"\n    },\n    {\n      \"excerpt\": \"Software is discouraged from following an NTL instruction with an instruction that does not explicitly access memory.\",\n      \"line_number\": 143,\n      \"reason\": \"This is a software recommendation, not an implementation parameter. It describes what software should do, not what implementations may choose.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 10162,
+  "output_tokens": 617,
+  "latency_ms": 13383,
+  "timestamp": "2026-05-25T21:25:22.691937+00:00",
+  "error": null,
+  "retry_count": 0
+}

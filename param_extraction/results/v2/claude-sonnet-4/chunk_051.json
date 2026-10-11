@@ -1,0 +1,164 @@
+{
+  "chunk_id": "chunk_051",
+  "source_file": "smstateen.adoc",
+  "start_line": 1,
+  "end_line": 383,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "MSTATEEN_AIA_TYPE",
+      "existing_udb_name": "MSTATEEN_AIA_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "Each bit in stateen CSRs may be read-only zero, read-only one, or read-write. This applies to all the specific bits like AIA, IMSIC, CONTEXT, etc. The implementation chooses the access type for each bit."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "MSTATEEN_IMSIC_TYPE",
+      "existing_udb_name": "MSTATEEN_IMSIC_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The IMSIC bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "MSTATEEN_CONTEXT_TYPE",
+      "existing_udb_name": "MSTATEEN_CONTEXT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The CONTEXT bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "MSTATEEN_CSRIND_TYPE",
+      "existing_udb_name": "MSTATEEN_CSRIND_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The CSRIND bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "MSTATEEN_ENVCFG_TYPE",
+      "existing_udb_name": "MSTATEEN_ENVCFG_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The ENVCFG bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "MSTATEEN_JVT_TYPE",
+      "existing_udb_name": "MSTATEEN_JVT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The JVT bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "HSTATEEN_AIA_TYPE",
+      "existing_udb_name": "HSTATEEN_AIA_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The AIA bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "HSTATEEN_IMSIC_TYPE",
+      "existing_udb_name": "HSTATEEN_IMSIC_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The IMSIC bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "HSTATEEN_CONTEXT_TYPE",
+      "existing_udb_name": "HSTATEEN_CONTEXT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The CONTEXT bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "HSTATEEN_CSRIND_TYPE",
+      "existing_udb_name": "HSTATEEN_CSRIND_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The CSRIND bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "HSTATEEN_ENVCFG_TYPE",
+      "existing_udb_name": "HSTATEEN_ENVCFG_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The ENVCFG bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    },
+    {
+      "excerpt": "Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.",
+      "line_number": 127,
+      "parameter_name": "SSTATEEN_JVT_TYPE",
+      "existing_udb_name": "SSTATEEN_JVT_TYPE",
+      "class": "NORM_CSR_RW",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The JVT bit in sstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The `stateen` registers at each level control access to state at all less-privileged levels, but not at its own level.",
+      "line_number": 82,
+      "reason": "This describes the behavioral function of stateen registers, not an implementation choice. The behavior is fixed by the specification."
+    },
+    {
+      "excerpt": "When this extension is not implemented, all state added by an extension is accessible as defined by that extension.",
+      "line_number": 90,
+      "reason": "This describes what happens when the extension is not implemented, which is a fixed behavioral requirement, not a parameter."
+    },
+    {
+      "excerpt": "The C bit controls access to any and all custom state.",
+      "line_number": 217,
+      "reason": "This describes the function of the C bit, not whether it is implemented or its access type. The behavioral description is fixed."
+    },
+    {
+      "excerpt": "On reset, all writable `mstateen` bits are initialized by the hardware to zeros.",
+      "line_number": 147,
+      "reason": "This is a fixed requirement for reset behavior that applies to all implementations. There is no implementation choice here."
+    },
+    {
+      "excerpt": "Whenever `misa.F` = 1, FCSR bit of `mstateen0` is read-only zero",
+      "line_number": 230,
+      "reason": "This is a conditional requirement based on misa.F value, not an implementation parameter. When F extension is present, the FCSR bit must be read-only zero."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"MSTATEEN_AIA_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_AIA_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Each bit in stateen CSRs may be read-only zero, read-only one, or read-write. This applies to all the specific bits like AIA, IMSIC, CONTEXT, etc. The implementation chooses the access type for each bit.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"MSTATEEN_IMSIC_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_IMSIC_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The IMSIC bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"MSTATEEN_CONTEXT_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_CONTEXT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The CONTEXT bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"MSTATEEN_CSRIND_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_CSRIND_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The CSRIND bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"MSTATEEN_ENVCFG_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_ENVCFG_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The ENVCFG bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"MSTATEEN_JVT_TYPE\",\n      \"existing_udb_name\": \"MSTATEEN_JVT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The JVT bit in mstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"HSTATEEN_AIA_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_AIA_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The AIA bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"HSTATEEN_IMSIC_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_IMSIC_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The IMSIC bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"HSTATEEN_CONTEXT_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_CONTEXT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The CONTEXT bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"HSTATEEN_CSRIND_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_CSRIND_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The CSRIND bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"HSTATEEN_ENVCFG_TYPE\",\n      \"existing_udb_name\": \"HSTATEEN_ENVCFG_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The ENVCFG bit in hstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    },\n    {\n      \"excerpt\": \"Each standard-defined bit of a `stateen` CSR is WARL and may be read-only zero or one, subject to the following conditions.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"SSTATEEN_JVT_TYPE\",\n      \"existing_udb_name\": \"SSTATEEN_JVT_TYPE\",\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The JVT bit in sstateen0 may be read-only zero, read-only one, or read-write, depending on implementation choices.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The `stateen` registers at each level control access to state at all less-privileged levels, but not at its own level.\",\n      \"line_number\": 82,\n      \"reason\": \"This describes the behavioral function of stateen registers, not an implementation choice. The behavior is fixed by the specification.\"\n    },\n    {\n      \"excerpt\": \"When this extension is not implemented, all state added by an extension is accessible as defined by that extension.\",\n      \"line_number\": 90,\n      \"reason\": \"This describes what happens when the extension is not implemented, which is a fixed behavioral requirement, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The C bit controls access to any and all custom state.\",\n      \"line_number\": 217,\n      \"reason\": \"This describes the function of the C bit, not whether it is implemented or its access type. The behavioral description is fixed.\"\n    },\n    {\n      \"excerpt\": \"On reset, all writable `mstateen` bits are initialized by the hardware to zeros.\",\n      \"line_number\": 147,\n      \"reason\": \"This is a fixed requirement for reset behavior that applies to all implementations. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"Whenever `misa.F` = 1, FCSR bit of `mstateen0` is read-only zero\",\n      \"line_number\": 230,\n      \"reason\": \"This is a conditional requirement based on misa.F value, not an implementation parameter. When F extension is present, the FCSR bit must be read-only zero.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 13669,
+  "output_tokens": 2464,
+  "latency_ms": 30646,
+  "timestamp": "2026-05-25T21:16:15.164585+00:00",
+  "error": null,
+  "retry_count": 0
+}

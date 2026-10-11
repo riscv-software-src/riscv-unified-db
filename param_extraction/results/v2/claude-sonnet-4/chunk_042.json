@@ -1,0 +1,74 @@
+{
+  "chunk_id": "chunk_042",
+  "source_file": "rv64.adoc",
+  "start_line": 1,
+  "end_line": 260,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "RV64I widens the integer registers and supported user address space to 64 bits (XLEN=64 in <<gprs>>).",
+      "line_number": 10,
+      "parameter_name": "XLEN",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "XLEN is a fundamental architectural parameter that determines the width of integer registers and address space. In RV64I, it is fixed at 64 bits, but this is still an implementation choice at the ISA level."
+    },
+    {
+      "excerpt": "These \"*W\" instructions ignore the upper 32 bits of their inputs and always produce 32-bit signed values, sign-extending them to 64 bits, i.e. bits XLEN-1 through 31 are equal.",
+      "line_number": 16,
+      "parameter_name": "RV64_W_INSTRUCTION_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines the normative behavior of W-suffix instructions in RV64I - they must sign-extend 32-bit results to 64 bits. This is a fixed architectural requirement, not a parameter choice."
+    },
+    {
+      "excerpt": "SLLIW, SRLIW, and SRAIW encodings with _imm[5] {ne} 0_ are reserved.",
+      "line_number": 67,
+      "parameter_name": "SLLIW_SRLIW_SRAIW_IMM5_HANDLING",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "The spec states these encodings are 'reserved' but the note mentions they were previously defined to cause illegal-instruction exceptions. This suggests implementation choice in how to handle these reserved encodings."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "This chapter describes the RV64I base integer instruction set, which builds upon the RV32I variant described in <<rv32>>.",
+      "line_number": 4,
+      "reason": "This is descriptive text about the chapter content, not an implementation choice."
+    },
+    {
+      "excerpt": "Most integer computational instructions operate on XLEN-bit values.",
+      "line_number": 14,
+      "reason": "This describes fixed behavior that all RV64I implementations must follow, not an optional choice."
+    },
+    {
+      "excerpt": "ADDIW is an RV64I instruction that adds the sign-extended 12-bit immediate to register _rs1_ and produces the proper sign extension of a 32-bit result in _rd_.",
+      "line_number": 42,
+      "reason": "This defines the fixed operation of the ADDIW instruction, which all implementations must perform identically."
+    },
+    {
+      "excerpt": "The compiler and calling convention maintain an invariant that all 32-bit values are held in a sign-extended format in 64-bit registers.",
+      "line_number": 22,
+      "reason": "This text is inside a [NOTE] block and describes software convention, not architectural requirements."
+    },
+    {
+      "excerpt": "In RV64I, only the low 6 bits of _rs2_ are considered for the shift amount.",
+      "line_number": 118,
+      "reason": "This is a fixed requirement for how shift instructions work in RV64I, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"RV64I widens the integer registers and supported user address space to 64 bits (XLEN=64 in <<gprs>>).\",\n      \"line_number\": 10,\n      \"parameter_name\": \"XLEN\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"XLEN is a fundamental architectural parameter that determines the width of integer registers and address space. In RV64I, it is fixed at 64 bits, but this is still an implementation choice at the ISA level.\"\n    },\n    {\n      \"excerpt\": \"These \\\"*W\\\" instructions ignore the upper 32 bits of their inputs and always produce 32-bit signed values, sign-extending them to 64 bits, i.e. bits XLEN-1 through 31 are equal.\",\n      \"line_number\": 16,\n      \"parameter_name\": \"RV64_W_INSTRUCTION_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines the normative behavior of W-suffix instructions in RV64I - they must sign-extend 32-bit results to 64 bits. This is a fixed architectural requirement, not a parameter choice.\"\n    },\n    {\n      \"excerpt\": \"SLLIW, SRLIW, and SRAIW encodings with _imm[5] {ne} 0_ are reserved.\",\n      \"line_number\": 67,\n      \"parameter_name\": \"SLLIW_SRLIW_SRAIW_IMM5_HANDLING\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The spec states these encodings are 'reserved' but the note mentions they were previously defined to cause illegal-instruction exceptions. This suggests implementation choice in how to handle these reserved encodings.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"This chapter describes the RV64I base integer instruction set, which builds upon the RV32I variant described in <<rv32>>.\",\n      \"line_number\": 4,\n      \"reason\": \"This is descriptive text about the chapter content, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Most integer computational instructions operate on XLEN-bit values.\",\n      \"line_number\": 14,\n      \"reason\": \"This describes fixed behavior that all RV64I implementations must follow, not an optional choice.\"\n    },\n    {\n      \"excerpt\": \"ADDIW is an RV64I instruction that adds the sign-extended 12-bit immediate to register _rs1_ and produces the proper sign extension of a 32-bit result in _rd_.\",\n      \"line_number\": 42,\n      \"reason\": \"This defines the fixed operation of the ADDIW instruction, which all implementations must perform identically.\"\n    },\n    {\n      \"excerpt\": \"The compiler and calling convention maintain an invariant that all 32-bit values are held in a sign-extended format in 64-bit registers.\",\n      \"line_number\": 22,\n      \"reason\": \"This text is inside a [NOTE] block and describes software convention, not architectural requirements.\"\n    },\n    {\n      \"excerpt\": \"In RV64I, only the low 6 bits of _rs2_ are considered for the shift amount.\",\n      \"line_number\": 118,\n      \"reason\": \"This is a fixed requirement for how shift instructions work in RV64I, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 11161,
+  "output_tokens": 935,
+  "latency_ms": 21744,
+  "timestamp": "2026-05-25T21:12:29.368089+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,49 @@
+{
+  "chunk_id": "chunk_075",
+  "source_file": "zihintpause.adoc",
+  "start_line": 1,
+  "end_line": 56,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The duration of its effect must be bounded and may be zero.",
+      "line_number": 5,
+      "parameter_name": "PAUSE_DURATION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "range",
+      "confidence": "high",
+      "reasoning": "The implementation chooses the duration of the PAUSE instruction's effect. The spec requires it to be bounded but allows it to be zero, giving implementations flexibility in the specific duration value."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Software can use the PAUSE instruction to reduce energy consumption while executing spin-wait code sequences.",
+      "line_number": 10,
+      "reason": "This is inside a [NOTE] block, which is non-normative. It describes software usage, not an implementation choice."
+    },
+    {
+      "excerpt": "The duration of a PAUSE instruction's effect may vary significantly within and among implementations.",
+      "line_number": 16,
+      "reason": "This is inside a [NOTE] block, which is non-normative. While it mentions implementation variation, it's informative context, not a normative parameter definition."
+    },
+    {
+      "excerpt": "PAUSE is encoded as a FENCE instruction with _pred_=`W`, _succ_=`0`, _fm_=`0`, _rd_=`x0`, and _rs1_=`x0`.",
+      "line_number": 30,
+      "reason": "This is a fixed encoding requirement that all implementations must follow. There is no implementation choice in the encoding."
+    },
+    {
+      "excerpt": "Like other FENCE instructions, PAUSE cannot be used within LR/SC sequences without voiding the forward-progress guarantee.",
+      "line_number": 43,
+      "reason": "This is inside a [NOTE] block and describes a fixed constraint, not an implementation-defined parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The duration of its effect must be bounded and may be zero.\",\n      \"line_number\": 5,\n      \"parameter_name\": \"PAUSE_DURATION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"range\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses the duration of the PAUSE instruction's effect. The spec requires it to be bounded but allows it to be zero, giving implementations flexibility in the specific duration value.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Software can use the PAUSE instruction to reduce energy consumption while executing spin-wait code sequences.\",\n      \"line_number\": 10,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative. It describes software usage, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The duration of a PAUSE instruction's effect may vary significantly within and among implementations.\",\n      \"line_number\": 16,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative. While it mentions implementation variation, it's informative context, not a normative parameter definition.\"\n    },\n    {\n      \"excerpt\": \"PAUSE is encoded as a FENCE instruction with _pred_=`W`, _succ_=`0`, _fm_=`0`, _rd_=`x0`, and _rs1_=`x0`.\",\n      \"line_number\": 30,\n      \"reason\": \"This is a fixed encoding requirement that all implementations must follow. There is no implementation choice in the encoding.\"\n    },\n    {\n      \"excerpt\": \"Like other FENCE instructions, PAUSE cannot be used within LR/SC sequences without voiding the forward-progress guarantee.\",\n      \"line_number\": 43,\n      \"reason\": \"This is inside a [NOTE] block and describes a fixed constraint, not an implementation-defined parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8064,
+  "output_tokens": 496,
+  "latency_ms": 9406,
+  "timestamp": "2026-05-25T21:25:32.625574+00:00",
+  "error": null,
+  "retry_count": 0
+}

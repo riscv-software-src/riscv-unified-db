@@ -1,0 +1,49 @@
+{
+  "chunk_id": "chunk_063",
+  "source_file": "zabha.adoc",
+  "start_line": 1,
+  "end_line": 68,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The same exception options as specified in the A extension are applicable in cases where the address is not naturally aligned.",
+      "line_number": 50,
+      "parameter_name": "MISALIGNED_AMO_ZABHA",
+      "existing_udb_name": "MISALIGNED_AMO",
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses how to handle misaligned byte/halfword AMO addresses - same options as A extension (trap, emulate, or hardware support). This is a direct implementation choice not controlled by any CSR field."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Byte and halfword AMOs always sign-extend the value placed in `rd`, and ignore the stem:[XLEN-1:2^{(width + 3)}] bits of the original value in `rs2`.",
+      "line_number": 39,
+      "reason": "This is a fixed behavioral requirement ('always sign-extend') that all Zabha implementations must follow. There is no implementation choice here."
+    },
+    {
+      "excerpt": "Similar to the AMOs specified in the A extension, the Zabha extension mandates that the address contained in the `rs1` register must be naturally aligned to the size of the operand.",
+      "line_number": 47,
+      "reason": "This is a fixed requirement ('mandates') about alignment checking, not a parameter. The parameter is what happens when misalignment occurs, which is covered separately."
+    },
+    {
+      "excerpt": "Zabha omits _byte_ and _halfword_ support for `LR` and `SC` due to low utility.",
+      "line_number": 56,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It explains a design decision but does not define an implementation parameter."
+    },
+    {
+      "excerpt": "The Zabha extension depends upon the Zaamo standard extension.",
+      "line_number": 25,
+      "reason": "This is a fixed dependency requirement, not an implementation choice. All Zabha implementations must include Zaamo support."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The same exception options as specified in the A extension are applicable in cases where the address is not naturally aligned.\",\n      \"line_number\": 50,\n      \"parameter_name\": \"MISALIGNED_AMO_ZABHA\",\n      \"existing_udb_name\": \"MISALIGNED_AMO\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses how to handle misaligned byte/halfword AMO addresses - same options as A extension (trap, emulate, or hardware support). This is a direct implementation choice not controlled by any CSR field.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Byte and halfword AMOs always sign-extend the value placed in `rd`, and ignore the stem:[XLEN-1:2^{(width + 3)}] bits of the original value in `rs2`.\",\n      \"line_number\": 39,\n      \"reason\": \"This is a fixed behavioral requirement ('always sign-extend') that all Zabha implementations must follow. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"Similar to the AMOs specified in the A extension, the Zabha extension mandates that the address contained in the `rs1` register must be naturally aligned to the size of the operand.\",\n      \"line_number\": 47,\n      \"reason\": \"This is a fixed requirement ('mandates') about alignment checking, not a parameter. The parameter is what happens when misalignment occurs, which is covered separately.\"\n    },\n    {\n      \"excerpt\": \"Zabha omits _byte_ and _halfword_ support for `LR` and `SC` due to low utility.\",\n      \"line_number\": 56,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It explains a design decision but does not define an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"The Zabha extension depends upon the Zaamo standard extension.\",\n      \"line_number\": 25,\n      \"reason\": \"This is a fixed dependency requirement, not an implementation choice. All Zabha implementations must include Zaamo support.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8638,
+  "output_tokens": 560,
+  "latency_ms": 11161,
+  "timestamp": "2026-05-25T21:22:28.761042+00:00",
+  "error": null,
+  "retry_count": 0
+}

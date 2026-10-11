@@ -1,0 +1,84 @@
+{
+  "chunk_id": "chunk_002",
+  "source_file": "b-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 3426,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1088,
+      "parameter_name": "BCLRI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings."
+    },
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1158,
+      "parameter_name": "BEXTI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings."
+    },
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1228,
+      "parameter_name": "BINVI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings."
+    },
+    {
+      "excerpt": "For RV32, the encodings corresponding to shamt[5]=1 are reserved.",
+      "line_number": 1298,
+      "parameter_name": "BSETI_SHAMT_RSV_RV32",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The bitmanip extensions are defined for RV32 and RV64.",
+      "line_number": 13,
+      "reason": "This is a fixed requirement that applies to all implementations - not an implementation choice."
+    },
+    {
+      "excerpt": "The bitmanip extension follows the convention in RV64 that _w_-suffixed instructions (without a dot before the _w_) ignore the upper 32 bits of their inputs, operate on the least-significant 32 bits as signed values, and produce a 32-bit signed result that is sign-extended to XLEN.",
+      "line_number": 15,
+      "reason": "This describes the required behavior of w-suffixed instructions - it is a fixed semantic requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "This instruction performs an XLEN-wide addition between _rs2_ and the zero-extended least-significant word of _rs1_.",
+      "line_number": 598,
+      "reason": "This describes the required operation of the add.uw instruction - it is behavioral specification, not an implementation parameter."
+    },
+    {
+      "excerpt": "This instruction returns _rs1_ with a single bit cleared at the index specified in _rs2_.",
+      "line_number": 638,
+      "reason": "This describes the required operation of the bclr instruction - it is behavioral specification, not an implementation parameter."
+    },
+    {
+      "excerpt": "The Logical with Negate instructions can be implemented by inverting the _rs2_ inputs to the base-required AND, OR, and XOR logic instructions.",
+      "line_number": 234,
+      "reason": "This is inside an Implementation Hint NOTE block, which is non-normative guidance, not a parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1088,\n      \"parameter_name\": \"BCLRI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings.\"\n    },\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1158,\n      \"parameter_name\": \"BEXTI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings.\"\n    },\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1228,\n      \"parameter_name\": \"BINVI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings.\"\n    },\n    {\n      \"excerpt\": \"For RV32, the encodings corresponding to shamt[5]=1 are reserved.\",\n      \"line_number\": 1298,\n      \"parameter_name\": \"BSETI_SHAMT_RSV_RV32\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether to trap on reserved encodings or treat them as NOPs. This is a direct implementation choice about handling reserved instruction encodings.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The bitmanip extensions are defined for RV32 and RV64.\",\n      \"line_number\": 13,\n      \"reason\": \"This is a fixed requirement that applies to all implementations - not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The bitmanip extension follows the convention in RV64 that _w_-suffixed instructions (without a dot before the _w_) ignore the upper 32 bits of their inputs, operate on the least-significant 32 bits as signed values, and produce a 32-bit signed result that is sign-extended to XLEN.\",\n      \"line_number\": 15,\n      \"reason\": \"This describes the required behavior of w-suffixed instructions - it is a fixed semantic requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"This instruction performs an XLEN-wide addition between _rs2_ and the zero-extended least-significant word of _rs1_.\",\n      \"line_number\": 598,\n      \"reason\": \"This describes the required operation of the add.uw instruction - it is behavioral specification, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"This instruction returns _rs1_ with a single bit cleared at the index specified in _rs2_.\",\n      \"line_number\": 638,\n      \"reason\": \"This describes the required operation of the bclr instruction - it is behavioral specification, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"The Logical with Negate instructions can be implemented by inverting the _rs2_ inputs to the base-required AND, OR, and XOR logic instructions.\",\n      \"line_number\": 234,\n      \"reason\": \"This is inside an Implementation Hint NOTE block, which is non-normative guidance, not a parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 37112,
+  "output_tokens": 1043,
+  "latency_ms": 20191,
+  "timestamp": "2026-05-25T21:00:43.119826+00:00",
+  "error": null,
+  "retry_count": 0
+}

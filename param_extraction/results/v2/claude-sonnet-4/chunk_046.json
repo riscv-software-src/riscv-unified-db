@@ -1,0 +1,129 @@
+{
+  "chunk_id": "chunk_046",
+  "source_file": "smcdeleg.adoc",
+  "start_line": 1,
+  "end_line": 140,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "When the Smcdeleg/Ssccfg extensions are enabled (`menvcfg`.CDE=1), it further allows M-mode to delegate select counters to S-mode.",
+      "line_number": 32,
+      "parameter_name": "SMCDELEG_SSCCFG_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Smcdeleg/Ssccfg extensions are implemented is an implementation choice. The text describes behavior when they are enabled, implying they may or may not be supported."
+    },
+    {
+      "excerpt": "If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.",
+      "line_number": 82,
+      "parameter_name": "ZICNTR_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Zicntr extension is implemented affects which counter state is accessible. The table shows cycle/cycleh depend on Zicntr support."
+    },
+    {
+      "excerpt": "If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.",
+      "line_number": 82,
+      "parameter_name": "ZIHPM_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Zihpm extension is implemented affects which HPM counter state is accessible. The table shows hpmcounter3-31 depend on Zihpm support."
+    },
+    {
+      "excerpt": "If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.",
+      "line_number": 82,
+      "parameter_name": "SSCOFPMF_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Sscofpmf extension is implemented affects which event selector state is accessible. The table shows hpmevent*h depends on Sscofpmf support."
+    },
+    {
+      "excerpt": "If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.",
+      "line_number": 82,
+      "parameter_name": "SMCNTRPMF_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Smcntrpmf extension is implemented affects which counter configuration state is accessible. The table shows cyclecfg*/instretcfg* depend on Smcntrpmf support."
+    },
+    {
+      "excerpt": "the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is implemented and writable.",
+      "line_number": 118,
+      "parameter_name": "MVIP_LCOFI_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For implementations supporting Smcdeleg+Sscofpmf+Smaia, the LCOFI bit in mvip is required to be implemented and writable. This is a CSR bit implementation choice."
+    },
+    {
+      "excerpt": "the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is implemented and writable.",
+      "line_number": 118,
+      "parameter_name": "MVIEN_LCOFI_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For implementations supporting Smcdeleg+Sscofpmf+Smaia, the LCOFI bit in mvien is required to be implemented and writable. This is a CSR bit implementation choice."
+    },
+    {
+      "excerpt": "the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.",
+      "line_number": 123,
+      "parameter_name": "HVIP_LCOFI_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For implementations supporting Smcdeleg/Ssccfg+Sscofpmf+Smaia/Ssaia+H, the LCOFI bit in hvip is required to be implemented and writable. This is a CSR bit implementation choice."
+    },
+    {
+      "excerpt": "the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.",
+      "line_number": 123,
+      "parameter_name": "HVIEN_LCOFI_IMPLEMENTED",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For implementations supporting Smcdeleg/Ssccfg+Sscofpmf+Smaia/Ssaia+H, the LCOFI bit in hvien is required to be implemented and writable. This is a CSR bit implementation choice."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "For a RISC-V hardware platform, Smcdeleg and Ssccfg must always be implemented in tandem.",
+      "line_number": 27,
+      "reason": "This is a fixed requirement ('must always') that applies to all implementations that support these extensions. It is not an optional choice."
+    },
+    {
+      "excerpt": "attempts to access any `sireg*` when `menvcfg`.CDE = 0;",
+      "line_number": 73,
+      "reason": "This describes behavior when a CSR field has a specific value (CDE=0). The behavior is determined by the field value at runtime, not an implementation choice."
+    },
+    {
+      "excerpt": "When `menvcfg`.CDE=0, attempts to access `scountinhibit` raise an illegal-instruction exception.",
+      "line_number": 97,
+      "reason": "This describes runtime behavior based on a CSR field value (CDE=0), not an implementation-defined parameter."
+    },
+    {
+      "excerpt": "It is optional whether the LCOFI bit (bit 13) in each of `mideleg` and `hideleg`, which allows all LCOFIs to be delegated to S-mode and VS-mode, respectively, is implemented and writable.",
+      "line_number": 135,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"When the Smcdeleg/Ssccfg extensions are enabled (`menvcfg`.CDE=1), it further allows M-mode to delegate select counters to S-mode.\",\n      \"line_number\": 32,\n      \"parameter_name\": \"SMCDELEG_SSCCFG_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Smcdeleg/Ssccfg extensions are implemented is an implementation choice. The text describes behavior when they are enabled, implying they may or may not be supported.\"\n    },\n    {\n      \"excerpt\": \"If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"ZICNTR_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Zicntr extension is implemented affects which counter state is accessible. The table shows cycle/cycleh depend on Zicntr support.\"\n    },\n    {\n      \"excerpt\": \"If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"ZIHPM_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Zihpm extension is implemented affects which HPM counter state is accessible. The table shows hpmcounter3-31 depend on Zihpm support.\"\n    },\n    {\n      \"excerpt\": \"If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"SSCOFPMF_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Sscofpmf extension is implemented affects which event selector state is accessible. The table shows hpmevent*h depends on Sscofpmf support.\"\n    },\n    {\n      \"excerpt\": \"If any extension upon which the underlying state depends is not implemented, an attempt from M or S mode to access the given state through `sireg*` raises an illegal-instruction exception.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"SMCNTRPMF_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Smcntrpmf extension is implemented affects which counter configuration state is accessible. The table shows cyclecfg*/instretcfg* depend on Smcntrpmf support.\"\n    },\n    {\n      \"excerpt\": \"the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is implemented and writable.\",\n      \"line_number\": 118,\n      \"parameter_name\": \"MVIP_LCOFI_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For implementations supporting Smcdeleg+Sscofpmf+Smaia, the LCOFI bit in mvip is required to be implemented and writable. This is a CSR bit implementation choice.\"\n    },\n    {\n      \"excerpt\": \"the local-counter-overflow interrupt (LCOFI) bit (bit 13) in each of CSRs `mvip` and `mvien` is implemented and writable.\",\n      \"line_number\": 118,\n      \"parameter_name\": \"MVIEN_LCOFI_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For implementations supporting Smcdeleg+Sscofpmf+Smaia, the LCOFI bit in mvien is required to be implemented and writable. This is a CSR bit implementation choice.\"\n    },\n    {\n      \"excerpt\": \"the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.\",\n      \"line_number\": 123,\n      \"parameter_name\": \"HVIP_LCOFI_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For implementations supporting Smcdeleg/Ssccfg+Sscofpmf+Smaia/Ssaia+H, the LCOFI bit in hvip is required to be implemented and writable. This is a CSR bit implementation choice.\"\n    },\n    {\n      \"excerpt\": \"the LCOFI bit (bit 13) in each of `hvip` and `hvien` is implemented and writable.\",\n      \"line_number\": 123,\n      \"parameter_name\": \"HVIEN_LCOFI_IMPLEMENTED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For implementations supporting Smcdeleg/Ssccfg+Sscofpmf+Smaia/Ssaia+H, the LCOFI bit in hvien is required to be implemented and writable. This is a CSR bit implementation choice.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"For a RISC-V hardware platform, Smcdeleg and Ssccfg must always be implemented in tandem.\",\n      \"line_number\": 27,\n      \"reason\": \"This is a fixed requirement ('must always') that applies to all implementations that support these extensions. It is not an optional choice.\"\n    },\n    {\n      \"excerpt\": \"attempts to access any `sireg*` when `menvcfg`.CDE = 0;\",\n      \"line_number\": 73,\n      \"reason\": \"This describes behavior when a CSR field has a specific value (CDE=0). The behavior is determined by the field value at runtime, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When `menvcfg`.CDE=0, attempts to access `scountinhibit` raise an illegal-instruction exception.\",\n      \"line_number\": 97,\n      \"reason\": \"This describes runtime behavior based on a CSR field value (CDE=0), not an implementation-defined parameter.\"\n    },\n    {\n      \"excerpt\": \"It is optional whether the LCOFI bit (bit 13) in each of `mideleg` and `hideleg`, which allows all LCOFIs to be delegated to S-mode and VS-mode, respectively, is implemented and writable.\",\n      \"line_number\": 135,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 10263,
+  "output_tokens": 1946,
+  "latency_ms": 27868,
+  "timestamp": "2026-05-25T21:14:17.311583+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_053",
+  "source_file": "ssdbltrp.adoc",
+  "start_line": 1,
+  "end_line": 15,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The Ssdbltrp extension adds the `menvcfg`.DTE (See <<sec:menvcfg>>) and the `sstatus`.SDT fields (See <<sstatus>>).",
+      "line_number": 10,
+      "parameter_name": "SSDBLTRP_EXTENSION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the Ssdbltrp extension is implemented is an implementation choice. The extension adds specific CSR fields, so the implementation either supports the extension (and these fields) or does not."
+    },
+    {
+      "excerpt": "If the hypervisor extension is additionally implemented, then the extension adds the `henvcfg`.DTE (See <<sec:henvcfg>>) and the `vsstatus`.SDT fields (See <<vsstatus>>).",
+      "line_number": 11,
+      "parameter_name": "HYPERVISOR_EXTENSION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the hypervisor extension is implemented is an implementation choice. This affects which additional CSR fields are present when Ssdbltrp is also implemented."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "It enables HS-mode to invoke a critical error handler in a virtual machine on a double trap in VS-mode.",
+      "line_number": 5,
+      "reason": "This describes the functional behavior/purpose of the extension, not an implementation choice. The behavior is fixed once the extension is implemented."
+    },
+    {
+      "excerpt": "It also allows M-mode to invoke a critical error handler in the OS/Hypervisor on a double trap in S/HS-mode.",
+      "line_number": 6,
+      "reason": "This describes the functional behavior/purpose of the extension, not an implementation choice. The behavior is fixed once the extension is implemented."
+    },
+    {
+      "excerpt": "See <<supv-double-trap>> for the operational details.",
+      "line_number": 14,
+      "reason": "This is a cross-reference to another section for implementation details, not a parameter definition itself."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The Ssdbltrp extension adds the `menvcfg`.DTE (See <<sec:menvcfg>>) and the `sstatus`.SDT fields (See <<sstatus>>).\",\n      \"line_number\": 10,\n      \"parameter_name\": \"SSDBLTRP_EXTENSION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the Ssdbltrp extension is implemented is an implementation choice. The extension adds specific CSR fields, so the implementation either supports the extension (and these fields) or does not.\"\n    },\n    {\n      \"excerpt\": \"If the hypervisor extension is additionally implemented, then the extension adds the `henvcfg`.DTE (See <<sec:henvcfg>>) and the `vsstatus`.SDT fields (See <<vsstatus>>).\",\n      \"line_number\": 11,\n      \"parameter_name\": \"HYPERVISOR_EXTENSION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the hypervisor extension is implemented is an implementation choice. This affects which additional CSR fields are present when Ssdbltrp is also implemented.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"It enables HS-mode to invoke a critical error handler in a virtual machine on a double trap in VS-mode.\",\n      \"line_number\": 5,\n      \"reason\": \"This describes the functional behavior/purpose of the extension, not an implementation choice. The behavior is fixed once the extension is implemented.\"\n    },\n    {\n      \"excerpt\": \"It also allows M-mode to invoke a critical error handler in the OS/Hypervisor on a double trap in S/HS-mode.\",\n      \"line_number\": 6,\n      \"reason\": \"This describes the functional behavior/purpose of the extension, not an implementation choice. The behavior is fixed once the extension is implemented.\"\n    },\n    {\n      \"excerpt\": \"See <<supv-double-trap>> for the operational details.\",\n      \"line_number\": 14,\n      \"reason\": \"This is a cross-reference to another section for implementation details, not a parameter definition itself.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7778,
+  "output_tokens": 608,
+  "latency_ms": 9596,
+  "timestamp": "2026-05-25T21:16:39.202753+00:00",
+  "error": null,
+  "retry_count": 0
+}

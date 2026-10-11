@@ -1,0 +1,74 @@
+{
+  "chunk_id": "chunk_066",
+  "source_file": "zawrs.adoc",
+  "start_line": 1,
+  "end_line": 103,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "`WRS.STO` (WRS-with-short-timeout) is provided that works like `WRS.NTO` but bounds the stall duration to an implementation-define short timeout such that the stall is terminated on the timeout if no other conditions have occurred to terminate the stall.",
+      "line_number": 30,
+      "parameter_name": "WRS_STO_TIMEOUT_DURATION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The timeout duration for WRS.STO is implementation-defined. This is a direct implementation choice not controlled by any CSR field."
+    },
+    {
+      "excerpt": "While stalled, an implementation is permitted to occasionally terminate the stall and complete execution for any reason.",
+      "line_number": 67,
+      "parameter_name": "WRS_EARLY_TERMINATION_POLICY",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Whether an implementation chooses to occasionally terminate WRS stalls early is an implementation choice. The spec permits but does not require this behavior."
+    },
+    {
+      "excerpt": "When the `TW` (Timeout Wait) bit in `mstatus` is set and `WRS.NTO` is executed in any privilege mode other than M mode, and it does not complete within an implementation-specific bounded time limit, the `WRS.NTO` instruction will cause an illegal-instruction exception.",
+      "line_number": 72,
+      "parameter_name": "WRS_NTO_TW_TIMEOUT_DURATION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The bounded time limit for WRS.NTO when TW=1 is implementation-specific. This is a direct implementation parameter not controlled by any CSR field."
+    },
+    {
+      "excerpt": "When executing in VS or VU mode, if the `VTW` bit is set in `hstatus`, the `TW` bit in `mstatus` is clear, and the `WRS.NTO` does not complete within an implementation-specific bounded time limit, the `WRS.NTO` instruction will cause a virtual-instruction exception.",
+      "line_number": 76,
+      "parameter_name": "WRS_NTO_VTW_TIMEOUT_DURATION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The bounded time limit for WRS.NTO when VTW=1 is implementation-specific. This is a direct implementation parameter not controlled by any CSR field."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Then a subsequent `WRS.NTO` instruction would cause the hart to temporarily stall execution in a low-power state until a store occurs to the reservation set or an interrupt is observed.",
+      "line_number": 24,
+      "reason": "This describes the required behavior of WRS.NTO, not an implementation choice. All implementations must behave this way."
+    },
+    {
+      "excerpt": "`WRS.NTO` and `WRS.STO` instructions follow the rules of the `WFI` instruction for resuming execution on a pending interrupt.",
+      "line_number": 69,
+      "reason": "This is a fixed requirement that all implementations must follow. It references existing WFI rules rather than defining a new parameter."
+    },
+    {
+      "excerpt": "The duration of a `WRS.STO` instruction's timeout may vary significantly within and among implementations. In typical implementations this duration should be roughly in the range of 10 to 100 times an on-chip cache miss latency or a cacheless access to main memory.",
+      "line_number": 86,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It provides guidance but does not define architectural requirements."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"`WRS.STO` (WRS-with-short-timeout) is provided that works like `WRS.NTO` but bounds the stall duration to an implementation-define short timeout such that the stall is terminated on the timeout if no other conditions have occurred to terminate the stall.\",\n      \"line_number\": 30,\n      \"parameter_name\": \"WRS_STO_TIMEOUT_DURATION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The timeout duration for WRS.STO is implementation-defined. This is a direct implementation choice not controlled by any CSR field.\"\n    },\n    {\n      \"excerpt\": \"While stalled, an implementation is permitted to occasionally terminate the stall and complete execution for any reason.\",\n      \"line_number\": 67,\n      \"parameter_name\": \"WRS_EARLY_TERMINATION_POLICY\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Whether an implementation chooses to occasionally terminate WRS stalls early is an implementation choice. The spec permits but does not require this behavior.\"\n    },\n    {\n      \"excerpt\": \"When the `TW` (Timeout Wait) bit in `mstatus` is set and `WRS.NTO` is executed in any privilege mode other than M mode, and it does not complete within an implementation-specific bounded time limit, the `WRS.NTO` instruction will cause an illegal-instruction exception.\",\n      \"line_number\": 72,\n      \"parameter_name\": \"WRS_NTO_TW_TIMEOUT_DURATION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The bounded time limit for WRS.NTO when TW=1 is implementation-specific. This is a direct implementation parameter not controlled by any CSR field.\"\n    },\n    {\n      \"excerpt\": \"When executing in VS or VU mode, if the `VTW` bit is set in `hstatus`, the `TW` bit in `mstatus` is clear, and the `WRS.NTO` does not complete within an implementation-specific bounded time limit, the `WRS.NTO` instruction will cause a virtual-instruction exception.\",\n      \"line_number\": 76,\n      \"parameter_name\": \"WRS_NTO_VTW_TIMEOUT_DURATION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The bounded time limit for WRS.NTO when VTW=1 is implementation-specific. This is a direct implementation parameter not controlled by any CSR field.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Then a subsequent `WRS.NTO` instruction would cause the hart to temporarily stall execution in a low-power state until a store occurs to the reservation set or an interrupt is observed.\",\n      \"line_number\": 24,\n      \"reason\": \"This describes the required behavior of WRS.NTO, not an implementation choice. All implementations must behave this way.\"\n    },\n    {\n      \"excerpt\": \"`WRS.NTO` and `WRS.STO` instructions follow the rules of the `WFI` instruction for resuming execution on a pending interrupt.\",\n      \"line_number\": 69,\n      \"reason\": \"This is a fixed requirement that all implementations must follow. It references existing WFI rules rather than defining a new parameter.\"\n    },\n    {\n      \"excerpt\": \"The duration of a `WRS.STO` instruction's timeout may vary significantly within and among implementations. In typical implementations this duration should be roughly in the range of 10 to 100 times an on-chip cache miss latency or a cacheless access to main memory.\",\n      \"line_number\": 86,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It provides guidance but does not define architectural requirements.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8903,
+  "output_tokens": 1058,
+  "latency_ms": 14677,
+  "timestamp": "2026-05-25T21:23:15.991281+00:00",
+  "error": null,
+  "retry_count": 0
+}

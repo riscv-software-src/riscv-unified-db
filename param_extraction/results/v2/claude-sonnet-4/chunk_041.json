@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_041",
+  "source_file": "rv32e.adoc",
+  "start_line": 1,
+  "end_line": 47,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "RV32E was designed to provide an even smaller base core for embedded microcontrollers. There is also interest in RV64E for microcontrollers within large SoC designs, and to reduce context state for highly threaded 64-bit processors.",
+      "line_number": 11,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It describes design rationale, not architectural requirements."
+    },
+    {
+      "excerpt": "RV32E and RV64E reduce the integer register count to 16 general-purpose registers, (`x0-x15`), where `x0` is a dedicated zero register.",
+      "line_number": 20,
+      "reason": "This is a fixed requirement that defines RV32E/RV64E - all implementations must have exactly 16 registers. There is no implementation choice here."
+    },
+    {
+      "excerpt": "RV32E and RV64E use the same instruction-set encoding as RV32I and RV64I respectively, except that only registers `x0-x15` are provided.",
+      "line_number": 33,
+      "reason": "This is a fixed requirement about the encoding format. All RV32E/RV64E implementations must follow this encoding rule - there is no implementation choice."
+    },
+    {
+      "excerpt": "All encodings specifying the other registers `x16-x31` are reserved.",
+      "line_number": 34,
+      "reason": "This is a fixed requirement that all implementations must follow. Reserved encodings are not implementation-defined parameters."
+    },
+    {
+      "excerpt": "The previous draft of this chapter made all encodings using the `x16-x31` registers available as custom. This version takes a more conservative approach, making these reserved so that they can be allocated between custom space or new standard encodings at a later date.",
+      "line_number": 38,
+      "reason": "This text is inside a [NOTE] block and describes historical design decisions, not current architectural parameters."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"RV32E was designed to provide an even smaller base core for embedded microcontrollers. There is also interest in RV64E for microcontrollers within large SoC designs, and to reduce context state for highly threaded 64-bit processors.\",\n      \"line_number\": 11,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It describes design rationale, not architectural requirements.\"\n    },\n    {\n      \"excerpt\": \"RV32E and RV64E reduce the integer register count to 16 general-purpose registers, (`x0-x15`), where `x0` is a dedicated zero register.\",\n      \"line_number\": 20,\n      \"reason\": \"This is a fixed requirement that defines RV32E/RV64E - all implementations must have exactly 16 registers. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"RV32E and RV64E use the same instruction-set encoding as RV32I and RV64I respectively, except that only registers `x0-x15` are provided.\",\n      \"line_number\": 33,\n      \"reason\": \"This is a fixed requirement about the encoding format. All RV32E/RV64E implementations must follow this encoding rule - there is no implementation choice.\"\n    },\n    {\n      \"excerpt\": \"All encodings specifying the other registers `x16-x31` are reserved.\",\n      \"line_number\": 34,\n      \"reason\": \"This is a fixed requirement that all implementations must follow. Reserved encodings are not implementation-defined parameters.\"\n    },\n    {\n      \"excerpt\": \"The previous draft of this chapter made all encodings using the `x16-x31` registers available as custom. This version takes a more conservative approach, making these reserved so that they can be allocated between custom space or new standard encodings at a later date.\",\n      \"line_number\": 38,\n      \"reason\": \"This text is inside a [NOTE] block and describes historical design decisions, not current architectural parameters.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8015,
+  "output_tokens": 518,
+  "latency_ms": 8371,
+  "timestamp": "2026-05-25T21:12:07.104159+00:00",
+  "error": null,
+  "retry_count": 0
+}

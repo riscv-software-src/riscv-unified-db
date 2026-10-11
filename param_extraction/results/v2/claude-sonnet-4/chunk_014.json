@@ -1,0 +1,38 @@
+{
+  "chunk_id": "chunk_014",
+  "source_file": "fraclmul.adoc",
+  "start_line": 1,
+  "end_line": 175,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "This appendix presents a non-normative example to help explain where compilers can make good use of the fractional LMUL feature.",
+      "line_number": 3,
+      "reason": "This is a non-normative example section that explains compiler usage patterns, not an architectural parameter definition."
+    },
+    {
+      "excerpt": "Without fractional LMUL, the compiler would be forced to use LMUL=1 for the 8-bit computation and LMUL=8 for the 64-bit computation(s)",
+      "line_number": 26,
+      "reason": "This describes compiler behavior and usage patterns, not an implementation-defined architectural choice."
+    },
+    {
+      "excerpt": "If instead of using LMUL=1 for the 8-bit computation, the compiler is allowed to use a fractional LMUL=1/2",
+      "line_number": 103,
+      "reason": "This describes a compiler optimization strategy using existing architectural features, not a parameter that implementations choose."
+    },
+    {
+      "excerpt": "Now the compiler has 8 available registers to perform register allocation",
+      "line_number": 107,
+      "reason": "This describes the consequence of a compiler's LMUL choice on register allocation, which is software behavior, not an architectural parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"This appendix presents a non-normative example to help explain where compilers can make good use of the fractional LMUL feature.\",\n      \"line_number\": 3,\n      \"reason\": \"This is a non-normative example section that explains compiler usage patterns, not an architectural parameter definition.\"\n    },\n    {\n      \"excerpt\": \"Without fractional LMUL, the compiler would be forced to use LMUL=1 for the 8-bit computation and LMUL=8 for the 64-bit computation(s)\",\n      \"line_number\": 26,\n      \"reason\": \"This describes compiler behavior and usage patterns, not an implementation-defined architectural choice.\"\n    },\n    {\n      \"excerpt\": \"If instead of using LMUL=1 for the 8-bit computation, the compiler is allowed to use a fractional LMUL=1/2\",\n      \"line_number\": 103,\n      \"reason\": \"This describes a compiler optimization strategy using existing architectural features, not a parameter that implementations choose.\"\n    },\n    {\n      \"excerpt\": \"Now the compiler has 8 available registers to perform register allocation\",\n      \"line_number\": 107,\n      \"reason\": \"This describes the consequence of a compiler's LMUL choice on register allocation, which is software behavior, not an architectural parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 10036,
+  "output_tokens": 353,
+  "latency_ms": 8728,
+  "timestamp": "2026-05-25T21:03:28.897927+00:00",
+  "error": null,
+  "retry_count": 0
+}

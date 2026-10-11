@@ -1,0 +1,114 @@
+{
+  "chunk_id": "chunk_040",
+  "source_file": "rv32.adoc",
+  "start_line": 1,
+  "end_line": 1105,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The EEI will define whether the memory system is little-endian or big-endian.",
+      "line_number": 598,
+      "parameter_name": "ENDIANNESS_LITTLE_OR_BIG",
+      "existing_udb_name": "ENDIANNESS_LITTLE_OR_BIG",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a platform-level choice about memory system endianness, which is outside the ISA scope and defined by the execution environment interface (EEI)."
+    },
+    {
+      "excerpt": "Loads and stores whose effective address is not naturally aligned to the referenced datatype (i.e., the effective address is not divisible by the size of the access in bytes) have behavior dependent on the EEI.",
+      "line_number": 635,
+      "parameter_name": "MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR",
+      "existing_udb_name": "MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR",
+      "class": "NON_ISA",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The behavior of misaligned loads and stores is defined by the EEI, not the ISA itself. This is a platform-level choice."
+    },
+    {
+      "excerpt": "misaligned loads and stores can be handled in hardware",
+      "line_number": 641,
+      "parameter_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED",
+      "existing_udb_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether misaligned loads and stores are handled in hardware is an implementation choice. The spec says they 'can be' handled in hardware, indicating this is optional."
+    },
+    {
+      "excerpt": "via an invisible trap into the execution environment implementation",
+      "line_number": 642,
+      "parameter_name": "MISALIGNED_LDST_INVISIBLE_TRAP",
+      "existing_udb_name": "MISALIGNED_LDST_INVISIBLE_TRAP",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether misaligned accesses are handled via invisible traps is an implementation choice. The spec presents this as one of several options."
+    },
+    {
+      "excerpt": "combination of hardware and invisible trap depending on address",
+      "line_number": 643,
+      "parameter_name": "MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR",
+      "existing_udb_name": "MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether the handling method varies by address is an implementation choice. The spec allows this as a possible approach."
+    },
+    {
+      "excerpt": "loads and stores that are not naturally aligned may either complete execution successfully or raise an exception",
+      "line_number": 646,
+      "parameter_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP",
+      "existing_udb_name": "MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP",
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "When the EEI doesn't guarantee invisible handling, the implementation chooses whether misaligned accesses succeed or trap. This is a direct implementation choice."
+    },
+    {
+      "excerpt": "When an EEI does not guarantee misaligned loads and stores are handled invisibly, the EEI must define if exceptions caused by address misalignment result in a contained trap (allowing software running inside the execution environment to handle the trap) or a fatal trap (terminating execution).",
+      "line_number": 653,
+      "parameter_name": "MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP",
+      "existing_udb_name": "MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP",
+      "class": "NON_ISA",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "Whether misalignment exceptions are contained or fatal is defined by the EEI, not the ISA. This is a platform-level choice."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "For RV32I, the 32 `x` registers are each 32 bits wide, i.e., `XLEN=32`.",
+      "line_number": 42,
+      "reason": "This is a fixed requirement for RV32I - XLEN is always 32 for this ISA variant. Not an implementation choice."
+    },
+    {
+      "excerpt": "Register `x0` is hardwired with all bits equal to 0.",
+      "line_number": 43,
+      "reason": "This is a fixed architectural requirement that all implementations must satisfy. Not a parameter."
+    },
+    {
+      "excerpt": "An instruction-address-misaligned exception is generated on a taken branch or unconditional jump if the target address is not `IALIGN-bit` aligned.",
+      "line_number": 156,
+      "reason": "This describes required behavior when a condition is met, not an implementation choice. The behavior is deterministic."
+    },
+    {
+      "excerpt": "immediates are always sign-extended",
+      "line_number": 175,
+      "reason": "This is a fixed requirement ('always') that applies to all implementations. Not a parameter."
+    },
+    {
+      "excerpt": "loads and stores whose effective addresses are naturally aligned shall not raise an address-misaligned exception",
+      "line_number": 632,
+      "reason": "This is a fixed requirement ('shall not') that all implementations must satisfy. Not a parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The EEI will define whether the memory system is little-endian or big-endian.\",\n      \"line_number\": 598,\n      \"parameter_name\": \"ENDIANNESS_LITTLE_OR_BIG\",\n      \"existing_udb_name\": \"ENDIANNESS_LITTLE_OR_BIG\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a platform-level choice about memory system endianness, which is outside the ISA scope and defined by the execution environment interface (EEI).\"\n    },\n    {\n      \"excerpt\": \"Loads and stores whose effective address is not naturally aligned to the referenced datatype (i.e., the effective address is not divisible by the size of the access in bytes) have behavior dependent on the EEI.\",\n      \"line_number\": 635,\n      \"parameter_name\": \"MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_EEI_DEPENDENT_BEHAVIOR\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The behavior of misaligned loads and stores is defined by the EEI, not the ISA itself. This is a platform-level choice.\"\n    },\n    {\n      \"excerpt\": \"misaligned loads and stores can be handled in hardware\",\n      \"line_number\": 641,\n      \"parameter_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether misaligned loads and stores are handled in hardware is an implementation choice. The spec says they 'can be' handled in hardware, indicating this is optional.\"\n    },\n    {\n      \"excerpt\": \"via an invisible trap into the execution environment implementation\",\n      \"line_number\": 642,\n      \"parameter_name\": \"MISALIGNED_LDST_INVISIBLE_TRAP\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_INVISIBLE_TRAP\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether misaligned accesses are handled via invisible traps is an implementation choice. The spec presents this as one of several options.\"\n    },\n    {\n      \"excerpt\": \"combination of hardware and invisible trap depending on address\",\n      \"line_number\": 643,\n      \"parameter_name\": \"MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_HW_OR_INVISIBLE_TRAP_FUNC_OF_ADDR\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether the handling method varies by address is an implementation choice. The spec allows this as a possible approach.\"\n    },\n    {\n      \"excerpt\": \"loads and stores that are not naturally aligned may either complete execution successfully or raise an exception\",\n      \"line_number\": 646,\n      \"parameter_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_FULLY_HW_SUPPORTED_OR_VISIBLE_TRAP\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"When the EEI doesn't guarantee invisible handling, the implementation chooses whether misaligned accesses succeed or trap. This is a direct implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When an EEI does not guarantee misaligned loads and stores are handled invisibly, the EEI must define if exceptions caused by address misalignment result in a contained trap (allowing software running inside the execution environment to handle the trap) or a fatal trap (terminating execution).\",\n      \"line_number\": 653,\n      \"parameter_name\": \"MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP\",\n      \"existing_udb_name\": \"MISALIGNED_LDST_CONTAINED_OR_FATAL_TRAP\",\n      \"class\": \"NON_ISA\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Whether misalignment exceptions are contained or fatal is defined by the EEI, not the ISA. This is a platform-level choice.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"For RV32I, the 32 `x` registers are each 32 bits wide, i.e., `XLEN=32`.\",\n      \"line_number\": 42,\n      \"reason\": \"This is a fixed requirement for RV32I - XLEN is always 32 for this ISA variant. Not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Register `x0` is hardwired with all bits equal to 0.\",\n      \"line_number\": 43,\n      \"reason\": \"This is a fixed architectural requirement that all implementations must satisfy. Not a parameter.\"\n    },\n    {\n      \"excerpt\": \"An instruction-address-misaligned exception is generated on a taken branch or unconditional jump if the target address is not `IALIGN-bit` aligned.\",\n      \"line_number\": 156,\n      \"reason\": \"This describes required behavior when a condition is met, not an implementation choice. The behavior is deterministic.\"\n    },\n    {\n      \"excerpt\": \"immediates are always sign-extended\",\n      \"line_number\": 175,\n      \"reason\": \"This is a fixed requirement ('always') that applies to all implementations. Not a parameter.\"\n    },\n    {\n      \"excerpt\": \"loads and stores whose effective addresses are naturally aligned shall not raise an address-misaligned exception\",\n      \"line_number\": 632,\n      \"reason\": \"This is a fixed requirement ('shall not') that all implementations must satisfy. Not a parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 21230,
+  "output_tokens": 1597,
+  "latency_ms": 27746,
+  "timestamp": "2026-05-25T21:11:58.208285+00:00",
+  "error": null,
+  "retry_count": 0
+}

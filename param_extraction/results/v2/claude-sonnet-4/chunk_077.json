@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_077",
+  "source_file": "zimop.adoc",
+  "start_line": 1,
+  "end_line": 113,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "It is sometimes desirable to define instruction-set extensions whose instructions, rather than raising illegal-instruction exceptions when the extension is not implemented, take no useful action (beyond writing `x[rd]`).",
+      "line_number": 12,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It provides background information but does not define any implementation choices."
+    },
+    {
+      "excerpt": "The Zimop extension defines 32 MOP instructions named MOP.R.__n__, where __n__ is an integer between 0 and 31, inclusive. Unless redefined by another extension, these instructions simply write 0 to `x[rd]`.",
+      "line_number": 28,
+      "reason": "This defines the fixed behavior of MOP.R instructions when not redefined by another extension. The behavior (write 0 to x[rd]) is deterministic and not implementation-defined."
+    },
+    {
+      "excerpt": "The Zimop extension additionally defines 8 MOP instructions named MOP.RR.__n__, where __n__ is an integer between 0 and 7, inclusive. Unless redefined by another extension, these instructions simply write 0 to `x[rd]`.",
+      "line_number": 36,
+      "reason": "Similar to MOP.R, this defines the fixed behavior of MOP.RR instructions. The behavior is deterministic when the extension is not redefined."
+    },
+    {
+      "excerpt": "This section defines the \"Zcmop\" extension, which defines eight 16-bit MOP instructions named C.MOP.__n__, where __n__ is an odd integer between 1 and 15, inclusive.",
+      "line_number": 58,
+      "reason": "This defines the fixed set of C.MOP instructions. The number and naming of instructions is fixed by the specification, not implementation-defined."
+    },
+    {
+      "excerpt": "Unlike the MOPs defined in the Zimop extension, the C.MOP.__n__ instructions are defined to _not_ write any register.",
+      "line_number": 62,
+      "reason": "This defines the fixed behavior of C.MOP instructions - they do not write any register. This is a specification requirement, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"It is sometimes desirable to define instruction-set extensions whose instructions, rather than raising illegal-instruction exceptions when the extension is not implemented, take no useful action (beyond writing `x[rd]`).\",\n      \"line_number\": 12,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It provides background information but does not define any implementation choices.\"\n    },\n    {\n      \"excerpt\": \"The Zimop extension defines 32 MOP instructions named MOP.R.__n__, where __n__ is an integer between 0 and 31, inclusive. Unless redefined by another extension, these instructions simply write 0 to `x[rd]`.\",\n      \"line_number\": 28,\n      \"reason\": \"This defines the fixed behavior of MOP.R instructions when not redefined by another extension. The behavior (write 0 to x[rd]) is deterministic and not implementation-defined.\"\n    },\n    {\n      \"excerpt\": \"The Zimop extension additionally defines 8 MOP instructions named MOP.RR.__n__, where __n__ is an integer between 0 and 7, inclusive. Unless redefined by another extension, these instructions simply write 0 to `x[rd]`.\",\n      \"line_number\": 36,\n      \"reason\": \"Similar to MOP.R, this defines the fixed behavior of MOP.RR instructions. The behavior is deterministic when the extension is not redefined.\"\n    },\n    {\n      \"excerpt\": \"This section defines the \\\"Zcmop\\\" extension, which defines eight 16-bit MOP instructions named C.MOP.__n__, where __n__ is an odd integer between 1 and 15, inclusive.\",\n      \"line_number\": 58,\n      \"reason\": \"This defines the fixed set of C.MOP instructions. The number and naming of instructions is fixed by the specification, not implementation-defined.\"\n    },\n    {\n      \"excerpt\": \"Unlike the MOPs defined in the Zimop extension, the C.MOP.__n__ instructions are defined to _not_ write any register.\",\n      \"line_number\": 62,\n      \"reason\": \"This defines the fixed behavior of C.MOP instructions - they do not write any register. This is a specification requirement, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 9003,
+  "output_tokens": 574,
+  "latency_ms": 10808,
+  "timestamp": "2026-05-25T21:26:03.087295+00:00",
+  "error": null,
+  "retry_count": 0
+}

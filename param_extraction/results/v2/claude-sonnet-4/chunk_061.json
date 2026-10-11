@@ -1,0 +1,104 @@
+{
+  "chunk_id": "chunk_061",
+  "source_file": "vector-crypto.adoc",
+  "start_line": 3311,
+  "end_line": 4966,
+  "content_start_line": 3341,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "`zvknha`: `SEW` is any value other than 32",
+      "line_number": 3349,
+      "parameter_name": "VSHA2MS_ZVKNHA_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "For zvknha extension, the vsha2ms instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction."
+    },
+    {
+      "excerpt": "`zvknhb`: `SEW` is any value other than 32 or 64",
+      "line_number": 3350,
+      "parameter_name": "VSHA2MS_ZVKNHB_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "For zvknhb extension, the vsha2ms instruction supports SEW=32 and SEW=64. This is a WARL constraint on which SEW values are legal for this instruction."
+    },
+    {
+      "excerpt": "`SEW` is any value other than 32",
+      "line_number": 3456,
+      "parameter_name": "VSM3C_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The vsm3c instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction."
+    },
+    {
+      "excerpt": "`SEW` is any value other than 32",
+      "line_number": 3598,
+      "parameter_name": "VSM3ME_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The vsm3me instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction."
+    },
+    {
+      "excerpt": "`SEW` is any value other than 32",
+      "line_number": 3730,
+      "parameter_name": "VSM4K_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The vsm4k instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction."
+    },
+    {
+      "excerpt": "`SEW` is any value other than 32",
+      "line_number": 3890,
+      "parameter_name": "VSM4R_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The vsm4r instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Four rounds of SHA-256 message schedule expansion are performed (`zvknha` and `zvknhb`)",
+      "line_number": 3365,
+      "reason": "This describes the behavior when SEW=32, not an implementation choice. The parameter is which SEW values are supported, not what the instruction does."
+    },
+    {
+      "excerpt": "Four rounds of SHA-512 message schedule expansion are performed (`zvknhb`)",
+      "line_number": 3366,
+      "reason": "This describes the behavior when SEW=64, not an implementation choice. The parameter is which SEW values are supported, not what the instruction does."
+    },
+    {
+      "excerpt": "Two rounds of SM3 compression are performed.",
+      "line_number": 3470,
+      "reason": "This describes what the vsm3c instruction does, which is fixed behavior, not an implementation choice."
+    },
+    {
+      "excerpt": "Eight rounds of SM3 message expansion are performed.",
+      "line_number": 3612,
+      "reason": "This describes what the vsm3me instruction does, which is fixed behavior, not an implementation choice."
+    },
+    {
+      "excerpt": "Four rounds of the SM4 Key Expansion are performed.",
+      "line_number": 3744,
+      "reason": "This describes what the vsm4k instruction does, which is fixed behavior, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"`zvknha`: `SEW` is any value other than 32\",\n      \"line_number\": 3349,\n      \"parameter_name\": \"VSHA2MS_ZVKNHA_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For zvknha extension, the vsha2ms instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction.\"\n    },\n    {\n      \"excerpt\": \"`zvknhb`: `SEW` is any value other than 32 or 64\",\n      \"line_number\": 3350,\n      \"parameter_name\": \"VSHA2MS_ZVKNHB_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For zvknhb extension, the vsha2ms instruction supports SEW=32 and SEW=64. This is a WARL constraint on which SEW values are legal for this instruction.\"\n    },\n    {\n      \"excerpt\": \"`SEW` is any value other than 32\",\n      \"line_number\": 3456,\n      \"parameter_name\": \"VSM3C_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The vsm3c instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction.\"\n    },\n    {\n      \"excerpt\": \"`SEW` is any value other than 32\",\n      \"line_number\": 3598,\n      \"parameter_name\": \"VSM3ME_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The vsm3me instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction.\"\n    },\n    {\n      \"excerpt\": \"`SEW` is any value other than 32\",\n      \"line_number\": 3730,\n      \"parameter_name\": \"VSM4K_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The vsm4k instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction.\"\n    },\n    {\n      \"excerpt\": \"`SEW` is any value other than 32\",\n      \"line_number\": 3890,\n      \"parameter_name\": \"VSM4R_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The vsm4r instruction only supports SEW=32. This is a WARL constraint on which SEW values are legal for this instruction.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Four rounds of SHA-256 message schedule expansion are performed (`zvknha` and `zvknhb`)\",\n      \"line_number\": 3365,\n      \"reason\": \"This describes the behavior when SEW=32, not an implementation choice. The parameter is which SEW values are supported, not what the instruction does.\"\n    },\n    {\n      \"excerpt\": \"Four rounds of SHA-512 message schedule expansion are performed (`zvknhb`)\",\n      \"line_number\": 3366,\n      \"reason\": \"This describes the behavior when SEW=64, not an implementation choice. The parameter is which SEW values are supported, not what the instruction does.\"\n    },\n    {\n      \"excerpt\": \"Two rounds of SM3 compression are performed.\",\n      \"line_number\": 3470,\n      \"reason\": \"This describes what the vsm3c instruction does, which is fixed behavior, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Eight rounds of SM3 message expansion are performed.\",\n      \"line_number\": 3612,\n      \"reason\": \"This describes what the vsm3me instruction does, which is fixed behavior, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Four rounds of the SM4 Key Expansion are performed.\",\n      \"line_number\": 3744,\n      \"reason\": \"This describes what the vsm4k instruction does, which is fixed behavior, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 34241,
+  "output_tokens": 1250,
+  "latency_ms": 17261,
+  "timestamp": "2026-05-25T21:22:17.076525+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,124 @@
+{
+  "chunk_id": "chunk_007",
+  "source_file": "c-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 931,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The C extension allows 16-bit instructions to be freely intermixed with 32-bit instructions, with the latter now able to start on any 16-bit boundary, i.e., IALIGN=16.",
+      "line_number": 22,
+      "parameter_name": "IALIGN",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "IALIGN is a direct architectural parameter that determines instruction alignment. With the C extension, it is set to 16 bits rather than 32 bits."
+    },
+    {
+      "excerpt": "CIW, CL, CS, CA, and CB are limited to just 8 of them.",
+      "line_number": 175,
+      "parameter_name": "COMPRESSED_REGISTER_SET",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The compressed instruction formats are limited to 8 specific registers (x8-x15). This is a direct architectural choice about which registers are accessible in compressed formats."
+    },
+    {
+      "excerpt": "Compressed register-based floating-point loads and stores also use the CL and CS formats respectively, with the eight registers mapping to `f8` to `f15`.",
+      "line_number": 185,
+      "parameter_name": "COMPRESSED_FP_REGISTER_SET",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "Similar to integer registers, compressed floating-point instructions are limited to 8 specific FP registers (f8-f15). This is a direct architectural choice."
+    },
+    {
+      "excerpt": "As with base RVI instructions, the offsets of all RVC control transfer instructions are in multiples of 2 bytes.",
+      "line_number": 456,
+      "parameter_name": "RVC_OFFSET_ALIGNMENT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The alignment requirement for RVC control transfer instruction offsets is a direct architectural parameter (multiples of 2 bytes)."
+    },
+    {
+      "excerpt": "For RV32C, _shamt[5]_ must be zero; the code points with _shamt[5]_=1 are designated for custom extensions.",
+      "line_number": 693,
+      "parameter_name": "RV32C_SLLI_SHAMT5_RESTRICTION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For RV32C implementations, bit 5 of the shift amount in C.SLLI must be zero. This is a direct architectural constraint that varies by base ISA width."
+    },
+    {
+      "excerpt": "For RV32C, _shamt[5]_ must be zero; the code points with _shamt[5]_=1 are designated for custom extensions.",
+      "line_number": 713,
+      "parameter_name": "RV32C_SRLI_SHAMT5_RESTRICTION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "For RV32C implementations, bit 5 of the shift amount in C.SRLI must be zero. This is a direct architectural constraint that varies by base ISA width."
+    },
+    {
+      "excerpt": "A 16-bit instruction with all bits zero is permanently reserved as an illegal instruction.",
+      "line_number": 825,
+      "parameter_name": "COMPRESSED_ALL_ZERO_ILLEGAL",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The treatment of all-zero 16-bit patterns as illegal instructions is a direct architectural requirement for the C extension."
+    },
+    {
+      "excerpt": "A portion of the RVC encoding space is reserved for microarchitectural HINTs.",
+      "line_number": 869,
+      "parameter_name": "RVC_HINT_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "Whether an implementation supports and acts on RVC HINTs or treats them as no-ops is an implementation choice, though the spec says they can be ignored."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Typically, 50%-60% of the RISC-V instructions in a program can be replaced with RVC instructions, resulting in a 25%-30% code-size reduction.",
+      "line_number": 8,
+      "reason": "This describes typical compression ratios, not an implementation-defined parameter. It's a performance characteristic, not a choice."
+    },
+    {
+      "excerpt": "C.LWSP loads a 32-bit value from memory into register _rd_. It computes an effective address by adding the _zero_-extended offset, scaled by 4, to the stack pointer, `x2`. It expands to `lw rd, offset(x2)`.",
+      "line_number": 295,
+      "reason": "This describes the behavior of the C.LWSP instruction, which is fixed. The operation is not implementation-defined."
+    },
+    {
+      "excerpt": "C.LWSP is valid only when _rd_\u2260`x0`; the code points with _rd_=`x0` are reserved.",
+      "line_number": 298,
+      "reason": "This is a fixed encoding constraint that applies to all implementations. It's not an implementation choice."
+    },
+    {
+      "excerpt": "When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.",
+      "line_number": 1254,
+      "reason": "This describes behavior when a CSR field has a specific value, not an implementation parameter. The behavior is determined by the field value at runtime."
+    },
+    {
+      "excerpt": "The remainder of the HINT space is designated for custom HINTs; no standard HINTs will ever be defined in this subspace.",
+      "line_number": 890,
+      "reason": "This describes the allocation of encoding space for custom vs standard HINTs, but doesn't define an implementation parameter. It's a specification design choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The C extension allows 16-bit instructions to be freely intermixed with 32-bit instructions, with the latter now able to start on any 16-bit boundary, i.e., IALIGN=16.\",\n      \"line_number\": 22,\n      \"parameter_name\": \"IALIGN\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"IALIGN is a direct architectural parameter that determines instruction alignment. With the C extension, it is set to 16 bits rather than 32 bits.\"\n    },\n    {\n      \"excerpt\": \"CIW, CL, CS, CA, and CB are limited to just 8 of them.\",\n      \"line_number\": 175,\n      \"parameter_name\": \"COMPRESSED_REGISTER_SET\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The compressed instruction formats are limited to 8 specific registers (x8-x15). This is a direct architectural choice about which registers are accessible in compressed formats.\"\n    },\n    {\n      \"excerpt\": \"Compressed register-based floating-point loads and stores also use the CL and CS formats respectively, with the eight registers mapping to `f8` to `f15`.\",\n      \"line_number\": 185,\n      \"parameter_name\": \"COMPRESSED_FP_REGISTER_SET\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Similar to integer registers, compressed floating-point instructions are limited to 8 specific FP registers (f8-f15). This is a direct architectural choice.\"\n    },\n    {\n      \"excerpt\": \"As with base RVI instructions, the offsets of all RVC control transfer instructions are in multiples of 2 bytes.\",\n      \"line_number\": 456,\n      \"parameter_name\": \"RVC_OFFSET_ALIGNMENT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The alignment requirement for RVC control transfer instruction offsets is a direct architectural parameter (multiples of 2 bytes).\"\n    },\n    {\n      \"excerpt\": \"For RV32C, _shamt[5]_ must be zero; the code points with _shamt[5]_=1 are designated for custom extensions.\",\n      \"line_number\": 693,\n      \"parameter_name\": \"RV32C_SLLI_SHAMT5_RESTRICTION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For RV32C implementations, bit 5 of the shift amount in C.SLLI must be zero. This is a direct architectural constraint that varies by base ISA width.\"\n    },\n    {\n      \"excerpt\": \"For RV32C, _shamt[5]_ must be zero; the code points with _shamt[5]_=1 are designated for custom extensions.\",\n      \"line_number\": 713,\n      \"parameter_name\": \"RV32C_SRLI_SHAMT5_RESTRICTION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"For RV32C implementations, bit 5 of the shift amount in C.SRLI must be zero. This is a direct architectural constraint that varies by base ISA width.\"\n    },\n    {\n      \"excerpt\": \"A 16-bit instruction with all bits zero is permanently reserved as an illegal instruction.\",\n      \"line_number\": 825,\n      \"parameter_name\": \"COMPRESSED_ALL_ZERO_ILLEGAL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The treatment of all-zero 16-bit patterns as illegal instructions is a direct architectural requirement for the C extension.\"\n    },\n    {\n      \"excerpt\": \"A portion of the RVC encoding space is reserved for microarchitectural HINTs.\",\n      \"line_number\": 869,\n      \"parameter_name\": \"RVC_HINT_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"Whether an implementation supports and acts on RVC HINTs or treats them as no-ops is an implementation choice, though the spec says they can be ignored.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Typically, 50%-60% of the RISC-V instructions in a program can be replaced with RVC instructions, resulting in a 25%-30% code-size reduction.\",\n      \"line_number\": 8,\n      \"reason\": \"This describes typical compression ratios, not an implementation-defined parameter. It's a performance characteristic, not a choice.\"\n    },\n    {\n      \"excerpt\": \"C.LWSP loads a 32-bit value from memory into register _rd_. It computes an effective address by adding the _zero_-extended offset, scaled by 4, to the stack pointer, `x2`. It expands to `lw rd, offset(x2)`.\",\n      \"line_number\": 295,\n      \"reason\": \"This describes the behavior of the C.LWSP instruction, which is fixed. The operation is not implementation-defined.\"\n    },\n    {\n      \"excerpt\": \"C.LWSP is valid only when _rd_\u2260`x0`; the code points with _rd_=`x0` are reserved.\",\n      \"line_number\": 298,\n      \"reason\": \"This is a fixed encoding constraint that applies to all implementations. It's not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When MODE=Direct, all traps into machine mode cause the `pc` to be set to the address in the BASE field.\",\n      \"line_number\": 1254,\n      \"reason\": \"This describes behavior when a CSR field has a specific value, not an implementation parameter. The behavior is determined by the field value at runtime.\"\n    },\n    {\n      \"excerpt\": \"The remainder of the HINT space is designated for custom HINTs; no standard HINTs will ever be defined in this subspace.\",\n      \"line_number\": 890,\n      \"reason\": \"This describes the allocation of encoding space for custom vs standard HINTs, but doesn't define an implementation parameter. It's a specification design choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 19921,
+  "output_tokens": 1716,
+  "latency_ms": 33776,
+  "timestamp": "2026-05-25T21:01:46.455411+00:00",
+  "error": null,
+  "retry_count": 0
+}

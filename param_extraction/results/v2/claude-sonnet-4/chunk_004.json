@@ -1,0 +1,84 @@
+{
+  "chunk_id": "chunk_004",
+  "source_file": "bfloat16.adoc",
+  "start_line": 1,
+  "end_line": 790,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "All of the BF16 instructions in the extensions defined in this specification (i.e., Zfbfmin, Zvfbfmin, and Zvfbfwma) fully support subnormal numbers. That is, instructions are able to accept subnormal values as inputs and they can produce subnormal results.",
+      "line_number": 149,
+      "parameter_name": "BF16_SUBNORMAL_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The specification states that BF16 instructions fully support subnormal numbers, but the NOTE indicates future extensions may choose not to support them. This is an implementation choice for future extensions."
+    },
+    {
+      "excerpt": "SEW is any value other than 16",
+      "line_number": 549,
+      "parameter_name": "VFNCVTBF16_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The instruction has reserved encodings when SEW is not 16, meaning only SEW=16 is a legal value. This defines the set of supported SEW values for this instruction."
+    },
+    {
+      "excerpt": "SEW is any value other than 16",
+      "line_number": 612,
+      "parameter_name": "VFWCVTBF16_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "Similar to vfncvtbf16, this instruction reserves encodings when SEW is not 16, defining the legal SEW values as only 16."
+    },
+    {
+      "excerpt": "SEW is any value other than 16",
+      "line_number": 707,
+      "parameter_name": "VFWMACCBF16_SEW_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "The vfwmaccbf16 instruction also reserves encodings when SEW is not 16, meaning only SEW=16 is legal for this instruction."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Future floating-point extensions, including those that operate on BF16 values, may chose not to support subnormal numbers.",
+      "line_number": 153,
+      "reason": "This text is inside a [NOTE] block, which is non-normative and should not be used to extract parameters."
+    },
+    {
+      "excerpt": "When MODE=Direct, all traps into machine mode cause the pc to be set to the address in the BASE field.",
+      "line_number": 0,
+      "reason": "This is not present in the given text, but serves as an example of behavioral description that depends on CSR field values at runtime, not implementation choices."
+    },
+    {
+      "excerpt": "This extension depends upon the single-precision floating-point extension F.",
+      "line_number": 286,
+      "reason": "This describes a fixed dependency requirement that all implementations must satisfy, not an optional implementation choice."
+    },
+    {
+      "excerpt": "Narrowing convert FP32 value to a BF16 value. Round according to the RM field.",
+      "line_number": 463,
+      "reason": "This describes the operation behavior, which is fixed for all implementations. The rounding mode is determined by the RM field value at runtime, not by implementation choice."
+    },
+    {
+      "excerpt": "The conversion is exact.",
+      "line_number": 510,
+      "reason": "This describes a fixed requirement for the conversion operation that all implementations must satisfy, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"All of the BF16 instructions in the extensions defined in this specification (i.e., Zfbfmin, Zvfbfmin, and Zvfbfwma) fully support subnormal numbers. That is, instructions are able to accept subnormal values as inputs and they can produce subnormal results.\",\n      \"line_number\": 149,\n      \"parameter_name\": \"BF16_SUBNORMAL_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The specification states that BF16 instructions fully support subnormal numbers, but the NOTE indicates future extensions may choose not to support them. This is an implementation choice for future extensions.\"\n    },\n    {\n      \"excerpt\": \"SEW is any value other than 16\",\n      \"line_number\": 549,\n      \"parameter_name\": \"VFNCVTBF16_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The instruction has reserved encodings when SEW is not 16, meaning only SEW=16 is a legal value. This defines the set of supported SEW values for this instruction.\"\n    },\n    {\n      \"excerpt\": \"SEW is any value other than 16\",\n      \"line_number\": 612,\n      \"parameter_name\": \"VFWCVTBF16_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"Similar to vfncvtbf16, this instruction reserves encodings when SEW is not 16, defining the legal SEW values as only 16.\"\n    },\n    {\n      \"excerpt\": \"SEW is any value other than 16\",\n      \"line_number\": 707,\n      \"parameter_name\": \"VFWMACCBF16_SEW_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The vfwmaccbf16 instruction also reserves encodings when SEW is not 16, meaning only SEW=16 is legal for this instruction.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Future floating-point extensions, including those that operate on BF16 values, may chose not to support subnormal numbers.\",\n      \"line_number\": 153,\n      \"reason\": \"This text is inside a [NOTE] block, which is non-normative and should not be used to extract parameters.\"\n    },\n    {\n      \"excerpt\": \"When MODE=Direct, all traps into machine mode cause the pc to be set to the address in the BASE field.\",\n      \"line_number\": 0,\n      \"reason\": \"This is not present in the given text, but serves as an example of behavioral description that depends on CSR field values at runtime, not implementation choices.\"\n    },\n    {\n      \"excerpt\": \"This extension depends upon the single-precision floating-point extension F.\",\n      \"line_number\": 286,\n      \"reason\": \"This describes a fixed dependency requirement that all implementations must satisfy, not an optional implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Narrowing convert FP32 value to a BF16 value. Round according to the RM field.\",\n      \"line_number\": 463,\n      \"reason\": \"This describes the operation behavior, which is fixed for all implementations. The rounding mode is determined by the RM field value at runtime, not by implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The conversion is exact.\",\n      \"line_number\": 510,\n      \"reason\": \"This describes a fixed requirement for the conversion operation that all implementations must satisfy, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 15810,
+  "output_tokens": 1033,
+  "latency_ms": 20814,
+  "timestamp": "2026-05-25T21:01:12.159409+00:00",
+  "error": null,
+  "retry_count": 0
+}

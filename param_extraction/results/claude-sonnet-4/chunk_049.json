@@ -1,0 +1,44 @@
+{
+  "chunk_id": "chunk_049",
+  "source_file": "smdbltrp.adoc",
+  "start_line": 1,
+  "end_line": 17,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The extension introduces a mechanism to enter Debug Mode instead of asserting a critical-error signal to the platform when the hart is in a critical error state.",
+      "line_number": 14,
+      "parameter_name": "SMDBLTRP_DEBUG_MODE_ON_CRITICAL_ERROR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "The extension 'introduces a mechanism' which implies an implementation choice between entering Debug Mode vs asserting a critical-error signal when in a critical error state. This is a binary choice for how to handle critical errors."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The Smdbltrp extension addresses a double trap (See <<machine-double-trap>>) in M-mode.",
+      "line_number": 4,
+      "reason": "This describes what the extension does, not an implementation choice. It's a fixed requirement for what the extension addresses."
+    },
+    {
+      "excerpt": "When the Smrnmi extension (<<rnmi>>) is implemented, it enables invocation of the RNMI handler on a double trap in M-mode to handle the critical error.",
+      "line_number": 5,
+      "reason": "This describes conditional behavior based on whether another extension is implemented, but doesn't define an implementation parameter within Smdbltrp itself."
+    },
+    {
+      "excerpt": "If the Smrnmi extension is not implemented or if a double trap occurs during the RNMI handler's execution, this extension helps transition the hart to a critical error state",
+      "line_number": 7,
+      "reason": "This describes what happens in specific conditions, but is a fixed behavioral requirement rather than an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The extension introduces a mechanism to enter Debug Mode instead of asserting a critical-error signal to the platform when the hart is in a critical error state.\",\n      \"line_number\": 14,\n      \"parameter_name\": \"SMDBLTRP_DEBUG_MODE_ON_CRITICAL_ERROR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The extension 'introduces a mechanism' which implies an implementation choice between entering Debug Mode vs asserting a critical-error signal when in a critical error state. This is a binary choice for how to handle critical errors.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The Smdbltrp extension addresses a double trap (See <<machine-double-trap>>) in M-mode.\",\n      \"line_number\": 4,\n      \"reason\": \"This describes what the extension does, not an implementation choice. It's a fixed requirement for what the extension addresses.\"\n    },\n    {\n      \"excerpt\": \"When the Smrnmi extension (<<rnmi>>) is implemented, it enables invocation of the RNMI handler on a double trap in M-mode to handle the critical error.\",\n      \"line_number\": 5,\n      \"reason\": \"This describes conditional behavior based on whether another extension is implemented, but doesn't define an implementation parameter within Smdbltrp itself.\"\n    },\n    {\n      \"excerpt\": \"If the Smrnmi extension is not implemented or if a double trap occurs during the RNMI handler's execution, this extension helps transition the hart to a critical error state\",\n      \"line_number\": 7,\n      \"reason\": \"This describes what happens in specific conditions, but is a fixed behavioral requirement rather than an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 5853,
+  "output_tokens": 467,
+  "latency_ms": 10070,
+  "timestamp": "2026-05-25T20:48:40.516536+00:00",
+  "error": null,
+  "retry_count": 0
+}
