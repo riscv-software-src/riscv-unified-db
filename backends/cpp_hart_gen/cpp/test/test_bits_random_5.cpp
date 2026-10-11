@@ -1,4 +1,4 @@
-#include <fmt/core.h>
+#include <format>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -59,12 +59,12 @@ consteval __uint128_t operator""_u128(const char *x) {
 }
 
 std::ostream &operator<<(std::ostream &stream, const __uint128_t &val) {
-  stream << fmt::format("0x{:x}", val);
+  stream << std::format("0x{:x}", val);
   return stream;
 }
 
 std::ostream &operator<<(std::ostream &stream, const __int128_t &val) {
-  stream << fmt::format("0x{:x}", val);
+  stream << std::format("0x{:x}", val);
   return stream;
 }
 

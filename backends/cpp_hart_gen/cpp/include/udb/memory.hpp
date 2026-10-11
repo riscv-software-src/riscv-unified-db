@@ -1,6 +1,8 @@
 #pragma once
 
+#include <vector>
 #include "udb/defines.hpp"
+
 
 namespace udb {
   class Memory {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fmt/format.h>
+#include <format>
 
 #include <utility>
 
@@ -225,11 +225,11 @@ BINARY_LOGICAL_OP(>=)
 
 // format XRegister as an XReg (integral) when using format()
 template <unsigned XLEN>
-struct fmt::formatter<udb::XRegister<XLEN>>
-    : formatter<typename udb::XRegister<XLEN>::ValueType> {
+struct std::formatter<udb::XRegister<XLEN>>
+    : std::formatter<typename udb::XRegister<XLEN>::ValueType> {
   template <typename CONTEXT_TYPE>
   auto format(udb::XRegister<XLEN> value, CONTEXT_TYPE &ctx) const {
-    return fmt::formatter<typename udb::XRegister<XLEN>::ValueType>::format(
+    return std::formatter<typename udb::XRegister<XLEN>::ValueType>::format(
         (typename udb::XRegister<XLEN>::ValueType)value, ctx);
   }
 };

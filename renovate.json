@@ -136,16 +136,6 @@
       "datasourceTemplate": "maven"
     },
     {
-      "description": "fmt version fetched by cpp_hart_gen's CMake FetchContent",
-      "customType": "regex",
-      "managerFilePatterns": ["/^backends/cpp_hart_gen/CMakeLists\\.txt$/"],
-      "matchStrings": [
-        "FetchContent_Declare\\(fmt\\s+GIT_REPOSITORY https://github\\.com/fmtlib/fmt\\.git\\s+GIT_TAG (?<currentValue>\\S+)\\s*\\)"
-      ],
-      "depNameTemplate": "fmtlib/fmt",
-      "datasourceTemplate": "github-releases"
-    },
-    {
       "description": "yaml-cpp version fetched by cpp_hart_gen's CMake FetchContent",
       "customType": "regex",
       "managerFilePatterns": ["/^backends/cpp_hart_gen/CMakeLists\\.txt$/"],

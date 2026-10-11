@@ -1,5 +1,5 @@
-
-#include <fmt/core.h>
+#include <format>
+#include <iostream>
 
 #include <CLI/CLI.hpp>
 #include <string>
@@ -150,13 +150,13 @@ int main(int argc, char *argv[])
     if (opts.showConfigs)
     {
       for (auto &config : udb::HartFactory::configs())
-        fmt::print("{}\n", config);
+        std::cout << std::format("{}\n", config);
       return 0;
     }
 
     if (opts.configPath.empty())
     {
-      fmt::print("No configuration file provided\n");
+      std::cerr << "No configuration file provided\n";
       return -1;
     }
 
@@ -201,7 +201,7 @@ InstructionSetSimulator::InstructionSetSimulator(Options& opts) :
         if(pTracer != nullptr)
           m_tracers.push_back(pTracer);
         else
-          fmt::print("Unknown tracer: {}\n", t);
+          std::cerr << std::format("Unknown tracer: {}\n", t);
       }
 
 
@@ -295,7 +295,7 @@ int InstructionSetSimulator::Run()
     result = ListenForConnection();
 
   if(m_opts.halt)
-    fmt::print("port {} - Waiting for debugger to attach...\n", m_opts.gdbPort);
+    std::cout << std::format("port {} - Waiting for debugger to attach...\n", m_opts.gdbPort);
 
   while (true)
   {
@@ -337,13 +337,13 @@ int InstructionSetSimulator::Run()
     if (stopReason != StopReason::InstLimitReached &&
         stopReason != StopReason::Exception) {
       if (stopReason == StopReason::ExitSuccess) {
-        fmt::print("SUCCESS - {}\n", m_pHart->exit_reason());
+        std::cout << std::format("SUCCESS - {}\n", m_pHart->exit_reason());
         break;
       } else if (stopReason == StopReason::ExitFailure) {
-        fmt::print(stderr, "FAIL - {}\n", m_pHart->exit_reason());
+        std::cerr << std::format("FAIL - {}\n", m_pHart->exit_reason());
         break;
       } else {
-        fmt::print("EXIT - {}\n", m_pHart->exit_reason());
+        std::cout << std::format("EXIT - {}\n", m_pHart->exit_reason());
         break;
       }
     }
@@ -750,11 +750,11 @@ HostTargetInterface* InstructionSetSimulator::CreateHostTargetInterface(
     pHTIF = new HostTargetInterface(pSoC, toHostAddress, fromHostAddress,
         sigBeginAddress, sigEndAddress - sigBeginAddress);
     if(pHTIF == nullptr)
-      fmt::print("Error: cannot create host-target interface");
+      std::cerr << "Error: cannot create host-target interface\n";
   }
   else
   {
-    fmt::print("Note: elf application does not support host-target interface");
+    std::cout << "Note: elf application does not support host-target interface\n";
   }
 
   return pHTIF;

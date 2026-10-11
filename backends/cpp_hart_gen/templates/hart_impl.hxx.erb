@@ -1,8 +1,7 @@
 #pragma once
 
 #include <memory>
-
-#include <fmt/core.h>
+#include <print>
 
 #include "udb/inst.hpp"
 #include "udb/cfgs/<%= cfg_arch.name %>/inst.hxx"
@@ -19,19 +18,25 @@ namespace udb {
   <%- end -%>
 
   template <SocModel SocType>
-  void udb::<%= name_of(:hart, cfg_arch) %><SocType>::printState(FILE* out) const {
-    fmt::print(out, "Hart %u:\n", this->m_hart_id);
-    fmt::print(out, "PC: {:#x}\n", m_pc.get());
+  void <%= name_of(:hart, cfg_arch) %><SocType>::printState(FILE* out) const {
+    std::print(out, "Hart {:d}:\n", this->m_hart_id);
+    std::print(out, "PC: {:#x}\n", m_pc.get());
     <%- applicable_register_files.each do |rf| -%>
     <%- rf_name = rf.name.downcase -%>
     <%- rf_width = rf.eval_register_length(cfg_arch) -%>
     <%- is_rt_width = rf_width.is_a?(String) -%>
-    fmt::print(out, "<%= rf.name %> registers:\n");
+    std::print(out, "<%= rf.name %> registers:\n");
     for (unsigned i = 0; i < <%= rf.registers.count %>; i++) {
       <%- if is_rt_width -%>
-      fmt::print(out, "<%= rf_name %>{}: {:#x}\n", i, static_cast<uint64_t>(_<%= rf_name %>reg(i).get().get_ui()));
+      std::print(out, "<%= rf_name %>{}: {:#x}\n", i, static_cast<uint64_t>(_<%= rf_name %>reg(i).get().get_ui()));
       <%- else -%>
-      fmt::print(out, "<%= rf_name %>{}: {:#x}\n", i, _<%= rf_name %>reg(i).get());
+        <%- if rf_width > 64 -%>
+        __int128 val = _<%= rf_name %>reg(i).get();
+        std::print(out, "<%= rf_name %>{}: {:#x}{:x}\n", i, static_cast<uint64_t>(val >> 64), static_cast<uint64_t>(val & 0xFFFFFFFFFFFFFFFF));
+        <%- else -%>
+        std::print(out, "<%= rf_name %>{}: {:#x}\n", i, _<%= rf_name %>reg(i).get());
+        <%- end -%>
+
       <%- end -%>
     }
     <%- end -%>

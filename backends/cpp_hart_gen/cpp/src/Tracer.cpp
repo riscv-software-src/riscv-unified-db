@@ -1,3 +1,5 @@
+#include <print>
+
 #include "udb/Tracer.hpp"
 #include "udb/inst.hpp"
 
@@ -31,16 +33,16 @@ namespace udb
     case PREEXECUTE_EVENT:
       {
         udb::InstBase* pInst = (udb::InstBase*)pData;
-        fmt::print("PC {:x} {}\n", m_pHart->pc(), pInst->disassemble());
+        std::print("PC {:x} {}\n", m_pHart->pc(), pInst->disassemble());
         for(auto r : pInst->srcRegs())
-          fmt::print("R {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
+          std::print("R {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
       }
       break;
     case EXECUTE_EVENT:
       {
         udb::InstBase* pInst = (udb::InstBase*)pData;
         for (auto r : pInst->dstRegs())
-          fmt::print("R= {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
+          std::print("R= {} {:x}\n", r.to_string(), m_pHart->xreg(r.get_num()));
       }
       break;
     case EXCEPTION_EVENT:
@@ -98,10 +100,10 @@ int udb::MemoryTracer::OnNotification(uint8_t uiModuleId, uint64_t uiEvent, void
 
 void udb::MemoryTracer::OnPhysicalMemoryRead(uint64_t addr, unsigned len)
 {
-  fmt::print("MEM:RD {:x}\n", addr);
+  std::print("MEM:RD {:x}\n", addr);
 }
 
 void udb::MemoryTracer::OnPhysicalMemoryWrite(uint64_t addr, unsigned len, uint64_t data)
 {
-  fmt::print("MEM:WR {:x} {} bytes\n", addr, len );
+  std::print("MEM:WR {:x} {} bytes\n", addr, len );
 }

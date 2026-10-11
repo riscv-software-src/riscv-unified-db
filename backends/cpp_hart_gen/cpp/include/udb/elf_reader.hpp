@@ -1,7 +1,7 @@
 #pragma once
 
+#include <stdio.h>
 #include <gelf.h>
-
 #include <limits>
 #include <string>
 #include <utility>

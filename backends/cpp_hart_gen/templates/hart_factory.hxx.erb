@@ -3,7 +3,7 @@
 
 #include "udb/config_validator.hpp"
 
-#include <fmt/core.h>
+#include <print>
 
 <%- cfg_list = ENV["CONFIG"].split(",").map(&:strip) -%>
 
@@ -50,7 +50,7 @@ namespace udb {
       <%- end %>
 
       // bad config name
-      fmt::print("'{}' is not a valid config name\n", config_name);
+      std::print("'{}' is not a valid config name\n", config_name);
       exit(1);
     }
   };

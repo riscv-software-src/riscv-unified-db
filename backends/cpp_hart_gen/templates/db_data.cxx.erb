@@ -32,7 +32,7 @@ static ExtensionName str_to_ext_name(const std::string& ext_name) {
   <%- i += 1 -%>
   <%- end -%>
   else {
-    udb_assert(false, fmt::format("'{}' is not a known extension", ext_name));
+    udb_assert(false, std::format("'{}' is not a known extension", ext_name));
   }
 }
 

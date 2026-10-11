@@ -71,12 +71,6 @@ if(NOT DEFINED FETCHCONTENT_UPDATES_DISCONNECTED)
       CACHE BOOL "Skip FetchContent update checks for already-fetched dependencies.")
 endif()
 
-FetchContent_Declare(fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-  GIT_TAG 12.2.0
-)
-FetchContent_MakeAvailable(fmt)
-
 FetchContent_Declare(
   yaml-cpp
   GIT_REPOSITORY https://github.com/jbeder/yaml-cpp.git
@@ -206,7 +200,7 @@ target_include_directories(hart PUBLIC ${CMAKE_SOURCE_DIR}/include)
 if(IGNOREUNDEFINED STREQUAL "YES")
 target_compile_definitions(hart PUBLIC IGNOREUNDEFINED)
 endif()
-target_link_libraries(hart PUBLIC yaml-cpp::yaml-cpp nlohmann_json_schema_validator fmt::fmt ctre::ctre -lgmp -lgmpxx)
+target_link_libraries(hart PUBLIC yaml-cpp::yaml-cpp nlohmann_json_schema_validator ctre::ctre -lgmp -lgmpxx)
 
 # add_library(hart_c ${CMAKE_SOURCE_DIR}/src/libhart_c.cpp)
 # target_include_directories(hart_c PUBLIC ${CMAKE_SOURCE_DIR}/include)

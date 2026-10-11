@@ -1,5 +1,6 @@
-
+#include <unistd.h>
 #include <fcntl.h>
+#include <format>
 #include <gelf.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -81,7 +82,7 @@ bool udb::ElfReader::getSym(const std::string& name, Elf64_Addr* result) {
       unsigned num_syms = section_header.sh_size / section_header.sh_entsize;
       Elf_Data* data;
       if ((data = elf_getdata(section, nullptr)) == nullptr) {
-        throw ElfException(fmt::format("Could not get symtab data. {}",
+        throw ElfException(std::format("Could not get symtab data. {}",
                                        elf_errmsg(elf_errno()))
                                .c_str());
       }

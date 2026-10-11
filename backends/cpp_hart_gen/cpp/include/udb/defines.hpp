@@ -1,9 +1,11 @@
 #pragma once
 
+#include <format>
 #include <algorithm>
 #include <cstdlib>
 #include <string_view>
 #include <version>
+#include <iostream>
 
 // type to be used when you want to pass a string literal as a template
 // argument
@@ -29,24 +31,22 @@ struct TemplateString {
 #define udb_unreachable() __builtin_unreachable()
 #endif
 
-#include <fmt/core.h>
-#include <fmt/std.h>
+template <class StringType>
+[[noreturn]] static void __udb_assert_fail(const char* file, unsigned line, const char* cond, const StringType& msg)
+{
+  std::cout << std::format("At {}:{} :\n   Assertion failed:  {}\n   {}\n",
+    file, line, cond, (msg));
+  std::abort();
+}
 
 template <class StringType>
 [[noreturn]] static void __udb_assert_fail(const std::source_location& location, const char* cond, const StringType& msg)
 {
-  fmt::print(stderr, "At {} :\n   Assertion failed: {}\n   {}\n",
-             location, cond, (msg));
+  __udb_assert_fail(location.file_name(), location.line(), cond, msg);
   std::abort();
 }
 
-template <class StringType>
-[[noreturn]] static void __udb_assert_fail(const char* file, unsigned line, const char* cond, const StringType& msg)
-{
-  fmt::print(stderr, "At {}:{} :\n   Assertion failed: {}\n   {}\n",
-             file, line, cond, (msg));
-  std::abort();
-}
+
 
 #if defined(__cpp_lib_source_location) && __cpp_lib_source_location >= 201907L
 #define __udb_assert(cond, msg)                                         \

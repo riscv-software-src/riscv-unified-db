@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fmt/core.h>
+#include <format>
 
 #include <compare>
 #include <ctre.hpp>
@@ -32,7 +32,7 @@ namespace udb {
               ver_str);
       if (!result) {
         throw std::runtime_error(
-            fmt::format("Bad version string '{}'", ver_str));
+            std::format("Bad version string '{}'", ver_str));
       }
       m_major = result.get<1>().to_number<unsigned>();
       m_minor = 0;
@@ -165,7 +165,7 @@ namespace udb {
 
       if (!result) {
         throw std::runtime_error(
-            fmt::format("Bad version requirement string '{}'", req));
+            std::format("Bad version requirement string '{}'", req));
       }
 
       return static_cast<OpKind>(result.get<1>().to_number<unsigned>());
@@ -178,7 +178,7 @@ namespace udb {
 
       if (!result) {
         throw std::runtime_error(
-            fmt::format("Bad version requirement string '{}'", req));
+            std::format("Bad version requirement string '{}'", req));
       }
 
       m_op.set(result.get<1>());

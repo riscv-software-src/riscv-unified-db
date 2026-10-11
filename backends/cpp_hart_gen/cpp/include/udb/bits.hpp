@@ -12,6 +12,7 @@
 #include <limits>
 #include <type_traits>
 #include <vector>
+#include <cmath>
 
 #include "udb/cpp_exceptions.hpp"
 #include "udb/defines.hpp"
@@ -3702,106 +3703,6 @@ struct std::formatter<BitsClass<N, Signed>> {
   }
 };
 
-#ifdef FMT_VERSION
-// fmt::formatter specializations for Bits types.
-// These are only compiled when <fmt/format.h> has been included before this header,
-// providing compatibility with code that uses fmt::format with Bits types.
-
-template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
-  requires((BitsClass<N, Signed>::IsABits) && (N <= udb::BitsMaxNativePrecision))
-struct fmt::formatter<BitsClass<N, Signed>>
-    : fmt::formatter<typename BitsClass<N, Signed>::StorageType> {
-  template <typename CONTEXT_TYPE>
-  auto format(BitsClass<N, Signed> value, CONTEXT_TYPE &ctx) const {
-    return fmt::formatter<typename BitsClass<N, Signed>::StorageType>::format(
-        value.get_ignore_unknown(), ctx);
-  }
-};
-
-template <template <unsigned, bool> class BitsClass, unsigned N, bool Signed>
-  requires((BitsClass<N, Signed>::IsABits) && (N > udb::BitsMaxNativePrecision))
-struct fmt::formatter<BitsClass<N, Signed>> {
- private:
-  char presentation_type_ = 'd';
-  int width_ = 0;
-  bool alt_flag_ = false;
-  bool zero_pad_ = false;
-
- public:
-  constexpr auto parse(fmt::format_parse_context &ctx) -> decltype(ctx.begin()) {
-    auto it = ctx.begin();
-    auto end = ctx.end();
-
-    // Parse alternate form flag
-    if (it != end && *it == '#') {
-      alt_flag_ = true;
-      ++it;
-    }
-
-    // Parse zero-pad flag
-    if (it != end && *it == '0') {
-      zero_pad_ = true;
-      ++it;
-    }
-
-    // Parse width
-    if (it != end && *it >= '1' && *it <= '9') {
-      width_ = 0;
-      while (it != end && *it >= '0' && *it <= '9') {
-        width_ = width_ * 10 + (*it - '0');
-        ++it;
-      }
-    }
-
-    // Parse presentation type
-    if (it != end && (*it == 'x' || *it == 'X' || *it == 'o' || *it == 'd')) {
-      presentation_type_ = *it;
-      ++it;
-    }
-
-    return it;
-  }
-
-  template <class FormatContext>
-  auto format(const BitsClass<N, Signed> &c, FormatContext &ctx) const -> decltype(ctx.out()) {
-    int base = 10;
-    std::string gmp_fmt_string = "%";
-
-    if (alt_flag_) {
-      gmp_fmt_string += "#";
-    }
-    if (zero_pad_ && width_ != 0) {
-      gmp_fmt_string += "0";
-    }
-    if (width_ != 0) {
-      gmp_fmt_string += std::to_string(width_);
-    }
-
-    gmp_fmt_string += "Z";
-
-    if (presentation_type_ == 'x') {
-      base = 16;
-      gmp_fmt_string += "x";
-    } else if (presentation_type_ == 'X') {
-      base = 16;
-      gmp_fmt_string += "X";
-    } else if (presentation_type_ == 'o') {
-      base = 8;
-      gmp_fmt_string += "o";
-    } else {
-      base = 10;
-      gmp_fmt_string += "d";
-    }
-
-    size_t strwidth = std::max((size_t)width_, mpz_sizeinbase(c.get().get_mpz_t(), base)) + 10;
-    char *str = new char[strwidth + 100];
-    gmp_snprintf(str, strwidth + 100, gmp_fmt_string.c_str(), c.get().get_mpz_t());
-    auto ret_val = fmt::format_to(ctx.out(), "{}", str);
-    delete[] str;
-    return ret_val;
-  }
-};
-#endif  // FMT_VERSION
 
 
 namespace std {

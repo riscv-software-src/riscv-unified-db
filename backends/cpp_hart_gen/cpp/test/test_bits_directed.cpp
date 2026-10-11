@@ -1,5 +1,5 @@
 
-#include <fmt/core.h>
+#include <format>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -60,12 +60,12 @@ consteval __uint128_t operator""_u128(const char *x) {
 }
 
 std::ostream &operator<<(std::ostream &stream, const __uint128_t &val) {
-  stream << fmt::format("0x{:x}", val);
+  stream << std::format("0x{:x}", val);
   return stream;
 }
 
 std::ostream &operator<<(std::ostream &stream, const __int128_t &val) {
-  stream << fmt::format("0x{:x}", val);
+  stream << std::format("0x{:x}", val);
   return stream;
 }
 
@@ -341,11 +341,11 @@ TEST_CASE("multiplication", "[bits]") {
 }
 
 TEST_CASE("Printing", "[bits]") {
-  REQUIRE_THAT(fmt::format("{}", Bits<GmpPrecision>{16}), Equals("16"));
-  REQUIRE_THAT(fmt::format("{:x}", Bits<GmpPrecision>{16}), Equals("10"));
-  REQUIRE_THAT(fmt::format("{:#x}", Bits<GmpPrecision>{16}), Equals("0x10"));
-  REQUIRE_THAT(fmt::format("{:#10x}", Bits<GmpPrecision>{16}), Equals("      0x10"));
-  REQUIRE_THAT(fmt::format("{:#010x}", Bits<GmpPrecision>{16}), Equals("0x00000010"));
+  REQUIRE_THAT(std::format("{}", Bits<GmpPrecision>{16}), Equals("16"));
+  REQUIRE_THAT(std::format("{:x}", Bits<GmpPrecision>{16}), Equals("10"));
+  REQUIRE_THAT(std::format("{:#x}", Bits<GmpPrecision>{16}), Equals("0x10"));
+  REQUIRE_THAT(std::format("{:#10x}", Bits<GmpPrecision>{16}), Equals("      0x10"));
+  REQUIRE_THAT(std::format("{:#010x}", Bits<GmpPrecision>{16}), Equals("0x00000010"));
   // fmt::print("{+:#10x}\n", Bits<GmpPrecision>{16});
 }
 

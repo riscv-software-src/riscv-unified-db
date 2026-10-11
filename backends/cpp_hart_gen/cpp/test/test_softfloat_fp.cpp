@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <fmt/format.h>
+#include <format>
 #include <nlohmann/json.hpp>
 
 #include <cstdint>
@@ -92,7 +92,7 @@ uint64_t parse_hex_u64(const std::string& text) {
   size_t idx = 0;
   uint64_t value = std::stoull(text, &idx, 16);
   if (idx != text.size()) {
-    throw std::runtime_error(fmt::format("invalid hex literal '{}'", text));
+    throw std::runtime_error(std::format("invalid hex literal '{}'", text));
   }
   return value;
 }
@@ -104,7 +104,7 @@ uint32_t parse_hex_u32(const std::string& text) {
 std::vector<TestVector> load_vectors(const std::string& path) {
   std::ifstream in(path);
   if (!in) {
-    throw std::runtime_error(fmt::format("unable to open vector file '{}'", path));
+    throw std::runtime_error(std::format("unable to open vector file '{}'", path));
   }
 
   std::vector<TestVector> vectors;
@@ -135,7 +135,7 @@ RoundingMode parse_rounding_mode(std::string_view rm) {
   if (rm == "RDN") return RoundingMode{RoundingMode::RDN};
   if (rm == "RUP") return RoundingMode{RoundingMode::RUP};
   if (rm == "RMM") return RoundingMode{RoundingMode::RMM};
-  throw std::runtime_error(fmt::format("unsupported rounding mode '{}'", rm));
+  throw std::runtime_error(std::format("unsupported rounding mode '{}'", rm));
 }
 
 uint_fast8_t get_softfloat_rm(std::string_view rm) {
@@ -144,21 +144,21 @@ uint_fast8_t get_softfloat_rm(std::string_view rm) {
   if (rm == "RDN") return softfloat_round_min;
   if (rm == "RUP") return softfloat_round_max;
   if (rm == "RMM") return softfloat_round_near_maxMag;
-  throw std::runtime_error(fmt::format("unsupported rounding mode '{}'", rm));
+  throw std::runtime_error(std::format("unsupported rounding mode '{}'", rm));
 }
 
 F32MulAddOp parse_muladd_op(std::string_view op) {
   if (op == "Softfloat_mulAdd_addC") return F32MulAddOp{F32MulAddOp::Softfloat_mulAdd_addC};
   if (op == "Softfloat_mulAdd_subC") return F32MulAddOp{F32MulAddOp::Softfloat_mulAdd_subC};
   if (op == "Softfloat_mulAdd_subProd") return F32MulAddOp{F32MulAddOp::Softfloat_mulAdd_subProd};
-  throw std::runtime_error(fmt::format("unsupported muladd op '{}'", op));
+  throw std::runtime_error(std::format("unsupported muladd op '{}'", op));
 }
 
 uint_fast8_t get_softfloat_muladd_op(std::string_view op) {
   if (op == "Softfloat_mulAdd_addC") return 0;
   if (op == "Softfloat_mulAdd_subC") return softfloat_mulAdd_subC;
   if (op == "Softfloat_mulAdd_subProd") return softfloat_mulAdd_subProd;
-  throw std::runtime_error(fmt::format("unsupported muladd op '{}'", op));
+  throw std::runtime_error(std::format("unsupported muladd op '{}'", op));
 }
 
 Config make_test_config() {
@@ -325,7 +325,7 @@ void check_operation(TestHart& hart, const TestVector& v) {
     softfloat_res.fflags = softfloat_exceptionFlags;
   }
   else {
-    throw std::runtime_error(fmt::format("unsupported operation '{}'", v.op));
+    throw std::runtime_error(std::format("unsupported operation '{}'", v.op));
   }
 
   // Softfloat may generate different NaN payloads than the RISC-V canonical NaN.
