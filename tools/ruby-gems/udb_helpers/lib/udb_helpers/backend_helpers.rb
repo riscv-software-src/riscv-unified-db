@@ -158,7 +158,7 @@ module Udb
       # @param csr_name [String] Name of the CSR
       # @param field_name [String] Name of the CSR field
       def link_to_udb_doc_csr_field(csr_name, field_name)
-        "%%UDB_DOC_LINK%csr_field;#{csr_name}*#{field_name};#{csr_name}.#{field_name}%%"
+        "%%UDB_DOC_LINK%csr_field;#{csr_name.sanitize}*#{field_name.sanitize};#{csr_name}.#{field_name}%%"
       end
 
       # @return [String] A hyperlink to UDB MMR documentation
