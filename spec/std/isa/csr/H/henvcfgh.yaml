@@ -94,6 +94,9 @@ fields:
   ADUE:
     location: 29
     alias: henvcfg.ADUE
+    sw_write(csr_value): |
+      CSR[henvcfg].ADUE = csr_value.ADUE;
+      return csr_value.ADUE;
     description: |
       If the `Svadu` extension is implemented, the ADUE bit controls whether hardware updating of
       PTE A/D bits is enabled for VS-stage address translation.
