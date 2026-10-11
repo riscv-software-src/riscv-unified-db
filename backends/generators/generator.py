@@ -14,13 +14,61 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 LOGGER = logging.getLogger(__name__)
 
 
-def check_requirement(req, exts):
-    if isinstance(req, str):
-        return req in exts
-    elif isinstance(req, dict) and "name" in req:
-        # If it has a name field, just match the extension name and ignore version
-        return req["name"] in exts
-    return False
+XLENS = {"RV32": {32}, "RV64": {64}, "BOTH": {32, 64}}
+
+
+def extension_condition_holds(cond, enabled_extensions):
+    """
+    Evaluate the inner part of an {extension: ...} condition: a {name, version}
+    requirement, or an allOf/anyOf/oneOf/noneOf/not aggregation of them.
+    Only the extension name is checked; versions are ignored.
+    """
+    if cond.get("name") is not None:
+        return cond["name"] in enabled_extensions
+    if "allOf" in cond:
+        return all(extension_condition_holds(c, enabled_extensions) for c in cond["allOf"])
+    if "anyOf" in cond or "oneOf" in cond:
+        alternatives = cond["anyOf"] if "anyOf" in cond else cond["oneOf"]
+        return any(extension_condition_holds(c, enabled_extensions) for c in alternatives)
+    if "noneOf" in cond:
+        return not any(extension_condition_holds(c, enabled_extensions) for c in cond["noneOf"])
+    if "not" in cond:
+        return not extension_condition_holds(cond["not"], enabled_extensions)
+    LOGGER.warning(f"Unrecognized extension condition, including anyway: {cond}")
+    return True
+
+
+def condition_holds(condition, enabled_extensions, target_arch):
+    """
+    Evaluate a "definedBy" condition.
+    Conditions can be a singleton YAML object like "extension" or "xlen", or a
+    hierarchical dictionary including allOf/oneOf/anyOf aggregations of objects.
+
+    enabled_extensions is the list of enabled extension names, or None to accept
+    every extension (--include-all). target_arch is "RV32", "RV64", or "BOTH".
+    """
+    if "extension" in condition:
+        return enabled_extensions is None or extension_condition_holds(
+            condition["extension"], enabled_extensions
+        )
+    if "xlen" in condition:
+        return condition["xlen"] in XLENS[target_arch]
+    if "param" in condition:
+        # Parameter constraints cannot be evaluated here; treat them as satisfied
+        return True
+    if "allOf" in condition:
+        return all(condition_holds(c, enabled_extensions, target_arch) for c in condition["allOf"])
+    if "anyOf" in condition or "oneOf" in condition:
+        alternatives = condition["anyOf"] if "anyOf" in condition else condition["oneOf"]
+        return any(condition_holds(c, enabled_extensions, target_arch) for c in alternatives)
+    if "noneOf" in condition:
+        return not any(
+            condition_holds(c, enabled_extensions, target_arch) for c in condition["noneOf"]
+        )
+    if "not" in condition:
+        return not condition_holds(condition["not"], enabled_extensions, target_arch)
+    LOGGER.warning(f"Unrecognized definedBy condition, including anyway: {condition}")
+    return True
 
 
 def build_match_from_format(format_field):
@@ -110,101 +158,18 @@ def build_match_from_format(format_field):
     return "".join(match_bits)
 
 
-def parse_extension_requirements(extensions_spec):
-    """
-    Parse the extension requirements from the definedBy field.
-    Extensions can be specified as a string or a dictionary with allOf/oneOf/anyOf fields.
-    Returns a function that checks if the given extensions satisfy the requirements.
-    """
-    if extensions_spec is None:
-        # If definedBy is None, we should never match
-        LOGGER.error("Missing 'definedBy' field")
-        return lambda exts: False
-
-    if isinstance(extensions_spec, str):
-        # Simple case: a single extension
-        extension = extensions_spec
-        if extension.startswith("RV"):
-            # Extract the actual extension part from RV prefix
-            if extension.startswith(("RV32", "RV64")):
-                ext_parts = extension[4:]
-            else:
-                ext_parts = extension[2:]
-            # Check if any part matches enabled extensions
-            return lambda enabled_exts: any(ext_part in enabled_exts for ext_part in ext_parts)
-        return lambda exts: extension in exts
-
-    # Handle complex cases with allOf/oneOf/anyOf
-    if "allOf" in extensions_spec:
-        required = extensions_spec["allOf"]
-        if isinstance(required, str):
-            required = [required]
-
-        # Process each requirement, which could be a string or a dict with name/version
-        return lambda exts: all(check_requirement(req, exts) for req in required)
-
-    if "oneOf" in extensions_spec:
-        alternatives = extensions_spec["oneOf"]
-        if isinstance(alternatives, str):
-            alternatives = [alternatives]
-
-        # Process each alternative, which could be a string or a dict with name/version
-        def check_alternative_one_of(alt, exts):
-            if isinstance(alt, str):
-                return alt in exts
-            elif isinstance(alt, dict) and "name" in alt:
-                return alt["name"] in exts
-            return False
-
-        return lambda exts: any(check_alternative_one_of(alt, exts) for alt in alternatives)
-
-    # Handle anyOf case (most common in the error output)
-    if "anyOf" in extensions_spec:
-        alternatives = extensions_spec["anyOf"]
-        if isinstance(alternatives, str):
-            alternatives = [alternatives]
-
-        # Process each alternative, which could be a string, dict with name/version, or nested allOf
-        def check_alternative(alt, exts):
-            if isinstance(alt, str):
-                return alt in exts
-            elif isinstance(alt, dict):
-                if "allOf" in alt:
-                    reqs = alt["allOf"]
-                    if isinstance(reqs, str):
-                        reqs = [reqs]
-                    return all(check_requirement(r, exts) for r in reqs)
-                elif "name" in alt:
-                    return alt["name"] in exts
-            return False
-
-        return lambda exts: any(check_alternative(alt, exts) for alt in alternatives)
-
-    # Handle direct name/version specification
-    if "name" in extensions_spec and "version" in extensions_spec:
-        extension = extensions_spec["name"]
-        # We don't actually check the version, just the extension name
-        return lambda exts: extension in exts
-
-    # Default case if we can't parse the requirements
-    LOGGER.debug(f"Unrecognized extension specification format: {extensions_spec}")
-    # Let's be more permissive for now - we'll include instructions
-    # that have an unrecognized format rather than excluding them
-    return lambda exts: True
-
-
 def load_instructions(root_dir, enabled_extensions, include_all=False, target_arch="RV64"):
     """
     Recursively walk through root_dir, load YAML files that define an instruction,
     filter by enabled extensions, and collect them into a dictionary keyed by the instruction name.
 
-    If include_all is True, extension filtering is bypassed.
+    If include_all is True, extension filtering is bypassed (xlen filtering still applies).
     target_arch can be "RV32", "RV64", or "BOTH".
     """
     instr_dict = {}
     found_files = 0
     found_instructions = 0
-    extension_filtered = 0
+    condition_filtered = 0
     encoding_filtered = 0
 
     LOGGER.info(
@@ -233,32 +198,20 @@ def load_instructions(root_dir, enabled_extensions, include_all=False, target_ar
                 LOGGER.error(f"Missing 'name' field in {path}")
                 continue
 
-            # If include_all is True, skip extension filtering
-            if not include_all:
-                # Check if this instruction is defined by an enabled extension
-                definedBy = data.get("definedBy")
-                if definedBy is None:
-                    LOGGER.error(f"Missing 'definedBy' field in instruction {name} in {path}")
-                    extension_filtered += 1
-                    continue
-
-                LOGGER.debug(f"Instruction {name} definedBy: {definedBy}")
-                meets_extension_req = parse_extension_requirements(definedBy)
-                if not meets_extension_req(enabled_extensions):
-                    msg = f"Skipping {name} because its extension is not enabled"
-                    LOGGER.debug(msg)
-                    extension_filtered += 1
-                    continue
-
-                # Check if this instruction is excluded by an enabled extension
-                excludedBy = data.get("excludedBy")
-                if excludedBy:
-                    exclusion_check = parse_extension_requirements(excludedBy)
-                    if exclusion_check(enabled_extensions):
-                        msg = f"Skipping {name} because it's excluded by an enabled extension"
-                        LOGGER.debug(msg)
-                        extension_filtered += 1
-                        continue
+            # Check that this instruction is defined by an enabled extension for the target arch.
+            # With include_all, only the xlen part of the condition is enforced.
+            definedBy = data.get("definedBy")
+            if definedBy is None:
+                LOGGER.error(f"Missing 'definedBy' field in instruction {name} in {path}")
+                condition_filtered += 1
+                continue
+            LOGGER.debug(f"Instruction {name} definedBy: {definedBy}")
+            if not condition_holds(
+                definedBy, None if include_all else enabled_extensions, target_arch
+            ):
+                LOGGER.debug(f"Skipping {name} because its definedBy condition is not satisfied")
+                condition_filtered += 1
+                continue
 
             encoding = data.get("encoding", {})
             if not encoding:
@@ -281,17 +234,6 @@ def load_instructions(root_dir, enabled_extensions, include_all=False, target_ar
                 # Create a synthetic encoding compatible with existing logic
                 encoding = {"match": match_string, "variables": []}
                 LOGGER.debug(f"Built encoding from format field for {name}")
-
-            # Check if the instruction specifies a base architecture constraint
-            base = data.get("base")
-            if base is not None and (
-                (base == 32 and target_arch not in ["RV32", "BOTH"])
-                or (base == 64 and target_arch not in ["RV64", "BOTH"])
-            ):
-                msg = f"Skipping {name} because it requires base {base} which doesn't match target arch {target_arch}"
-                LOGGER.debug(msg)
-                encoding_filtered += 1
-                continue
 
             # Determine which encoding to use based on target architecture
             if isinstance(encoding, dict):
@@ -364,8 +306,8 @@ def load_instructions(root_dir, enabled_extensions, include_all=False, target_ar
 
     if found_instructions > 0:
         LOGGER.info(f"Found {found_instructions} instruction definitions in {found_files} files")
-        if extension_filtered > 0:
-            LOGGER.info(f"Filtered out {extension_filtered} instructions by extension")
+        if condition_filtered > 0:
+            LOGGER.info(f"Filtered out {condition_filtered} instructions by definedBy condition")
         if encoding_filtered > 0:
             LOGGER.info(f"Filtered out {encoding_filtered} instructions due to encoding issues")
         LOGGER.info(f"Added {len(instr_dict)} instruction encodings to the output")
@@ -381,14 +323,13 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
     filter by enabled extensions, and collect them into a dictionary mapping
     each address (as an integer) to the CSR name.
 
-    If include_all is True, extension filtering is bypassed.
+    If include_all is True, extension filtering is bypassed (xlen filtering still applies).
     target_arch can be "RV32", "RV64", or "BOTH".
     """
     csrs = {}
     found_files = 0
     found_csrs = 0
-    extension_filtered = 0
-    arch_filtered = 0
+    condition_filtered = 0
     address_errors = 0
 
     LOGGER.info(f"Searching for CSR files in {csr_root} for target architecture {target_arch}")
@@ -425,37 +366,22 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
                 address_errors += 1
                 continue
 
-            # Check if the CSR has a base constraint (32 or 64)
-            base = data.get("base")
-            if base:
-                if base == 32 and target_arch not in ["RV32", "BOTH"]:
-                    LOGGER.debug(f"Skipping CSR {name} because it requires RV32 base")
-                    arch_filtered += 1
-                    continue
-                elif base == 64 and target_arch not in ["RV64", "BOTH"]:
-                    LOGGER.debug(f"Skipping CSR {name} because it requires RV64 base")
-                    arch_filtered += 1
-                    continue
-
-            # If include_all is True, skip extension filtering
-            if not include_all:
-                # Check if this CSR is defined by an enabled extension
-                definedBy = data.get("definedBy")
-
-                # If definedBy is missing, log a warning but don't skip
-                # This is different from instructions where we're more strict
-                if definedBy is None:
-                    LOGGER.warning(
-                        f"Missing 'definedBy' field in CSR {name} in {path}, including anyway"
-                    )
-                else:
-                    LOGGER.debug(f"CSR {name} definedBy: {definedBy}")
-                    meets_extension_req = parse_extension_requirements(definedBy)
-                    if not meets_extension_req(enabled_extensions):
-                        msg = f"Skipping CSR {name} because its extension is not enabled"
-                        LOGGER.debug(msg)
-                        extension_filtered += 1
-                        continue
+            # Check that this CSR is defined by an enabled extension for the target arch.
+            # With include_all, only the xlen part of the condition is enforced.
+            definedBy = data.get("definedBy")
+            if definedBy is None:
+                LOGGER.error(f"Missing 'definedBy' field in CSR {name} in {path}")
+                condition_filtered += 1
+                continue
+            LOGGER.debug(f"CSR {name} definedBy: {definedBy}")
+            if not condition_holds(
+                definedBy, None if include_all else enabled_extensions, target_arch
+            ):
+                LOGGER.debug(
+                    f"Skipping CSR {name} because its definedBy condition is not satisfied"
+                )
+                condition_filtered += 1
+                continue
 
             # If we're here, we've passed all checks
             try:
@@ -474,10 +400,8 @@ def load_csrs(csr_root, enabled_extensions, include_all=False, target_arch="RV64
 
     if found_csrs > 0:
         LOGGER.info(f"Found {found_csrs} CSR definitions in {found_files} files")
-        if extension_filtered > 0:
-            LOGGER.info(f"Filtered out {extension_filtered} CSRs by extension")
-        if arch_filtered > 0:
-            LOGGER.info(f"Filtered out {arch_filtered} CSRs by architecture constraints")
+        if condition_filtered > 0:
+            LOGGER.info(f"Filtered out {condition_filtered} CSRs by definedBy condition")
         if address_errors > 0:
             LOGGER.info(f"Filtered out {address_errors} CSRs due to address issues")
         LOGGER.info(f"Added {len(csrs)} CSRs to the output")
