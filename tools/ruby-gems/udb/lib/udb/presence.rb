@@ -23,10 +23,13 @@ module Udb
     sig { params(yaml: T.any(String, T::Hash[String, String])).returns(Presence) }
     def self.from_yaml(yaml)
       if yaml.is_a?(String)
-        if yaml == "mandatory"
+        case yaml
+        when "mandatory"
           Mandatory
-        else
+        when "optional", "option"
           Option
+        else
+          raise "Unrecognized presence string '#{yaml}'"
         end
       else
         if yaml.key?("optional")
