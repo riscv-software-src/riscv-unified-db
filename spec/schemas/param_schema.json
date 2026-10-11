@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.1",
+  "$id": "v0.2",
   "type": "object",
   "required": [
     "$schema",
@@ -33,8 +33,62 @@
       "$ref": "schema_defs.json#/$defs/condition"
     },
     "schema": {
-      "$ref": "json-schema-draft-07.json#",
-      "additionalProperties": false
+      "allOf": [
+        {
+          "$ref": "json-schema-draft-07.json#"
+        }
+      ],
+      "propertyNames": {
+        "description": "Only JSON Schema draft-07 keywords are permitted. Prevents typos and misplaced keys from being silently ignored.",
+        "enum": [
+          "$comment",
+          "$id",
+          "$ref",
+          "$schema",
+          "additionalItems",
+          "additionalProperties",
+          "allOf",
+          "anyOf",
+          "const",
+          "contains",
+          "contentEncoding",
+          "contentMediaType",
+          "default",
+          "definitions",
+          "dependencies",
+          "description",
+          "else",
+          "enum",
+          "examples",
+          "exclusiveMaximum",
+          "exclusiveMinimum",
+          "format",
+          "if",
+          "items",
+          "maxItems",
+          "maxLength",
+          "maxProperties",
+          "maximum",
+          "minItems",
+          "minLength",
+          "minProperties",
+          "minimum",
+          "multipleOf",
+          "not",
+          "oneOf",
+          "pattern",
+          "patternProperties",
+          "properties",
+          "propertyNames",
+          "readOnly",
+          "required",
+          "then",
+          "title",
+          "type",
+          "uniqueItems",
+          "writeOnly"
+        ]
+      }
     },
     "requirements": {
       "$ref": "schema_defs.json#/$defs/condition"
