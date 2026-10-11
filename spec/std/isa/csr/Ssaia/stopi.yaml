@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stopi
+long_name: Supervisor top interrupt
+address: 0xDB0
+writable: false
+priv_mode: S
+length: SXLEN
+description: |
+  Supervisor top interrupt CSR.
+definedBy:
+  extension:
+    name: Ssaia
+fields:
+  IID:
+    location: 27-16
+    description: |
+      Interrupt identity number for the highest-priority pending interrupt.
+    type: RO
+    reset_value: UNDEFINED_LEGAL
+  IPRIO:
+    location: 7-0
+    description: |
+      Interrupt priority for the highest-priority pending interrupt.
+    type: RO
+    reset_value: UNDEFINED_LEGAL

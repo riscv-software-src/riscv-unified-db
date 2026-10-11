@@ -1,0 +1,39 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stopei
+long_name: Supervisor top external interrupt
+address: 0x15C
+writable: true
+priv_mode: S
+length: SXLEN
+description: |
+  Supervisor top external interrupt CSR.
+definedBy:
+  extension:
+    name: Ssaia
+fields:
+  IID:
+    location: 26-16
+    description: |
+      Interrupt identity number for the highest-priority pending external
+      interrupt. Writes ignore this value and instead claim the interrupt that
+      the CSR currently reports.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      return CSR[stopei].IID;
+  IPRIO:
+    location: 10-0
+    description: |
+      Interrupt priority for the highest-priority pending external interrupt.
+      Writes ignore this value and instead claim the interrupt that the CSR
+      currently reports.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      return CSR[stopei].IPRIO;
