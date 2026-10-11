@@ -1,0 +1,36 @@
+# Copyright (c) 2026 Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+$schema: "inst_schema.json#"
+kind: instruction
+name: vpaire.vv
+long_name: Vector pair even
+description: |
+  Interleaves even-indexed elements of two source vector register groups into
+  the destination. All operands have EMUL=LMUL. For destination index `i`,
+  even indices read `vs2[i]` and odd indices read `vs1[i-1]`, producing
+  `[vs2[0], vs1[0], vs2[2], vs1[2], ...]`. Standard vector masking,
+  prestart, inactive, and tail handling applies. The destination may not
+  overlap either source group.
+definedBy:
+  extension:
+    name: Zvzip
+assembly: vd, vs2, vs1, vm
+encoding:
+  match: 001111-----------000-----1010111
+  variables:
+    - name: vm
+      location: 25
+    - name: vs2
+      location: 24-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): |

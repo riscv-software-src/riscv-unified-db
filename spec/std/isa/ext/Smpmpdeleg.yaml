@@ -1,0 +1,33 @@
+# Copyright (c) Shanghai Jiao Tong University
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smpmpdeleg
+type: privileged
+long_name: Machine PMP Delegation to SPMP
+description: |
+  The Smpmpdeleg extension provides the mpmpdeleg CSR, which controls how many
+  PMP entries are delegated to SPMP.
+
+  The mpmpdeleg CSR contains a pmpnum field in bits [6:0]. Let max_pmp be the
+  implementation's total number of PMP entries. Entries 0 through pmpnum-1
+  remain as PMP entries, while entries pmpnum through max_pmp-1 are delegated
+  to SPMP.
+
+  When pmpnum = 0, all entries are delegated to SPMP.
+  When pmpnum = max_pmp, no entries are delegated to SPMP.
+
+  Writes to SPMP CSRs are ignored when no entries are delegated to SPMP.
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2026-08
+    url: "https://github.com/riscv/riscv-spmp/tree/v1.0"
+requirements:
+  extension:
+    allOf:
+      - name: S
+      - name: Smcsrind

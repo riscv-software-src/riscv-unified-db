@@ -7,20 +7,18 @@ $schema: param_schema.json#
 kind: parameter
 name: HW_MSTATUS_VS_DIRTY_UPDATE
 description: |
-  Indicates whether or not hardware will write to `mstatus.VS`
+  Indicates when hardware will write to `mstatus.VS`
 
   Values are:
   [separator="!"]
   !===
-  h! never  ! Hardware never writes `mstatus.VS`
   h! precise  ! Hardware writes `mstatus.VS` to the Dirty (3) state precisely when V registers are modified
   h! imprecise ! Hardware writes `mstatus.VS` imprecisely. This will result in a call to unpredictable() on any attempt to read `mstatus` or write vector state.
   !===
-long_name: TODO
+long_name: Hardware mstatus.VS Dirty update
 schema:
   type: string
   enum:
-    - never
     - precise
     - imprecise
 definedBy:

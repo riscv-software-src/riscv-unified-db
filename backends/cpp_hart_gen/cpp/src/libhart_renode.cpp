@@ -1,5 +1,6 @@
 
 
+#include <random>
 #include "udb/enum.hxx"
 #include "udb/hart.hpp"
 #include "udb/hart_factory.hxx"
@@ -88,6 +89,14 @@ struct RenodeSocModel {
   uint8_t atomic_check_then_write_64(uint64_t, uint64_t, uint64_t) { return 0; }
   uint8_t atomically_set_pte_a(uint64_t, uint64_t, uint32_t) { return 0; }
   uint8_t atomically_set_pte_a_d(uint64_t, uint64_t, uint32_t) { return 0; }
+  uint64_t atomic_read_modify_write_8(uint64_t, uint64_t,
+                                      udb::AmoOperation::ValueType) {
+    return 0;
+  }
+  uint64_t atomic_read_modify_write_16(uint64_t, uint64_t,
+                                       udb::AmoOperation::ValueType) {
+    return 0;
+  }
   uint64_t atomic_read_modify_write_32(uint64_t, uint64_t,
                                        udb::AmoOperation::ValueType) {
     return 0;
@@ -103,6 +112,14 @@ struct RenodeSocModel {
                          uint32_t len) {
     return 0;
   }
+  uint32_t read_seed() {
+    // Always report ES16 (0b10) with fresh entropy in the low 16 bits.
+    // Seeded deterministically so simulation runs are reproducible.
+    static std::mt19937 gen{0x5EEDu};
+    return (0b10u << 30) | (gen() & 0xffffu);
+  }
+
+  void write_seed() {}
 };
 
 static RenodeSocModel callbacks;

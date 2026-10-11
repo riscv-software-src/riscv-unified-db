@@ -13,7 +13,7 @@ description: |
 
   true::
     Supervisor-level external interrupts are implemented.
-    `mie.SEIE` and `mideleg.SEI` are writable.
+    `mie.SEIE` is writable, and `mideleg.SEI` is writable if `MIDELEG_DELEGATABLE[9]` is true.
 
   false::
     Supervisor-level external interrupts are not implemented.

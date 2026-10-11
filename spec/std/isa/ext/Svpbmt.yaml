@@ -8,8 +8,8 @@ kind: extension
 name: Svpbmt
 long_name: Page-based memory types
 description: |
-  This extension mandates that the `satp` mode Bare must
-  be supported.
+  This extension specifies page-based memory types, adding the PBMT field
+  to page-table entries to control memory type, cacheability, and ordering attributes.
 type: privileged
 versions:
   - version: "1.0.0"

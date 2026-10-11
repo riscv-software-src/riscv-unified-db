@@ -8,7 +8,7 @@ module Rouge
   class RegexLexer < Lexer; end
   module Lexers
     class Idl < RegexLexer
-      def self.version = "0.1.0"
+      def self.version = "0.1.1"
     end
   end
 end
