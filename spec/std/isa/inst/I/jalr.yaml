@@ -31,6 +31,9 @@ access:
   u: always
   vs: always
   vu: always
+pc:
+  references: true
+  changes: true
 pseudoinstructions:
   - when: xd == 0
     to: jr imm(xs1)

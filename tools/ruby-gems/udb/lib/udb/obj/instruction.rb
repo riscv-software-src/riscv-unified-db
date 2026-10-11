@@ -401,6 +401,12 @@ module Udb
     # @return [Boolean] Whether or not the instruction must have data-independent timing when Zkt is enabled.
     def data_independent_timing? = @data["data_independent_timing"]
 
+    # @return [Boolean] Whether or not the instruction semantics reference the current PC.
+    def pc_references? = @data.dig("pc", "references") || false
+
+    # @return [Boolean] Whether or not the instruction semantics update the PC.
+    def pc_changes? = @data.dig("pc", "changes") || false
+
     # @param xlen [Integer] 32 or 64, the target xlen
     # @return [Boolean] whethen or not instruction is defined in base +xlen+
     def defined_in_base?(xlen)

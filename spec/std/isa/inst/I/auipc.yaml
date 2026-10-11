@@ -29,4 +29,6 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pc:
+  references: true
 operation(): X[xd] = $pc + $signed(imm);

@@ -395,6 +395,23 @@
       "description": "Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported",
       "default": false
     },
+    "pc": {
+      "type": "object",
+      "description": "Whether the instruction reads and/or writes the program counter",
+      "properties": {
+        "references": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the instruction semantics reference the current program counter"
+        },
+        "changes": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether the instruction semantics update the program counter"
+        }
+      },
+      "additionalProperties": false
+    },
     "pseudoinstructions": {
       "description": "Variations of this instruction that form a pseudoinstruction",
       "type": "array",

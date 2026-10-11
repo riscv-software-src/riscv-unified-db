@@ -97,6 +97,9 @@ access:
   vs: always   # VS-mode access
   vu: always   # VU-mode access
 data_independent_timing: true  # For cryptographic extensions
+pc: # program counter
+  references: true # Optional: instruction semantics reference the current PC
+  changes: false   # Optional: instruction semantics update the PC
 operation(): |
   # IDL code implementing the instruction
   X[xd] = X[xs1] + $signed(imm);
@@ -109,6 +112,11 @@ Common variable properties:
 * `location` - Bit range (e.g., `31-20`, `19-15`, or `31|7|30-25|11-8` for non-contiguous)
 * `sign_extend` - Set to `true` for signed immediates
 * `left_shift` - Shift value left by N bits (common for branch offsets)
+
+Optional instruction metadata:
+
+* `pc.references` - Set to `true` when the instruction semantics explicitly reference the current PC
+* `pc.changes` - Set to `true` when the instruction semantics explicitly update the PC
 
 === Pseudoinstructions
 

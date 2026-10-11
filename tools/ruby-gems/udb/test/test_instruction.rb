@@ -12,6 +12,18 @@ require "udb/resolver"
 class TestInstruction < Minitest::Test
   include Udb
 
+  private def operation_text(inst)
+    inst.instance_variable_get(:@data)["operation()"]
+  end
+
+  private def idl_references_pc?(operation)
+    operation.include?("$pc")
+  end
+
+  private def idl_changes_pc?(operation)
+    operation.match?(/(?:jump(?:_halfword)?\(|^\s*\$pc\s*=)/)
+  end
+
   def setup
     @resolver = Udb::Resolver.new(Udb.repo_root)
     @cfg_arch = @resolver.cfg_arch_for("_")
@@ -60,5 +72,46 @@ class TestInstruction < Minitest::Test
     # Extract and verify no sext call
     extracted = rs1_var.extract
     refute_match(/sext/, extracted, "non-signed decode variable should not use sext")
+  end
+
+  def test_explicit_pc_metadata
+    db = @cfg_arch
+
+    auipc_inst = db.instructions.find { |i| i.name == "auipc" }
+    refute_nil auipc_inst, "AUIPC instruction should be found"
+    assert auipc_inst.pc_references?, "AUIPC should explicitly reference the PC"
+    refute auipc_inst.pc_changes?, "AUIPC should not explicitly change the PC"
+
+    jalr_inst = db.instructions.find { |i| i.name == "jalr" }
+    refute_nil jalr_inst, "JALR instruction should be found"
+    assert jalr_inst.pc_references?, "JALR should explicitly reference the PC"
+    assert jalr_inst.pc_changes?, "JALR should explicitly change the PC"
+
+    mret_inst = db.instructions.find { |i| i.name == "mret" }
+    refute_nil mret_inst, "MRET instruction should be found"
+    refute mret_inst.pc_references?, "MRET should not explicitly reference the current PC"
+    assert mret_inst.pc_changes?, "MRET should explicitly change the PC"
+
+    add_inst = db.instructions.find { |i| i.name == "add" }
+    refute_nil add_inst, "ADD instruction should be found"
+    refute add_inst.pc_references?, "Instructions without pc metadata should default to not referencing the PC"
+    refute add_inst.pc_changes?, "Instructions without pc metadata should default to not changing the PC"
+  end
+
+  def test_explicit_pc_metadata_agrees_with_idl
+    @cfg_arch.instructions.each do |inst|
+      next unless inst.pc_references? || inst.pc_changes?
+
+      operation = operation_text(inst)
+      refute_nil operation, "#{inst.name} should define operation() when explicit pc metadata is present"
+
+      if inst.pc_references?
+        assert idl_references_pc?(operation), "#{inst.name} pc.references should agree with operation()"
+      end
+
+      if inst.pc_changes?
+        assert idl_changes_pc?(operation), "#{inst.name} pc.changes should agree with operation()"
+      end
+    end
   end
 end
