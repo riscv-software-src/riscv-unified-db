@@ -318,16 +318,19 @@ module Udb
   # Supported JSON schema features:
   # - Type constraints (boolean, integer, string, array)
   # - Value constraints (const, enum, minimum, maximum)
-  # - Composition (allOf; anyOf for boolean, integer, and string)
+  # - Composition (allOf; anyOf/oneOf/noneOf and if/then/else for boolean,
+  #   integer, and string)
   # - References ($ref to uint32/uint64)
   # - Array constraints (items, minItems, maxItems, contains, uniqueItems)
   #
   # Not yet supported (TODO):
-  # - anyOf for array
-  # - oneOf, noneOf
-  # - if/then/else (conditional schemas)
+  # - anyOf/oneOf/noneOf and if/then/else for array
+  #   (these must disjoin whole array shapes, not just element values)
   class Z3ParameterTerm
     extend T::Sig
+
+    # Schema keywords that hold a list of subschemas constraining the same term
+    COMBINATOR_KEYWORDS = T.let(["allOf", "anyOf", "oneOf", "noneOf"].freeze, T::Array[String])
 
     sig { returns(String) }
     attr_reader :name
@@ -343,6 +346,9 @@ module Udb
     # - minimum/maximum: range bounds (unsigned comparison)
     # - allOf: conjunction of subschemas
     # - anyOf: inclusive disjunction of subschemas (at least one must hold)
+    # - oneOf: exclusive disjunction of subschemas (exactly one must hold)
+    # - noneOf: negated disjunction of subschemas (none may hold)
+    # - if/then/else: conditional subschemas
     # - $ref: references to uint32/uint64 types
     #
     # @param solver [Z3Solver] The solver to add assertions to
@@ -399,15 +405,23 @@ module Udb
       end
 
       if schema_hsh.key?("oneOf")
-        raise "TODO: oneOf not yet implemented for integer constraints"
+        branches = schema_hsh.fetch("oneOf").map do |h|
+          constrain_int(solver, term, h, assert: false)
+        end
+        assertions << one_of_constraint(branches)
       end
 
       if schema_hsh.key?("noneOf")
-        raise "TODO: noneOf not yet implemented for integer constraints"
+        branches = schema_hsh.fetch("noneOf").map do |h|
+          constrain_int(solver, term, h, assert: false)
+        end
+        assertions << none_of_constraint(branches)
       end
 
       if schema_hsh.key?("if")
-        raise "TODO: if/then/else not yet implemented for integer constraints"
+        assertions += if_then_else_constraints(schema_hsh) do |h|
+          constrain_int(solver, term, h, assert: false)
+        end
       end
 
       if schema_hsh.key?("$ref")
@@ -476,15 +490,23 @@ module Udb
       end
 
       if schema_hsh.key?("oneOf")
-        raise "TODO: oneOf not yet implemented for boolean constraints"
+        branches = schema_hsh.fetch("oneOf").map do |h|
+          constrain_bool(solver, term, h, assert: false)
+        end
+        assertions << one_of_constraint(branches)
       end
 
       if schema_hsh.key?("noneOf")
-        raise "TODO: noneOf not yet implemented for boolean constraints"
+        branches = schema_hsh.fetch("noneOf").map do |h|
+          constrain_bool(solver, term, h, assert: false)
+        end
+        assertions << none_of_constraint(branches)
       end
 
       if schema_hsh.key?("if")
-        raise "TODO: if/then/else not yet implemented for boolean constraints"
+        assertions += if_then_else_constraints(schema_hsh) do |h|
+          constrain_bool(solver, term, h, assert: false)
+        end
       end
 
       if assert
@@ -543,15 +565,23 @@ module Udb
       end
 
       if schema_hsh.key?("oneOf")
-        raise "TODO: oneOf not yet implemented for string constraints"
+        branches = schema_hsh.fetch("oneOf").map do |h|
+          constrain_string(solver, term, h, assert: false)
+        end
+        assertions << one_of_constraint(branches)
       end
 
       if schema_hsh.key?("noneOf")
-        raise "TODO: noneOf not yet implemented for string constraints"
+        branches = schema_hsh.fetch("noneOf").map do |h|
+          constrain_string(solver, term, h, assert: false)
+        end
+        assertions << none_of_constraint(branches)
       end
 
       if schema_hsh.key?("if")
-        raise "TODO: if/then/else not yet implemented for string constraints"
+        assertions += if_then_else_constraints(schema_hsh) do |h|
+          constrain_string(solver, term, h, assert: false)
+        end
       end
 
       if assert
@@ -560,14 +590,61 @@ module Udb
       assertions
     end
 
+    # Conjoin a branch's assertions into a single expression, so that a
+    # subschema can be used as a condition instead of being asserted outright.
+    sig { params(assertions: T::Array[Z3::BoolExpr]).returns(Z3::BoolExpr) }
+    def self.conjoin(assertions)
+      assertions.reduce(Z3.True) { |expression, assertion| expression & assertion }
+    end
+    private_class_method :conjoin
+
     sig { params(branches: T::Array[T::Array[Z3::BoolExpr]]).returns(Z3::BoolExpr) }
     def self.any_of_constraint(branches)
-      expressions = branches.map do |branch|
-        branch.reduce(Z3.True) { |expression, assertion| expression & assertion }
-      end
-      expressions.reduce(Z3.False) { |expression, branch| expression | branch }
+      branches.map { |branch| conjoin(branch) }
+              .reduce(Z3.False) { |expression, branch| expression | branch }
     end
     private_class_method :any_of_constraint
+
+    # Exactly one branch may hold: each disjunct asserts its own branch and
+    # negates every other one.
+    sig { params(branches: T::Array[T::Array[Z3::BoolExpr]]).returns(Z3::BoolExpr) }
+    def self.one_of_constraint(branches)
+      expressions = branches.map { |branch| conjoin(branch) }
+      expressions.each_with_index.reduce(Z3.False) do |disjunction, (expression, idx)|
+        exclusive = expressions.each_with_index.reduce(expression) do |acc, (other, other_idx)|
+          other_idx == idx ? acc : acc & ~other
+        end
+        disjunction | exclusive
+      end
+    end
+    private_class_method :one_of_constraint
+
+    # No branch may hold. Matches the noneOf semantics used by the condition
+    # language: NOT(OR(branches)).
+    sig { params(branches: T::Array[T::Array[Z3::BoolExpr]]).returns(Z3::BoolExpr) }
+    def self.none_of_constraint(branches)
+      ~any_of_constraint(branches)
+    end
+    private_class_method :none_of_constraint
+
+    # Build the implications for a conditional schema. The "if" subschema is
+    # evaluated as a condition rather than asserted, so a schema with no "then"
+    # or "else" adds nothing. A missing branch leaves that case unconstrained.
+    sig {
+      params(
+        schema_hsh: T::Hash[String, T.untyped],
+        blk: T.proc.params(subschema: T::Hash[String, T.untyped]).returns(T::Array[Z3::BoolExpr])
+      )
+      .returns(T::Array[Z3::BoolExpr])
+    }
+    def self.if_then_else_constraints(schema_hsh, &blk)
+      condition = conjoin(blk.call(schema_hsh.fetch("if")))
+      assertions = T.let([], T::Array[Z3::BoolExpr])
+      assertions << (~condition | conjoin(blk.call(schema_hsh.fetch("then")))) if schema_hsh.key?("then")
+      assertions << (condition | conjoin(blk.call(schema_hsh.fetch("else")))) if schema_hsh.key?("else")
+      assertions
+    end
+    private_class_method :if_then_else_constraints
 
     # Extract array constraints from JSON schema
     #
@@ -703,44 +780,12 @@ module Udb
         else
           raise "unhandled enum type"
         end
-      elsif schema_hsh.key?("allOf")
-        # Infer type from subschemas (must agree)
-        subschema_types = schema_hsh.fetch("allOf").map { |subschema| detect_type(subschema) }
-
-        if subschema_types.fetch(0) == :string
-          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t == :string }
-
-          :string
-        elsif subschema_types.fetch(0) == :boolean
-          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t == :boolean }
-
-          :boolean
-        elsif subschema_types.fetch(0) == :int
-          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t == :int }
-
-          :int
-        else
-          raise "unhandled subschema type"
-        end
-      elsif schema_hsh.key?("anyOf")
-        # Infer type from anyOf subschemas (must agree on type even if values differ)
-        subschema_types = schema_hsh.fetch("anyOf").map { |subschema| detect_type(subschema) }
-
-        if subschema_types.fetch(0) == :string
-          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t == :string }
-
-          :string
-        elsif subschema_types.fetch(0) == :boolean
-          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t == :boolean }
-
-          :boolean
-        elsif subschema_types.fetch(0) == :int
-          raise "Subschema types do not agree" unless subschema_types[1..].all? { |t| t == :int }
-
-          :int
-        else
-          raise "unhandled subschema type"
-        end
+      elsif (combinator = COMBINATOR_KEYWORDS.find { |keyword| schema_hsh.key?(keyword) })
+        # Infer type from subschemas (they must agree on type even if values differ)
+        detect_agreeing_type(schema_hsh.fetch(combinator))
+      elsif schema_hsh.key?("if")
+        # A conditional schema constrains one term, so any present branch works
+        detect_agreeing_type(schema_hsh.values_at("if", "then", "else").compact)
       elsif schema_hsh.key?("$ref")
         case schema_hsh.fetch("$ref").split("/").last
         when "uint32", "uint64", "32bit_unsigned_pow2", "64bit_unsigned_pow2"
@@ -754,6 +799,18 @@ module Udb
       else
         raise "unhandled scalar schema:\n#{schema_hsh}"
       end
+    end
+
+    # Detect the single type shared by a list of subschemas
+    #
+    # @param subschemas [Array<Hash>] Subschemas constraining the same term
+    # @return [Symbol] One of :boolean, :int, :string, :array
+    sig { params(subschemas: T::Array[T::Hash[String, T.untyped]]).returns(Symbol) }
+    def self.detect_agreeing_type(subschemas)
+      types = subschemas.map { |subschema| detect_type(subschema) }.uniq
+      raise "Subschema types do not agree: #{types.join(", ")}" unless types.size == 1
+
+      types.fetch(0)
     end
 
     # Detect the element type of an array schema

@@ -574,4 +574,270 @@ class TestZ3ParameterConstraints < Minitest::Test
     # Elements should be different variables
     refute_equal elem0.object_id, elem1.object_id
   end
+
+  # oneOf tests
+  def test_constrain_int_with_oneof_overlapping_ranges
+    # oneOf is exclusive: a value satisfying both subschemas is rejected.
+    schema = {
+      "oneOf" => [
+        { "minimum" => 0, "maximum" => 10 },
+        { "minimum" => 5, "maximum" => 15 }
+      ]
+    }
+    param = Udb::Z3ParameterTerm.new("oneof_range_param", @solver, schema)
+
+    # Values matching exactly one subschema are allowed
+    [3, 12].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      assert @solver.satisfiable?
+      @solver.pop
+    end
+
+    # A value in the overlap matches both, so oneOf rejects it
+    @solver.push
+    @solver.assert(param == 7)
+    refute @solver.satisfiable?
+    @solver.pop
+
+    # A value matching neither is also rejected
+    @solver.push
+    @solver.assert(param == 20)
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_bool_with_oneof_duplicate_branches
+    # Both branches hold for true and neither holds for false, so no value
+    # satisfies exactly one branch.
+    schema = {
+      "type" => "boolean",
+      "oneOf" => [
+        { "const" => true },
+        { "const" => true }
+      ]
+    }
+    Udb::Z3ParameterTerm.new("oneof_bool", @solver, schema)
+
+    refute @solver.satisfiable?
+  end
+
+  def test_constrain_string_with_oneof
+    schema = {
+      "type" => "string",
+      "oneOf" => [
+        { "const" => "alpha" },
+        { "enum" => ["alpha", "beta"] }
+      ]
+    }
+    param = Udb::Z3ParameterTerm.new("oneof_string", @solver, schema)
+
+    # "beta" matches only the second branch
+    @solver.push
+    @solver.assert(param == "beta")
+    assert @solver.satisfiable?
+    @solver.pop
+
+    # "alpha" matches both branches
+    @solver.push
+    @solver.assert(param == "alpha")
+    refute @solver.satisfiable?
+    @solver.pop
+
+    # "gamma" matches neither
+    @solver.push
+    @solver.assert(param == "gamma")
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  # noneOf tests
+  def test_constrain_int_with_noneof
+    schema = {
+      "type" => "integer",
+      "noneOf" => [
+        { "const" => 1 },
+        { "minimum" => 10, "maximum" => 20 }
+      ]
+    }
+    param = Udb::Z3ParameterTerm.new("noneof_int", @solver, schema)
+
+    [1, 15].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      refute @solver.satisfiable?
+      @solver.pop
+    end
+
+    @solver.push
+    @solver.assert(param == 5)
+    assert @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_bool_with_noneof
+    schema = {
+      "type" => "boolean",
+      "noneOf" => [{ "const" => true }]
+    }
+    param = Udb::Z3ParameterTerm.new("noneof_bool", @solver, schema)
+
+    @solver.push
+    @solver.assert(param == true)
+    refute @solver.satisfiable?
+    @solver.pop
+
+    @solver.push
+    @solver.assert(param == false)
+    assert @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_string_with_noneof
+    schema = {
+      "type" => "string",
+      "noneOf" => [{ "enum" => ["alpha", "beta"] }]
+    }
+    param = Udb::Z3ParameterTerm.new("noneof_string", @solver, schema)
+
+    @solver.push
+    @solver.assert(param == "alpha")
+    refute @solver.satisfiable?
+    @solver.pop
+
+    @solver.push
+    @solver.assert(param == "gamma")
+    assert @solver.satisfiable?
+    @solver.pop
+  end
+
+  # if/then/else tests
+  def test_constrain_int_with_if_then
+    # Without an "else", values failing the condition are unconstrained.
+    schema = {
+      "type" => "integer",
+      "if" => { "minimum" => 100 },
+      "then" => { "maximum" => 200 }
+    }
+    param = Udb::Z3ParameterTerm.new("if_then_int", @solver, schema)
+
+    [50, 150].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      assert @solver.satisfiable?
+      @solver.pop
+    end
+
+    @solver.push
+    @solver.assert(param == 250)
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_int_with_if_then_else
+    schema = {
+      "type" => "integer",
+      "if" => { "maximum" => 10 },
+      "then" => { "const" => 5 },
+      "else" => { "const" => 100 }
+    }
+    param = Udb::Z3ParameterTerm.new("if_then_else_int", @solver, schema)
+
+    [5, 100].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      assert @solver.satisfiable?
+      @solver.pop
+    end
+
+    [7, 50].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      refute @solver.satisfiable?
+      @solver.pop
+    end
+  end
+
+  def test_constrain_bool_with_if_then
+    # true would require the term to be false, so only false survives.
+    schema = {
+      "type" => "boolean",
+      "if" => { "const" => true },
+      "then" => { "const" => false }
+    }
+    param = Udb::Z3ParameterTerm.new("if_then_bool", @solver, schema)
+
+    @solver.push
+    @solver.assert(param == true)
+    refute @solver.satisfiable?
+    @solver.pop
+
+    @solver.push
+    @solver.assert(param == false)
+    assert @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_string_with_if_then_else
+    schema = {
+      "type" => "string",
+      "if" => { "const" => "alpha" },
+      "then" => { "const" => "beta" },
+      "else" => { "enum" => ["gamma", "delta"] }
+    }
+    param = Udb::Z3ParameterTerm.new("if_then_else_string", @solver, schema)
+
+    # "alpha" triggers the condition, which then demands "beta": contradictory
+    @solver.push
+    @solver.assert(param == "alpha")
+    refute @solver.satisfiable?
+    @solver.pop
+
+    @solver.push
+    @solver.assert(param == "gamma")
+    assert @solver.satisfiable?
+    @solver.pop
+
+    @solver.push
+    @solver.assert(param == "epsilon")
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_combinators_stay_branch_local
+    # A nested combinator inside a oneOf branch must not leak into the solver.
+    schema = {
+      "type" => "integer",
+      "oneOf" => [
+        { "noneOf" => [{ "minimum" => 10 }] },
+        { "minimum" => 100, "maximum" => 110 }
+      ]
+    }
+    param = Udb::Z3ParameterTerm.new("nested_combinator_param", @solver, schema)
+
+    [5, 105].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      assert @solver.satisfiable?
+      @solver.pop
+    end
+
+    @solver.push
+    @solver.assert(param == 50)
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_array_combinators_still_unimplemented
+    # Array combinators need to disjoin whole array shapes, not just element
+    # values, so they remain out of scope here.
+    %w[anyOf oneOf noneOf].each do |keyword|
+      schema = {
+        "type" => "array",
+        "items" => { "type" => "integer" },
+        keyword => [{ "maxItems" => 2 }]
+      }
+      assert_raises(RuntimeError) { Udb::Z3ParameterTerm.new("array_#{keyword}", @solver, schema) }
+    end
+  end
 end
