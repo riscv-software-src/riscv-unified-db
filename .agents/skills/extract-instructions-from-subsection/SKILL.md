@@ -53,6 +53,8 @@ Scan the non-NOTE text of the subsection for RISC-V instruction names. Instructi
 - Uppercase tokens inside backticks: `` `ADD` ``, `` `JALR` ``
 - Uppercase tokens in AsciiDoc index entries: `(((MUL, MULH)))` — extract each comma-separated token
 - Uppercase tokens in AsciiDoc comment lines like `//.Integer register-register` — skip these (they are labels, not instructions)
+- Strip any surrounding AsciiDoc formatting characters (such as `*`, `_`, `+`, or `#`) before evaluating a token.
+- Treat AsciiDoc structural elements consistently: consider instruction names appearing in AsciiDoc tables, but ignore instruction names that appear only within literal code blocks used for examples or diagrams.
 
 **Exclude pseudoinstructions:**
 The prose explicitly signals pseudoinstructions with the phrase "assembler pseudoinstruction" or "pseudoinstruction" adjacent to the name, e.g.:
