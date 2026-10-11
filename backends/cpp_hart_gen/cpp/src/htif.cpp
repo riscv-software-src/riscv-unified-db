@@ -4,7 +4,7 @@
 
 HostTargetInterface::HostTargetInterface(udb::IssSocModel* pSoC, uint64_t toHostAddress,
                                          uint64_t fromHostAddress, uint64_t sigAddress,
-                                         uint64_t sigLength) : m_sysCall(pSoC), m_bcd(pSoC)
+                                         uint64_t sigLength) : m_sysCall(pSoC, fromHostAddress), m_bcd(pSoC, fromHostAddress)
 {
   m_toHost = toHostAddress;
   m_fromHost = fromHostAddress;
@@ -75,9 +75,10 @@ int HostTargetInterface::HandleCommand(HTIFCOMMAND cmd)
   return 0;
 }
 
-HTIFDevice::HTIFDevice(udb::IssSocModel* pSoC)
+HTIFDevice::HTIFDevice(udb::IssSocModel* pSoC, uint64_t fromHostAddress)
 {
   m_pSoC = pSoC;
+  m_fromHost = fromHostAddress;
 }
 
 HTIFDevice::~HTIFDevice()
@@ -85,8 +86,8 @@ HTIFDevice::~HTIFDevice()
 
 }
 
-SysCallDevice::SysCallDevice(udb::IssSocModel* pSoC)
-  : HTIFDevice(pSoC), m_cmdHandlers(94)
+SysCallDevice::SysCallDevice(udb::IssSocModel* pSoC, uint64_t fromHostAddress)
+  : HTIFDevice(pSoC, fromHostAddress), m_cmdHandlers(94)
 {
   m_cmdHandlers[93] = &SysCallDevice::exit;
 }
@@ -135,8 +136,8 @@ int SysCallDevice::exit(uint64_t a0, uint64_t a1, uint64_t a2, uint64_t a3,
   return a0;
 }
 
-BCDDevice::BCDDevice(udb::IssSocModel* pSoC)
-  : HTIFDevice(pSoC)
+BCDDevice::BCDDevice(udb::IssSocModel* pSoC, uint64_t fromHostAddress)
+  : HTIFDevice(pSoC, fromHostAddress)
 {
 
 }
@@ -151,7 +152,11 @@ int BCDDevice::HandleCommand(HTIFCOMMAND cmd)
   switch(cmd.command)
   {
   case READ:
-    //TODO:
+    {
+      //Read a character from stdin, use stdin for now
+      uint8_t ch = static_cast<uint8_t>(std::getchar());
+      m_pSoC->memcpy_from_host(m_fromHost, &ch, sizeof(ch));
+    }
     break;
   case WRITE:
     //TODO: use deicated console, stdout for now
