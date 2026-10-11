@@ -83,3 +83,85 @@ mstatus:
       reset_value(): |
         return (M_MODE_ENDIANNESS == "big") ? 1 : 0;
 ```
+
+## Hardware vs software CSR reads
+
+CSR values can be observed through several IDL forms. They are not interchangeable when authoring `sw_read()`:
+
+| Form | Behavior |
+|------|----------|
+| `CSR[x].FIELD` | Read or write a single field's stored value on CSR `x`. |
+| `$bits(CSR[x])` | Assemble the CSR from its field storage (hardware read). Does **not** run `sw_read()`. |
+| `csr_sw_read(handle)` | Software-visible read through a dynamic `Csr` handle. **Runs** `sw_read()` when defined. See [Standard Library](./standard-library#dynamic-csr-access). |
+
+When a `Zicsr` instruction reads a CSR, the backend calls the CSR's `sw_read()` if one is defined. Otherwise the value is assembled from field storage (the same result as `$bits(CSR[x])`).
+
+Inside `sw_read()`, return the value software should see. To read this CSR's own field storage without re-entering `sw_read()`, use `$bits(CSR[x])` where `x` is **this** CSR's YAML name. Use a different CSR name only when the architecture shares storage or the read is intentionally a masked view of another register (for example, `sctrctl` reading masked `mctrctl`).
+
+## CSR field aliases
+
+The `alias:` key on a CSR field (see the [CSR schema](../schemas/v0.2/csr_schema)) indicates that the field aliases (a portion of) another CSR field. Three patterns appear in this repository:
+
+**Shared-storage view.** Some CSRs expose a subset of another CSR's bits. For example, `sctrctl` fields alias `mctrctl.*`, and `sctrctl.sw_read()` may return a masked `$bits(CSR[mctrctl])` because supervisor mode sees machine-level configuration bits.
+
+**Independent virtual CSR.** Hypervisor `vs*` CSRs (see below) hold guest state that is saved and restored across world switches. YAML `alias:` on these fields may document bit layout correspondence with an HS CSR, but the virtual CSR still has its own storage in generated models such as `cpp_hart_gen`.
+
+**Read-only shadow.** Some fields alias a portion of another CSR for documentation and schema purposes (for example, an upper-half counter field aliasing the high bits of a 64-bit sibling). The shadow CSR's `sw_read()` and `sw_write()` IDL defines how software accesses those bits.
+
+:::note
+The `alias:` metadata does not by itself redirect reads or writes in generated code. Each CSR is a separate object with its own field storage unless `sw_read()` or `sw_write()` explicitly references another CSR.
+:::
+
+## Virtual supervisor CSRs
+
+When the H extension is implemented, several CSRs use three YAML keys together:
+
+| Key | Role |
+|-----|------|
+| `address` | Canonical CSR number (for example `0x241` for `vsepc`). |
+| `virtual_address` | CSR number visible when `V=1` (for example `0x141`, the usual `sepc` number). |
+| `priv_mode: VS` | Marks the register as virtual supervisor state. |
+
+When `V=1`, instructions that target the supervisor CSR number access the `vs*` register instead. This state is world-switched guest state — it is not the same storage as the HS supervisor CSR at the same virtual address. A `sw_read()` on a virtual CSR must return values from that virtual CSR (for example `$bits(CSR[vsepc])`), not from its HS supervisor counterpart.
+
+## WARL field writes
+
+Fields with type `RW-R` or `RW-RH` require a `sw_write(csr_value)` function (enforced by the CSR schema). These fields implement Write Any, Read Legal behavior: software may write any bit pattern, but hardware stores a legal value.
+
+A common pattern for an illegal or reserved encoding is to retain the current value of **this** field on **this** CSR:
+
+```yaml
+sw_write(csr_value): |
+  if (csr_value.CBIE <= 2'b01) {
+    return csr_value.CBIE;
+  } else {
+    return CSR[henvcfg].CBIE;
+  }
+```
+
+Returning a field from a different CSR is only correct when the architecture explicitly shares that storage.
+
+For fields that do not require explicit WARL mapping, `sw_write` may return `UNDEFINED_LEGAL` or `UNDEFINED_LEGAL_DETERMINISTIC` instead of a concrete value — see the table in [`field.sw_write(csr_value)`](#fieldsw_writecsr_value) above.
+
+## CSR-scope helper functions
+
+Several functions defined in `spec/std/isa/isa/builtin_functions.idl` and `globals.isa` appear in CSR `sw_read()` and `sw_write()` bodies:
+
+| Function | Use |
+|----------|-----|
+| `direct_csr_lookup(addr)` | Resolve a 12-bit direct CSR address to a `Csr` handle. Check `.valid` before use. |
+| `indirect_csr_lookup(select, slot)` | Resolve an indirect CSR (`*ireg*` windows) from a select value and 1-indexed slot. |
+| `csr_sw_read(handle)` | Software-visible read for a dynamic handle (applies `sw_read()`). |
+| `implemented_csr?(addr)` | Returns whether a 12-bit address is an implemented CSR in the current configuration. |
+| `unimplemented_csr($encoding)` | Handle access to an unimplemented CSR (raises or enters unpredictable state per `TRAP_ON_UNIMPLEMENTED_CSR`). |
+
+For compile-time CSR access by name, prefer `CSR[name]` and `$bits(CSR[name])`. Use the lookup functions when the address comes from instruction encoding or from another CSR field at runtime.
+
+## Upper-half CSRs (`*h`)
+
+RV32-only upper-half CSRs (names ending in `h`, such as `minstreth` and `htimedeltah`) expose bits `[63:32]` of a 64-bit sibling CSR on RV32:
+
+- **`sw_read()`** returns the upper half: `CSR[sibling].FIELD[63:32]`.
+- **`sw_write()`** writes the upper half and preserves the sibling's lower half, typically `{csr_value.FIELD, CSR[sibling].FIELD[31:0]}`.
+
+The lower 32 bits remain in the sibling CSR (for example `minstret`, `htimedelta`).

@@ -105,6 +105,17 @@ IDL is a domain-specific language with a C/Verilog-like syntax used to formally 
 
 IDL is compiled by the `idlc` gem. The compiler performs type checking and can generate AsciiDoc documentation, option analysis, and other passes. Key types: `Bits<N>`, `XReg` (alias for `Bits<MXLEN>`), `Boolean`, enums, bitfields, structs.
 
+### CSR authoring
+
+CSR definitions live in `spec/std/isa/csr/`. Semantics for `sw_read()`, field `sw_write()`, aliases, virtual CSRs, and WARL behavior are documented in [`doc/docs/idl/in-csrs.mdx`](doc/docs/idl/in-csrs.mdx).
+
+After editing CSR YAML or CSR IDL, validate the changes:
+
+```bash
+./do test:schema
+./do test:idl CFG=_    # or rv32, rv64, or another relevant config
+```
+
 ### Backends (`backends/`)
 
 Each backend has a `tasks.rake` file that registers Rake tasks. Key backends:
