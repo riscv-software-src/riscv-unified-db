@@ -242,6 +242,7 @@ class TestMmr < Minitest::Test
       }
     )
     assert_instance_of Hash, mmr.field_hash
+    assert_same mmr.field_hash, mmr.field_hash
     assert mmr.field_hash.key?("EN")
     assert_equal "EN", mmr.field_hash["EN"].name
   end

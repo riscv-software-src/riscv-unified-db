@@ -37,7 +37,7 @@ module HasFields
 
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name
   def field_hash
-    @field_hash unless @field_hash.nil?
+    return @field_hash unless @field_hash.nil?
 
     @field_hash = {}
     fields.each do |field|
