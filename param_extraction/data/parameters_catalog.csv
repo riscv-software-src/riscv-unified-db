@@ -1,0 +1,723 @@
+parameter_name,long_name,classification,classification_confidence,classification_reasoning,value_type,value_details,defined_by_extensions,defined_by_summary,has_requirements,num_csr_references,csr_names,spec_file,spec_line,spec_score,spec_is_normative,spec_in_note,spec_text,description
+ARCH_ID_VALUE,Vendor-specific architecture ID in `marchid`,NORM_DIRECT,high,Well-known architectural parameter 'ARCH_ID_VALUE',conditional,2 conditional branches,Sm,ext:Sm AND param:MARCHID_IMPLEMENTED(equal=True),False,1,marchid,machine.adoc,297,8,False,False,==== Machine Architecture ID (`marchid`) Register,"The value of `marchid`
+The combination of mvendorid and marchid should uniquely identify the type of hart microarchitecture that is implemented."
+ASID_WIDTH,TODO,NORM_DIRECT,high,Well-known architectural parameter 'ASID_WIDTH',conditional,2 conditional branches,S,ext:S,False,0,,supervisor.adoc,1373,5,True,False,"[#norm:sfence-vma-asid_effect]#Likewise, changes to `satp`.ASID take effect immediately.#","Number of implemented ASID bits. Maximum is 16 for XLEN==64, and 9 for XLEN==32"
+CACHE_BLOCK_SIZE,TODO,NORM_DIRECT,high,Well-known architectural parameter 'CACHE_BLOCK_SIZE',range,[1..18446744073709551615],"Zicbom, Zicbop, Zicboz",(ext:Zicbom OR ext:Zicbop OR ext:Zicboz),False,0,,cmo.adoc,973,5,True,False,[#norm:cbo-zero_unaligned]#It is not required that _rs1_ is aligned to the size of a cache block.# On,"The observable size of a cache block, in bytes"
+CONFIG_PTR_ADDRESS,Physical address in `mconfigptr`,NORM_DIRECT,high,Well-known architectural parameter 'CONFIG_PTR_ADDRESS',conditional,2 conditional branches,Sm,ext:Sm(>= 1.12.0),True,1,mconfigptr,machine.adoc,2136,6,False,False,==== Machine Configuration Pointer (`mconfigptr`) Register,The value returned from `mconfigptr`
+COUNTINHIBIT_EN,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of mcountinhibit.CY,bitmask,32-bit mask,Sm,ext:Sm,False,62,mcountinhibit,machine.adoc,1669,13,True,False,[#norm:mcountinhibit_sz_warl_op1]#The counter-inhibit register `mcountinhibit` is a 32-bit,"Indicates which hardware performance monitor counters can be disabled from `mcountinhibit`.
+
+An unimplemented counter cannot be specified, i.e., if HPM_COUNTER_EN[3] is false,
+it would be illegal to set COUNTINHIBIT_EN[3] to true.
+
+COUNTINHIBIT_EN[1] can never be true, since it corresponds to `mcoun"
+DBG_HCONTEXT_WIDTH,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of hcontext.HCONTEXT,range,[0..14],Sdtrig,ext:Sdtrig,False,2,"hcontext, mcontext",smstateen.adoc,287,8,False,False,`hcontext` CSRs provided by the Sdtrig extension. The CONTEXT bit in,Specifies the size of HCONTEXT
+DBG_SCONTEXT_WIDTH,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of scontext.DATA,range,[0..32],Sdtrig,ext:Sdtrig,False,1,scontext,hypervisor.adoc,146,6,False,False,"Some standard supervisor CSRs (`senvcfg`, `scounteren`, and `scontext`,",Specifies the size of SCONTEXT
+DCSR_MPRVEN_TYPE,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of dcsr.MPRVEN,enum,"values: ['read-only-0', 'read-only-1', 'rw']",Sdtrig,ext:Sdtrig,False,2,dcsr,priv-cfi.adoc,87,4,False,False,"transition to Debug Mode, a `pelp` bit is defined in the `dcsr` register.#","Implementation of dcsr.MPRVEN is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr.MPRVEN bit:
+  * 'read-only-0': tied to 0
+  * 'read-only-1': tied to 1
+  * 'rw': read-write"
+DCSR_STEPIE_TYPE,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of dcsr.STEPIE,enum,"values: ['read-only-0', 'read-only-1', 'rw']",Sdtrig,ext:Sdtrig,False,2,dcsr,priv-cfi.adoc,87,4,False,False,"transition to Debug Mode, a `pelp` bit is defined in the `dcsr` register.#","Implementation of dcsr.STEPIE is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr.STEPIE bit:
+  * 'read-only-0': tied to 0
+  * 'read-only-1': tied to 1
+  * 'rw': read-write"
+DCSR_STOPCOUNT_TYPE,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of dcsr.STOPCOUNT,enum,"values: ['read-only-0', 'read-only-1', 'rw']",Sdtrig,ext:Sdtrig,False,2,dcsr,priv-cfi.adoc,87,4,False,False,"transition to Debug Mode, a `pelp` bit is defined in the `dcsr` register.#","Implementation of dcsr.STOPCOUNT is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr.STOPCOUNT bit:
+  * 'read-only-0': tied to 0
+  * 'read-only-1': tied to 1
+  * 'rw': read-write"
+DCSR_STOPTIME_TYPE,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of dcsr.STOPTIME,enum,"values: ['read-only-0', 'read-only-1', 'rw']",Sdtrig,ext:Sdtrig,False,2,dcsr,priv-cfi.adoc,87,4,False,False,"transition to Debug Mode, a `pelp` bit is defined in the `dcsr` register.#","Implementation of dcsr.STOPTIME is optional.
+It may be tied to either 0 or 1.
+
+Behavior of the dcsr.STOPTIME bit:
+  * 'read-only-0': tied to 0
+  * 'read-only-1': tied to 1
+  * 'rw': read-write"
+ELEN,TODO,NORM_DIRECT,high,Well-known architectural parameter 'ELEN',value,{'base': 'integer'},V,ext:V,False,0,,v-st-ext.adoc,24,9,True,False,". [#norm:vlen_param]#The number of bits in a single vector register, _VLEN_ {ge} ELEN, which must be a power of 2, and must be no greater than 2^16^.#",The maximum size in bits of a vector element that any operation can produce or consume.
+FOLLOW_VTYPE_RESET_RECOMMENDATION,TODO,NORM_DIRECT,medium,Implementation behavioral choice parameter,binary,"choices: [True, False]",V,ext:V,False,6,"vl, vtype",v-st-ext.adoc,169,14,True,False,"NOTE: [#norm:vill_implicit_encoding_param]#A small implementation supporting ELEN=32 requires only seven bits of state in `vtype`: two bits for `ma` and `ta`, two bits for `vsew[1:0]` and three bits f","It is recommended that at reset, vtype.vill is set, the remaining bits in vtype are zero, and vl is set to zero.
+If this parameter is set to true, this recommendation is followed. If it is false, at reset the respective fields
+will be UNDEFINED_LEGAL."
+FORCE_UPGRADE_CBO_INVAL_TO_FLUSH,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of menvcfg.CBIE,binary,"choices: [True, False]",Zicbom,ext:Zicbom,False,1,menvcfg,supervisor.adoc,913,20,False,False,"implemented, `CBIE` is read-only zero. Execution of `CBO.INVAL` in U-mode is","When true, an implementation prohibits setting `menvcfg.CBIE` == `11` such that all `cbo.inval`
+instructions either trap (when `menvcfg.CBIE` == '00') or flush (when `menvcfg.CBIE` == '01').
+
+When false, an implementation allows a true INVAL operation for `cbo.inval`, and thus supports
+the setting `"
+GSTAGE_MODE_BARE,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of hgatp.MODE,binary,"choices: [True, False]",H,ext:H,True,1,hgatp,hypervisor.adoc,1075,11,False,False,"is for `satp`. Instead, the fields of `hgatp` are *WARL* in the normal way,",Whether or not writing mode=Bare is supported in the `hgatp` register.
+HCONTEXT_AVAILABLE,TODO,NORM_DIRECT,high,Feature/CSR existence parameter ('AVAILABLE' suffix),binary,"choices: [True, False]",Sdtrig,ext:Sdtrig,True,2,hcontext,smstateen.adoc,287,8,False,False,`hcontext` CSRs provided by the Sdtrig extension. The CONTEXT bit in,Specifies if HCONTEXT is available
+HCOUNTENABLE_EN,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of hcounteren.CY,bitmask,32-bit mask,H,ext:H,False,64,hcounteren,hypervisor.adoc,857,12,False,False,"When the CY, TM, IR, or HPM__n__ bit in the `hcounteren` register is","Indicates which counters can delegated via `hcounteren`
+
+An unimplemented counter cannot be specified, i.e., if
+HPM_COUNTER_EN[3] is false, it would be illegal to set
+HCOUNTENABLE_EN[3] to true.
+
+HCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+HCOUNTENABLE_EN[3:31] must all be"
+HPM_COUNTER_EN,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of scountovf.OF3,bitmask,32-bit mask,Smhpm,ext:Smhpm,False,1044,"mhpmcounter10, mhpmcounter10h, mhpmcounter11, mhpmcounter11h, mhpmcounter12, mhpmcounter12h, mhpmcounter13, mhpmcounter13h, mhpmcounter14, mhpmcounter14h, mhpmcounter15, mhpmcounter15h, mhpmcounter16, mhpmcounter16h, mhpmcounter17, mhpmcounter17h, mhpmcounter18, mhpmcounter18h, mhpmcounter19, mhpmcounter19h, mhpmcounter20, mhpmcounter20h, mhpmcounter21, mhpmcounter21h, mhpmcounter22, mhpmcounter22h, mhpmcounter23, mhpmcounter23h, mhpmcounter24, mhpmcounter24h, mhpmcounter25, mhpmcounter25h, mhpmcounter26, mhpmcounter26h, mhpmcounter27, mhpmcounter27h, mhpmcounter28, mhpmcounter28h, mhpmcounter29, mhpmcounter29h, mhpmcounter3, mhpmcounter30, mhpmcounter30h, mhpmcounter31, mhpmcounter31h, mhpmcounter3h, mhpmcounter4, mhpmcounter4h, mhpmcounter5, mhpmcounter5h, mhpmcounter6, mhpmcounter6h, mhpmcounter7, mhpmcounter7h, mhpmcounter8, mhpmcounter8h, mhpmcounter9, mhpmcounter9h, mhpmevent10, mhpmevent10h, mhpmevent11, mhpmevent11h, mhpmevent12, mhpmevent12h, mhpmevent13, mhpmevent13h, mhpmevent14, mhpmevent14h, mhpmevent15, mhpmevent15h, mhpmevent16, mhpmevent16h, mhpmevent17, mhpmevent17h, mhpmevent18, mhpmevent18h, mhpmevent19, mhpmevent19h, mhpmevent20, mhpmevent20h, mhpmevent21, mhpmevent21h, mhpmevent22, mhpmevent22h, mhpmevent23, mhpmevent23h, mhpmevent24, mhpmevent24h, mhpmevent25, mhpmevent25h, mhpmevent26, mhpmevent26h, mhpmevent27, mhpmevent27h, mhpmevent28, mhpmevent28h, mhpmevent29, mhpmevent29h, mhpmevent3, mhpmevent30, mhpmevent30h, mhpmevent31, mhpmevent31h, mhpmevent3h, mhpmevent4, mhpmevent4h, mhpmevent5, mhpmevent5h, mhpmevent6, mhpmevent6h, mhpmevent7, mhpmevent7h, mhpmevent8, mhpmevent8h, mhpmevent9, mhpmevent9h, scountovf",machine.adoc,1615,8,True,False,"[#norm:mcounteren_clr_ill_inst_exc]#When the CY, TM, IR, or HPM__n__ bit in the `mcounteren` register is","List of HPM counters that are enabled.
+There is one entry for each hpmcounter.
+
+The first three entries *must* be false (as they correspond to CY, IR, TM in, _e.g._ `mhmpcountinhibit`)
+Index 3 in HPM_COUNTER_EN corresponds to hpmcounter3.
+Index 31 in HPM_COUNTER_EN corresponds to hpmcounter31."
+HPM_EVENTS,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of mhpmevent14.EVENT,set,set of integer,Smhpm,ext:Smhpm,False,29,"mhpmevent10, mhpmevent11, mhpmevent12, mhpmevent13, mhpmevent14, mhpmevent15, mhpmevent16, mhpmevent17, mhpmevent18, mhpmevent19, mhpmevent20, mhpmevent21, mhpmevent22, mhpmevent23, mhpmevent24, mhpmevent25, mhpmevent26, mhpmevent27, mhpmevent28, mhpmevent29, mhpmevent3, mhpmevent30, mhpmevent31, mhpmevent4, mhpmevent5, mhpmevent6, mhpmevent7, mhpmevent8, mhpmevent9",machine.adoc,1581,8,False,False,"`mhpmevent3`-`mhpmevent31`, are 64-bit *WARL* registers that control which",List of defined event numbers that can be written into hpmeventN
+HSTATEEN_AIA_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'hstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","H, Ssaia, Ssstateen",ext:Ssaia AND ext:H AND ext:Ssstateen,True,0,,,,0,,,,"Behavior of the hstateen0.AIA bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+HSTATEEN_CONTEXT_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'hstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","H, Sdtrig, Ssstateen",ext:Sdtrig AND ext:H AND ext:Ssstateen,True,0,,smctr.adoc,652,5,True,False,"[#norm:ccounter_reset]#The CtrCycleCounter is reset on writes to `__x__ctrctl`, and on execution of SCTRCLR, to ensure that any accumulated cycle counts do not persist across a context switch.#","Behavior of the hstateen0.CONTEXT bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+HSTATEEN_CSRIND_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'hstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","H, Sscsrind, Ssstateen",ext:Sscsrind AND ext:H AND ext:Ssstateen,True,0,,smstateen.adoc,191,3,False,False,"{bits: 1, name: 'CSRIND'},","Behavior of the hstateen0.CSRIND bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+HSTATEEN_ENVCFG_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'hstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","H, Ssstateen",ext:H(~> 1.0) AND ext:Ssstateen(~> 1.0),True,0,,priv-cfi.adoc,134,3,False,False,*__x__*`envcfg.SSE` fields. The conditions are specified as follows:,"Behavior of the hstateen0.ENVCFG bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+HSTATEEN_IMSIC_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'hstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","H, Ssaia, Ssstateen",ext:Ssaia AND ext:H AND ext:Ssstateen,True,0,,smstateen.adoc,189,3,False,False,"{bits: 1, name: 'IMSIC'},","Behavior of the hstateen0.IMSIC bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+HSTATEEN_JVT_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'hstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","H, Ssstateen, Zcmt",ext:Zcmt AND ext:H AND ext:Ssstateen,True,0,,zc.adoc,2341,4,True,False,"[#norm:Zcmt_entry_sz]#The base of the table is in the jvt CSR (see <<csrs-jvt>>), each table entry is XLEN bits.#","Behavior of the hstateen0.JVT bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+HW_MSTATUS_FS_DIRTY_UPDATE,TODO,SW_RULE,medium,Hardware update behavior (HW_ prefix) — software-deterministic with correct fencing,enum,"values: ['never', 'precise', 'imprecise']",F,ext:F,False,1,mstatus,v-st-ext.adoc,3313,26,True,False,[#norm:mstatus-FS_off_V_fp_ill]#If the floating-point unit status field `mstatus.FS` is `Off` then any,"Indicates whether or not hardware will write to `mstatus.FS`
+
+Values are:
+[separator=""!""]
+!===
+h! never  ! Hardware never writes `mstatus.FS`
+h! precise  ! Hardware writes `mstatus.FS` to the Dirty (3) state precisely when F registers are modified
+h! imprecise ! Hardware writes `mstatus.FS` imprecis"
+HW_MSTATUS_VS_DIRTY_UPDATE,TODO,SW_RULE,medium,Hardware update behavior (HW_ prefix) — software-deterministic with correct fencing,enum,"values: ['never', 'precise', 'imprecise']",V,ext:V,False,1,mstatus,v-st-ext.adoc,107,27,False,False,"If `mstatus.VS` is Dirty, `mstatus.SD` is 1;","Indicates whether or not hardware will write to `mstatus.VS`
+
+Values are:
+[separator=""!""]
+!===
+h! never  ! Hardware never writes `mstatus.VS`
+h! precise  ! Hardware writes `mstatus.VS` to the Dirty (3) state precisely when V registers are modified
+h! imprecise ! Hardware writes `mstatus.VS` imprecis"
+IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of vsatp.MODE,binary,"choices: [True, False]",H,ext:H,False,3,vsatp,hypervisor.adoc,1416,9,False,False,"ignored as it is for `satp`, or the fields of `vsatp` are treated as *WARL* in","Whether writes from M-mode, U-mode, or S-mode to vsatp with an illegal mode setting are
+ignored (as they are with satp), or if they are treated as WARL, leading to undpredictable
+behavior."
+IMP_ID_VALUE,Vendor-specific implementation ID in `mimpid`,NORM_DIRECT,high,Well-known architectural parameter 'IMP_ID_VALUE',conditional,2 conditional branches,Sm,ext:Sm AND param:MIMPID_IMPLEMENTED(equal=True),False,1,mimpid,machine.adoc,335,5,False,False,==== Machine Implementation ID (`mimpid`) Register,A unique encoding of the version of the processor implementation.
+JVT_BASE_MASK,Mask representing the implemented bits of jvt.BASE,NORM_CSR_WARL,high,Referenced in sw_write() of jvt.BASE,range,[64..576460752303423487],Zcmt,ext:Zcmt AND param:JVT_BASE_TYPE(equal=mask),True,1,jvt,c-st-ext.adoc,466,8,True,False,"instructions. [#norm:Zca_offsets_mul2]#As with base RVI instructions, the offsets of all RVC","Mask representing the implemented bits of jvt.BASE.
+Includes the implicitly-zero bits of jvt.BASE, so JVT_BASE_MASK[5:0] must always be 0."
+JVT_BASE_TYPE,Type of the jvt.BASE CSR field,NORM_CSR_WARL,high,Referenced in sw_write() of jvt.BASE,binary,"choices: ['mask', 'custom']",Zcmt,ext:Zcmt,False,1,jvt,c-st-ext.adoc,466,10,True,False,"instructions. [#norm:Zca_offsets_mul2]#As with base RVI instructions, the offsets of all RVC","Type of the jvt.BASE CSR field. One of:
+
+* mask: jvt.BASE contains one or more implemented bits, which are indicated by JVT_BASE_MASK.
+* custom: Custom behavior. Will cause hart to enter 'unpredictable' state on a write to jvt.BASE."
+JVT_READ_ONLY,Whether or not the JVT CSR is read-only,NORM_CSR_WARL,high,Referenced in sw_write() of jvt.MODE,binary,"choices: [True, False]",Zcmt,ext:Zcmt,False,3,jvt,zc.adoc,2341,6,True,False,"[#norm:Zcmt_entry_sz]#The base of the table is in the jvt CSR (see <<csrs-jvt>>), each table entry is XLEN bits.#","If Zcmt is implemented, JVT is implemented, but can contain a read-only value"
+LRSC_FAIL_ON_NON_EXACT_LRSC,TODO,NORM_DIRECT,medium,Load-reserved/store-conditional behavior parameter,binary,"choices: [True, False]",Zalrsc,ext:Zalrsc,False,0,,a-st-ext.adoc,169,3,False,False,The SC must fail if the address is not within the reservation set of the,"Whether or not a Store Conditional fails if its physical address and size do not
+exactly match the physical address and size of the last Load Reserved in program order
+(independent of whether or not the SC is in the current reservation set)"
+LRSC_FAIL_ON_VA_SYNONYM,TODO,NORM_DIRECT,medium,Load-reserved/store-conditional behavior parameter,binary,"choices: [True, False]",Zalrsc,ext:Zalrsc,False,0,,a-st-ext.adoc,76,7,False,False,SC.W instruction invalidates any reservation held by this hart. LR.D and,"Whether or not an `sc.l`/`sc.d` will fail if its VA does not match the VA of the prior
+`lr.l`/`lr.d`, even if the physical address of the SC and LR are the same"
+LRSC_MISALIGNED_BEHAVIOR,TODO,NORM_DIRECT,medium,Load-reserved/store-conditional behavior parameter,enum,"values: ['always raise misaligned exception', 'always raise access fault', 'custom']",Zalrsc,ext:Zalrsc,False,0,,a-st-ext.adoc,59,12,False,False,are performed with the load-reserved (LR) and store-conditional (SC),"What to do when an LR/SC address is misaligned and MISALIGNED_AMO == false.
+
+  * 'always raise misaligned exception': self-explainitory
+  * 'always raise access fault': self-explainitory
+  * 'custom': Custom behavior; misaligned LR/SC may sometimes raise a misaligned exception and sometimes raise a "
+LRSC_RESERVATION_STRATEGY,TODO,NORM_DIRECT,medium,Load-reserved/store-conditional behavior parameter,enum,"values: ['reserve naturally-aligned 64-byte region', 'reserve naturally-aligned 128-byte region', 'reserve exactly enough to cover the access', 'custom']",Zalrsc,ext:Zalrsc,False,0,,a-st-ext.adoc,76,19,False,False,SC.W instruction invalidates any reservation held by this hart. LR.D and,"Strategy used to handle reservation sets.
+
+  * ""reserve naturally-aligned 64-byte region"": Always reserve the 64-byte block containing the LR/SC address
+  * ""reserve naturally-aligned 128-byte region"": Always reserve the 128-byte block containing the LR/SC address
+  * ""reserve exactly enough to cove"
+MARCHID_IMPLEMENTED,Whether or not the `marchid` CSR is implemented.,NORM_DIRECT,high,Feature/CSR existence parameter ('IMPLEMENTED' suffix),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,machine.adoc,303,10,False,False,The combination of `mvendorid` and `marchid` should uniquely identify the type of hart microarchitecture that is implemented.,"* false: `marchid` is not implemented, and must be read-only-0
+* true: `marchid` is implemented, and the value is determined by `ARCH_ID_VALUE`"
+MCID_WIDTH,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of srmcfg.MCID,range,[1..12],Ssqosid,ext:Ssqosid,False,1,srmcfg,supervisor.adoc,2586,8,False,False,The `RCID` and `MCID` configured in the `srmcfg` CSR apply to all privilege,"Number of bits used for the Monitoring Counter ID field (MCID).
+Default is 12."
+MCONTEXT_AVAILABLE,TODO,NORM_DIRECT,high,Feature/CSR existence parameter ('AVAILABLE' suffix),binary,"choices: [True, False]",Sdtrig,ext:Sdtrig,False,2,mcontext,priv-csrs.adoc,1019,6,False,False,`mcontext`,Specifies if MCONTEXT is available
+MCOUNTENABLE_EN,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of mcounteren.CY,bitmask,32-bit mask,U,ext:U,True,62,mcounteren,machine.adoc,1656,13,True,False,"[#norm:mcounteren_flds_mandatory_warl]#In harts with U-mode, the `mcounteren` must be","Indicates which counters can be delegated via `mcounteren`.
+
+An unimplemented counter cannot be specified, i.e., if
+HPM_COUNTER_EN[3] is false, it would be illegal to set
+MCOUNTENABLE_EN[3] to true.
+
+MCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+MCOUNTENABLE_EN[3:31] must al"
+MIMPID_IMPLEMENTED,Whether or not the `mimpid` CSR is implemented.,NORM_DIRECT,high,Feature/CSR existence parameter ('IMPLEMENTED' suffix),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,machine.adoc,337,9,True,False,[#norm:mimpid_op]#The `mimpid` CSR provides a unique encoding of the version of the,"* false: `mimpid` is not implemented, and must be read-only-0
+* true: `mimpid` is implemented, and the value is determined by `IMP_ID_VALUE`"
+MISALIGNED_AMO,TODO,NORM_DIRECT,medium,Misaligned access behavior parameter,binary,"choices: [True, False]",Zaamo,ext:Zaamo,False,0,,machine.adoc,1976,5,True,False,[#norm:mcause_exccode_pri2]#Load/store/AMO address-misaligned exceptions may have either higher or,whether or not the implementation supports misaligned atomics in main memory
+MISALIGNED_LDST,Support for misaligned loads and stores to main memory.,NORM_DIRECT,medium,Misaligned access behavior parameter,binary,"choices: [True, False]",Sm,ext:Sm,False,0,,machine.adoc,1976,5,True,False,[#norm:mcause_exccode_pri2]#Load/store/AMO address-misaligned exceptions may have either higher or,"Does the implementation perform non-atomic misaligned loads and stores to main memory
+(does *not* affect misaligned support to device memory)?
+If not, the implementation always throws a misaligned exception."
+MISALIGNED_LDST_EXCEPTION_PRIORITY,"The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
+or access-fault exceptions.",NORM_DIRECT,medium,Misaligned access behavior parameter,binary,"choices: ['low', 'high']",Sm,ext:Sm,True,0,,rv32.adoc,139,6,True,False,[#norm:taken_cti_misaligned_exc]#An instruction-address-misaligned exception is generated on a taken branch,"The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault
+or access-fault exceptions.
+
+May be one of:
+
+[separator=""!""]
+!===
+! low  ! Misaligned load/store/AMO exceptions are always lower priority than load/store/AMO page-fault and access-fault exceptions.
+! high ! Misaligned "
+MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE,"The maximum granule size, in bytes, that the hart can atomically perform a
+misaligned load/store/AMO without raising a Misaligned exception",NORM_DIRECT,medium,Misaligned access behavior parameter,enum,13 values,Sm,ext:Sm AND param:MISALIGNED_LDST(equal=True),True,0,,a-st-ext.adoc,385,7,False,False,"The misaligned atomicity granule PMA, defined in Volume II of this manual,","When MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE is 0, the hart
+cannot atomically perform a misaligned load/store/AMO. When a power of two, the hart can
+atomically load/store/AMO a misaligned access that is fully contained in a
+MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE-aligned region.
+
+[NOTE]
+Even if the hart"
+MISALIGNED_SPLIT_STRATEGY,"The *order* the implementation appears
+to process a non-atomic misaligned load/store, which determines how/which
+exceptions will be reported.",NORM_DIRECT,medium,Misaligned access behavior parameter,binary,"choices: ['sequential_bytes', 'custom']",Sm,ext:Sm AND param:MISALIGNED_LDST(equal=True),False,0,,machine.adoc,1976,5,True,False,[#norm:mcause_exccode_pri2]#Load/store/AMO address-misaligned exceptions may have either higher or,"Options:
+
+  * sequential_bytes: The load/store appears to be broken into byte-sized accesses that processed sequentially from smallest address to largest address
+  * custom: Something else. Will result in a call to unpredictable() in the execution"
+MISA_CSR_IMPLEMENTED,Whether or not the `misa` CSR is implemented,NORM_DIRECT,high,Feature/CSR existence parameter ('IMPLEMENTED' suffix),binary,"choices: [True, False]",Sm,ext:Sm,False,3,mstatus,machine.adoc,23,12,True,False,"but [#norm:misa_csr_implemented]#a value of zero can be returned to indicate the `misa` register has not been implemented#, requiring that CPU capabilities be determined through a separate non-standar","Options:
+
+  true::
+    The `misa` CSR returns a non-zero value.
+
+  false::
+    The `misa` CSR is read-only-0."
+MSTATEEN_AIA_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'mstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","Smstateen, Ssaia",ext:Ssaia AND ext:Smstateen(~> 1.0),False,0,,,,0,,,,"Behavior of the mstateen0.AIA bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+MSTATEEN_CONTEXT_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'mstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","Sdtrig, Smstateen",ext:Sdtrig AND ext:Smstateen,False,0,,smctr.adoc,652,5,True,False,"[#norm:ccounter_reset]#The CtrCycleCounter is reset on writes to `__x__ctrctl`, and on execution of SCTRCLR, to ensure that any accumulated cycle counts do not persist across a context switch.#","Behavior of the mstateen0.CONTEXT bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+MSTATEEN_CSRIND_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'mstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","Smstateen, Sscsrind",ext:Sscsrind AND ext:Smstateen,False,0,,smstateen.adoc,191,3,False,False,"{bits: 1, name: 'CSRIND'},","Behavior of the mstateen0.CSRIND bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+MSTATEEN_ENVCFG_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'mstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","S, Smstateen",ext:S AND ext:Smstateen,False,0,,priv-cfi.adoc,134,3,False,False,*__x__*`envcfg.SSE` fields. The conditions are specified as follows:,"Behavior of the mstateen0.ENVCFG bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+MSTATEEN_IMSIC_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'mstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","Smstateen, Ssaia",ext:Ssaia AND ext:Smstateen(~> 1.0),False,0,,smstateen.adoc,189,3,False,False,"{bits: 1, name: 'IMSIC'},","Behavior of the mstateen0.IMSIC bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+MSTATEEN_JVT_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'mstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","Smstateen, Zcmt",ext:Zcmt AND ext:Smstateen(~> 1.0),False,0,,zc.adoc,2341,4,True,False,"[#norm:Zcmt_entry_sz]#The base of the table is in the jvt CSR (see <<csrs-jvt>>), each table entry is XLEN bits.#","Behavior of the mstateen0.JVT bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+MSTATUS_FS_LEGAL_VALUES,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of mstatus.FS,set,"subset of [0, 1, 2, 3]","F, S",(ext:F OR ext:S),True,3,mstatus,machine.adoc,679,11,True,False,"[#norm:mstatus_mstatush_xbe_warl]#The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are *WARL* fields# that",The set of values that mstatus.FS supports.
+MSTATUS_TVM_IMPLEMENTED,TODO,NORM_DIRECT,high,Feature/CSR existence parameter ('IMPLEMENTED' suffix),binary,"choices: [True, False]",S,ext:S,False,2,mstatus,hypervisor.adoc,999,12,True,False,"addresses. [#norm:hgatp_tvm_illegal]#When `mstatus`.TVM=1, attempts to read or write `hgatp` while","Whether or not mstatus.TVM is implemented.
+
+When not implemented mstatus.TVM will be read-only-zero."
+MSTATUS_VS_LEGAL_VALUES,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of mstatus.VS,set,"subset of [0, 1, 2, 3]","S, V",(ext:V OR ext:S),True,3,mstatus,machine.adoc,679,11,True,False,"[#norm:mstatus_mstatush_xbe_warl]#The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are *WARL* fields# that",The set of values that mstatus.VS will accept from a software write.
+MTVAL_WIDTH,Width of the `mtval` CSR,NORM_DIRECT,medium,Trap value reporting parameter,conditional,2 conditional branches,Sm,ext:Sm,True,0,,hypervisor.adoc,25,6,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","The number of implemented bits in the `mtval` CSR.
+This is the CSR that may be written when a trap is taken into M-mode with exception-specific information to
+assist software in handling the trap (e.g., address associated with exception).
+
+Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `V"
+MTVEC_ACCESS,Acess type of the `mtvec` CSR (read-only or read-write).,NORM_CSR_RW,high,Controls type (RO/RW) of mtvec.BASE,binary,"choices: ['ro', 'rw']",Sm,ext:Sm,False,2,mtvec,machine.adoc,1209,17,True,False,[#norm:mtvec_sz_warl_acc]#The `mtvec` register is an MXLEN-bit *WARL* read/write register that holds,"Options:
+
+  ro::
+    `mtvec` is read-only.
+
+  rw::
+    `mtvec` is read-write, but may not accept all values."
+MTVEC_BASE_ALIGNMENT_DIRECT,Minumum alignment of `mtvec.BASE` when `mtvec.MODE` is 0 (direct),NORM_CSR_WARL,low,"Name pattern suggests CSR 'mtvec' association, but no IDL cross-reference found",conditional,2 conditional branches,Sm,"ext:Sm AND {'param': {'allOf': [{'name': 'MTVEC_MODES', 'includes': 0, 'reason': 'Only rele",False,0,,machine.adoc,1209,6,True,False,[#norm:mtvec_sz_warl_acc]#The `mtvec` register is an MXLEN-bit *WARL* read/write register that holds,"Minimum alignment of the base pointer. Because `mtvec` excludes the two least-significant bits of
+the base, the minimum alignment cannot be less than 4."
+MTVEC_BASE_ALIGNMENT_VECTORED,Minumum alignment of `mtvec.BASE` when `mtvec.MODE` is 1 (vectored),NORM_CSR_WARL,low,"Name pattern suggests CSR 'mtvec' association, but no IDL cross-reference found",conditional,2 conditional branches,Sm,"ext:Sm AND {'param': {'allOf': [{'name': 'MTVEC_MODES', 'includes': 1, 'reason': 'Only rele",False,0,,priv-preface.adoc,540,7,False,False,* Optional vectored interrupt support has been added to the `mtvec` and,"Because `mtvec` excludes the two least-significant bits of
+the base, the minimum alignment cannot be less than 4."
+MTVEC_ILLEGAL_WRITE_BEHAVIOR,What happens when `mtvec` is written with an illegal value,NORM_CSR_WARL,high,Referenced in sw_write() of mtvec.BASE,binary,"choices: ['retain', 'custom']",Sm,ext:Sm,False,2,mtvec,machine.adoc,1209,18,True,False,[#norm:mtvec_sz_warl_acc]#The `mtvec` register is an MXLEN-bit *WARL* read/write register that holds,"Options:
+
+  retain::
+    When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will retain its current value
+
+  custom::
+    When either `mtvec.MODE` or `mtvec.BASE` is illegal, `mtvec` will obtain an unpredictable value
+
+Other values may be added over time once other common behaviors are ide"
+MTVEC_MODES,Modes supported by `mtvec.MODE`,NORM_CSR_WARL,high,Referenced in sw_write() of mtvec.BASE,set,"subset of [0, 1]",Sm,ext:Sm,True,4,mtvec,machine.adoc,1255,18,False,False,machine mode cause the `pc` to be set to the address in the BASE field.#,"Options:
+
+  0::
+    Direct; All traps set `pc` to `mtvec.BASE`
+  1::
+    Vectored; Asynchronous interrupts set `pc` to `mtvec.BASE` + 4 x cause.
+
+If only one mode is given, `mtvec.MODE` is assumed to be read-only with that value.
+Otherwise, `mtvec.MODE` is read-write."
+MUTABLE_MISA_A,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.A,binary,"choices: [True, False]",A,ext:A,False,2,misa,machine.adoc,21,16,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,"When the `A` extensions is supported, indicates whether or not
+the extension can be disabled in the `misa.A` bit."
+MUTABLE_MISA_B,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.B,binary,"choices: [True, False]",B,ext:B,False,1,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `B` extension can be disabled with the `misa.B` bit.
+MUTABLE_MISA_C,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.C,binary,"choices: [True, False]",C,ext:C,False,1,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `C` extension can be disabled with the `misa.C` bit.
+MUTABLE_MISA_D,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.D,binary,"choices: [True, False]",D,ext:D,False,2,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `D` extension can be disabled with the `misa.D` bit.
+MUTABLE_MISA_F,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.F,binary,"choices: [True, False]",F,ext:F,False,2,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `F` extension can be disabled with the `misa.F` bit.
+MUTABLE_MISA_H,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.H,binary,"choices: [True, False]",H,ext:H,True,1,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `H` extension can be disabled with the `misa.H` bit.
+MUTABLE_MISA_M,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.G,binary,"choices: [True, False]",M,ext:M,False,2,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `M` extension can be disabled with the `misa.M` bit.
+MUTABLE_MISA_Q,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.Q,binary,"choices: [True, False]",Q,ext:Q,False,1,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `Q` extension can be disabled with the `misa.Q` bit.
+MUTABLE_MISA_S,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.S,binary,"choices: [True, False]",S,ext:S,True,1,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `S` extension can be disabled with the `misa.S` bit.
+MUTABLE_MISA_U,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.U,binary,"choices: [True, False]",U,ext:U,False,1,misa,machine.adoc,21,11,True,False,[#norm:misa_acc]#The `misa` CSR is a *WARL* read-write register# reporting the ISA supported by the hart.,Indicates whether or not the `U` extension can be disabled with the `misa.U` bit.
+MUTABLE_MISA_V,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of misa.V,binary,"choices: [True, False]",V,ext:V,False,1,misa,v-st-ext.adoc,5161,14,True,False,[#norm:misa-V_op]#The `misa.v` bit is set for implementations providing `misa` and,Indicates whether or not the `V` extension can be disabled with the `misa.V` bit.
+MXLEN,XLEN in machine mode,NORM_DIRECT,high,Well-known architectural parameter 'MXLEN',binary,"choices: [32, 64]",Sm,ext:Sm,True,69,"hcontext, mconfigptr, misa, pmpaddr0, pmpaddr1, pmpaddr10, pmpaddr11, pmpaddr12, pmpaddr13, pmpaddr14, pmpaddr15, pmpaddr16, pmpaddr17, pmpaddr18, pmpaddr19, pmpaddr2, pmpaddr20, pmpaddr21, pmpaddr22, pmpaddr23, pmpaddr24, pmpaddr25, pmpaddr26, pmpaddr27, pmpaddr28, pmpaddr29, pmpaddr3, pmpaddr30, pmpaddr31, pmpaddr32, pmpaddr33, pmpaddr34, pmpaddr35, pmpaddr36, pmpaddr37, pmpaddr38, pmpaddr39, pmpaddr4, pmpaddr40, pmpaddr41, pmpaddr42, pmpaddr43, pmpaddr44, pmpaddr45, pmpaddr46, pmpaddr47, pmpaddr48, pmpaddr49, pmpaddr5, pmpaddr50, pmpaddr51, pmpaddr52, pmpaddr53, pmpaddr54, pmpaddr55, pmpaddr56, pmpaddr57, pmpaddr58, pmpaddr59, pmpaddr6, pmpaddr60, pmpaddr61, pmpaddr62, pmpaddr63, pmpaddr7, pmpaddr8, pmpaddr9, satp, vsatp",machine.adoc,50,12,True,False,[#norm:misa_sz]#The `misa` CSR is MXLEN bits wide.#,"XLEN in machine mode, specified in bits"
+M_MODE_ENDIANNESS,Endianness of data in M-mode,NORM_CSR_RW,high,Controls type (RO/RW) of mstatus.MBE,enum,"values: ['little', 'big', 'dynamic']",Sm,ext:Sm,False,4,"mstatus, mstatush",machine.adoc,679,22,True,False,"[#norm:mstatus_mstatush_xbe_warl]#The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are *WARL* fields# that","Options:
+
+[separator=""!""]
+!===
+h! little  ! M-mode data is always little endian
+h! big     ! M-mode data is always big endian
+h! dynamic ! M-mode data can be either little or big endian,
+             depending on the CSR field `mstatus.MBE`
+!==="
+NUM_EXTERNAL_GUEST_INTERRUPTS,TODO,NORM_DIRECT,high,Well-known architectural parameter 'NUM_EXTERNAL_GUEST_INTERRUPTS',conditional,2 conditional branches,H,ext:H,False,3,hstatus,hypervisor.adoc,259,9,False,False,"VS-level external interrupts. GEILEN may be zero, in which case VGEIN","Number of supported virtualized guest interrupts
+
+Corresponds to the `GEILEN` parameter in the RVI specs"
+NUM_PMP_ENTRIES,TODO,NORM_DIRECT,high,Well-known architectural parameter 'NUM_PMP_ENTRIES',range,[0..64],Smpmp,ext:Smpmp,False,224,"pmpaddr0, pmpaddr1, pmpaddr10, pmpaddr11, pmpaddr12, pmpaddr13, pmpaddr14, pmpaddr15, pmpaddr16, pmpaddr17, pmpaddr18, pmpaddr19, pmpaddr2, pmpaddr20, pmpaddr21, pmpaddr22, pmpaddr23, pmpaddr24, pmpaddr25, pmpaddr26, pmpaddr27, pmpaddr28, pmpaddr29, pmpaddr3, pmpaddr30, pmpaddr31, pmpaddr32, pmpaddr33, pmpaddr34, pmpaddr35, pmpaddr36, pmpaddr37, pmpaddr38, pmpaddr39, pmpaddr4, pmpaddr40, pmpaddr41, pmpaddr42, pmpaddr43, pmpaddr44, pmpaddr45, pmpaddr46, pmpaddr47, pmpaddr48, pmpaddr49, pmpaddr5, pmpaddr50, pmpaddr51, pmpaddr52, pmpaddr53, pmpaddr54, pmpaddr55, pmpaddr56, pmpaddr57, pmpaddr58, pmpaddr59, pmpaddr6, pmpaddr60, pmpaddr61, pmpaddr62, pmpaddr63, pmpaddr7, pmpaddr8, pmpaddr9, pmpcfg0, pmpcfg1, pmpcfg10, pmpcfg11, pmpcfg12, pmpcfg13, pmpcfg14, pmpcfg15, pmpcfg2, pmpcfg3, pmpcfg4, pmpcfg5, pmpcfg6, pmpcfg7, pmpcfg8, pmpcfg9",machine.adoc,668,4,True,False,"Note that, [#norm:mstatus_sum_op_mprv_mpp]#while SUM is ordinarily ignored when not","Number of implemented PMP entries. Can be any value between 0-64, inclusive.
+
+The architecture mandates that the number of implemented PMP registers
+must appear to be 0, 16, or 64.
+
+Therefore, pmp registers will behave as follows according to NUN_PMP_ENTRIES:
+
+[separator=""!""]
+!===
+! NUM_PMP_ENTRIES "
+PHYS_ADDR_WIDTH,Number of bits in a physical address,NORM_DIRECT,high,Well-known architectural parameter 'PHYS_ADDR_WIDTH',conditional,2 conditional branches,Sm,ext:Sm,True,128,"pmpaddr0, pmpaddr1, pmpaddr10, pmpaddr11, pmpaddr12, pmpaddr13, pmpaddr14, pmpaddr15, pmpaddr16, pmpaddr17, pmpaddr18, pmpaddr19, pmpaddr2, pmpaddr20, pmpaddr21, pmpaddr22, pmpaddr23, pmpaddr24, pmpaddr25, pmpaddr26, pmpaddr27, pmpaddr28, pmpaddr29, pmpaddr3, pmpaddr30, pmpaddr31, pmpaddr32, pmpaddr33, pmpaddr34, pmpaddr35, pmpaddr36, pmpaddr37, pmpaddr38, pmpaddr39, pmpaddr4, pmpaddr40, pmpaddr41, pmpaddr42, pmpaddr43, pmpaddr44, pmpaddr45, pmpaddr46, pmpaddr47, pmpaddr48, pmpaddr49, pmpaddr5, pmpaddr50, pmpaddr51, pmpaddr52, pmpaddr53, pmpaddr54, pmpaddr55, pmpaddr56, pmpaddr57, pmpaddr58, pmpaddr59, pmpaddr6, pmpaddr60, pmpaddr61, pmpaddr62, pmpaddr63, pmpaddr7, pmpaddr8, pmpaddr9",hypervisor.adoc,1027,3,False,False,<<guest-addr-translation>>.,Implementation-defined size of the physical address space.
+PMA_GRANULARITY,log2 of the smallest supported PMA region,NORM_DIRECT,high,Well-known architectural parameter 'PMA_GRANULARITY',range,[2..66],Sm,ext:Sm,False,0,,cmo.adoc,754,3,False,False,"granularity and atomicity, including individual bytes.","Generally, for systems with an MMU, should not be smaller than 12,
+as that would preclude caching PMA results in the TLB along with
+virtual memory translations"
+PMLEN,TODO,NORM_DIRECT,high,Well-known architectural parameter 'PMLEN',value,{'base': 'integer'},"Smmpm, Smnpm, Ssnpm",(ext:Smmpm OR ext:Smnpm OR ext:Ssnpm),False,0,,hypervisor.adoc,807,7,False,False,|00|Pointer masking is disabled (PMLEN = 0),"The number of high-order bits of an address that are masked by the
+pointer masking facility."
+PMP_GRANULARITY,TODO,NORM_DIRECT,high,Well-known architectural parameter 'PMP_GRANULARITY',range,[2..66],Smpmp,ext:Smpmp,False,160,"pmpaddr0, pmpaddr1, pmpaddr10, pmpaddr11, pmpaddr12, pmpaddr13, pmpaddr14, pmpaddr15, pmpaddr16, pmpaddr17, pmpaddr18, pmpaddr19, pmpaddr2, pmpaddr20, pmpaddr21, pmpaddr22, pmpaddr23, pmpaddr24, pmpaddr25, pmpaddr26, pmpaddr27, pmpaddr28, pmpaddr29, pmpaddr3, pmpaddr30, pmpaddr31, pmpaddr32, pmpaddr33, pmpaddr34, pmpaddr35, pmpaddr36, pmpaddr37, pmpaddr38, pmpaddr39, pmpaddr4, pmpaddr40, pmpaddr41, pmpaddr42, pmpaddr43, pmpaddr44, pmpaddr45, pmpaddr46, pmpaddr47, pmpaddr48, pmpaddr49, pmpaddr5, pmpaddr50, pmpaddr51, pmpaddr52, pmpaddr53, pmpaddr54, pmpaddr55, pmpaddr56, pmpaddr57, pmpaddr58, pmpaddr59, pmpaddr6, pmpaddr60, pmpaddr61, pmpaddr62, pmpaddr63, pmpaddr7, pmpaddr8, pmpaddr9, pmpcfg0, pmpcfg1, pmpcfg10, pmpcfg11, pmpcfg12, pmpcfg13, pmpcfg14, pmpcfg15, pmpcfg2, pmpcfg3, pmpcfg4, pmpcfg5, pmpcfg6, pmpcfg7, pmpcfg8, pmpcfg9",cmo.adoc,754,3,False,False,"granularity and atomicity, including individual bytes.","log2 of the smallest supported PMP region.
+
+Generally, for systems with an MMU, should not be smaller than 12,
+as that would preclude caching PMP results in the TLB along with
+virtual memory translations
+
+Note that PMP_GRANULARITY is equal to G+2 (not G) as described in
+the privileged architecture."
+PRECISE_SYNCHRONOUS_EXCEPTIONS,Whether or not all synchronous exceptions are precise.,NORM_DIRECT,high,Trap/report behavior parameter (matches ^PRECISE_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,machine.adoc,1256,4,True,False,"[#norm:mtvec_mode_vectored_op]#When MODE=Vectored, all synchronous exceptions into machine mode cause","If false, any exception not otherwise mandated to precise (e.g., PMP violation)
+will cause execution to enter an unpredictable state."
+RCID_WIDTH,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of srmcfg.RCID,range,[1..12],Ssqosid,ext:Ssqosid,False,1,srmcfg,supervisor.adoc,2586,8,False,False,The `RCID` and `MCID` configured in the `srmcfg` CSR apply to all privilege,"Number of bits used for the Resource Control ID field (RCID).
+Default is 12."
+REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Zicfilp,ext:Zicfilp,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","When true, `mtval` is written with the shadow stack cause (code=18) when a SoftwareCheck exception is raised into M-mode due to a landing pad error.
+
+When false, `mtval` is written with 0."
+REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Zicfiss,ext:Zicfiss,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","When true, `mtval` is written with the shadow stack cause (code=3) when a SoftwareCheck exception is raised into M-mode due to a shadow stack pop check instruction.
+
+When false, `mtval` is written with 0."
+REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Zicfilp,ext:Zicfilp,False,0,,supervisor.adoc,707,9,True,False,[[norm:stval]],"When true, `stval` is written with the shadow stack cause (code=18) when a SoftwareCheck exception is raised into S-mode due to a landing pad error.
+
+When false, `stval` is written with 0."
+REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Zicfiss,ext:Zicfiss,False,0,,supervisor.adoc,707,9,True,False,[[norm:stval]],"When true, `stval` is written with the shadow stack cause (code=3) when a SoftwareCheck exception is raised into S-mode due to a shadow stack pop check instruction.
+
+When false, `stval` is written with 0."
+REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Zicfilp,ext:Zicfilp,False,0,,hypervisor.adoc,1364,7,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the shadow stack cause (code=18) when a SoftwareCheck exception is raised into VS-mode due to a landing pad error.
+
+When false, `vstval` is written with 0."
+REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Zicfiss,ext:Zicfiss,False,0,,hypervisor.adoc,1364,7,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the shadow stack cause (code=3) when a SoftwareCheck exception is raised into VS-mode due to a shadow stack pop check instruction.
+
+When false, `vstval` is written with 0."
+REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION,Whether or not `mtval` is written with the encoding of an instruction causing an IllegalInstruction exception,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,machine.adoc,2082,11,False,False,"nonzero value when an illegal-instruction exception occurs, then `mtval`","Options:
+
+  * true:  `mtval` is written with the encoding of an instruction causing an IllegalInstruction exception
+  * false: `mtval` is written with 0 when an instruction causes an IllegalInstruction exception."
+REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,supervisor.adoc,751,11,False,False,"nonzero value when an illegal-instruction exception occurs, then `stval`","When true, `stval` is written with the encoding of an instruction that causes an
+`IllegalInstruction` exception.
+
+When false `stval` is written with 0 when an `IllegalInstruction` exception occurs."
+REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1364,7,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the encoding of an instruction that causes an
+`IllegalInstruction` exception.
+
+When false `vstval` is written with 0 when an `IllegalInstruction` exception occurs."
+REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1364,8,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the encoding of an instruction that causes an
+`VirualInstruction` exception.
+
+When false `vstval` is written with 0 when an `VirtualInstruction` exception occurs."
+REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,917,9,False,False,"When a guest-page-fault trap is taken into HS-mode, `htval` is written","When true, `htval` is written with the Guest Physical Address, shifted right by 2, that
+caused a `GuestPageFault` exception.
+
+When false, `htval` is written with 0 when a `GuestPageFault` exception occurs."
+REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,2,"htval, mtval2",hypervisor.adoc,2832,8,False,False,"`mtval2` or `htval`. If both conditions are met, the value written to","Whether or not GPA >> 2 is written into htval/mtval2 when an instruction guest page fault occurs.
+
+If false, 0 will be written into htval/mtval2 on an instruction guest page fault."
+REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,2,"htval, mtval2",hypervisor.adoc,2832,8,False,False,"`mtval2` or `htval`. If both conditions are met, the value written to","Whether or not GPA >> 2 is written into htval/mtval2 when a guest page fault occurs while
+walking a VS-mode page table.
+
+If false, 0 will be written into htval/mtval2 on an intermediate guest page fault."
+REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,2,"htval, mtval2",hypervisor.adoc,2832,8,False,False,"`mtval2` or `htval`. If both conditions are met, the value written to","Whether or not GPA >> 2 is written into htval/mtval2 when a load guest page fault occurs.
+
+If false, 0 will be written into htval/mtval2 on a load guest page fault."
+REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,2,"htval, mtval2",hypervisor.adoc,2832,8,False,False,"`mtval2` or `htval`. If both conditions are met, the value written to","Whether or not GPA >> 2 is written into htval/mtval2 when a store/amo guest page fault occurs.
+
+If false, 0 will be written into htval/mtval2 on a store/amo guest page fault."
+REPORT_VA_IN_MTVAL_ON_BREAKPOINT,Whether or not `mtval` is written with the virtual PC of an EBREAK instruction.,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,machine.adoc,2049,17,False,False,"On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, `mtval`","Options:
+
+  * true:  `mtval` is written with the virtual PC of an EBREAK instruction (same information as `mepc`).
+  * false: `mtval` is written with 0 on an EBREAK instruction.
+
+Regardless, `mtval` is always written with a virtual PC when an external breakpoint is generated"
+REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT,Whether or not `mtval` is written with the virtual address of a fetch causing an access fault,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","Options:
+
+  * true:  `mtval` is written with the virtual address of a fetch causing the access fault
+  * false: `mtval` is written with 0 when a fetch causes an access fault"
+REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED,Whether or not `mtval` is written with the virtual address of a misaligned fetch,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","Options:
+
+  * true:  `mtval` is written with the virtual address of a trapping misaligned fetch
+  * false: `mtval` is written with 0 when a misaligned fetch traps"
+REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","When true, `mtval` is written with the virtual PC of an instructino when fetch causes an
+`InstructionPageFault`.
+
+WHen false, `mtval` is written with 0 when an instruction fetch causes an
+`InstructionPageFault`."
+REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT,Whether or not `mtval` is written with the virtual address of a load causing an access fault,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","Options:
+
+  * true:  `mtval` is written with the virtual address of a load causing the access fault
+  * false: `mtval` is written with 0 when a load causes an access fault"
+REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED,Whether or not `mtval` is written with the virtual address of a misaligned load,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,machine.adoc,2067,11,False,False,If `mtval` is written with a nonzero value when a misaligned load or,"Options:
+
+  * true:  `mtval` is written with the virtual address of a trapping misaligned load.
+  * false: `mtval` is written with 0 when a misaligned load traps."
+REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","When true, `mtval` is written with the virtual address of a load when it causes a
+`LoadPageFault`.
+
+WHen false, `mtval` is written with 0 when a load causes a `LoadPageFault`."
+REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT,Whether or not `mtval` is written with the virtual address of a store or AMO causing an access fault,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","Options:
+
+  * true:  `mtval` is written with the virtual address of a store or AMO causing the access fault
+  * false: `mtval` is written with 0 when a store or AMO causes an access fault"
+REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED,Whether or not `mtval` is written with the virtual address of a misaligned store or AMO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","Options:
+
+  * true:  `mtval` is written with the virtual address of a trapping misaligned store or AMO.
+  * false: `mtval` is written with 0 when a misaligned store or AMO traps."
+REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,hypervisor.adoc,25,10,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","When true, `mtval` is written with the virtual address of a store when it causes a
+`StoreAmoPageFault`.
+
+WHen false, `mtval` is written with 0 when a store causes a `StoreAmoPageFault`."
+REPORT_VA_IN_STVAL_ON_BREAKPOINT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,supervisor.adoc,726,17,False,False,"On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, `stval`","When true, `stval` is written with the virtual PC of the EBREAK instruction (same information as `mepc`).
+
+When false, `stval` is written with 0 on an EBREAK instruction.
+
+Regardless, `stval` is always written with a virtual PC when an external breakpoint is generated"
+REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,hypervisor.adoc,936,10,False,False,the instruction as indicated by the virtual address in `stval`.,"When true, `stval` is written with the virtual PC of an instructino when fetch causes an
+`InstructionAccessFault`.
+
+WHen false, `stval` is written with 0 when an instruction fetch causes an
+`InstructionAccessFault`."
+REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,supervisor.adoc,726,13,False,False,"On a breakpoint exception raised by an EBREAK or C.EBREAK instruction, `stval`","When true, `stval` is written with the virtual PC when an instruction fetch is misaligned.
+
+When false, `stval` is written with 0 when an instruction fetch is misaligned.
+
+Note that when IALIGN=16 (i.e., when the `C` or one of the `Zc*` extensions are implemented),
+it is impossible to generate a mis"
+REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,hypervisor.adoc,936,10,False,False,the instruction as indicated by the virtual address in `stval`.,"When true, `stval` is written with the virtual PC of an instructino when fetch causes an
+`InstructionPageFault`.
+
+WHen false, `stval` is written with 0 when an instruction fetch causes an
+`InstructionPageFault`."
+REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,supervisor.adoc,707,9,True,False,[[norm:stval]],"When true, `stval` is written with the virtual address of a load when it causes a
+`LoadAccessFault`.
+
+WHen false, `stval` is written with 0 when a load causes a `LoadAccessFault`."
+REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,supervisor.adoc,734,11,False,False,If `stval` is written with a nonzero value when a misaligned load or,"When true, `stval` is written with the virtual address of a load instruction when the
+address is misaligned and MISALIGNED_LDST is false.
+
+When false, `stval` is written with 0 when a load address is misaligned and
+MISALIGNED_LDST is false."
+REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,hypervisor.adoc,2046,9,False,False,"modes. On a guest-page fault, CSR `mtval` or `stval` is written with the","When true, `stval` is written with the virtual address of a load when it causes a
+`LoadPageFault`.
+
+WHen false, `stval` is written with 0 when a load causes a `LoadPageFault`."
+REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,supervisor.adoc,707,9,True,False,[[norm:stval]],"When true, `stval` is written with the virtual address of a store when it causes a
+`StoreAmoAccessFault`.
+
+WHen false, `stval` is written with 0 when a store causes a `StoreAmoAccessFault`."
+REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,supervisor.adoc,734,10,False,False,If `stval` is written with a nonzero value when a misaligned load or,"When true, `stval` is written with the virtual address of a store instruction when the
+address is misaligned and MISALIGNED_LDST is false.
+
+When false, `stval` is written with 0 when a store address is misaligned and
+MISALIGNED_LDST is false."
+REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",S,ext:S,False,0,,hypervisor.adoc,2046,9,False,False,"modes. On a guest-page fault, CSR `mtval` or `stval` is written with the","When true, `stval` is written with the virtual address of a store when it causes a
+`StoreAmoPageFault`.
+
+WHen false, `stval` is written with 0 when a store causes a `StoreAmoPageFault`."
+REPORT_VA_IN_VSTVAL_ON_BREAKPOINT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1364,10,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the virtual PC of the EBREAK instruction (same information as `mepc`).
+
+When false, `vstval` is written with 0 on an EBREAK instruction.
+
+Regardless, `vstval` is always written with a virtual PC when an external breakpoint is generated."
+REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,zc.adoc,1183,9,True,False,"[#norm:Zcmp_trap]#If a trap occurs during the sequence then _xEPC_ is updated with the PC of the instruction, _xTVAL_ (if not read-only-zero) updated with the bad address if it was an access fault and","When true, `vstval` is written with the virtual PC of an instructino when fetch causes an
+`InstructionAccessFault`.
+
+WHen false, `vstval` is written with 0 when an instruction fetch causes an
+`InstructionAccessFault`."
+REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,c-st-ext.adoc,310,8,True,False,[#norm:c-ldsp_op]#C.LDSP is an RV64C-only instruction that loads a 64-bit value,"When true, `vstval` is written with the virtual PC when an instruction fetch is misaligned.
+
+When false, `vstval` is written with 0 when an instruction fetch is misaligned.
+
+Note that when IALIGN=16 (i.e., when the `C` or one of the `Zc*` extensions are implemented),
+it is impossible to generate a m"
+REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,zc.adoc,1183,8,True,False,"[#norm:Zcmp_trap]#If a trap occurs during the sequence then _xEPC_ is updated with the PC of the instruction, _xTVAL_ (if not read-only-zero) updated with the bad address if it was an access fault and","When true, `vstval` is written with the virtual PC of an instructino when fetch causes an
+`InstructionPageFault`.
+
+WHen false, `vstval` is written with 0 when an instruction fetch causes an
+`InstructionPageFault`."
+REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1371,8,False,False,"actually access `vstval` instead. When V=0, `vstval` does not directly","When true, `vstval` is written with the virtual address of a load when it causes a
+`LoadAccessFault`.
+
+WHen false, `vstval` is written with 0 when a load causes a `LoadAccessFault`."
+REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1364,7,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the virtual address of a load instruction when the
+address is misaligned and MISALIGNED_LDST is false.
+
+When false, `vstval` is written with 0 when a load address is misaligned and
+MISALIGNED_LDST is false."
+REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1364,7,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the virtual address of a load when it causes a
+`LoadPageFault`.
+
+WHen false, `vstval` is written with 0 when a load causes a `LoadPageFault`."
+REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1371,8,False,False,"actually access `vstval` instead. When V=0, `vstval` does not directly","When true, `vstval` is written with the virtual address of a store when it causes a
+`StoreAmoAccessFault`.
+
+WHen false, `vstval` is written with 0 when a store causes a `StoreAmoAccessFault`."
+REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1364,7,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the virtual address of a store instruction when the
+address is misaligned and MISALIGNED_LDST is false.
+
+When false, `vstval` is written with 0 when a store address is misaligned and
+MISALIGNED_LDST is false."
+REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^REPORT_),binary,"choices: [True, False]",H,ext:H,False,0,,hypervisor.adoc,1364,7,False,False,==== Virtual Supervisor Trap Value (`vstval`) Register,"When true, `vstval` is written with the virtual address of a store when it causes a
+`StoreAmoPageFault`.
+
+WHen false, `vstval` is written with 0 when a store causes a `StoreAmoPageFault`."
+RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX,TODO,NORM_DIRECT,low,No strong signals; defaulting to direct normative parameter,enum,"values: ['ceil(AVL/2)', 'VLMAX', 'custom']",V,ext:V,False,0,,v-st-ext.adoc,1279,9,True,False,"[#norm:vsetvl_op_rs1_x0_rd_x0]#When _rs1_=`x0` and _rd_=`x0`, the instructions operate as if the current vector length in `vl` is used as the AVL, and the resulting value is written to `vl`, but not t",The value assigned to VL when AVL < 2*VLMAX.
+SATP_MODE_BARE,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of satp.MODE,binary,"choices: [True, False]",S,ext:S,False,1,satp,machine.adoc,670,11,True,False,[#norm:mstatus_sum_rdonly0]#SUM is read-only 0 if S-mode is not supported or if `satp`.MODE is read-only 0.#,Whether or not satp.MODE == Bare is supported.
+SCOUNTENABLE_EN,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of scounteren.CY,bitmask,32-bit mask,"S, Zicntr, Zihpm",ext:S AND (ext:Zicntr OR ext:Zihpm),True,64,scounteren,supervisor.adoc,511,12,False,False,"When the CY, TM, IR, or HPM__n__ bit in the `scounteren` register is","Indicates which counters can delegated via `scounteren`
+
+An unimplemented counter cannot be specified, i.e., if
+HPM_COUNTER_EN[3] is false, it would be illegal to set
+SCOUNTENABLE_EN[3] to true.
+
+SCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+SCOUNTENABLE_EN[3:31] must all be"
+SSTATEEN_JVT_TYPE,TODO,NORM_CSR_RW,low,CSR field type control parameter for 'sstateen' (determines RO/RW behavior),enum,"values: ['rw', 'read-only-0', 'read-only-1']","Ssstateen, Zcmt",ext:Zcmt AND ext:Ssstateen,True,0,,zc.adoc,2341,4,True,False,"[#norm:Zcmt_entry_sz]#The base of the table is in the jvt CSR (see <<csrs-jvt>>), each table entry is XLEN bits.#","Behavior of the sstateen0.JVT bit:
+
+  * 'rw': read-write
+  * 'read-only-0': read-only, fixed to 0
+  * 'read-only-1': read-only, fixed to 1"
+STVAL_WIDTH,TODO,NORM_DIRECT,medium,Trap value reporting parameter,range,[None..18446744073709551615],S,ext:S,False,0,,supervisor.adoc,707,6,True,False,[[norm:stval]],"The number of implemented bits in `stval`.
+
+Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)"
+STVEC_MODE_DIRECT,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of stvec.MODE,binary,"choices: [True, False]",S,ext:S,True,1,stvec,hypervisor.adoc,1304,8,False,False,"VS-mode’s version of supervisor register `stvec`, formatted as shown in",Whether or not `stvec.MODE` supports Direct (0).
+STVEC_MODE_VECTORED,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of stvec.MODE,binary,"choices: [True, False]",S,ext:S,True,1,stvec,machine.adoc,1256,9,True,False,"[#norm:mtvec_mode_vectored_op]#When MODE=Vectored, all synchronous exceptions into machine mode cause",Whether or not `stvec.MODE` supports Vectored (1).
+SV32X4_TRANSLATION,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of hgatp.MODE,binary,"choices: [True, False]",H,ext:H AND param:SXLEN(includes=32),True,3,hgatp,hypervisor.adoc,1915,9,False,False,"When `hgatp`.MODE specifies a translation scheme of Sv32x4, Sv39x4,",Whether or not Sv32x4 translation mode is supported.
+SV32_VSMODE_TRANSLATION,TODO,NORM_DIRECT,medium,Translation/mode parameter,binary,"choices: [True, False]",H,ext:H AND param:VSXLEN(includes=32),True,0,,cmo.adoc,365,5,True,False,"otherwise.# [#norm:cbm_unperm_translate]#During address translation, the instruction also checks the accessed","Whether or not Sv32 translation is supported in first-stage (VS-stage)
+translation."
+SV39X4_TRANSLATION,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of hgatp.MODE,binary,"choices: [True, False]",H,ext:H AND param:SXLEN(includes=64),True,3,hgatp,hypervisor.adoc,1007,9,False,False,".Hypervisor guest address translation and protection register `hgatp` when HSXLEN=64 for MODE values Bare, Sv39x4, Sv48x4, and Sv57x4.",Whether or not Sv39x4 translation mode is supported.
+SV39_VSMODE_TRANSLATION,TODO,NORM_DIRECT,medium,Translation/mode parameter,binary,"choices: [True, False]",H,ext:H AND param:VSXLEN(includes=64),True,0,,cmo.adoc,365,5,True,False,"otherwise.# [#norm:cbm_unperm_translate]#During address translation, the instruction also checks the accessed","Whether or not Sv39 translation is supported in first-stage (VS-stage)
+translation."
+SV48X4_TRANSLATION,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of hgatp.MODE,binary,"choices: [True, False]",H,ext:H AND param:SXLEN(includes=64),True,3,hgatp,hypervisor.adoc,1007,9,False,False,".Hypervisor guest address translation and protection register `hgatp` when HSXLEN=64 for MODE values Bare, Sv39x4, Sv48x4, and Sv57x4.",Whether or not Sv48x4 translation mode is supported.
+SV48_VSMODE_TRANSLATION,TODO,NORM_DIRECT,medium,Translation/mode parameter,binary,"choices: [True, False]",H,ext:H AND param:VSXLEN(includes=64),True,0,,cmo.adoc,365,5,True,False,"otherwise.# [#norm:cbm_unperm_translate]#During address translation, the instruction also checks the accessed","Whether or not Sv48 translation is supported in first-stage (VS-stage)
+translation."
+SV57X4_TRANSLATION,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of hgatp.MODE,binary,"choices: [True, False]",H,ext:H AND param:SXLEN(includes=64),True,3,hgatp,hypervisor.adoc,1007,9,False,False,".Hypervisor guest address translation and protection register `hgatp` when HSXLEN=64 for MODE values Bare, Sv39x4, Sv48x4, and Sv57x4.",Whether or not Sv57x4 translation mode is supported.
+SV57_VSMODE_TRANSLATION,TODO,NORM_DIRECT,medium,Translation/mode parameter,binary,"choices: [True, False]",H,ext:H AND param:VSXLEN(includes=64),True,0,,cmo.adoc,365,5,True,False,"otherwise.# [#norm:cbm_unperm_translate]#During address translation, the instruction also checks the accessed","Whether or not Sv57 translation is supported in first-stage (VS-stage)
+translation."
+SXLEN,TODO,NORM_DIRECT,high,Well-known architectural parameter 'SXLEN',set,"subset of [32, 64]",S,ext:S,True,3,"hstatus, mstatus",machine.adoc,575,11,False,False,"When MXLEN=32, the SXL and UXL fields do not exist, and SXLEN=32 and UXLEN=32.","Set of XLENs supported in S-mode. Can be one of:
+
+  * 32:   SXLEN is always 32
+  * 64:   SXLEN is always 64
+  * [32, 64]: SXLEN can be changed (via mstatus.SXL) between 32 and 64"
+S_MODE_ENDIANNESS,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of mstatus.SBE,enum,"values: ['little', 'big', 'dynamic']",S,ext:S,False,4,"mstatus, mstatush",machine.adoc,679,22,True,False,"[#norm:mstatus_mstatush_xbe_warl]#The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are *WARL* fields# that","Endianness of data in S-mode. Can be one of:
+
+ * little:  S-mode data is always little endian
+ * big:     S-mode data is always big endian
+ * dynamic: S-mode data can be either little or big endian,
+            depending on the CSR field `mstatus.SBE`"
+TIME_CSR_IMPLEMENTED,TODO,NORM_DIRECT,high,Feature/CSR existence parameter ('IMPLEMENTED' suffix),binary,"choices: [True, False]",Zicntr,ext:Zicntr,False,2,"time, timeh",machine.adoc,2621,25,False,False,"When `mtime` changes, it is guaranteed to be reflected in `time` and `timeh`","Whether or not a real hardware `time` CSR exists. Implementations can either provide a real
+CSR or emulate access at M-mode.
+
+Possible values:
+
+true::
+  `time`/`timeh` exists, and accessing it will not cause an IllegalInstruction trap
+
+false::
+  `time`/`timeh` does not exist.
+  Accessing the CSR wil"
+TINST_VALUE_ON_BREAKPOINT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a Breakpoint exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""custom"": Write a custom value, which results in UNPREDICTABLE"
+TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'always pseudoinstruction']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,2567,9,False,False,==== Transformed Instruction or Pseudoinstruction for `mtinst` or `htinst`,"Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always pseudoinstruction"": Always write the pseudoinstruction"
+TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always pseudoinstruction', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always pseudoinstruction"": Always write the pseudoinstruction
+  * ""always transformed standard instruction"": Always write the transformation"
+TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always pseudoinstruction', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always pseudoinstruction"": Always write the pseudoinstruction
+  * ""always transformed standard instruction"": Always write the transformation"
+TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,2567,9,False,False,==== Transformed Instruction or Pseudoinstruction for `mtinst` or `htinst`,"Value written into htinst/mtinst when there is an instruction address misaligned exception.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""custom"": Write a custom value, which results in UNPREDICTABLE"
+TINST_VALUE_ON_LOAD_ACCESS_FAULT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always transformed standard instruction"": Always write a transformed standard instruction as defined by H
+  * ""custom"": Write a custom value, which resu"
+TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always transformed standard instruction"": Always write a transformed standard instruction as defined by H
+  * ""custom"": Write a custom value, whic"
+TINST_VALUE_ON_LOAD_PAGE_FAULT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a LoadPageFault exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always transformed standard instruction"": Always write a transformed standard instruction as defined by H
+  * ""custom"": Write a custom value, which res"
+TINST_VALUE_ON_MCALL,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a MCall exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""custom"": Write a custom value, which results in UNPREDICTABLE"
+TINST_VALUE_ON_SCALL,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a SCall exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""custom"": Write a custom value, which results in UNPREDICTABLE"
+TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always transformed standard instruction"": Always write a transformed standard instruction as defined by H
+  * ""custom"": Write a custom value, which resu"
+TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always transformed standard instruction"": Always write a transformed standard instruction as defined by H
+  * ""custom"": Write a custom value, whic"
+TINST_VALUE_ON_STORE_AMO_PAGE_FAULT,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,enum,"values: ['always zero', 'always transformed standard instruction', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a StoreAmoPageFault exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""always transformed standard instruction"": Always write a transformed standard instruction as defined by H
+  * ""custom"": Write a custom value, which"
+TINST_VALUE_ON_UCALL,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a UCall exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""custom"": Write a custom value, which results in UNPREDICTABLE"
+TINST_VALUE_ON_VIRTUAL_INSTRUCTION,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'custom']",H,ext:H,False,2,"htinst, mtinst",smctr.adoc,218,10,True,False,"[#norm:sctrdepth_mode]#Attempts to access `sctrdepth` from VS-mode or VU-mode raise a virtual-instruction exception, unless CTR state enable access restrictions apply.#  See <<State Enable Access Cont","Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""custom"": Write a custom value, which results in UNPREDICTABLE"
+TINST_VALUE_ON_VSCALL,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of htinst.VALUE,binary,"choices: ['always zero', 'custom']",H,ext:H,False,2,"htinst, mtinst",hypervisor.adoc,983,8,False,False,`htinst` is a *WARL* register that need only be able to hold the values that,"Value written into htinst/mtinst on a VSCall exception from VU/VS-mode.
+
+Possible values:
+  * ""always zero"": Always write the value zero
+  * ""custom"": Write a custom value, which results in UNPREDICTABLE"
+TRAP_ON_EBREAK,Whether or not an EBREAK causes a synchronous exception.,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,rv32.adoc,684,4,True,False,[#norm:ENDIANNESS_LITTLE_OR_BIG]#The EEI will define whether the memory system is little-endian or big-endian.#,"The spec states that implementations may handle EBREAKs transparently
+without raising a trap, in which case the EEI must provide a builtin."
+TRAP_ON_ECALL_FROM_M,Whether or not an ECALL-from-M-mode causes a synchronous exception.,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,rv32.adoc,684,4,True,False,[#norm:ENDIANNESS_LITTLE_OR_BIG]#The EEI will define whether the memory system is little-endian or big-endian.#,"The spec states that implementations may handle ECALLs transparently
+without raising a trap, in which case the EEI must provide a builtin."
+TRAP_ON_ECALL_FROM_S,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",S,ext:S,False,0,,rv32.adoc,925,5,True,False,[#norm:ecall_op]#The `ECALL` instruction is used to make a service request to the execution environment.#,"Whether or not an ECALL-from-S-mode causes a synchronous exception.
+
+The spec states that implementations may handle ECALLs transparently
+without raising a trap, in which case the EEI must provide a builtin."
+TRAP_ON_ECALL_FROM_U,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",U,ext:U,False,0,,rv32.adoc,925,5,True,False,[#norm:ecall_op]#The `ECALL` instruction is used to make a service request to the execution environment.#,"Whether or not an ECALL-from-U-mode causes a synchronous exception.
+
+The spec states that implementations may handle ECALLs transparently
+without raising a trap, in which case the EEI must provide a builtin."
+TRAP_ON_ECALL_FROM_VS,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",H,ext:H,False,0,,machine.adoc,932,5,True,False,"[#norm:mstatus_sd_rdonly0]#If FS, XS, and VS are all read-only zero, then SD is also always zero.#","Whether or not an ECALL-from-VS-mode causes a synchronous exception.
+
+The spec states that implementations may handle ECALLs transparently
+without raising a trap, in which case the EEI must provide a builtin."
+TRAP_ON_ILLEGAL_WLRL,Whether or not writing an illegal value to a WLRL CSR field causes a trap.,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,hypervisor.adoc,25,3,True,False,"registers. [#norm:H_mtval_nrz]#CSR `mtval` must not be read-only zero#, and","Options:
+
+  * true: Writing an illegal value to a WLRL CSR field will cause an IllegalInstruction exception.
+  * false: Writing an illegal value to a WLRL CSR field causes unpredictable behavior."
+TRAP_ON_RESERVED_INSTRUCTION,"Whether or not fetching an unimplemented standard instruction and/or an undefined standard
+instruction from the standard/reserved opcode space causes a trap",NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,c-st-ext.adoc,756,6,True,False,[#norm:Zca_illegal]#A 16-bit instruction with all bits zero is permanently reserved as an,"Options:
+
+  * true: Fetching an unimplemented and/or undefined instruction from the standard/reserved opcode space will cause an IllegalInstruction exception.
+  * false: Fetching an unimplemented and/or undefined instruction from the standard/reserved opcose space causes unpredictable behavior.
+
+TRA"
+TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY,TODO,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]","S, Sv32, Sv39, Sv48, Sv57","ext:S AND NONE(ext:Sv32, ext:Sv39, ext:Sv48, ext:Sv57)",False,0,,hypervisor.adoc,250,9,False,False,VS-mode to execute SFENCE.VMA or SINVAL.VMA or to access CSR `satp`,"For implementations that make `satp`.MODE read-only zero
+(always Bare, _i.e._, no virtual translation is implemented),
+attempts to execute an SFENCE.VMA instruction might raise an
+illegal-instruction exception.
+
+TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY indicates whether
+or not that exception o"
+TRAP_ON_UNIMPLEMENTED_CSR,Whether or not fetching an unimplemented instruction causes a trap,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,v-st-ext.adoc,5140,8,True,False,[#norm:Zve32x_dependent_Zicsr]#The Zve32x extension depends on the Zicsr extension.#,"Options:
+
+  * true: Accessing an unimplemented CSR (via a `Zicsr` instruction) will cause an IllegalInstruction exception.
+  * false: Accessing an unimplemented CSR (via a `Zicsr` instruction) will cause unpredictable behavior."
+TRAP_ON_UNIMPLEMENTED_INSTRUCTION,Whether or not fetching an unimplemented instruction causes a trap,NORM_DIRECT,high,Trap/report behavior parameter (matches ^TRAP_ON_),binary,"choices: [True, False]",Sm,ext:Sm,False,0,,c-st-ext.adoc,310,5,True,False,[#norm:c-ldsp_op]#C.LDSP is an RV64C-only instruction that loads a 64-bit value,"Options:
+
+  * true: Fetching an unimplemented instruction will cause an IllegalInstruction exception.
+  * false: Fetching an unimplemented instruction causes unpredictable behavior.
+
+An unimplemented instruction is any instruction encoding that is not defined by the implementation.
+Custom instructio"
+UXLEN,TODO,NORM_DIRECT,high,Well-known architectural parameter 'UXLEN',set,"subset of [32, 64]",U,ext:U,True,2,mstatus,machine.adoc,575,11,False,False,"When MXLEN=32, the SXL and UXL fields do not exist, and SXLEN=32 and UXLEN=32.","Set of XLENs supported in U-mode. When both 32 and 64 are supported, SXLEN can be changed,
+via mstatus.UXL, between 32 and 64."
+U_MODE_ENDIANNESS,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of mstatus.UBE,enum,"values: ['little', 'big', 'dynamic']",U,ext:U,False,2,mstatus,machine.adoc,679,14,True,False,"[#norm:mstatus_mstatush_xbe_warl]#The MBE, SBE, and UBE bits in `mstatus` and `mstatush` are *WARL* fields# that","Endianness of data in U-mode. Can be one of:
+
+ * little:  U-mode data is always little endian
+ * big:     U-mode data is always big endian
+ * dynamic: U-mode data can be either little or big endian,
+            depending on the CSR field `mstatus.UBE`"
+VENDOR_ID_BANK,"JEDEC Vendor ID bank, for `mvendorid`.",NORM_DIRECT,high,Well-known architectural parameter 'VENDOR_ID_BANK',range,[0..33554431],Sm,ext:Sm,False,1,mvendorid,machine.adoc,263,12,True,False,[#norm:mvendorid_sz_acc_op]#The `mvendorid` CSR is a 32-bit read-only register providing the JEDEC,"Encodes the number of one-byte continuation codes in the Bank field of `mvendorid`.
+
+iN JEDEC’s parlance, the bank number is one greater than the number of continuation codes; hence, the mvendorid Bank field encodes a value that is one less than the JEDEC bank number."
+VENDOR_ID_OFFSET,"JEDEC Vendor ID offset, for `mvendorid`.",NORM_DIRECT,high,Well-known architectural parameter 'VENDOR_ID_OFFSET',range,[0..127],Sm,ext:Sm,False,1,mvendorid,machine.adoc,263,7,True,False,[#norm:mvendorid_sz_acc_op]#The `mvendorid` CSR is a 32-bit read-only register providing the JEDEC,"Encodes the final byte of a JEDEC manufactor ID, discarding the parity bit."
+VLEN,TODO,NORM_DIRECT,high,Well-known architectural parameter 'VLEN',value,{'base': 'integer'},V,ext:V,False,2,"vlenb, vstart",v-st-ext.adoc,511,12,False,False,"The _XLEN_-bit-wide read-only CSR `vlenb` holds the value VLEN/8,",The number of bits in a single vector register.
+VMID_WIDTH,TODO,NORM_DIRECT,high,Well-known architectural parameter 'VMID_WIDTH',conditional,2 conditional branches,H,ext:H,False,3,hgatp,hypervisor.adoc,1089,8,False,False,"bit position in the VMID field, then reading back the value in `hgatp`","Number of bits supported in `hgatp.VMID` (i.e., the supported width of a virtual machine ID)."
+VSSTAGE_MODE_BARE,TODO,NORM_DIRECT,medium,Translation/mode parameter,binary,"choices: [True, False]",H,ext:H,True,0,,priv-cfi.adoc,216,6,True,False,[#norm:satp-mode_bare]#If `satp.MODE` (or `vsatp.MODE` when `V=1`) is set to `Bare` and the effective,Whether or not writing mode=Bare is supported in the `vsatp` register.
+VSTVEC_MODE_DIRECT,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of vstvec.MODE,binary,"choices: [True, False]",H,ext:H,True,1,vstvec,machine.adoc,423,7,True,False,"[#norm:mstatus_sie_spie_rdonly0]#If supervisor mode is not implemented, then SIE and SPIE are read-only 0.#",Whether or not `vstvec.MODE` supports Direct (0).
+VSTVEC_MODE_VECTORED,TODO,NORM_CSR_WARL,high,Referenced in sw_write() of vstvec.MODE,binary,"choices: [True, False]",H,ext:H,True,1,vstvec,machine.adoc,1256,9,True,False,"[#norm:mtvec_mode_vectored_op]#When MODE=Vectored, all synchronous exceptions into machine mode cause",Whether or not `stvec.MODE` supports Vectored (1).
+VSXLEN,TODO,NORM_DIRECT,high,Well-known architectural parameter 'VSXLEN',set,"subset of [32, 64]",H,ext:H,True,3,hstatus,hypervisor.adoc,1184,20,False,False,"encoded the same as the MXL field of `misa`, shown in <<norm:misa_mxl_enc>>. In particular, an implementation may make UXL be a read-only copy of field VSXL of `hstatus`, forcing VU-mode XLEN=VSXLEN.","Set of XLENs supported in VS-mode. Can be one of:
+
+  * [32]:     VSXLEN is always 32
+  * [64]:     VSXLEN is always 64
+  * [32, 64]: VSXLEN can be changed (via `hstatus.VSXL`) between 32 and 64"
+VS_MODE_ENDIANNESS,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of hstatus.VSBE,enum,"values: ['little', 'big', 'dynamic']",H,ext:H,False,2,hstatus,hypervisor.adoc,339,14,False,False,"accesses made from VS-mode are little-endian, and if VSBE=1, they are","Endianness of data in VS-mode. Can be one of:
+
+ * little:  VS-mode data is always little endian
+ * big:     VS-mode data is always big endian
+ * dynamic: VS-mode data can be either little or big endian,
+            depending on the CSR field `hstatus.VSBE`"
+VUXLEN,TODO,NORM_DIRECT,high,Well-known architectural parameter 'VUXLEN',set,"subset of [32, 64]",H,ext:H,True,2,vsstatus,hypervisor.adoc,1181,6,False,False,"The UXL field controls the effective XLEN for VU-mode, which may differ","Set of XLENs supported in VU-mode. When both 32 and 64 are supported, VUXLEN can be changed
+via `vsstatus.UXL`."
+VU_MODE_ENDIANNESS,TODO,NORM_CSR_RW,high,Controls type (RO/RW) of vsstatus.UBE,enum,"values: ['little', 'big', 'dynamic']",H,ext:H,False,2,vsstatus,hypervisor.adoc,2359,10,True,False,"* [#norm:H_virtinst_vu_nonhighctr_h0_s0_m1]#in VU-mode, attempts to access a non-high-half counter CSR when the","Endianness of data in VU-mode. Can be one of:
+
+ * little:  VU-mode data is always little endian
+ * big:     VU-mode data is always big endian
+ * dynamic: VU-mode data can be either little or big endian,
+            depending on the CSR field `vsstatus.UBE`"

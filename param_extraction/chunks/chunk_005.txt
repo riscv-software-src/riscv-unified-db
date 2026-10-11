@@ -1,0 +1,12 @@
+# Chunk: chunk_005
+# Source: bibliography.adoc
+# Lines: 1-4 (of 4)
+# Content starts: line 1
+# Line count: 4
+# Sections: 1
+#   == Bibliography
+#
+[bibliography]
+== Bibliography
+
+bibliography::[]
