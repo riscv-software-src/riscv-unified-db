@@ -520,6 +520,7 @@ jobs:
           - database_obj_compare
           - cli
           - yaml_loader
+          - yaml_resolver
           - cfg_arch
           - cfg
           - csr

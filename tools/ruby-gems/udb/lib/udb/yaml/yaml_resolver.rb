@@ -573,6 +573,9 @@ module Udb
         end
       end
 
+      # rel_path can come from a `$inherits` target in a spec file, so it is untrusted:
+      # without the containment check a `../` sequence or an absolute path would read an
+      # arbitrary file and inline it into the resolved (and published) output.
       sig {
         params(
           rel_path: String,
@@ -581,6 +584,13 @@ module Udb
         ).returns(T::Hash[String, T.untyped])
       }
       def get_resolved_object(rel_path, arch_root, no_checks)
+        arch_root_abs = arch_root.realpath
+        target = (arch_root_abs / rel_path).expand_path
+        target = target.realpath if target.exist?
+        unless target.to_s.start_with?("#{arch_root_abs}/")
+          raise "#{rel_path} escapes the architecture root #{arch_root}/"
+        end
+
         return @resolved_objs.fetch(rel_path).fetch(:data) if @resolved_objs.key?(rel_path)
 
         input_path = arch_root / rel_path

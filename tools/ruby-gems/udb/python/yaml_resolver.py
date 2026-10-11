@@ -297,7 +297,19 @@ def resolve(
     -------
     dict
       The resolved object
+
+    Raises
+    ------
+    ValueError
+      If rel_path points outside arch_root. rel_path can come from a `$inherits`
+      target in a spec file, so it is untrusted: without this check a `../` sequence
+      or an absolute path would read an arbitrary file and inline it into the
+      resolved (and published) output.
     """
+    arch_root_abs = Path(arch_root).resolve()
+    if not (arch_root_abs / rel_path).resolve().is_relative_to(arch_root_abs):
+        raise ValueError(f"{rel_path} escapes the architecture root {arch_root}/")
+
     if str(rel_path) in resolved_objs:
         return resolved_objs[str(rel_path)]
     else:

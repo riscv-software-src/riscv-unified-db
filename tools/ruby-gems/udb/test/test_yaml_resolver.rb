@@ -560,6 +560,68 @@ class TestYamlResolver < Minitest::Test
     end
   end
 
+  # A `$inherits` target is untrusted data from a spec file, so it must not be able
+  # to name a file outside the architecture root.
+  #
+  # NOTE: these live above the `private` marker deliberately. Minitest only collects
+  # *public* `test_*` methods, so a test defined below it never runs.
+  def test_inherits_cannot_escape_arch_root
+    arch_dir = Pathname.new(@test_dir) / "arch" / "ext"
+    arch_dir.mkpath
+    outside = Pathname.new(@test_dir) / "outside"
+    outside.mkpath
+    File.write(outside / "secrets.yaml", "name: secrets\nsecret: s3cret\n")
+
+    ["../outside/secrets.yaml#", "#{outside / "secrets.yaml"}#"].each do |target|
+      File.write(arch_dir / "Evil.yaml", "name: Evil\n$inherits: \"#{target}\"\n")
+
+      err = assert_raises(RuntimeError) do
+        Udb::Yaml::Resolver.new(quiet: true).resolve_files(
+          arch_dir.parent, Pathname.new(@test_dir) / "resolved", no_checks: true
+        )
+      end
+      assert_match(/escapes the architecture root/, err.message, "did not block #{target}")
+    end
+  end
+
+  def test_inherits_still_resolves_targets_inside_arch_root
+    arch_dir = Pathname.new(@test_dir) / "arch" / "ext"
+    arch_dir.mkpath
+    File.write(arch_dir / "Base.yaml", "name: Base\nfoo: 1\n")
+    File.write(arch_dir / "Child.yaml", "name: Child\n$inherits: \"ext/Base.yaml#\"\nbar: 2\n")
+
+    resolved_dir = Pathname.new(@test_dir) / "resolved"
+    Udb::Yaml::Resolver.new(quiet: true).resolve_files(arch_dir.parent, resolved_dir, no_checks: true)
+
+    child = Psych.safe_load_file(resolved_dir / "ext" / "Child.yaml", permitted_classes: [Date])
+    assert_equal 1, child["foo"]
+    assert_equal 2, child["bar"]
+  end
+
+  # An `arch_overlay` may live outside the repo (Resolver#merge_arch accepts an absolute
+  # path), so the containment check must not treat that as an escape. It doesn't, because
+  # merging copies the overlay into the generated merged tree first and resolution only
+  # ever runs against that tree -- this test pins that ordering.
+  def test_out_of_tree_overlay_inherits_across_the_merged_tree
+    std_dir = Pathname.new(@test_dir) / "std" / "ext"
+    std_dir.mkpath
+    File.write(std_dir / "Base.yaml", "name: Base\nfoo: 1\n")
+
+    overlay_dir = Pathname.new(@test_dir) / "outside" / "overlay" / "ext"
+    overlay_dir.mkpath
+    File.write(overlay_dir / "MyExt.yaml", "name: MyExt\n$inherits: \"ext/Base.yaml#\"\nbar: 2\n")
+
+    merged_dir = Pathname.new(@test_dir) / "merged"
+    resolved_dir = Pathname.new(@test_dir) / "resolved"
+    resolver = Udb::Yaml::Resolver.new(quiet: true)
+    resolver.merge_files(std_dir.parent, overlay_dir.parent, merged_dir)
+    resolver.resolve_files(merged_dir, resolved_dir, no_checks: true)
+
+    my_ext = Psych.safe_load_file(resolved_dir / "ext" / "MyExt.yaml", permitted_classes: [Date])
+    assert_equal 1, my_ext["foo"], "overlay file could not inherit from the standard spec"
+    assert_equal 2, my_ext["bar"]
+  end
+
   private
 
   # Recursively find all compiled AST hashes (identified by having a "source" hash
