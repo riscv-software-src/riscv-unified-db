@@ -548,6 +548,10 @@ module Idl
           Type.new(:bits, width: 32)
         elsif schema.fetch("$ref") == "schema_defs.json#/$defs/uint64"
           Type.new(:bits, width: 64)
+        elsif schema.fetch("$ref") == "schema_defs.json#/$defs/32bit_unsigned_pow2"
+          Type.new(:bits, width: 32)
+        elsif schema.fetch("$ref") == "schema_defs.json#/$defs/64bit_unsigned_pow2"
+          Type.new(:bits, width: 64)
         else
           raise "unhandled ref: #{schema.fetch("$ref")}"
         end
