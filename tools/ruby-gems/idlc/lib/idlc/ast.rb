@@ -9702,9 +9702,16 @@ module Idl
       when "sw_read"
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
-        cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
 
-        value_error "TODO: CSRs with sw_read function"
+        if cd.has_custom_sw_read?
+          ast = cd.sw_read_ast(symtab)
+          ast.return_value(symtab)
+        else
+          cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
+          v = cd.value
+          value_error "CSR value not knowable" if v.nil?
+          v
+        end
       when "address"
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
