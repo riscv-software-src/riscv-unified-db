@@ -82,7 +82,6 @@ unless File.exist?(espresso_file)
   $stderr.puts "Downloading espresso (#{espresso_version}, #{cpu}) from GitHub releases..."
   $stderr.puts "  URL: #{url_str}"
   File.binwrite(espresso_file, download_with_redirects(url_str))
-  File.chmod(0o755, espresso_file)
   $stderr.puts "  Saved to #{espresso_file}"
 
   # Download and verify checksum
@@ -102,10 +101,15 @@ unless File.exist?(espresso_file)
     $stderr.puts "  Expected: #{expected}"
     $stderr.puts "  Got:      #{actual}"
     $stderr.puts "  The downloaded file may be corrupted or tampered with."
+    # Remove the unverified artifact. Leaving it in place makes the next
+    # run skip both the download and this check via File.exist?.
+    FileUtils.rm_f(espresso_file)
     abort "Checksum verification failed"
   end
 
   $stderr.puts "  Checksum verified successfully."
+
+  File.chmod(0o755, espresso_file)
 end
 
 # ---------------------------------------------------------------------------
@@ -121,7 +125,6 @@ unless File.exist?(eqntott_file)
   $stderr.puts "Downloading eqntott (#{eqntott_version}, #{cpu}) from GitHub releases..."
   $stderr.puts "  URL: #{url_str}"
   File.binwrite(eqntott_file, download_with_redirects(url_str))
-  File.chmod(0o755, eqntott_file)
   $stderr.puts "  Saved to #{eqntott_file}"
 
   # Download and verify checksum
@@ -141,10 +144,15 @@ unless File.exist?(eqntott_file)
     $stderr.puts "  Expected: #{expected}"
     $stderr.puts "  Got:      #{actual}"
     $stderr.puts "  The downloaded file may be corrupted or tampered with."
+    # Remove the unverified artifact. Leaving it in place makes the next
+    # run skip both the download and this check via File.exist?.
+    FileUtils.rm_f(eqntott_file)
     abort "Checksum verification failed"
   end
 
   $stderr.puts "  Checksum verified successfully."
+
+  File.chmod(0o755, eqntott_file)
 end
 
 # ---------------------------------------------------------------------------
@@ -160,7 +168,6 @@ unless File.exist?(must_file)
   $stderr.puts "Downloading must (#{must_version}, #{cpu}) from GitHub releases..."
   $stderr.puts "  URL: #{url_str}"
   File.binwrite(must_file, download_with_redirects(url_str))
-  File.chmod(0o755, must_file)
   $stderr.puts "  Saved to #{must_file}"
 
   # Download and verify checksum
@@ -180,10 +187,15 @@ unless File.exist?(must_file)
     $stderr.puts "  Expected: #{expected}"
     $stderr.puts "  Got:      #{actual}"
     $stderr.puts "  The downloaded file may be corrupted or tampered with."
+    # Remove the unverified artifact. Leaving it in place makes the next
+    # run skip both the download and this check via File.exist?.
+    FileUtils.rm_f(must_file)
     abort "Checksum verification failed"
   end
 
   $stderr.puts "  Checksum verified successfully."
+
+  File.chmod(0o755, must_file)
 end
 
 # ---------------------------------------------------------------------------
@@ -221,6 +233,9 @@ unless File.exist?(z3_file)
     $stderr.puts "  Expected: #{expected}"
     $stderr.puts "  Got:      #{actual}"
     $stderr.puts "  The downloaded file may be corrupted or tampered with."
+    # Remove the unverified artifact. Leaving it in place makes the next
+    # run skip both the download and this check via File.exist?.
+    FileUtils.rm_f(z3_file)
     abort "Checksum verification failed"
   end
 

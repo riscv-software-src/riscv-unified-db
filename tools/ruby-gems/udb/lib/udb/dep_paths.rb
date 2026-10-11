@@ -4,6 +4,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "digest"
 require "rbconfig"
 require "fileutils"
 require "net/http"
@@ -54,6 +55,24 @@ module Udb
         $stderr.puts "  URL: #{url_str}"
 
         body = download_with_redirects(url_str)
+
+        # Verify against the published .checksum asset before the file is made
+        # executable. extconf.rb publishes and checks these for the same
+        # artifacts; this path previously skipped verification entirely.
+        checksum_url_str = "#{url_str}.checksum"
+        $stderr.puts "  Verifying checksum..."
+        expected = download_with_redirects(checksum_url_str).strip.split(":")[1]
+        actual = Digest::SHA256.hexdigest(body)
+
+        raise "Could not parse checksum for #{name} from #{checksum_url_str}" if expected.nil? || expected.empty?
+
+        unless expected == actual
+          raise "Checksum verification failed for #{name}!\n" \
+                "  Expected: #{expected}\n" \
+                "  Got:      #{actual}\n" \
+                "  The downloaded file may be corrupted or tampered with."
+        end
+
         File.binwrite(dest_file, body)
         File.chmod(0o755, dest_file)
         $stderr.puts "  Saved to #{dest_file}"
@@ -63,8 +82,10 @@ module Udb
         raise "Too many HTTP redirects" if limit.zero?
 
         uri = URI.parse(url_str)
+        raise "Refusing to download over a non-HTTPS URL: #{url_str}" unless uri.scheme == "https"
+
         http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = (uri.scheme == "https")
+        http.use_ssl = true
         http.open_timeout = 30
         http.read_timeout = 120
 
