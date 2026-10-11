@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_069",
+  "source_file": "zfh.adoc",
+  "start_line": 1,
+  "end_line": 186,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "This extension primarily provides instructions that consume half-precision operands and produce half-precision results. However, it is also common to compute on half-precision data using higher intermediate precision.",
+      "line_number": 13,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    },
+    {
+      "excerpt": "FLH and FSH are only guaranteed to execute atomically if the effective address is naturally aligned.",
+      "line_number": 32,
+      "reason": "This is a fixed requirement that applies to all implementations - there is no implementation choice about when atomic execution is guaranteed."
+    },
+    {
+      "excerpt": "FCVT.L[U].H and FCVT.H.L[U] are RV64-only instructions.",
+      "line_number": 75,
+      "reason": "This is a fixed requirement based on the base ISA (RV64 vs RV32), not an implementation-defined parameter."
+    },
+    {
+      "excerpt": "The Zfhmin extension includes the following instructions from the Zfh extension: FLH, FSH, FMV.X.H, FMV.H.X, FCVT.S.H, and FCVT.H.S.",
+      "line_number": 149,
+      "reason": "This defines the fixed contents of the Zfhmin extension - it is a specification requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "Zfhmin does not include the FSGNJ.H instruction, because it suffices to instead use the FSGNJ.S instruction to move half-precision values between floating-point registers.",
+      "line_number": 154,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It explains rationale but does not define implementation parameters."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"This extension primarily provides instructions that consume half-precision operands and produce half-precision results. However, it is also common to compute on half-precision data using higher intermediate precision.\",\n      \"line_number\": 13,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"FLH and FSH are only guaranteed to execute atomically if the effective address is naturally aligned.\",\n      \"line_number\": 32,\n      \"reason\": \"This is a fixed requirement that applies to all implementations - there is no implementation choice about when atomic execution is guaranteed.\"\n    },\n    {\n      \"excerpt\": \"FCVT.L[U].H and FCVT.H.L[U] are RV64-only instructions.\",\n      \"line_number\": 75,\n      \"reason\": \"This is a fixed requirement based on the base ISA (RV64 vs RV32), not an implementation-defined parameter.\"\n    },\n    {\n      \"excerpt\": \"The Zfhmin extension includes the following instructions from the Zfh extension: FLH, FSH, FMV.X.H, FMV.H.X, FCVT.S.H, and FCVT.H.S.\",\n      \"line_number\": 149,\n      \"reason\": \"This defines the fixed contents of the Zfhmin extension - it is a specification requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Zfhmin does not include the FSGNJ.H instruction, because it suffices to instead use the FSGNJ.S instruction to move half-precision values between floating-point registers.\",\n      \"line_number\": 154,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It explains rationale but does not define implementation parameters.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8189,
+  "output_tokens": 493,
+  "latency_ms": 10226,
+  "timestamp": "2026-05-25T20:56:22.608884+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,144 @@
+{
+  "chunk_id": "chunk_060",
+  "source_file": "vector-crypto.adoc",
+  "start_line": 1,
+  "end_line": 3340,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "The <<zvknh,Zvknhb>> and <<zvbc>> Vector Crypto Extensions --and accordingly the composite extensions <<Zvkn>>, <<Zvknc>>, <<Zvkng>>, and <<Zvksc>>-- depend on Zve64x.",
+      "line_number": 298,
+      "parameter_name": "ZVKNHB_ZVBC_ZVKN_ZVKNC_ZVKNG_ZVKSC_DEPENDENCY",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a normative requirement that certain extensions depend on Zve64x. The implementation chooses whether to support these extensions, which determines this dependency."
+    },
+    {
+      "excerpt": "All of the other Vector Crypto Extensions depend on `Zve32x`.",
+      "line_number": 300,
+      "parameter_name": "OTHER_VECTOR_CRYPTO_EXTENSIONS_DEPENDENCY",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a normative requirement that other vector crypto extensions depend on Zve32x. The implementation chooses whether to support these extensions, which determines this dependency."
+    },
+    {
+      "excerpt": "Since `vl` and `vstart` refer to elements, Vector Crypto instructions that use elements groups (See <<crypto-vector-element-groups>>) require that these values are an integer multiple of the Element Group Size (`EGS`).",
+      "line_number": 244,
+      "parameter_name": "VL_VSTART_EGS_CONSTRAINT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a normative constraint on vl and vstart values for vector crypto instructions. The implementation must enforce this constraint."
+    },
+    {
+      "excerpt": "Instructions that violate the `vl` or `vstart` requirements are _reserved_.",
+      "line_number": 247,
+      "parameter_name": "VL_VSTART_VIOLATION_RESERVED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines that instructions violating vl/vstart requirements are reserved, which is an implementation choice about how to handle such violations."
+    },
+    {
+      "excerpt": "For element-group instructions, `LMUL`*`VLEN` must always be at least as large as `EGW`, otherwise an _illegal-instruction exception_ is raised, even if `vl`=0.",
+      "line_number": 264,
+      "parameter_name": "LMUL_VLEN_EGW_CONSTRAINT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a normative constraint that implementations must enforce for element-group instructions. The implementation must check this condition and raise an exception."
+    },
+    {
+      "excerpt": "Some Vector Crypto instructions are only defined for a specific `SEW`. In such a case all other `SEW` values are _reserved_.",
+      "line_number": 283,
+      "parameter_name": "SEW_SPECIFIC_INSTRUCTIONS_RESERVED",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines that certain SEW values are reserved for specific instructions, which is an implementation choice about how to handle unsupported SEW values."
+    },
+    {
+      "excerpt": "In the case of the `.vs` instructions defined in this specification, `vs2` holds a 128-bit scalar element group.",
+      "line_number": 308,
+      "parameter_name": "VS_INSTRUCTION_VS2_SIZE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "This is a normative requirement that vs2 holds a 128-bit scalar element group for .vs instructions. This is a fixed architectural requirement."
+    },
+    {
+      "excerpt": "For implementations with `VLEN` \u2265 128, `vs2` refers to a single register. Thus, the `vd` register group must not overlap the `vs2` register. However, in implementations where `VLEN` < 128, `vs2` refers to a register group comprised of the number of registers needed to hold the 128-bit scalar element group. In this case, the `vd` register group must not overlap this `vs2` register group.",
+      "line_number": 309,
+      "parameter_name": "VS2_VD_OVERLAP_CONSTRAINT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines overlap constraints between vd and vs2 register groups that depend on VLEN. The implementation must enforce these constraints."
+    },
+    {
+      "excerpt": "These instructions enable a single key, specified as a scalar element group in `vs2`, to be applied to each element group of register group `vd`.",
+      "line_number": 356,
+      "parameter_name": "VS_INSTRUCTION_KEY_APPLICATION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines the normative behavior of .vs instructions where a scalar key is applied to vector data. This is a fixed architectural requirement."
+    },
+    {
+      "excerpt": "they return _vector_ results to `vd`, which is also a source vector operand.",
+      "line_number": 349,
+      "parameter_name": "VS_INSTRUCTION_VD_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines that .vs instructions return vector results to vd which is also a source operand. This is a fixed architectural requirement."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Where variables are concatenated, the order shown is how they would appear in a vector register from left to right.",
+      "line_number": 89,
+      "reason": "This is inside a [NOTE] block and is therefore non-normative documentation guidance, not an architectural parameter."
+    },
+    {
+      "excerpt": "For all of the vector crypto instructions in this specification, `EEW`=`SEW`.",
+      "line_number": 189,
+      "reason": "This is a fixed requirement that applies to ALL implementations - it is not a choice left to implementers."
+    },
+    {
+      "excerpt": "The required `SEW` for each cryptographic instruction was chosen to match what is typically needed for other instructions when implementing the targeted algorithm.",
+      "line_number": 194,
+      "reason": "This is inside a [NOTE] block explaining design rationale, not a normative requirement or implementation choice."
+    },
+    {
+      "excerpt": "All standard vector instruction constraints specified by RVV 1.0 apply to Vector Crypto instructions.",
+      "line_number": 238,
+      "reason": "This is a fixed requirement that all implementations must follow - it references existing constraints rather than defining new implementation choices."
+    },
+    {
+      "excerpt": "It is important to note that the Vector Crypto instructions are independent of the implementation of the `Zkt` extension and do not require that `Zkt` is implemented.",
+      "line_number": 306,
+      "reason": "This clarifies that Vector Crypto instructions don't depend on Zkt, but this is a fixed architectural fact rather than an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"The <<zvknh,Zvknhb>> and <<zvbc>> Vector Crypto Extensions --and accordingly the composite extensions <<Zvkn>>, <<Zvknc>>, <<Zvkng>>, and <<Zvksc>>-- depend on Zve64x.\",\n      \"line_number\": 298,\n      \"parameter_name\": \"ZVKNHB_ZVBC_ZVKN_ZVKNC_ZVKNG_ZVKSC_DEPENDENCY\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a normative requirement that certain extensions depend on Zve64x. The implementation chooses whether to support these extensions, which determines this dependency.\"\n    },\n    {\n      \"excerpt\": \"All of the other Vector Crypto Extensions depend on `Zve32x`.\",\n      \"line_number\": 300,\n      \"parameter_name\": \"OTHER_VECTOR_CRYPTO_EXTENSIONS_DEPENDENCY\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a normative requirement that other vector crypto extensions depend on Zve32x. The implementation chooses whether to support these extensions, which determines this dependency.\"\n    },\n    {\n      \"excerpt\": \"Since `vl` and `vstart` refer to elements, Vector Crypto instructions that use elements groups (See <<crypto-vector-element-groups>>) require that these values are an integer multiple of the Element Group Size (`EGS`).\",\n      \"line_number\": 244,\n      \"parameter_name\": \"VL_VSTART_EGS_CONSTRAINT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a normative constraint on vl and vstart values for vector crypto instructions. The implementation must enforce this constraint.\"\n    },\n    {\n      \"excerpt\": \"Instructions that violate the `vl` or `vstart` requirements are _reserved_.\",\n      \"line_number\": 247,\n      \"parameter_name\": \"VL_VSTART_VIOLATION_RESERVED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines that instructions violating vl/vstart requirements are reserved, which is an implementation choice about how to handle such violations.\"\n    },\n    {\n      \"excerpt\": \"For element-group instructions, `LMUL`*`VLEN` must always be at least as large as `EGW`, otherwise an _illegal-instruction exception_ is raised, even if `vl`=0.\",\n      \"line_number\": 264,\n      \"parameter_name\": \"LMUL_VLEN_EGW_CONSTRAINT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a normative constraint that implementations must enforce for element-group instructions. The implementation must check this condition and raise an exception.\"\n    },\n    {\n      \"excerpt\": \"Some Vector Crypto instructions are only defined for a specific `SEW`. In such a case all other `SEW` values are _reserved_.\",\n      \"line_number\": 283,\n      \"parameter_name\": \"SEW_SPECIFIC_INSTRUCTIONS_RESERVED\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines that certain SEW values are reserved for specific instructions, which is an implementation choice about how to handle unsupported SEW values.\"\n    },\n    {\n      \"excerpt\": \"In the case of the `.vs` instructions defined in this specification, `vs2` holds a 128-bit scalar element group.\",\n      \"line_number\": 308,\n      \"parameter_name\": \"VS_INSTRUCTION_VS2_SIZE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a normative requirement that vs2 holds a 128-bit scalar element group for .vs instructions. This is a fixed architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"For implementations with `VLEN` \u2265 128, `vs2` refers to a single register. Thus, the `vd` register group must not overlap the `vs2` register. However, in implementations where `VLEN` < 128, `vs2` refers to a register group comprised of the number of registers needed to hold the 128-bit scalar element group. In this case, the `vd` register group must not overlap this `vs2` register group.\",\n      \"line_number\": 309,\n      \"parameter_name\": \"VS2_VD_OVERLAP_CONSTRAINT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines overlap constraints between vd and vs2 register groups that depend on VLEN. The implementation must enforce these constraints.\"\n    },\n    {\n      \"excerpt\": \"These instructions enable a single key, specified as a scalar element group in `vs2`, to be applied to each element group of register group `vd`.\",\n      \"line_number\": 356,\n      \"parameter_name\": \"VS_INSTRUCTION_KEY_APPLICATION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines the normative behavior of .vs instructions where a scalar key is applied to vector data. This is a fixed architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"they return _vector_ results to `vd`, which is also a source vector operand.\",\n      \"line_number\": 349,\n      \"parameter_name\": \"VS_INSTRUCTION_VD_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines that .vs instructions return vector results to vd which is also a source operand. This is a fixed architectural requirement.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Where variables are concatenated, the order shown is how they would appear in a vector register from left to right.\",\n      \"line_number\": 89,\n      \"reason\": \"This is inside a [NOTE] block and is therefore non-normative documentation guidance, not an architectural parameter.\"\n    },\n    {\n      \"excerpt\": \"For all of the vector crypto instructions in this specification, `EEW`=`SEW`.\",\n      \"line_number\": 189,\n      \"reason\": \"This is a fixed requirement that applies to ALL implementations - it is not a choice left to implementers.\"\n    },\n    {\n      \"excerpt\": \"The required `SEW` for each cryptographic instruction was chosen to match what is typically needed for other instructions when implementing the targeted algorithm.\",\n      \"line_number\": 194,\n      \"reason\": \"This is inside a [NOTE] block explaining design rationale, not a normative requirement or implementation choice.\"\n    },\n    {\n      \"excerpt\": \"All standard vector instruction constraints specified by RVV 1.0 apply to Vector Crypto instructions.\",\n      \"line_number\": 238,\n      \"reason\": \"This is a fixed requirement that all implementations must follow - it references existing constraints rather than defining new implementation choices.\"\n    },\n    {\n      \"excerpt\": \"It is important to note that the Vector Crypto instructions are independent of the implementation of the `Zkt` extension and do not require that `Zkt` is implemented.\",\n      \"line_number\": 306,\n      \"reason\": \"This clarifies that Vector Crypto instructions don't depend on Zkt, but this is a fixed architectural fact rather than an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 39502,
+  "output_tokens": 2058,
+  "latency_ms": 45408,
+  "timestamp": "2026-05-25T20:54:15.273907+00:00",
+  "error": null,
+  "retry_count": 1
+}

@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_019",
+  "source_file": "m-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 157,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "We separate integer multiply and divide out from the base to simplify low-end implementations, or for applications where integer multiply and divide operations are either infrequent or better handled in attached accelerators.",
+      "line_number": 9,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It explains design rationale but does not define any implementation choices."
+    },
+    {
+      "excerpt": "MUL performs an XLEN-bit\u00d7XLEN-bit multiplication of `rs1` by `rs2` and places the lower XLEN bits in the destination register.",
+      "line_number": 23,
+      "reason": "This describes the fixed behavior of the MUL instruction that all implementations must follow. There is no implementation choice here."
+    },
+    {
+      "excerpt": "The quotient of division by zero has all bits set, and the remainder of division by zero equals the dividend.",
+      "line_number": 85,
+      "reason": "This specifies the required behavior for division by zero that all implementations must follow. It is a fixed requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "Signed division overflow occurs only when the most-negative integer is divided by \u22121. The quotient of a signed division with overflow is equal to the dividend, and the remainder is zero.",
+      "line_number": 86,
+      "reason": "This defines the required behavior for signed division overflow that all implementations must implement. It is not a parameter but a fixed specification."
+    },
+    {
+      "excerpt": "The `Zmmul` extension enables low-cost implementations that require multiplication operations but not division.",
+      "line_number": 147,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It provides background information about the extension's purpose but does not define implementation parameters."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"We separate integer multiply and divide out from the base to simplify low-end implementations, or for applications where integer multiply and divide operations are either infrequent or better handled in attached accelerators.\",\n      \"line_number\": 9,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It explains design rationale but does not define any implementation choices.\"\n    },\n    {\n      \"excerpt\": \"MUL performs an XLEN-bit\u00d7XLEN-bit multiplication of `rs1` by `rs2` and places the lower XLEN bits in the destination register.\",\n      \"line_number\": 23,\n      \"reason\": \"This describes the fixed behavior of the MUL instruction that all implementations must follow. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"The quotient of division by zero has all bits set, and the remainder of division by zero equals the dividend.\",\n      \"line_number\": 85,\n      \"reason\": \"This specifies the required behavior for division by zero that all implementations must follow. It is a fixed requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Signed division overflow occurs only when the most-negative integer is divided by \u22121. The quotient of a signed division with overflow is equal to the dividend, and the remainder is zero.\",\n      \"line_number\": 86,\n      \"reason\": \"This defines the required behavior for signed division overflow that all implementations must implement. It is not a parameter but a fixed specification.\"\n    },\n    {\n      \"excerpt\": \"The `Zmmul` extension enables low-cost implementations that require multiplication operations but not division.\",\n      \"line_number\": 147,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It provides background information about the extension's purpose but does not define implementation parameters.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7607,
+  "output_tokens": 474,
+  "latency_ms": 10363,
+  "timestamp": "2026-05-25T20:43:47.340070+00:00",
+  "error": null,
+  "retry_count": 0
+}

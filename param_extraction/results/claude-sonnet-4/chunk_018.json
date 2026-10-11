@@ -1,0 +1,114 @@
+{
+  "chunk_id": "chunk_018",
+  "source_file": "intro.adoc",
+  "start_line": 1,
+  "end_line": 696,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "There are two primary base integer variants, RV32I and RV64I, described in <<rv32>> and <<rv64>>, which provide 32-bit or 64-bit address spaces respectively.",
+      "line_number": 201,
+      "parameter_name": "BASE_ISA_VARIANT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses between RV32I and RV64I base ISA variants. This is a fundamental architectural choice that determines the address space width."
+    },
+    {
+      "excerpt": "We use the term XLEN to refer to the width of an integer register in bits (either 32 or 64).",
+      "line_number": 202,
+      "parameter_name": "XLEN",
+      "existing_udb_name": "MXLEN",
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "XLEN is a direct implementation parameter that determines the width of integer registers (32 or 64 bits). This corresponds to the known UDB parameter MXLEN for machine mode."
+    },
+    {
+      "excerpt": "The implementation of a RISC-V execution environment can be pure hardware, pure software, or a combination of hardware and software.",
+      "line_number": 127,
+      "parameter_name": "EXECUTION_ENVIRONMENT_IMPLEMENTATION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "medium",
+      "reasoning": "The implementation chooses how to implement the execution environment (pure hardware, pure software, or combination). This is an architectural choice about the implementation approach."
+    },
+    {
+      "excerpt": "RISC-V base ISAs have either little-endian or big-endian memory systems, with the privileged architecture further defining bi-endian operation.",
+      "line_number": 598,
+      "parameter_name": "MEMORY_ENDIANNESS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses the memory system endianness (little-endian, big-endian, or bi-endian). This is a fundamental memory system architectural choice."
+    },
+    {
+      "excerpt": "Optionally, an implementation may adopt the stronger model of Total Store Ordering, as defined in <<ztso>>.",
+      "line_number": 522,
+      "parameter_name": "MEMORY_CONSISTENCY_MODEL",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation may choose between RVWMO (default) and Total Store Ordering memory consistency models. This is an optional architectural choice."
+    },
+    {
+      "excerpt": "IALIGN is 32 bits in the base ISA, but some ISA extensions, including the compressed ISA extension, relax IALIGN to 16 bits. IALIGN may not take on any value other than 16 or 32.",
+      "line_number": 548,
+      "parameter_name": "IALIGN",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "IALIGN (instruction alignment constraint) can be either 16 or 32 bits depending on which ISA extensions are implemented. This is a direct implementation choice."
+    },
+    {
+      "excerpt": "We use the term ILEN (measured in bits) to refer to the maximum instruction length supported by an implementation, and which is always a multiple of IALIGN.",
+      "line_number": 553,
+      "parameter_name": "ILEN",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "ILEN is the maximum instruction length supported by an implementation. It's a direct implementation parameter with constraints (multiple of IALIGN, minimum 32 bits)."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Commentary on our design decisions is formatted as in this paragraph. This non-normative text can be skipped if the reader is only interested in the specification itself.",
+      "line_number": 35,
+      "reason": "This is inside a [NOTE] block, which is non-normative commentary, not an architectural requirement."
+    },
+    {
+      "excerpt": "The base integer instruction sets use a two's-complement representation for signed integer values.",
+      "line_number": 207,
+      "reason": "This is a fixed requirement that all implementations must follow, not an implementation choice."
+    },
+    {
+      "excerpt": "A word of memory is defined as 32 bits (4 bytes).",
+      "line_number": 423,
+      "reason": "This is a fixed definition in the specification, not an implementation parameter."
+    },
+    {
+      "excerpt": "All the 32-bit instructions in the base ISA have their lowest two bits set to `11`.",
+      "line_number": 560,
+      "reason": "This describes a fixed encoding requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "The term UNSPECIFIED refers to a behavior or value that is intentionally unconstrained.",
+      "line_number": 693,
+      "reason": "This defines terminology used in the specification, not an architectural parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"There are two primary base integer variants, RV32I and RV64I, described in <<rv32>> and <<rv64>>, which provide 32-bit or 64-bit address spaces respectively.\",\n      \"line_number\": 201,\n      \"parameter_name\": \"BASE_ISA_VARIANT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses between RV32I and RV64I base ISA variants. This is a fundamental architectural choice that determines the address space width.\"\n    },\n    {\n      \"excerpt\": \"We use the term XLEN to refer to the width of an integer register in bits (either 32 or 64).\",\n      \"line_number\": 202,\n      \"parameter_name\": \"XLEN\",\n      \"existing_udb_name\": \"MXLEN\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"XLEN is a direct implementation parameter that determines the width of integer registers (32 or 64 bits). This corresponds to the known UDB parameter MXLEN for machine mode.\"\n    },\n    {\n      \"excerpt\": \"The implementation of a RISC-V execution environment can be pure hardware, pure software, or a combination of hardware and software.\",\n      \"line_number\": 127,\n      \"parameter_name\": \"EXECUTION_ENVIRONMENT_IMPLEMENTATION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation chooses how to implement the execution environment (pure hardware, pure software, or combination). This is an architectural choice about the implementation approach.\"\n    },\n    {\n      \"excerpt\": \"RISC-V base ISAs have either little-endian or big-endian memory systems, with the privileged architecture further defining bi-endian operation.\",\n      \"line_number\": 598,\n      \"parameter_name\": \"MEMORY_ENDIANNESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses the memory system endianness (little-endian, big-endian, or bi-endian). This is a fundamental memory system architectural choice.\"\n    },\n    {\n      \"excerpt\": \"Optionally, an implementation may adopt the stronger model of Total Store Ordering, as defined in <<ztso>>.\",\n      \"line_number\": 522,\n      \"parameter_name\": \"MEMORY_CONSISTENCY_MODEL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation may choose between RVWMO (default) and Total Store Ordering memory consistency models. This is an optional architectural choice.\"\n    },\n    {\n      \"excerpt\": \"IALIGN is 32 bits in the base ISA, but some ISA extensions, including the compressed ISA extension, relax IALIGN to 16 bits. IALIGN may not take on any value other than 16 or 32.\",\n      \"line_number\": 548,\n      \"parameter_name\": \"IALIGN\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"IALIGN (instruction alignment constraint) can be either 16 or 32 bits depending on which ISA extensions are implemented. This is a direct implementation choice.\"\n    },\n    {\n      \"excerpt\": \"We use the term ILEN (measured in bits) to refer to the maximum instruction length supported by an implementation, and which is always a multiple of IALIGN.\",\n      \"line_number\": 553,\n      \"parameter_name\": \"ILEN\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"ILEN is the maximum instruction length supported by an implementation. It's a direct implementation parameter with constraints (multiple of IALIGN, minimum 32 bits).\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Commentary on our design decisions is formatted as in this paragraph. This non-normative text can be skipped if the reader is only interested in the specification itself.\",\n      \"line_number\": 35,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative commentary, not an architectural requirement.\"\n    },\n    {\n      \"excerpt\": \"The base integer instruction sets use a two's-complement representation for signed integer values.\",\n      \"line_number\": 207,\n      \"reason\": \"This is a fixed requirement that all implementations must follow, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"A word of memory is defined as 32 bits (4 bytes).\",\n      \"line_number\": 423,\n      \"reason\": \"This is a fixed definition in the specification, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"All the 32-bit instructions in the base ISA have their lowest two bits set to `11`.\",\n      \"line_number\": 560,\n      \"reason\": \"This describes a fixed encoding requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The term UNSPECIFIED refers to a behavior or value that is intentionally unconstrained.\",\n      \"line_number\": 693,\n      \"reason\": \"This defines terminology used in the specification, not an architectural parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 14258,
+  "output_tokens": 1452,
+  "latency_ms": 26773,
+  "timestamp": "2026-05-25T20:43:36.459454+00:00",
+  "error": null,
+  "retry_count": 0
+}

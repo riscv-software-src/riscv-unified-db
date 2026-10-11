@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_054",
+  "source_file": "sstc.adoc",
+  "start_line": 1,
+  "end_line": 24,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "This extension serves to provide supervisor mode with its own CSR-based timer interrupt facility that it can directly manage to provide its own timer service (in the form of having its own `stimecmp` register) - thus eliminating the large overheads for emulating S/HS-mode timers and timer interrupt generation up in M-mode.",
+      "line_number": 13,
+      "reason": "This describes the purpose and functionality of the extension, not an implementation choice or parameter."
+    },
+    {
+      "excerpt": "Further, this extension adds a similar facility to the Hypervisor extension for VS-mode.",
+      "line_number": 17,
+      "reason": "This describes what the extension provides, not an implementation-defined choice."
+    },
+    {
+      "excerpt": "This extension adds the S-level `stimecmp` CSR",
+      "line_number": 21,
+      "reason": "This states that the extension adds a CSR, which is a fixed requirement when the extension is implemented, not a parameter."
+    },
+    {
+      "excerpt": "and the VS-level `vstimecmp` CSR",
+      "line_number": 21,
+      "reason": "This states that the extension adds a CSR, which is a fixed requirement when the extension is implemented, not a parameter."
+    },
+    {
+      "excerpt": "This extension adds the `STCE` bit to the `menvcfg` and `henvcfg` CSRs.",
+      "line_number": 21,
+      "reason": "This states that the extension adds CSR bits, which is a fixed requirement when the extension is implemented, not a parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"This extension serves to provide supervisor mode with its own CSR-based timer interrupt facility that it can directly manage to provide its own timer service (in the form of having its own `stimecmp` register) - thus eliminating the large overheads for emulating S/HS-mode timers and timer interrupt generation up in M-mode.\",\n      \"line_number\": 13,\n      \"reason\": \"This describes the purpose and functionality of the extension, not an implementation choice or parameter.\"\n    },\n    {\n      \"excerpt\": \"Further, this extension adds a similar facility to the Hypervisor extension for VS-mode.\",\n      \"line_number\": 17,\n      \"reason\": \"This describes what the extension provides, not an implementation-defined choice.\"\n    },\n    {\n      \"excerpt\": \"This extension adds the S-level `stimecmp` CSR\",\n      \"line_number\": 21,\n      \"reason\": \"This states that the extension adds a CSR, which is a fixed requirement when the extension is implemented, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"and the VS-level `vstimecmp` CSR\",\n      \"line_number\": 21,\n      \"reason\": \"This states that the extension adds a CSR, which is a fixed requirement when the extension is implemented, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"This extension adds the `STCE` bit to the `menvcfg` and `henvcfg` CSRs.\",\n      \"line_number\": 21,\n      \"reason\": \"This states that the extension adds CSR bits, which is a fixed requirement when the extension is implemented, not a parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 6077,
+  "output_tokens": 428,
+  "latency_ms": 6347,
+  "timestamp": "2026-05-25T20:49:54.927915+00:00",
+  "error": null,
+  "retry_count": 0
+}

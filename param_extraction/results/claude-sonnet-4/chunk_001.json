@@ -1,0 +1,64 @@
+{
+  "chunk_id": "chunk_001",
+  "source_file": "a-st-ext.adoc",
+  "start_line": 1,
+  "end_line": 484,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "An implementation can register an arbitrarily large reservation set on each LR, provided the reservation set includes all bytes of the addressed data word or doubleword.",
+      "line_number": 134,
+      "parameter_name": "LRSC_RESERVATION_STRATEGY",
+      "existing_udb_name": "LRSC_RESERVATION_STRATEGY",
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses the size and strategy for the reservation set. This is a direct architectural choice about how LR/SC reservations are tracked."
+    },
+    {
+      "excerpt": "The misaligned atomicity granule PMA, defined in Volume II of this manual, optionally relaxes this alignment requirement. If present, the misaligned atomicity granule PMA specifies the size of a misaligned atomicity granule, a power-of-two number of bytes.",
+      "line_number": 350,
+      "parameter_name": "MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE",
+      "existing_udb_name": "MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE",
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The implementation optionally chooses the size of the misaligned atomicity granule, which must be a power of 2. This is a direct architectural parameter controlling AMO alignment requirements."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "After much debate, the language community and architecture community appear to have finally settled on release consistency as the standard memory consistency model and so the RISC-V atomic support is built around this model.",
+      "line_number": 13,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    },
+    {
+      "excerpt": "If both bits are clear, no additional ordering constraints are imposed on the atomic memory operation.",
+      "line_number": 37,
+      "reason": "This describes the behavior when aq and rl bits have specific values. The behavior is determined by CSR field values at runtime, not an implementation choice."
+    },
+    {
+      "excerpt": "LR.W loads a word from the address in rs1, places the sign-extended value in rd, and registers a reservation set\u2014a set of bytes that subsumes the bytes in the addressed word.",
+      "line_number": 58,
+      "reason": "This describes the fixed behavior of the LR.W instruction that all implementations must follow. It is not an implementation choice."
+    },
+    {
+      "excerpt": "The failure code with value 1 encodes an unspecified failure. Other failure codes are reserved at this time.",
+      "line_number": 103,
+      "reason": "This defines a fixed encoding (failure code 1 = unspecified failure) that all implementations must follow. It is not an implementation choice."
+    },
+    {
+      "excerpt": "For LR and SC, the Zalrsc extension requires that the address held in rs1 be naturally aligned to the size of the operand",
+      "line_number": 113,
+      "reason": "This is a fixed requirement ('requires') that all implementations must satisfy. There is no implementation choice here."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"An implementation can register an arbitrarily large reservation set on each LR, provided the reservation set includes all bytes of the addressed data word or doubleword.\",\n      \"line_number\": 134,\n      \"parameter_name\": \"LRSC_RESERVATION_STRATEGY\",\n      \"existing_udb_name\": \"LRSC_RESERVATION_STRATEGY\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses the size and strategy for the reservation set. This is a direct architectural choice about how LR/SC reservations are tracked.\"\n    },\n    {\n      \"excerpt\": \"The misaligned atomicity granule PMA, defined in Volume II of this manual, optionally relaxes this alignment requirement. If present, the misaligned atomicity granule PMA specifies the size of a misaligned atomicity granule, a power-of-two number of bytes.\",\n      \"line_number\": 350,\n      \"parameter_name\": \"MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE\",\n      \"existing_udb_name\": \"MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE\",\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation optionally chooses the size of the misaligned atomicity granule, which must be a power of 2. This is a direct architectural parameter controlling AMO alignment requirements.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"After much debate, the language community and architecture community appear to have finally settled on release consistency as the standard memory consistency model and so the RISC-V atomic support is built around this model.\",\n      \"line_number\": 13,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"If both bits are clear, no additional ordering constraints are imposed on the atomic memory operation.\",\n      \"line_number\": 37,\n      \"reason\": \"This describes the behavior when aq and rl bits have specific values. The behavior is determined by CSR field values at runtime, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"LR.W loads a word from the address in rs1, places the sign-extended value in rd, and registers a reservation set\u2014a set of bytes that subsumes the bytes in the addressed word.\",\n      \"line_number\": 58,\n      \"reason\": \"This describes the fixed behavior of the LR.W instruction that all implementations must follow. It is not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The failure code with value 1 encodes an unspecified failure. Other failure codes are reserved at this time.\",\n      \"line_number\": 103,\n      \"reason\": \"This defines a fixed encoding (failure code 1 = unspecified failure) that all implementations must follow. It is not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"For LR and SC, the Zalrsc extension requires that the address held in rs1 be naturally aligned to the size of the operand\",\n      \"line_number\": 113,\n      \"reason\": \"This is a fixed requirement ('requires') that all implementations must satisfy. There is no implementation choice here.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 12033,
+  "output_tokens": 841,
+  "latency_ms": 20122,
+  "timestamp": "2026-05-25T20:37:45.124378+00:00",
+  "error": null,
+  "retry_count": 0
+}

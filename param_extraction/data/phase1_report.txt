@@ -1,0 +1,821 @@
+========================================================================
+PHASE 1 REPORT: UDB Parameter Ground Truth
+RISC-V Architectural Parameter Extraction Project
+========================================================================
+
+1. OVERVIEW
+----------------------------------------
+  Total real parameters in UDB:    185
+  Spec files searched:             74
+  Total spec lines:                52602
+  Parameters with spec matches:    183 (98%)
+  Parameters with strong matches:  161 (87%)
+
+2. CLASSIFICATION BREAKDOWN
+----------------------------------------
+  NORM_CSR_RW             55  (29%)
+  NORM_CSR_WARL           26  (14%)
+  NORM_DIRECT            102  (55%)
+  SW_RULE                  2  ( 1%)
+
+  Classification descriptions:
+    NORM_DIRECT    = Normative, directly configurable (not CSR-controlled)
+    NORM_CSR_WARL  = Normative, legal values of a WARL CSR field
+    NORM_CSR_RW    = Normative, controls whether CSR field is RO/RW
+    SW_RULE        = Software-deterministic (impl-defined but deterministic w/ correct SW)
+
+3. VALUE TYPE BREAKDOWN
+----------------------------------------
+  binary                 111  (60%)
+  bitmask                  5  ( 2%)
+  conditional             10  ( 5%)
+  enum                    36  (19%)
+  range                   12  ( 6%)
+  set                      8  ( 4%)
+  value                    3  ( 1%)
+
+  Value type descriptions:
+    binary       = Exactly 2 choices (boolean or 2-value enum)
+    enum         = Finite set of 3+ discrete values
+    range        = Continuous integer range with min/max bounds
+    set          = Subset selection from a fixed universe of values
+    bitmask      = Fixed-length boolean array (one bit per feature)
+    conditional  = Schema varies based on another parameter (e.g., MXLEN)
+    value        = Single unconstrained value
+
+4. CLASSIFICATION CONFIDENCE
+----------------------------------------
+  high                   150  (81%)
+  low                     16  ( 8%)
+  medium                  19  (10%)
+
+5. DEFINING EXTENSIONS (Top 15)
+----------------------------------------
+  H                       61
+  Sm                      38
+  S                       29
+  Sdtrig                  10
+  V                        7
+  Ssstateen                7
+  Zcmt                     6
+  Smstateen                6
+  U                        5
+  Ssaia                    4
+  Zalrsc                   4
+  F                        3
+  Zicfilp                  3
+  Zicfiss                  3
+  Zicbom                   2
+
+6. PARAMETER LISTING BY CLASSIFICATION
+----------------------------------------
+
+  --- NORM_DIRECT (102 parameters) ---
+    ARCH_ID_VALUE
+      Type: conditional  |  Exts: ext:Sm AND param:MARCHID_IMPLEMENTED(equal=True)  CSRs: marchid
+      Spec: -> machine.adoc:297
+      Conf: high  |  Well-known architectural parameter 'ARCH_ID_VALUE'
+    ASID_WIDTH
+      Type: conditional  |  Exts: ext:S
+      Spec: -> supervisor.adoc:1373 [NORM]
+      Conf: high  |  Well-known architectural parameter 'ASID_WIDTH'
+    CACHE_BLOCK_SIZE
+      Type: range  |  Exts: (ext:Zicbom OR ext:Zicbop OR ext:Zicboz)
+      Spec: -> cmo.adoc:973 [NORM]
+      Conf: high  |  Well-known architectural parameter 'CACHE_BLOCK_SIZE'
+    CONFIG_PTR_ADDRESS
+      Type: conditional  |  Exts: ext:Sm(>= 1.12.0)  CSRs: mconfigptr
+      Spec: -> machine.adoc:2136
+      Conf: high  |  Well-known architectural parameter 'CONFIG_PTR_ADDRESS'
+    ELEN
+      Type: value  |  Exts: ext:V
+      Spec: -> v-st-ext.adoc:24 [NORM]
+      Conf: high  |  Well-known architectural parameter 'ELEN'
+    FOLLOW_VTYPE_RESET_RECOMMENDATION
+      Type: binary([True, False])  |  Exts: ext:V  CSRs: vl, vtype
+      Spec: -> v-st-ext.adoc:169 [NORM]
+      Conf: medium  |  Implementation behavioral choice parameter
+    HCONTEXT_AVAILABLE
+      Type: binary([True, False])  |  Exts: ext:Sdtrig  CSRs: hcontext
+      Spec: -> smstateen.adoc:287
+      Conf: high  |  Feature/CSR existence parameter ('AVAILABLE' suffix)
+    IMP_ID_VALUE
+      Type: conditional  |  Exts: ext:Sm AND param:MIMPID_IMPLEMENTED(equal=True)  CSRs: mimpid
+      Spec: -> machine.adoc:335
+      Conf: high  |  Well-known architectural parameter 'IMP_ID_VALUE'
+    LRSC_FAIL_ON_NON_EXACT_LRSC
+      Type: binary([True, False])  |  Exts: ext:Zalrsc
+      Spec: -> a-st-ext.adoc:169
+      Conf: medium  |  Load-reserved/store-conditional behavior parameter
+    LRSC_FAIL_ON_VA_SYNONYM
+      Type: binary([True, False])  |  Exts: ext:Zalrsc
+      Spec: -> a-st-ext.adoc:76
+      Conf: medium  |  Load-reserved/store-conditional behavior parameter
+    LRSC_MISALIGNED_BEHAVIOR
+      Type: enum(3 vals)  |  Exts: ext:Zalrsc
+      Spec: -> a-st-ext.adoc:59
+      Conf: medium  |  Load-reserved/store-conditional behavior parameter
+    LRSC_RESERVATION_STRATEGY
+      Type: enum(4 vals)  |  Exts: ext:Zalrsc
+      Spec: -> a-st-ext.adoc:76
+      Conf: medium  |  Load-reserved/store-conditional behavior parameter
+    MARCHID_IMPLEMENTED
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> machine.adoc:303
+      Conf: high  |  Feature/CSR existence parameter ('IMPLEMENTED' suffix)
+    MCONTEXT_AVAILABLE
+      Type: binary([True, False])  |  Exts: ext:Sdtrig  CSRs: mcontext
+      Spec: -> priv-csrs.adoc:1019
+      Conf: high  |  Feature/CSR existence parameter ('AVAILABLE' suffix)
+    MIMPID_IMPLEMENTED
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> machine.adoc:337 [NORM]
+      Conf: high  |  Feature/CSR existence parameter ('IMPLEMENTED' suffix)
+    MISALIGNED_AMO
+      Type: binary([True, False])  |  Exts: ext:Zaamo
+      Spec: -> machine.adoc:1976 [NORM]
+      Conf: medium  |  Misaligned access behavior parameter
+    MISALIGNED_LDST
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> machine.adoc:1976 [NORM]
+      Conf: medium  |  Misaligned access behavior parameter
+    MISALIGNED_LDST_EXCEPTION_PRIORITY
+      Type: binary(['low', 'high'])  |  Exts: ext:Sm
+      Spec: -> rv32.adoc:139 [NORM]
+      Conf: medium  |  Misaligned access behavior parameter
+    MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
+      Type: enum(13 vals)  |  Exts: ext:Sm AND param:MISALIGNED_LDST(equal=True)
+      Spec: -> a-st-ext.adoc:385
+      Conf: medium  |  Misaligned access behavior parameter
+    MISALIGNED_SPLIT_STRATEGY
+      Type: binary(['sequential_bytes', 'custom'])  |  Exts: ext:Sm AND param:MISALIGNED_LDST(equal=True)
+      Spec: -> machine.adoc:1976 [NORM]
+      Conf: medium  |  Misaligned access behavior parameter
+    MISA_CSR_IMPLEMENTED
+      Type: binary([True, False])  |  Exts: ext:Sm  CSRs: mstatus
+      Spec: -> machine.adoc:23 [NORM]
+      Conf: high  |  Feature/CSR existence parameter ('IMPLEMENTED' suffix)
+    MSTATUS_TVM_IMPLEMENTED
+      Type: binary([True, False])  |  Exts: ext:S  CSRs: mstatus
+      Spec: -> hypervisor.adoc:999 [NORM]
+      Conf: high  |  Feature/CSR existence parameter ('IMPLEMENTED' suffix)
+    MTVAL_WIDTH
+      Type: conditional  |  Exts: ext:Sm
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: medium  |  Trap value reporting parameter
+    MXLEN
+      Type: binary([32, 64])  |  Exts: ext:Sm  CSRs: hcontext, mconfigptr, misa
+      Spec: -> machine.adoc:50 [NORM]
+      Conf: high  |  Well-known architectural parameter 'MXLEN'
+    NUM_EXTERNAL_GUEST_INTERRUPTS
+      Type: conditional  |  Exts: ext:H  CSRs: hstatus
+      Spec: -> hypervisor.adoc:259
+      Conf: high  |  Well-known architectural parameter 'NUM_EXTERNAL_GUEST_INTERRUPTS'
+    NUM_PMP_ENTRIES
+      Type: range  |  Exts: ext:Smpmp  CSRs: pmpaddr0, pmpaddr1, pmpaddr10
+      Spec: -> machine.adoc:668 [NORM]
+      Conf: high  |  Well-known architectural parameter 'NUM_PMP_ENTRIES'
+    PHYS_ADDR_WIDTH
+      Type: conditional  |  Exts: ext:Sm  CSRs: pmpaddr0, pmpaddr1, pmpaddr10
+      Spec: -> hypervisor.adoc:1027
+      Conf: high  |  Well-known architectural parameter 'PHYS_ADDR_WIDTH'
+    PMA_GRANULARITY
+      Type: range  |  Exts: ext:Sm
+      Spec: -> cmo.adoc:754
+      Conf: high  |  Well-known architectural parameter 'PMA_GRANULARITY'
+    PMLEN
+      Type: value  |  Exts: (ext:Smmpm OR ext:Smnpm OR ext:Ssnpm)
+      Spec: -> hypervisor.adoc:807
+      Conf: high  |  Well-known architectural parameter 'PMLEN'
+    PMP_GRANULARITY
+      Type: range  |  Exts: ext:Smpmp  CSRs: pmpaddr0, pmpaddr1, pmpaddr10
+      Spec: -> cmo.adoc:754
+      Conf: high  |  Well-known architectural parameter 'PMP_GRANULARITY'
+    PRECISE_SYNCHRONOUS_EXCEPTIONS
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> machine.adoc:1256 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^PRECISE_)
+    REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK
+      Type: binary([True, False])  |  Exts: ext:Zicfilp
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+      Type: binary([True, False])  |  Exts: ext:Zicfiss
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK
+      Type: binary([True, False])  |  Exts: ext:Zicfilp
+      Spec: -> supervisor.adoc:707 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+      Type: binary([True, False])  |  Exts: ext:Zicfiss
+      Spec: -> supervisor.adoc:707 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK
+      Type: binary([True, False])  |  Exts: ext:Zicfilp
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK
+      Type: binary([True, False])  |  Exts: ext:Zicfiss
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> machine.adoc:2082
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> supervisor.adoc:751
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_ENCODING_IN_VSTVAL_ON_VIRTUAL_INSTRUCTION
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:917
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: htval, mtval2
+      Spec: -> hypervisor.adoc:2832
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: htval, mtval2
+      Spec: -> hypervisor.adoc:2832
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: htval, mtval2
+      Spec: -> hypervisor.adoc:2832
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: htval, mtval2
+      Spec: -> hypervisor.adoc:2832
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_BREAKPOINT
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> machine.adoc:2049
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> machine.adoc:2067
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_BREAKPOINT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> supervisor.adoc:726
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> hypervisor.adoc:936
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> supervisor.adoc:726
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> hypervisor.adoc:936
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> supervisor.adoc:707 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> supervisor.adoc:734
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> hypervisor.adoc:2046
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> supervisor.adoc:707 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> supervisor.adoc:734
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> hypervisor.adoc:2046
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_BREAKPOINT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> zc.adoc:1183 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> c-st-ext.adoc:310 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> zc.adoc:1183 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1371
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1371
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> hypervisor.adoc:1364
+      Conf: high  |  Trap/report behavior parameter (matches ^REPORT_)
+    RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX
+      Type: enum(3 vals)  |  Exts: ext:V
+      Spec: -> v-st-ext.adoc:1279 [NORM]
+      Conf: low  |  No strong signals; defaulting to direct normative parameter
+    STVAL_WIDTH
+      Type: range  |  Exts: ext:S
+      Spec: -> supervisor.adoc:707 [NORM]
+      Conf: medium  |  Trap value reporting parameter
+    SV32_VSMODE_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:VSXLEN(includes=32)
+      Spec: -> cmo.adoc:365 [NORM]
+      Conf: medium  |  Translation/mode parameter
+    SV39_VSMODE_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:VSXLEN(includes=64)
+      Spec: -> cmo.adoc:365 [NORM]
+      Conf: medium  |  Translation/mode parameter
+    SV48_VSMODE_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:VSXLEN(includes=64)
+      Spec: -> cmo.adoc:365 [NORM]
+      Conf: medium  |  Translation/mode parameter
+    SV57_VSMODE_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:VSXLEN(includes=64)
+      Spec: -> cmo.adoc:365 [NORM]
+      Conf: medium  |  Translation/mode parameter
+    SXLEN
+      Type: set  |  Exts: ext:S  CSRs: hstatus, mstatus
+      Spec: -> machine.adoc:575
+      Conf: high  |  Well-known architectural parameter 'SXLEN'
+    TIME_CSR_IMPLEMENTED
+      Type: binary([True, False])  |  Exts: ext:Zicntr  CSRs: time, timeh
+      Spec: -> machine.adoc:2621
+      Conf: high  |  Feature/CSR existence parameter ('IMPLEMENTED' suffix)
+    TRAP_ON_EBREAK
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> rv32.adoc:684 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_ECALL_FROM_M
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> rv32.adoc:684 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_ECALL_FROM_S
+      Type: binary([True, False])  |  Exts: ext:S
+      Spec: -> rv32.adoc:925 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_ECALL_FROM_U
+      Type: binary([True, False])  |  Exts: ext:U
+      Spec: -> rv32.adoc:925 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_ECALL_FROM_VS
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> machine.adoc:932 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_ILLEGAL_WLRL
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> hypervisor.adoc:25 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_RESERVED_INSTRUCTION
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> c-st-ext.adoc:756 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY
+      Type: binary([True, False])  |  Exts: ext:S AND NONE(ext:Sv32, ext:Sv39, ext:Sv48, ext:Sv57)
+      Spec: -> hypervisor.adoc:250
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_UNIMPLEMENTED_CSR
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> v-st-ext.adoc:5140 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    TRAP_ON_UNIMPLEMENTED_INSTRUCTION
+      Type: binary([True, False])  |  Exts: ext:Sm
+      Spec: -> c-st-ext.adoc:310 [NORM]
+      Conf: high  |  Trap/report behavior parameter (matches ^TRAP_ON_)
+    UXLEN
+      Type: set  |  Exts: ext:U  CSRs: mstatus
+      Spec: -> machine.adoc:575
+      Conf: high  |  Well-known architectural parameter 'UXLEN'
+    VENDOR_ID_BANK
+      Type: range  |  Exts: ext:Sm  CSRs: mvendorid
+      Spec: -> machine.adoc:263 [NORM]
+      Conf: high  |  Well-known architectural parameter 'VENDOR_ID_BANK'
+    VENDOR_ID_OFFSET
+      Type: range  |  Exts: ext:Sm  CSRs: mvendorid
+      Spec: -> machine.adoc:263 [NORM]
+      Conf: high  |  Well-known architectural parameter 'VENDOR_ID_OFFSET'
+    VLEN
+      Type: value  |  Exts: ext:V  CSRs: vlenb, vstart
+      Spec: -> v-st-ext.adoc:511
+      Conf: high  |  Well-known architectural parameter 'VLEN'
+    VMID_WIDTH
+      Type: conditional  |  Exts: ext:H  CSRs: hgatp
+      Spec: -> hypervisor.adoc:1089
+      Conf: high  |  Well-known architectural parameter 'VMID_WIDTH'
+    VSSTAGE_MODE_BARE
+      Type: binary([True, False])  |  Exts: ext:H
+      Spec: -> priv-cfi.adoc:216 [NORM]
+      Conf: medium  |  Translation/mode parameter
+    VSXLEN
+      Type: set  |  Exts: ext:H  CSRs: hstatus
+      Spec: -> hypervisor.adoc:1184
+      Conf: high  |  Well-known architectural parameter 'VSXLEN'
+    VUXLEN
+      Type: set  |  Exts: ext:H  CSRs: vsstatus
+      Spec: -> hypervisor.adoc:1181
+      Conf: high  |  Well-known architectural parameter 'VUXLEN'
+
+  --- NORM_CSR_WARL (26 parameters) ---
+    DBG_HCONTEXT_WIDTH
+      Type: range  |  Exts: ext:Sdtrig  CSRs: hcontext, mcontext
+      Spec: -> smstateen.adoc:287
+      Conf: high  |  Referenced in sw_write() of hcontext.HCONTEXT
+    DBG_SCONTEXT_WIDTH
+      Type: range  |  Exts: ext:Sdtrig  CSRs: scontext
+      Spec: -> hypervisor.adoc:146
+      Conf: high  |  Referenced in sw_write() of scontext.DATA
+    FORCE_UPGRADE_CBO_INVAL_TO_FLUSH
+      Type: binary([True, False])  |  Exts: ext:Zicbom  CSRs: menvcfg
+      Spec: -> supervisor.adoc:913
+      Conf: high  |  Referenced in sw_write() of menvcfg.CBIE
+    GSTAGE_MODE_BARE
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: hgatp
+      Spec: -> hypervisor.adoc:1075
+      Conf: high  |  Referenced in sw_write() of hgatp.MODE
+    HPM_EVENTS
+      Type: set  |  Exts: ext:Smhpm  CSRs: mhpmevent10, mhpmevent11, mhpmevent12
+      Spec: -> machine.adoc:1581
+      Conf: high  |  Referenced in sw_write() of mhpmevent14.EVENT
+    IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: vsatp
+      Spec: -> hypervisor.adoc:1416
+      Conf: high  |  Referenced in sw_write() of vsatp.MODE
+    JVT_BASE_MASK
+      Type: range  |  Exts: ext:Zcmt AND param:JVT_BASE_TYPE(equal=mask)  CSRs: jvt
+      Spec: -> c-st-ext.adoc:466 [NORM]
+      Conf: high  |  Referenced in sw_write() of jvt.BASE
+    JVT_BASE_TYPE
+      Type: binary(['mask', 'custom'])  |  Exts: ext:Zcmt  CSRs: jvt
+      Spec: -> c-st-ext.adoc:466 [NORM]
+      Conf: high  |  Referenced in sw_write() of jvt.BASE
+    JVT_READ_ONLY
+      Type: binary([True, False])  |  Exts: ext:Zcmt  CSRs: jvt
+      Spec: -> zc.adoc:2341 [NORM]
+      Conf: high  |  Referenced in sw_write() of jvt.MODE
+    MCID_WIDTH
+      Type: range  |  Exts: ext:Ssqosid  CSRs: srmcfg
+      Spec: -> supervisor.adoc:2586
+      Conf: high  |  Referenced in sw_write() of srmcfg.MCID
+    MSTATUS_FS_LEGAL_VALUES
+      Type: set  |  Exts: (ext:F OR ext:S)  CSRs: mstatus
+      Spec: -> machine.adoc:679 [NORM]
+      Conf: high  |  Referenced in sw_write() of mstatus.FS
+    MSTATUS_VS_LEGAL_VALUES
+      Type: set  |  Exts: (ext:V OR ext:S)  CSRs: mstatus
+      Spec: -> machine.adoc:679 [NORM]
+      Conf: high  |  Referenced in sw_write() of mstatus.VS
+    MTVEC_BASE_ALIGNMENT_DIRECT
+      Type: conditional  |  Exts: ext:Sm AND {'param': {'allOf': [{'name': 'MTVEC_MODES', 'includes': 0, 'reason': 'Only rele
+      Spec: -> machine.adoc:1209 [NORM]
+      Conf: low  |  Name pattern suggests CSR 'mtvec' association, but no IDL cross-reference found
+    MTVEC_BASE_ALIGNMENT_VECTORED
+      Type: conditional  |  Exts: ext:Sm AND {'param': {'allOf': [{'name': 'MTVEC_MODES', 'includes': 1, 'reason': 'Only rele
+      Spec: -> priv-preface.adoc:540
+      Conf: low  |  Name pattern suggests CSR 'mtvec' association, but no IDL cross-reference found
+    MTVEC_ILLEGAL_WRITE_BEHAVIOR
+      Type: binary(['retain', 'custom'])  |  Exts: ext:Sm  CSRs: mtvec
+      Spec: -> machine.adoc:1209 [NORM]
+      Conf: high  |  Referenced in sw_write() of mtvec.BASE
+    MTVEC_MODES
+      Type: set  |  Exts: ext:Sm  CSRs: mtvec
+      Spec: -> machine.adoc:1255
+      Conf: high  |  Referenced in sw_write() of mtvec.BASE
+    RCID_WIDTH
+      Type: range  |  Exts: ext:Ssqosid  CSRs: srmcfg
+      Spec: -> supervisor.adoc:2586
+      Conf: high  |  Referenced in sw_write() of srmcfg.RCID
+    SATP_MODE_BARE
+      Type: binary([True, False])  |  Exts: ext:S  CSRs: satp
+      Spec: -> machine.adoc:670 [NORM]
+      Conf: high  |  Referenced in sw_write() of satp.MODE
+    STVEC_MODE_DIRECT
+      Type: binary([True, False])  |  Exts: ext:S  CSRs: stvec
+      Spec: -> hypervisor.adoc:1304
+      Conf: high  |  Referenced in sw_write() of stvec.MODE
+    STVEC_MODE_VECTORED
+      Type: binary([True, False])  |  Exts: ext:S  CSRs: stvec
+      Spec: -> machine.adoc:1256 [NORM]
+      Conf: high  |  Referenced in sw_write() of stvec.MODE
+    SV32X4_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:SXLEN(includes=32)  CSRs: hgatp
+      Spec: -> hypervisor.adoc:1915
+      Conf: high  |  Referenced in sw_write() of hgatp.MODE
+    SV39X4_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:SXLEN(includes=64)  CSRs: hgatp
+      Spec: -> hypervisor.adoc:1007
+      Conf: high  |  Referenced in sw_write() of hgatp.MODE
+    SV48X4_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:SXLEN(includes=64)  CSRs: hgatp
+      Spec: -> hypervisor.adoc:1007
+      Conf: high  |  Referenced in sw_write() of hgatp.MODE
+    SV57X4_TRANSLATION
+      Type: binary([True, False])  |  Exts: ext:H AND param:SXLEN(includes=64)  CSRs: hgatp
+      Spec: -> hypervisor.adoc:1007
+      Conf: high  |  Referenced in sw_write() of hgatp.MODE
+    VSTVEC_MODE_DIRECT
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: vstvec
+      Spec: -> machine.adoc:423 [NORM]
+      Conf: high  |  Referenced in sw_write() of vstvec.MODE
+    VSTVEC_MODE_VECTORED
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: vstvec
+      Spec: -> machine.adoc:1256 [NORM]
+      Conf: high  |  Referenced in sw_write() of vstvec.MODE
+
+  --- NORM_CSR_RW (55 parameters) ---
+    COUNTINHIBIT_EN
+      Type: bitmask  |  Exts: ext:Sm  CSRs: mcountinhibit
+      Spec: -> machine.adoc:1669 [NORM]
+      Conf: high  |  Controls type (RO/RW) of mcountinhibit.CY
+    DCSR_MPRVEN_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sdtrig  CSRs: dcsr
+      Spec: -> priv-cfi.adoc:87
+      Conf: high  |  Controls type (RO/RW) of dcsr.MPRVEN
+    DCSR_STEPIE_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sdtrig  CSRs: dcsr
+      Spec: -> priv-cfi.adoc:87
+      Conf: high  |  Controls type (RO/RW) of dcsr.STEPIE
+    DCSR_STOPCOUNT_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sdtrig  CSRs: dcsr
+      Spec: -> priv-cfi.adoc:87
+      Conf: high  |  Controls type (RO/RW) of dcsr.STOPCOUNT
+    DCSR_STOPTIME_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sdtrig  CSRs: dcsr
+      Spec: -> priv-cfi.adoc:87
+      Conf: high  |  Controls type (RO/RW) of dcsr.STOPTIME
+    HCOUNTENABLE_EN
+      Type: bitmask  |  Exts: ext:H  CSRs: hcounteren
+      Spec: -> hypervisor.adoc:857
+      Conf: high  |  Controls type (RO/RW) of hcounteren.CY
+    HPM_COUNTER_EN
+      Type: bitmask  |  Exts: ext:Smhpm  CSRs: mhpmcounter10, mhpmcounter10h, mhpmcounter11
+      Spec: -> machine.adoc:1615 [NORM]
+      Conf: high  |  Controls type (RO/RW) of scountovf.OF3
+    HSTATEEN_AIA_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Ssaia AND ext:H AND ext:Ssstateen
+      Conf: low  |  CSR field type control parameter for 'hstateen' (determines RO/RW behavior)
+    HSTATEEN_CONTEXT_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sdtrig AND ext:H AND ext:Ssstateen
+      Spec: -> smctr.adoc:652 [NORM]
+      Conf: low  |  CSR field type control parameter for 'hstateen' (determines RO/RW behavior)
+    HSTATEEN_CSRIND_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sscsrind AND ext:H AND ext:Ssstateen
+      Spec: -> smstateen.adoc:191
+      Conf: low  |  CSR field type control parameter for 'hstateen' (determines RO/RW behavior)
+    HSTATEEN_ENVCFG_TYPE
+      Type: enum(3 vals)  |  Exts: ext:H(~> 1.0) AND ext:Ssstateen(~> 1.0)
+      Spec: -> priv-cfi.adoc:134
+      Conf: low  |  CSR field type control parameter for 'hstateen' (determines RO/RW behavior)
+    HSTATEEN_IMSIC_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Ssaia AND ext:H AND ext:Ssstateen
+      Spec: -> smstateen.adoc:189
+      Conf: low  |  CSR field type control parameter for 'hstateen' (determines RO/RW behavior)
+    HSTATEEN_JVT_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Zcmt AND ext:H AND ext:Ssstateen
+      Spec: -> zc.adoc:2341 [NORM]
+      Conf: low  |  CSR field type control parameter for 'hstateen' (determines RO/RW behavior)
+    MCOUNTENABLE_EN
+      Type: bitmask  |  Exts: ext:U  CSRs: mcounteren
+      Spec: -> machine.adoc:1656 [NORM]
+      Conf: high  |  Controls type (RO/RW) of mcounteren.CY
+    MSTATEEN_AIA_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Ssaia AND ext:Smstateen(~> 1.0)
+      Conf: low  |  CSR field type control parameter for 'mstateen' (determines RO/RW behavior)
+    MSTATEEN_CONTEXT_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sdtrig AND ext:Smstateen
+      Spec: -> smctr.adoc:652 [NORM]
+      Conf: low  |  CSR field type control parameter for 'mstateen' (determines RO/RW behavior)
+    MSTATEEN_CSRIND_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Sscsrind AND ext:Smstateen
+      Spec: -> smstateen.adoc:191
+      Conf: low  |  CSR field type control parameter for 'mstateen' (determines RO/RW behavior)
+    MSTATEEN_ENVCFG_TYPE
+      Type: enum(3 vals)  |  Exts: ext:S AND ext:Smstateen
+      Spec: -> priv-cfi.adoc:134
+      Conf: low  |  CSR field type control parameter for 'mstateen' (determines RO/RW behavior)
+    MSTATEEN_IMSIC_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Ssaia AND ext:Smstateen(~> 1.0)
+      Spec: -> smstateen.adoc:189
+      Conf: low  |  CSR field type control parameter for 'mstateen' (determines RO/RW behavior)
+    MSTATEEN_JVT_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Zcmt AND ext:Smstateen(~> 1.0)
+      Spec: -> zc.adoc:2341 [NORM]
+      Conf: low  |  CSR field type control parameter for 'mstateen' (determines RO/RW behavior)
+    MTVEC_ACCESS
+      Type: binary(['ro', 'rw'])  |  Exts: ext:Sm  CSRs: mtvec
+      Spec: -> machine.adoc:1209 [NORM]
+      Conf: high  |  Controls type (RO/RW) of mtvec.BASE
+    MUTABLE_MISA_A
+      Type: binary([True, False])  |  Exts: ext:A  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.A
+    MUTABLE_MISA_B
+      Type: binary([True, False])  |  Exts: ext:B  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.B
+    MUTABLE_MISA_C
+      Type: binary([True, False])  |  Exts: ext:C  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.C
+    MUTABLE_MISA_D
+      Type: binary([True, False])  |  Exts: ext:D  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.D
+    MUTABLE_MISA_F
+      Type: binary([True, False])  |  Exts: ext:F  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.F
+    MUTABLE_MISA_H
+      Type: binary([True, False])  |  Exts: ext:H  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.H
+    MUTABLE_MISA_M
+      Type: binary([True, False])  |  Exts: ext:M  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.G
+    MUTABLE_MISA_Q
+      Type: binary([True, False])  |  Exts: ext:Q  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.Q
+    MUTABLE_MISA_S
+      Type: binary([True, False])  |  Exts: ext:S  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.S
+    MUTABLE_MISA_U
+      Type: binary([True, False])  |  Exts: ext:U  CSRs: misa
+      Spec: -> machine.adoc:21 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.U
+    MUTABLE_MISA_V
+      Type: binary([True, False])  |  Exts: ext:V  CSRs: misa
+      Spec: -> v-st-ext.adoc:5161 [NORM]
+      Conf: high  |  Controls type (RO/RW) of misa.V
+    M_MODE_ENDIANNESS
+      Type: enum(3 vals)  |  Exts: ext:Sm  CSRs: mstatus, mstatush
+      Spec: -> machine.adoc:679 [NORM]
+      Conf: high  |  Controls type (RO/RW) of mstatus.MBE
+    SCOUNTENABLE_EN
+      Type: bitmask  |  Exts: ext:S AND (ext:Zicntr OR ext:Zihpm)  CSRs: scounteren
+      Spec: -> supervisor.adoc:511
+      Conf: high  |  Controls type (RO/RW) of scounteren.CY
+    SSTATEEN_JVT_TYPE
+      Type: enum(3 vals)  |  Exts: ext:Zcmt AND ext:Ssstateen
+      Spec: -> zc.adoc:2341 [NORM]
+      Conf: low  |  CSR field type control parameter for 'sstateen' (determines RO/RW behavior)
+    S_MODE_ENDIANNESS
+      Type: enum(3 vals)  |  Exts: ext:S  CSRs: mstatus, mstatush
+      Spec: -> machine.adoc:679 [NORM]
+      Conf: high  |  Controls type (RO/RW) of mstatus.SBE
+    TINST_VALUE_ON_BREAKPOINT
+      Type: binary(['always zero', 'custom'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT
+      Type: binary(['always zero', 'always pseudoinstruction'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:2567
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT
+      Type: enum(4 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT
+      Type: enum(4 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED
+      Type: binary(['always zero', 'custom'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:2567
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_LOAD_ACCESS_FAULT
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_LOAD_PAGE_FAULT
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_MCALL
+      Type: binary(['always zero', 'custom'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_SCALL
+      Type: binary(['always zero', 'custom'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_STORE_AMO_PAGE_FAULT
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_UCALL
+      Type: binary(['always zero', 'custom'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_VIRTUAL_INSTRUCTION
+      Type: binary(['always zero', 'custom'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> smctr.adoc:218 [NORM]
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    TINST_VALUE_ON_VSCALL
+      Type: binary(['always zero', 'custom'])  |  Exts: ext:H  CSRs: htinst, mtinst
+      Spec: -> hypervisor.adoc:983
+      Conf: high  |  Controls type (RO/RW) of htinst.VALUE
+    U_MODE_ENDIANNESS
+      Type: enum(3 vals)  |  Exts: ext:U  CSRs: mstatus
+      Spec: -> machine.adoc:679 [NORM]
+      Conf: high  |  Controls type (RO/RW) of mstatus.UBE
+    VS_MODE_ENDIANNESS
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: hstatus
+      Spec: -> hypervisor.adoc:339
+      Conf: high  |  Controls type (RO/RW) of hstatus.VSBE
+    VU_MODE_ENDIANNESS
+      Type: enum(3 vals)  |  Exts: ext:H  CSRs: vsstatus
+      Spec: -> hypervisor.adoc:2359 [NORM]
+      Conf: high  |  Controls type (RO/RW) of vsstatus.UBE
+
+  --- SW_RULE (2 parameters) ---
+    HW_MSTATUS_FS_DIRTY_UPDATE
+      Type: enum(3 vals)  |  Exts: ext:F  CSRs: mstatus
+      Spec: -> v-st-ext.adoc:3313 [NORM]
+      Conf: medium  |  Hardware update behavior (HW_ prefix) — software-deterministic with correct fencing
+    HW_MSTATUS_VS_DIRTY_UPDATE
+      Type: enum(3 vals)  |  Exts: ext:V  CSRs: mstatus
+      Spec: -> v-st-ext.adoc:107
+      Conf: medium  |  Hardware update behavior (HW_ prefix) — software-deterministic with correct fencing
+
+========================================================================
+END OF REPORT
+========================================================================

@@ -1,0 +1,20 @@
+# Chunk: chunk_030
+# Source: priv-insns.adoc
+# Lines: 1-12 (of 12)
+# Content starts: line 1
+# Line count: 12
+# Sections: 1
+#   == RISC-V Privileged Instruction Set Listings
+#
+
+== RISC-V Privileged Instruction Set Listings
+
+This chapter presents instruction-set listings for all instructions
+defined in the RISC-V Privileged Architecture.
+
+The instruction-set listings for unprivileged instructions, including
+the ECALL and EBREAK instructions, are provided in Volume I of this
+manual.
+
+.RISC-V Privileged Instructions
+include::images/bytefield/priv-instr-set.edn[]

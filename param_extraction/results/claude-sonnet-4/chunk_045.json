@@ -1,0 +1,84 @@
+{
+  "chunk_id": "chunk_045",
+  "source_file": "scalar-crypto.adoc",
+  "start_line": 3423,
+  "end_line": 5594,
+  "content_start_line": 3453,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Implementations may implement `mseccfg` such that `[s,u]seed` is a read-only constant value `0`.",
+      "line_number": 4088,
+      "parameter_name": "MSECCFG_SEED_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether the mseccfg.[s,u]seed fields are read-only zero or read-write. This is a binary choice about the mutability of these CSR fields."
+    },
+    {
+      "excerpt": "An implementation of the entropy source should meet at least one of the following requirements sets",
+      "line_number": 3598,
+      "parameter_name": "ENTROPY_SOURCE_STANDARD",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which entropy source standard to comply with: NIST SP 800-90B, BSI AIS-31 PTG.2, or virtual source requirements. This is a direct implementation choice among discrete options."
+    },
+    {
+      "excerpt": "A virtual source does not need to implement `WAIT` or `BIST` states.",
+      "line_number": 3747,
+      "parameter_name": "VIRTUAL_SOURCE_STATES",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "medium",
+      "reasoning": "For virtual entropy sources, the implementation may choose which states to implement. The spec indicates WAIT and BIST are optional, while ES16 and DEAD are implied to be required."
+    },
+    {
+      "excerpt": "An implementation may safely set reserved and custom bits to zeros.",
+      "line_number": 3530,
+      "parameter_name": "SEED_CSR_RESERVED_BITS",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "bitmask",
+      "confidence": "medium",
+      "reasoning": "The implementation chooses the values of reserved and custom bits in the seed CSR. While zero is suggested as safe, other values are not prohibited."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The `seed` CSR provides an interface to a NIST SP 800-90B cite:[TuBaKe:18] or BSI AIS-31 cite:[KiSc11] compliant physical Entropy Source (ES).",
+      "line_number": 3485,
+      "reason": "This describes what the seed CSR provides, not an implementation choice. It's a functional description."
+    },
+    {
+      "excerpt": "Attempts to access the `seed` CSR using a read-only CSR-access instruction (`CSRRS`/`CSRRC` with _rs1_=`x0` or `CSRRSI`/`CSRRCI` with _uimm_=0) raise an illegal-instruction exception",
+      "line_number": 3540,
+      "reason": "This is a fixed requirement ('raise an illegal-instruction exception') that all implementations must satisfy. There is no implementation choice."
+    },
+    {
+      "excerpt": "When `OPST` is not `ES16`, `entropy` must be set to 0.",
+      "line_number": 3575,
+      "reason": "This describes required behavior when the CSR is in certain states. It's a fixed requirement, not an implementation choice."
+    },
+    {
+      "excerpt": "This instruction is useful for implementing the SHA3 cryptographic hash function on a 32-bit architecture",
+      "line_number": 3470,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It describes a software use case, not an architectural parameter."
+    },
+    {
+      "excerpt": "Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.",
+      "line_number": 4200,
+      "reason": "Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Implementations may implement `mseccfg` such that `[s,u]seed` is a read-only constant value `0`.\",\n      \"line_number\": 4088,\n      \"parameter_name\": \"MSECCFG_SEED_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether the mseccfg.[s,u]seed fields are read-only zero or read-write. This is a binary choice about the mutability of these CSR fields.\"\n    },\n    {\n      \"excerpt\": \"An implementation of the entropy source should meet at least one of the following requirements sets\",\n      \"line_number\": 3598,\n      \"parameter_name\": \"ENTROPY_SOURCE_STANDARD\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which entropy source standard to comply with: NIST SP 800-90B, BSI AIS-31 PTG.2, or virtual source requirements. This is a direct implementation choice among discrete options.\"\n    },\n    {\n      \"excerpt\": \"A virtual source does not need to implement `WAIT` or `BIST` states.\",\n      \"line_number\": 3747,\n      \"parameter_name\": \"VIRTUAL_SOURCE_STATES\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"For virtual entropy sources, the implementation may choose which states to implement. The spec indicates WAIT and BIST are optional, while ES16 and DEAD are implied to be required.\"\n    },\n    {\n      \"excerpt\": \"An implementation may safely set reserved and custom bits to zeros.\",\n      \"line_number\": 3530,\n      \"parameter_name\": \"SEED_CSR_RESERVED_BITS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"The implementation chooses the values of reserved and custom bits in the seed CSR. While zero is suggested as safe, other values are not prohibited.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The `seed` CSR provides an interface to a NIST SP 800-90B cite:[TuBaKe:18] or BSI AIS-31 cite:[KiSc11] compliant physical Entropy Source (ES).\",\n      \"line_number\": 3485,\n      \"reason\": \"This describes what the seed CSR provides, not an implementation choice. It's a functional description.\"\n    },\n    {\n      \"excerpt\": \"Attempts to access the `seed` CSR using a read-only CSR-access instruction (`CSRRS`/`CSRRC` with _rs1_=`x0` or `CSRRSI`/`CSRRCI` with _uimm_=0) raise an illegal-instruction exception\",\n      \"line_number\": 3540,\n      \"reason\": \"This is a fixed requirement ('raise an illegal-instruction exception') that all implementations must satisfy. There is no implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When `OPST` is not `ES16`, `entropy` must be set to 0.\",\n      \"line_number\": 3575,\n      \"reason\": \"This describes required behavior when the CSR is in certain states. It's a fixed requirement, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"This instruction is useful for implementing the SHA3 cryptographic hash function on a 32-bit architecture\",\n      \"line_number\": 3470,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It describes a software use case, not an architectural parameter.\"\n    },\n    {\n      \"excerpt\": \"Software may determine the PMP granularity by writing zero to `pmp0cfg`, then writing all ones to `pmpaddr0`, then reading back `pmpaddr0`.\",\n      \"line_number\": 4200,\n      \"reason\": \"Here 'may' means 'is allowed to' (permission), not 'might or might not' (optionality). This describes a software technique, not an implementation-defined parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 36794,
+  "output_tokens": 1132,
+  "latency_ms": 26615,
+  "timestamp": "2026-05-25T20:47:21.673298+00:00",
+  "error": null,
+  "retry_count": 0
+}
