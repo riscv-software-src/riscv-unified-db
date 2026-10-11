@@ -1,0 +1,358 @@
+{
+  "source_file": "src/unpriv/zclsd.adoc",
+  "total": 44,
+  "sentences": [
+    {
+      "text": "The ext:zclsd[] extension provides compressed load/store pair instructions for RV32, reusing the existing RV64 doubleword load/store instruction encodings.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "Zclsd depends on Zilsd and Zca.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions",
+      "line_range": [
+        6,
+        6
+      ]
+    },
+    {
+      "text": "It has overlapping encodings with Zcf and is thus incompatible with Zcf.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions",
+      "line_range": [
+        6,
+        6
+      ]
+    },
+    {
+      "text": "For C.LDSP, usage of `x0` as the destination is reserved.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand",
+      "line_range": [
+        10,
+        10
+      ]
+    },
+    {
+      "text": "If using `x0` as `src` of C.SDSP, the entire 64-bit operand is zero — i.e., register `x1` is not accessed.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand",
+      "line_range": [
+        12,
+        12
+      ]
+    },
+    {
+      "text": "C.LD and C.SD instructions can only use `x8-15`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand",
+      "line_range": [
+        14,
+        14
+      ]
+    },
+    {
+      "text": "For the purposes of RVWMO and exception handling, C.LD[SP] and C.SD[SP] instructions are considered to be misaligned loads and stores, with one additional constraint: a C.LD[SP] or C.SD[SP] instruction whose effective address is a multiple of 4 gives rise to two 4-byte memory operations.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        18,
+        21
+      ]
+    },
+    {
+      "text": "Zclsd adds the following RV32-only instructions:",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        23,
+        23
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        25,
+        30
+      ]
+    },
+    {
+      "text": "|yes |no |c.ldsp rd, offset(sp) |",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        32,
+        35
+      ]
+    },
+    {
+      "text": "|yes |no |c.sdsp rs2, offset(sp) |",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        37,
+        40
+      ]
+    },
+    {
+      "text": "|yes |no |c.ld rd', offset(rs1') |",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        42,
+        45
+      ]
+    },
+    {
+      "text": "|yes |no |c.sd rs2', offset(rs1') |",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        47,
+        50
+      ]
+    },
+    {
+      "text": "[insns-cldsp,reftext=\"Stack-pointer based load doubleword to register pair, 16-bit encoding\"]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling",
+      "line_range": [
+        56,
+        56
+      ]
+    },
+    {
+      "text": "Synopsis:: Stack-pointer based load doubleword to even/odd register pair, 16-bit encoding",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        59,
+        60
+      ]
+    },
+    {
+      "text": "Mnemonic:: c.ldsp rd, offset(sp)",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        62,
+        63
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, ,svg] .... {reg: [ {bits: 2, name: 0x2, type: 8, attr: ['C2']}, {bits: 5, name: 'imm', type: 3, attr: ['offset[4:3|8:6]']}, {bits: 5, name: 'rd', type: 2, attr: ['dest!=0, dest[0]=0']}, {bits: 1, name: 'imm', type: 3, attr: ['offset[5]']}, {bits: 3, name: 0x3, type: 8, attr: ['C.LDSP']}, ], config: {bits: 16}} ....",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        65,
+        75
+      ]
+    },
+    {
+      "text": "Description:: Loads stack-pointer relative 64-bit value into registers `rd'` and `rd'+1`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        77,
+        79
+      ]
+    },
+    {
+      "text": "It computes its effective address by adding the zero-extended offset, scaled by 8, to the stack pointer, `x2`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        77,
+        79
+      ]
+    },
+    {
+      "text": "It expands to `ld rd, offset(x2)`. C.LDSP is only valid when rd{ne}x0; the code points with rd=x0 are reserved.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        77,
+        79
+      ]
+    },
+    {
+      "text": "Included in: extlink:zclsd[]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        81,
+        81
+      ]
+    },
+    {
+      "text": "[insns-csdsp,reftext=\"Stack-pointer based store doubleword from register pair, 16-bit encoding\"]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ldsp",
+      "line_range": [
+        85,
+        85
+      ]
+    },
+    {
+      "text": "Synopsis:: Stack-pointer based store doubleword from even/odd register pair, 16-bit encoding",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        88,
+        89
+      ]
+    },
+    {
+      "text": "Mnemonic:: c.sdsp rs2, offset(sp)",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        91,
+        92
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, ,svg] .... {reg: [ {bits: 2, name: 0x2, type: 8, attr: ['C2']}, {bits: 5, name: 'rs2', type: 4, attr: ['src, src[0]=0']}, {bits: 6, name: 'imm', type: 3, attr: ['offset[5:3|8:6]']}, {bits: 3, name: 0x7, type: 8, attr: ['C.SDSP']}, ], config: {bits: 16}} ....",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        94,
+        103
+      ]
+    },
+    {
+      "text": "Description:: Stores a stack-pointer relative 64-bit value from registers `rs2'` and `rs2'+1`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        105,
+        107
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 8, to the stack pointer, `x2`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        105,
+        107
+      ]
+    },
+    {
+      "text": "It expands to `sd rs2, offset(x2)`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        105,
+        107
+      ]
+    },
+    {
+      "text": "Included in: extlink:zclsd[]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        109,
+        109
+      ]
+    },
+    {
+      "text": "[insns-cld,reftext=\"Load doubleword to register pair, 16-bit encoding\"]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sdsp",
+      "line_range": [
+        113,
+        113
+      ]
+    },
+    {
+      "text": "Synopsis:: Load doubleword to even/odd register pair, 16-bit encoding",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ld",
+      "line_range": [
+        116,
+        117
+      ]
+    },
+    {
+      "text": "Mnemonic:: c.ld rd', offset(rs1')",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ld",
+      "line_range": [
+        119,
+        120
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, ,svg] .... {reg: [ {bits: 2, name: 0x0, type: 8, attr: ['C0']}, {bits: 3, name: 'rd`', type: 2, attr: ['dest, dest[0]=0']}, {bits: 2, name: 'imm', type: 3, attr: ['offset[7:6]']}, {bits: 3, name: 'rs1`', type: 4, attr: ['base']}, {bits: 3, name: 'imm', type: 3, attr: ['offset[5:3]']}, {bits: 3, name: 0x3, type: 8, attr: ['C.LD']}, ], config: {bits: 16}} ....",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ld",
+      "line_range": [
+        122,
+        133
+      ]
+    },
+    {
+      "text": "Description:: Loads a 64-bit value into registers `rd'` and `rd'+1`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ld",
+      "line_range": [
+        135,
+        138
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 8, to the base address in register rs1'.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ld",
+      "line_range": [
+        135,
+        138
+      ]
+    },
+    {
+      "text": "Included in: extlink:zclsd[]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ld",
+      "line_range": [
+        140,
+        140
+      ]
+    },
+    {
+      "text": "[insns-csd,reftext=\"Store doubleword from register pair, 16-bit encoding\"]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.ld",
+      "line_range": [
+        144,
+        144
+      ]
+    },
+    {
+      "text": "Synopsis:: Store doubleword from even/odd register pair, 16-bit encoding",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sd",
+      "line_range": [
+        147,
+        148
+      ]
+    },
+    {
+      "text": "Mnemonic:: c.sd rs2', offset(rs1')",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sd",
+      "line_range": [
+        150,
+        151
+      ]
+    },
+    {
+      "text": "Encoding (RV32):: [wavedrom, ,svg] .... {reg: [ {bits: 2, name: 0x0, type: 8, attr: ['C0']}, {bits: 3, name: 'rs2`', type: 4, attr: ['src, src[0]=0']}, {bits: 2, name: 'imm', type: 3, attr: ['offset[7:6]']}, {bits: 3, name: 'rs1`', type: 4, attr: ['base']}, {bits: 3, name: 'imm', type: 3, attr: ['offset[5:3]']}, {bits: 3, name: 0x7, type: 8, attr: ['C.SD']}, ], config: {bits: 16}} ....",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sd",
+      "line_range": [
+        153,
+        164
+      ]
+    },
+    {
+      "text": "Description:: Stores a 64-bit value from registers `rs2'` and `rs2'+1`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sd",
+      "line_range": [
+        166,
+        170
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 8, to the base address in register rs1'.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sd",
+      "line_range": [
+        166,
+        170
+      ]
+    },
+    {
+      "text": "It expands to `sd rs2', offset(rs1')`.",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sd",
+      "line_range": [
+        166,
+        170
+      ]
+    },
+    {
+      "text": "Included in: extlink:zclsd[]",
+      "section": "Preamble > ext:zclsd[] Extension for Compressed Load/Store Pair Instructions > Use of `x0` as operand > Exception Handling > c.sd",
+      "line_range": [
+        172,
+        172
+      ]
+    }
+  ]
+}

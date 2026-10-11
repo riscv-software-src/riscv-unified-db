@@ -1,0 +1,14 @@
+{
+  "source_file": "src/priv/shtvala.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "If the Shtvala extension is implemented, `htval` must be written with the faulting guest physical address in all circumstances permitted by the ISA.",
+      "section": "Preamble > Shtvala Extension for Trap Value Reporting, Version 1.0",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

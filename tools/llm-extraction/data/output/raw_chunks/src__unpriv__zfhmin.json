@@ -1,0 +1,62 @@
+{
+  "source_file": "src/unpriv/zfhmin.adoc",
+  "total": 7,
+  "sentences": [
+    {
+      "text": "This section describes the Zfhmin standard extension, which provides minimal support for 16-bit half-precision binary floating-point instructions.",
+      "section": "Preamble > ext:zfhmin[] Extension for Minimal Half-Precision Floating-Point",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "The Zfhmin extension is a subset of the Zfh extension, consisting only of data transfer and conversion instructions.",
+      "section": "Preamble > ext:zfhmin[] Extension for Minimal Half-Precision Floating-Point",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "Like Zfh, the Zfhmin extension depends on the single-precision floating-point extension, F.",
+      "section": "Preamble > ext:zfhmin[] Extension for Minimal Half-Precision Floating-Point",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "The expectation is that Zfhmin software primarily uses the half-precision format for storage, performing most computation in higher precision.",
+      "section": "Preamble > ext:zfhmin[] Extension for Minimal Half-Precision Floating-Point",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "The Zfhmin extension includes the following instructions from the Zfh extension: FLH, FSH, FMV.X.H, FMV.H.X, FCVT.S.H, and FCVT.H.S.",
+      "section": "Preamble > ext:zfhmin[] Extension for Minimal Half-Precision Floating-Point",
+      "line_range": [
+        12,
+        17
+      ]
+    },
+    {
+      "text": "If the D extension is present, the FCVT.D.H and FCVT.H.D instructions are also included.",
+      "section": "Preamble > ext:zfhmin[] Extension for Minimal Half-Precision Floating-Point",
+      "line_range": [
+        12,
+        17
+      ]
+    },
+    {
+      "text": "If the Q extension is present, the FCVT.Q.H and FCVT.H.Q instructions are additionally included.",
+      "section": "Preamble > ext:zfhmin[] Extension for Minimal Half-Precision Floating-Point",
+      "line_range": [
+        12,
+        17
+      ]
+    }
+  ]
+}

@@ -1,0 +1,662 @@
+{
+  "source_file": "src/naming.adoc",
+  "total": 82,
+  "sentences": [
+    {
+      "text": "This chapter describes the RISC-V ISA extension naming scheme that is used to concisely describe the set of instructions present in a hardware implementation, or the set of instructions used by an application binary interface (ABI).",
+      "section": "Preamble > ISA Extension Naming Conventions",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "The ISA naming strings are case insensitive.",
+      "section": "Preamble > ISA Extension Naming Conventions > Case Sensitivity",
+      "line_range": [
+        9,
+        9
+      ]
+    },
+    {
+      "text": "RISC-V ISA strings begin with either RV32I, RV32E, RV64I, or RV64E, indicating the supported address space size in bits for the base integer ISA.",
+      "section": "Preamble > ISA Extension Naming Conventions > Base Integer ISA",
+      "line_range": [
+        13,
+        15
+      ]
+    },
+    {
+      "text": "Standard ISA extensions are given a name consisting of a single letter.",
+      "section": "Preamble > ISA Extension Naming Conventions > Instruction-Set Extension Names",
+      "line_range": [
+        19,
+        26
+      ]
+    },
+    {
+      "text": "For example, the first four standard extensions to the integer bases are: \"M\" for integer multiplication and division, \"A\" for atomic memory instructions, \"F\" for single-precision floating-point instructions, and \"D\" for double-precision floating-point instructions.",
+      "section": "Preamble > ISA Extension Naming Conventions > Instruction-Set Extension Names",
+      "line_range": [
+        19,
+        26
+      ]
+    },
+    {
+      "text": "Any RISC-V instruction-set variant can be succinctly described by concatenating the base integer prefix with the names of the included extensions, e.g., \"RV64IMAFD\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Instruction-Set Extension Names",
+      "line_range": [
+        19,
+        26
+      ]
+    },
+    {
+      "text": "We have also defined an abbreviation \"G\" to represent the \"IMAFDZicsrZifencei\" base and extensions, as this is intended to represent our standard general-purpose ISA.",
+      "section": "Preamble > ISA Extension Naming Conventions > Instruction-Set Extension Names",
+      "line_range": [
+        28,
+        30
+      ]
+    },
+    {
+      "text": "Standard extensions to the RISC-V ISA are given other reserved letters, e.g., \"Q\" for quad-precision floating-point, or \"C\" for the 16-bit compressed instruction format.",
+      "section": "Preamble > ISA Extension Naming Conventions > Instruction-Set Extension Names",
+      "line_range": [
+        32,
+        34
+      ]
+    },
+    {
+      "text": "Some ISA extensions depend on the presence of other extensions, e.g., \"D\" depends on \"F\" and \"F\" depends on \"Zicsr\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Instruction-Set Extension Names",
+      "line_range": [
+        36,
+        39
+      ]
+    },
+    {
+      "text": "These dependencies may be implicit in the ISA name: for example, RV32IF is equivalent to RV32IFZicsr, and RV32ID is equivalent to RV32IFD and RV32IFDZicsr.",
+      "section": "Preamble > ISA Extension Naming Conventions > Instruction-Set Extension Names",
+      "line_range": [
+        36,
+        39
+      ]
+    },
+    {
+      "text": "Underscores \"\" may be used to separate ISA extensions to improve readability and to provide disambiguation, e.g., \"RV32I2M2A2\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Underscores",
+      "line_range": [
+        43,
+        44
+      ]
+    },
+    {
+      "text": "Standard unprivileged extensions can also be named by using a single \"Z\" followed by an alphanumeric name.",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        48,
+        52
+      ]
+    },
+    {
+      "text": "The name must end with an alphabetical character.",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        48,
+        52
+      ]
+    },
+    {
+      "text": "The second letter from the end cannot be numeric if the last letter is \"p\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        48,
+        52
+      ]
+    },
+    {
+      "text": "For example, \"Zifencei\" names the instruction-fetch fence extension described in .",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        48,
+        52
+      ]
+    },
+    {
+      "text": "The first letter following the \"Z\" conventionally indicates the most closely related alphabetical extension category, IMAFDQLCBKJTPVH.",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        54,
+        57
+      ]
+    },
+    {
+      "text": "For the \"Zfa\" extension for additional floating-point instructions, for example, the letter \"f\" indicates the extension is related to the \"F\" standard extension.",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        54,
+        57
+      ]
+    },
+    {
+      "text": "NOTE: The Zhinx extension is an exception to this rule, as the extension is not related to the H extension but the Zfh extension.",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        59,
+        60
+      ]
+    },
+    {
+      "text": "If multiple \"Z\" extensions are named, they should be ordered first by category, then alphabetically within a category—for example, \"ZicsrZifenceiZtso\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        62,
+        63
+      ]
+    },
+    {
+      "text": "All multi-letter extensions, including those with the \"Z\" prefix, must be separated from other multi-letter extensions by an underscore, e.g., \"RV32IMACZicsrZifencei\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Additional Standard Unprivileged Extension Names",
+      "line_range": [
+        65,
+        67
+      ]
+    },
+    {
+      "text": "Standard extensions that extend the user-level architecture are prefixed with the letters \"Su\".",
+      "section": "Preamble > ISA Extension Naming Conventions > User-Level Instruction-Set Extension Names",
+      "line_range": [
+        71,
+        72
+      ]
+    },
+    {
+      "text": "Standard user-level extensions should be listed after standard unprivileged extensions, and like other multi-letter extensions, must be separated from other multi-letter extensions by an underscore.",
+      "section": "Preamble > ISA Extension Naming Conventions > User-Level Instruction-Set Extension Names",
+      "line_range": [
+        74,
+        77
+      ]
+    },
+    {
+      "text": "If multiple user-level extensions are listed, they should be ordered alphabetically.",
+      "section": "Preamble > ISA Extension Naming Conventions > User-Level Instruction-Set Extension Names",
+      "line_range": [
+        74,
+        77
+      ]
+    },
+    {
+      "text": "Standard extensions that extend the supervisor-level virtual-memory architecture are prefixed with the letters \"Sv\", followed by an alphanumeric name.",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "Other standard extensions that extend the supervisor-level architecture are prefixed with the letters \"Ss\", followed by an alphanumeric name.",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "The name must end with an alphabetical character.",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "The second letter from the end cannot be numeric if the last letter is \"p\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "These extensions are further defined in Volume II.",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "The extensions \"sv32\", \"sv39\", \"sv48\", and \"sv59\" were defined before the rule against extension names ending in numbers was established.",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        89,
+        90
+      ]
+    },
+    {
+      "text": "Standard supervisor-level extensions should be listed after standard unprivileged and user-level extensions, and like other multi-letter extensions, must be separated from other multi-letter extensions by an underscore.",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        92,
+        96
+      ]
+    },
+    {
+      "text": "If multiple supervisor-level extensions are listed, they should be ordered alphabetically.",
+      "section": "Preamble > ISA Extension Naming Conventions > Supervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        92,
+        96
+      ]
+    },
+    {
+      "text": "Standard extensions that extend the hypervisor-level architecture are prefixed with the letters \"Sh\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Hypervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        100,
+        101
+      ]
+    },
+    {
+      "text": "Standard hypervisor-level extensions should be listed after standard unprivileged, user-level and supervisor-level extensions, and like other multi-letter extensions, must be separated from other multi-letter extensions by an underscore.",
+      "section": "Preamble > ISA Extension Naming Conventions > Hypervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        103,
+        107
+      ]
+    },
+    {
+      "text": "If multiple hypervisor-level extensions are listed, they should be ordered alphabetically.",
+      "section": "Preamble > ISA Extension Naming Conventions > Hypervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        103,
+        107
+      ]
+    },
+    {
+      "text": "NOTE: Many augmentations to the hypervisor-level architecture are more naturally defined as supervisor-level extensions, following the scheme described in the previous section.",
+      "section": "Preamble > ISA Extension Naming Conventions > Hypervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        109,
+        113
+      ]
+    },
+    {
+      "text": "The \"Sh\" prefix is used by the few hypervisor-level extensions that have no supervisor-visible effects.",
+      "section": "Preamble > ISA Extension Naming Conventions > Hypervisor-Level Instruction-Set Extension Names",
+      "line_range": [
+        109,
+        113
+      ]
+    },
+    {
+      "text": "Standard machine-level instruction-set extensions are prefixed with the letters \"Sm\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Machine-Level Instruction-Set Extension Names",
+      "line_range": [
+        117,
+        118
+      ]
+    },
+    {
+      "text": "Standard machine-level extensions should be listed after standard lesser-privileged extensions, and like other multi-letter extensions, must be separated from other multi-letter extensions by an underscore.",
+      "section": "Preamble > ISA Extension Naming Conventions > Machine-Level Instruction-Set Extension Names",
+      "line_range": [
+        120,
+        123
+      ]
+    },
+    {
+      "text": "If multiple machine-level extensions are listed, they should be ordered alphabetically.",
+      "section": "Preamble > ISA Extension Naming Conventions > Machine-Level Instruction-Set Extension Names",
+      "line_range": [
+        120,
+        123
+      ]
+    },
+    {
+      "text": "Non-standard extensions are named by using a single \"X\" followed by the alphanumeric name.",
+      "section": "Preamble > ISA Extension Naming Conventions > Non-Standard Extension Names",
+      "line_range": [
+        127,
+        130
+      ]
+    },
+    {
+      "text": "The name must end with an alphabetic character.",
+      "section": "Preamble > ISA Extension Naming Conventions > Non-Standard Extension Names",
+      "line_range": [
+        127,
+        130
+      ]
+    },
+    {
+      "text": "The second letter from the end cannot be numeric if the last letter is \"p\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Non-Standard Extension Names",
+      "line_range": [
+        127,
+        130
+      ]
+    },
+    {
+      "text": "For example, \"Xhwacha\" names the Hwacha vector-fetch ISA extension cite:[hwacha-esscirc2014].",
+      "section": "Preamble > ISA Extension Naming Conventions > Non-Standard Extension Names",
+      "line_range": [
+        127,
+        130
+      ]
+    },
+    {
+      "text": "Non-standard extensions must be listed after all standard extensions, and, like other multi-letter extensions, must be separated from other multi-letter extensions by an underscore.",
+      "section": "Preamble > ISA Extension Naming Conventions > Non-Standard Extension Names",
+      "line_range": [
+        132,
+        135
+      ]
+    },
+    {
+      "text": "If multiple non-standard extensions are listed, they should be ordered alphabetically.",
+      "section": "Preamble > ISA Extension Naming Conventions > Non-Standard Extension Names",
+      "line_range": [
+        132,
+        135
+      ]
+    },
+    {
+      "text": "For example, an ISA with non-standard extensions Argle and Bargle may be named \"RV64IZifenceiXargleXbargle\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Non-Standard Extension Names",
+      "line_range": [
+        137,
+        138
+      ]
+    },
+    {
+      "text": "Recognizing that instruction sets may expand or alter over time, we encode extension version numbers following the extension name.",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        142,
+        147
+      ]
+    },
+    {
+      "text": "Version numbers are divided into major and minor version numbers, separated by a \"p\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        142,
+        147
+      ]
+    },
+    {
+      "text": "If the minor version is \"0\", then \"p0\" can be omitted from the version string.",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        142,
+        147
+      ]
+    },
+    {
+      "text": "To avoid ambiguity, no extension name may end with a number or a \"p\" preceded by a number.",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        142,
+        147
+      ]
+    },
+    {
+      "text": "Because the \"P\" extension for Packed SIMD can be confused for the decimal point in a version number, it must be preceded by an underscore if it follows another extension with a version number.",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        149,
+        153
+      ]
+    },
+    {
+      "text": "For example, \"rv32i2p2\" means version 2.2 of RV32I, whereas \"rv32i2p2\" means version 2.0 of RV32I with version 2.0 of the P extension.",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        149,
+        153
+      ]
+    },
+    {
+      "text": "Changes in major version numbers imply a loss of backwards compatibility, whereas changes in only the minor version number must be backwards-compatible.",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        155,
+        160
+      ]
+    },
+    {
+      "text": "For example, the original 64-bit standard ISA defined in release 1.0 of this manual can be written in full as \"RV64I1p0M1p0A1p0F1p0D1p0\", more concisely as \"RV64I1M1A1F1D1\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        155,
+        160
+      ]
+    },
+    {
+      "text": "We define the default version of ratified standard extensions as follows:",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        162,
+        162
+      ]
+    },
+    {
+      "text": "Version 2 if the extension is one of the following extensions: I, E, M, A, F, D, Q, C, Zicntr, Zicsr, Zifencei, Zihintpause, Zihpm. - Version 1 otherwise.",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        164,
+        166
+      ]
+    },
+    {
+      "text": "For instance, \"RV32IV\" is equivalent to \"RV32I2V1\".",
+      "section": "Preamble > ISA Extension Naming Conventions > Version Numbers",
+      "line_range": [
+        168,
+        168
+      ]
+    },
+    {
+      "text": "In canonical ISA name strings, components appear in the following order:",
+      "section": "Preamble > ISA Extension Naming Conventions > Canonical Order",
+      "line_range": [
+        172,
+        172
+      ]
+    },
+    {
+      "text": "One-letter extensions, MAFDQCBPVH, in this order . Z-prefixed extensions .",
+      "section": "Preamble > ISA Extension Naming Conventions > Canonical Order",
+      "line_range": [
+        174,
+        182
+      ]
+    },
+    {
+      "text": "Sm-prefixed extensions . X-prefixed extensions",
+      "section": "Preamble > ISA Extension Naming Conventions > Canonical Order",
+      "line_range": [
+        174,
+        182
+      ]
+    },
+    {
+      "text": "For instance, RV32IMACV is canonical, whereas RV32IMAVC is not.",
+      "section": "Preamble > ISA Extension Naming Conventions > Canonical Order",
+      "line_range": [
+        184,
+        184
+      ]
+    },
+    {
+      "text": "summarizes the standardized extension names.",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        188,
+        188
+      ]
+    },
+    {
+      "text": ".Standard ISA extension names. | |Subset |Name |Implies",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        190,
+        194
+      ]
+    },
+    {
+      "text": "3+^|*Standard Unprivileged Extensions*",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        202,
+        202
+      ]
+    },
+    {
+      "text": "|Integer Multiplication and Division |M |Zmmul",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        204,
+        204
+      ]
+    },
+    {
+      "text": "|Single-Precision Floating-Point |F |Zicsr",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        208,
+        208
+      ]
+    },
+    {
+      "text": "|Double-Precision Floating-Point |D |F",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        210,
+        210
+      ]
+    },
+    {
+      "text": "|General |G |IMAFDZicsrZifencei",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        212,
+        212
+      ]
+    },
+    {
+      "text": "|Quad-Precision Floating-Point |Q |D",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        214,
+        214
+      ]
+    },
+    {
+      "text": "|16-bit Compressed Instructions |C |",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        216,
+        216
+      ]
+    },
+    {
+      "text": "3+^|*Additional Standard Unprivileged Extensions*",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        224,
+        224
+      ]
+    },
+    {
+      "text": "|Unprivileged extension \"abc\" |Zabc |",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        226,
+        226
+      ]
+    },
+    {
+      "text": "3+^|*Standard User-Level Extensions*",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        228,
+        228
+      ]
+    },
+    {
+      "text": "|User-level extension \"def\" |Sudef |",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        230,
+        230
+      ]
+    },
+    {
+      "text": "3+^|*Standard Supervisor-Level Extensions*",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        232,
+        232
+      ]
+    },
+    {
+      "text": "|Supervisor-level extension \"ghi\" |Ssghi | |Supervisor-level virtual-memory extension \"jkl\" |Svjkl |",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        236,
+        237
+      ]
+    },
+    {
+      "text": "3+^|*Standard Hypervisor-Level Extensions*",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        239,
+        239
+      ]
+    },
+    {
+      "text": "|Hypervisor-level extension \"mno\" |Shmno |",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        241,
+        241
+      ]
+    },
+    {
+      "text": "3+^|*Standard Machine-Level Extensions*",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        243,
+        243
+      ]
+    },
+    {
+      "text": "|Machine-level extension \"pqr\" |Smpqr |",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        245,
+        245
+      ]
+    },
+    {
+      "text": "3+^|*Non-Standard Extensions*",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        247,
+        247
+      ]
+    },
+    {
+      "text": "|Non-standard extension \"stu\" |Xstu | |",
+      "section": "Preamble > ISA Extension Naming Conventions > Summary",
+      "line_range": [
+        249,
+        250
+      ]
+    }
+  ]
+}

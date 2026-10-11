@@ -1,0 +1,14 @@
+{
+  "source_file": "src/priv/sscounterenw.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "If the Sscounterenw extension is implemented, then for any `hpmcounter` that is not read-only zero, the corresponding bit in `scounteren` must be writable.",
+      "section": "Preamble > Sscounterenw Extension for Counter-Enable Writability, Version 1.0",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

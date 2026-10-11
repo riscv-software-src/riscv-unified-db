@@ -1,0 +1,182 @@
+{
+  "source_file": "src/unpriv/zicntr.adoc",
+  "total": 22,
+  "sentences": [
+    {
+      "text": "RISC-V ISAs provide a set of up to thirty-two 64-bit performance counters and timers that are accessible via unprivileged XLEN-bit read-only CSR registers `0xC00`–`0xC1F` (when XLEN=32, the upper 32 bits are accessed via CSR registers `0xC80`–`0xC9F`).",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "These counters are divided between the Zicntr and extensions.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The Zicntr standard extension comprises the first three of these counters (CYCLE, TIME, and INSTRET), which have dedicated functions (cycle count, real-time clock, and instructions retired, respectively).",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        9,
+        12
+      ]
+    },
+    {
+      "text": "The Zicntr extension depends on the Zicsr extension.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        9,
+        12
+      ]
+    },
+    {
+      "text": "For base ISAs with XLEN{ge}64, CSR instructions can access the full 64-bit CSRs directly.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        16,
+        19
+      ]
+    },
+    {
+      "text": "In particular, the RDCYCLE, RDTIME, and RDINSTRET pseudoinstructions read the full 64 bits of the `cycle`, `time`, and `instret` counters.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        16,
+        19
+      ]
+    },
+    {
+      "text": "For base ISAs with XLEN=32, the Zicntr extension enables the three 64-bit read-only counters to be accessed in 32-bit pieces.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The RDCYCLE, RDTIME, and RDINSTRET pseudoinstructions provide the lower 32 bits, and the RDCYCLEH, RDTIMEH, and RDINSTRETH pseudoinstructions provide the upper 32 bits of the respective counters.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The RDCYCLE pseudoinstruction reads the low XLEN bits of the `cycle` CSR which holds a count of the number of clock cycles executed by the processor core on which the hart is running from an arbitrary start time in the past. RDCYCLEH is only present when XLEN=32 and reads bits 63-32 of the same cycle counter.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The underlying 64-bit counter should never overflow in practice.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The rate at which the cycle counter advances will depend on the implementation and operating environment.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The execution environment should provide a means to determine the current rate (cycles/second) at which the cycle counter is incrementing.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The RDTIME pseudoinstruction reads the low XLEN bits of the \"time\" CSR, which counts wall-clock real time that has passed from an arbitrary start time in the past. RDTIMEH is only present when XLEN=32 and reads bits 63-32 of the same real-time counter.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The underlying 64-bit counter increments by one with each tick of the real-time clock, and, for realistic real-time clock frequencies, should never overflow in practice.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The execution environment should provide a means of determining the period of a counter tick (seconds/tick).",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The period should be constant within a small error bound.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The environment should provide a means to determine the accuracy of the clock (i.e., the maximum relative error between the nominal and actual real-time clock periods).",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The real-time clocks of all harts must be synchronized to within one tick of the real-time clock.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The RDINSTRET pseudoinstruction reads the low XLEN bits of the `instret` CSR, which counts the number of instructions retired by this hart from some arbitrary start point in the past. RDINSTRETH is only present when XLEN=32 and reads bits 63-32 of the same instruction counter.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The underlying 64-bit counter should never overflow in practice.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "The following code sequence will read a valid 64-bit cycle counter value into `x3:x2`, even if the counter overflows its lower half between reading its upper and lower halves.",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        21,
+        57
+      ]
+    },
+    {
+      "text": "[source,asm.] .Sample code for reading the 64-bit cycle counter when XLEN=32. again: rdcycleh x3 rdcycle x2 rdcycleh x4 bne x3, x4, again",
+      "section": "Preamble > \"Zicntr\" Extension for Base Counters and Timers",
+      "line_range": [
+        59,
+        65
+      ]
+    }
+  ]
+}

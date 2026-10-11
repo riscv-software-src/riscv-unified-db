@@ -1,0 +1,182 @@
+{
+  "source_file": "src/unpriv/zfbfmin.adoc",
+  "total": 22,
+  "sentences": [
+    {
+      "text": "This extension provides the minimal set of instructions needed to enable scalar support of the BF16 format.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "It enables BF16 as an interchange format as it provides conversion between BF16 values and FP32 values.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "This extension depends upon the single-precision floating-point extension `F`.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions",
+      "line_range": [
+        7,
+        8
+      ]
+    },
+    {
+      "text": "This extension includes six instructions: the `FCVT.BF16.S` and `FCVT.S.BF16` instructions, defined below, and the `FLH`, `FSH`, `FMV.X.H`, and `FMV.H.X` instructions, defined in .",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions",
+      "line_range": [
+        10,
+        12
+      ]
+    },
+    {
+      "text": "BF16 bits:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: 'frac'}, {bits: 8, name: 'expo'}, {bits: 1, name: 'S'}, ]} ....",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format",
+      "line_range": [
+        16,
+        24
+      ]
+    },
+    {
+      "text": "While BF16 (also known as BFloat16) is not an IEEE 754 standard format, it is a valid floating-point format as defined by IEEE 754-2008, with radix 2, number of significand digits 8, and maximum exponent 127.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format",
+      "line_range": [
+        26,
+        28
+      ]
+    },
+    {
+      "text": "BF16 computational instructions defined in this chapter support all IEEE 754-2008 features, including all rounding modes, subnormal inputs and outputs, overflow and underflow, and default exception handling.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format",
+      "line_range": [
+        30,
+        34
+      ]
+    },
+    {
+      "text": "Tininess is detected after rounding.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format",
+      "line_range": [
+        30,
+        34
+      ]
+    },
+    {
+      "text": "The BF16 canonical NaN is `0x7fc0`.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format",
+      "line_range": [
+        36,
+        36
+      ]
+    },
+    {
+      "text": "BF16 values are NaN-boxed when held in `f` registers, as described in .",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format",
+      "line_range": [
+        38,
+        38
+      ]
+    },
+    {
+      "text": "Synopsis:: Convert FP32 value to a BF16 value",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.bf16.s",
+      "line_range": [
+        42,
+        43
+      ]
+    },
+    {
+      "text": "Mnemonic:: fcvt.bf16.s rd, rs1",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.bf16.s",
+      "line_range": [
+        45,
+        46
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: '1010011', attr: ['OP-FP']}, {bits: 5, name: 'rd'}, {bits: 3, name: 'rm'}, {bits: 5, name: 'rs1'}, {bits: 5, name: '01000', attr: ['bf16.s']}, {bits: 2, name: '10', attr: ['h']}, {bits: 5, name: '01000', attr: 'fcvt'}, ]} ....",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.bf16.s",
+      "line_range": [
+        48,
+        60
+      ]
+    },
+    {
+      "text": "Description:: Narrowing convert FP32 value to a BF16 value.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.bf16.s",
+      "line_range": [
+        62,
+        64
+      ]
+    },
+    {
+      "text": "Round according to the RM field.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.bf16.s",
+      "line_range": [
+        62,
+        64
+      ]
+    },
+    {
+      "text": "This instruction is similar to other narrowing floating-point-to-floating-point conversion instructions.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.bf16.s",
+      "line_range": [
+        66,
+        67
+      ]
+    },
+    {
+      "text": "Exceptions: Overflow, Underflow, Inexact, Invalid",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.bf16.s",
+      "line_range": [
+        69,
+        69
+      ]
+    },
+    {
+      "text": "Synopsis:: Convert BF16 value to an FP32 value",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.s.bf16",
+      "line_range": [
+        75,
+        76
+      ]
+    },
+    {
+      "text": "Mnemonic:: fcvt.s.bf16 rd, rs1",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.s.bf16",
+      "line_range": [
+        78,
+        79
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: '1010011', attr: ['OP-FP']}, {bits: 5, name: 'rd'}, {bits: 3, name: 'rm'}, {bits: 5, name: 'rs1'}, {bits: 5, name: '00110', attr: ['bf16']}, {bits: 2, name: '00', attr: ['s']}, {bits: 5, name: '01000', attr: 'fcvt'}, ]} ....",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.s.bf16",
+      "line_range": [
+        81,
+        93
+      ]
+    },
+    {
+      "text": "Description:: Converts a BF16 value to an FP32 value.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.s.bf16",
+      "line_range": [
+        95,
+        97
+      ]
+    },
+    {
+      "text": "This instruction is similar to other widening floating-point-to-floating-point conversion instructions.",
+      "section": "Preamble > `Zfbfmin` Extension for Scalar BFloat16 Conversions > BF16 Number Format > fcvt.s.bf16",
+      "line_range": [
+        99,
+        100
+      ]
+    }
+  ]
+}

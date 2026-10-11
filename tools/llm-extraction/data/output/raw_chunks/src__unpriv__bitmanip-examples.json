@@ -1,0 +1,134 @@
+{
+  "source_file": "src/unpriv/bitmanip-examples.adoc",
+  "total": 16,
+  "sentences": [
+    {
+      "text": "The following examples provide software optimization guidance.",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples",
+      "line_range": [
+        3,
+        3
+      ]
+    },
+    {
+      "text": "The *orc.b* instruction allows for the efficient detection of *NUL* bytes in an XLEN-sized chunk of data:",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen",
+      "line_range": [
+        7,
+        7
+      ]
+    },
+    {
+      "text": "the result of *orc.b* on a chunk that does not contain any *NUL* bytes will be all-ones, and * after a bitwise-negation of the result of *orc.b*, the number of data bytes before the first *NUL* byte (if any) can be detected by *ctz*/*clz* (depending on the endianness of data).",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen",
+      "line_range": [
+        9,
+        10
+      ]
+    },
+    {
+      "text": "A full example of a *strlen* function, which uses these techniques and also demonstrates the use of it for unaligned/partial data, is the following:",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen",
+      "line_range": [
+        12,
+        12
+      ]
+    },
+    {
+      "text": "[source,asm] -- include <sys/asm.h>",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen",
+      "line_range": [
+        14,
+        16
+      ]
+    },
+    {
+      "text": ".text .globl strlen .type strlen, @function strlen: andi a3, a0, (SZREG-1) // offset andi a1, a0, -SZREG // align pointer .Lprologue: li a4, SZREG sub a4, a4, a3 // XLEN - offset slli a3, a3, 3 // offset * 8 REGL a2, 0(a1) // chunk if BYTEORDER ORDERLITTLEENDIAN srl a2, a2 ,a3 // chunk >> (offset * 8) else sll a2, a2, a3 endif orc.b a2, a2 not a2, a2 if BYTEORDER ORDERLITTLEENDIAN ctz a2, a2 else clz a2, a2 endif srli a0, a2, 3 bgtu a4, a0, .Ldone addi a3, a1, SZREG li a4, -1 .align 2 .Lloop: REGL a2, SZREG(a1) addi a1, a1, SZREG orc.b a2, a2 beq a2, a4, .Lloop",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen",
+      "line_range": [
+        18,
+        67
+      ]
+    },
+    {
+      "text": ".Lepilogue: not a2, a2 if BYTEORDER ORDERLITTLEENDIAN ctz a2, a2 else clz a2, a2 endif sub a1, a1, a3 add a0, a0, a1 srli a2, a2, 3 add a0, a0, a2 .Ldone: ret --",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen",
+      "line_range": [
+        69,
+        82
+      ]
+    },
+    {
+      "text": "[source,asm] -- include <sys/asm.h>",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        86,
+        88
+      ]
+    },
+    {
+      "text": ".text .globl strcmp .type strcmp, @function strcmp: or a4, a0, a1 li t2, -1 and a4, a4, SZREG-1 bnez a4, .Lsimpleloop",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        90,
+        97
+      ]
+    },
+    {
+      "text": "Main loop for aligned strings .Lloop: REGL a2, 0(a0) REGL a3, 0(a1) orc.b t0, a2 bne t0, t2, .Lfoundnull addi a0, a0, SZREG addi a1, a1, SZREG beq a2, a3, .Lloop",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        99,
+        107
+      ]
+    },
+    {
+      "text": "Words don't match, and no null byte in first word.",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        109,
+        119
+      ]
+    },
+    {
+      "text": "Get bytes in big-endian order and compare. if BYTEORDER ORDERLITTLEENDIAN rev8 a2, a2 rev8 a3, a3 endif Synthesize (a2 >= a3) ? 1 : -1 in a branchless sequence. sltu a0, a2, a3 neg a0, a0 ori a0, a0, 1 ret",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        109,
+        119
+      ]
+    },
+    {
+      "text": ".Lfoundnull: Found a null byte.",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        121,
+        124
+      ]
+    },
+    {
+      "text": "If words don't match, fall back to simple loop. bne a2, a3, .Lsimpleloop",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        121,
+        124
+      ]
+    },
+    {
+      "text": "Otherwise, strings are equal. li a0, 0 ret",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        126,
+        128
+      ]
+    },
+    {
+      "text": "Simple loop for misaligned strings .Lsimpleloop: lbu a2, 0(a0) lbu a3, 0(a1) addi a0, a0, 1 addi a1, a1, 1 bne a2, a3, 1f bnez a2, .Lsimpleloop",
+      "section": "Preamble > Bit Manipulation Extensions Assembly Code Examples > strlen > strcmp",
+      "line_range": [
+        130,
+        137
+      ]
+    }
+  ]
+}

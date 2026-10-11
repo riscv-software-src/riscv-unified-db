@@ -1,0 +1,38 @@
+{
+  "source_file": "src/unpriv/zi.adoc",
+  "total": 4,
+  "sentences": [
+    {
+      "text": "NOTE: This chapter is currently being restructured.",
+      "section": "Preamble > Scalar Integer Extensions",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "Its contents are normative, but the presentation might appear disjoint.",
+      "section": "Preamble > Scalar Integer Extensions",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "This chapter describes the scalar integer extensions.",
+      "section": "Preamble > Scalar Integer Extensions",
+      "line_range": [
+        6,
+        9
+      ]
+    },
+    {
+      "text": "Most of these extensions are accordingly named with the prefix \"Zi\", with the exception of the integer multiplication and division extensions, which are named \"M\" or prefixed with \"Zm\".",
+      "section": "Preamble > Scalar Integer Extensions",
+      "line_range": [
+        6,
+        9
+      ]
+    }
+  ]
+}

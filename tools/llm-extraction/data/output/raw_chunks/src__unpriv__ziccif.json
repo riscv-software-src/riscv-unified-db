@@ -1,0 +1,94 @@
+{
+  "source_file": "src/unpriv/ziccif.adoc",
+  "total": 11,
+  "sentences": [
+    {
+      "text": "NOTE: This extension was ratified alongside the RVA20U64 profile.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "This chapter supplies an operational definition for the extension and adds expository material.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "If the Ziccif extension is implemented, main memory regions with both the cacheability and coherence PMAs must support instruction fetch, and any instruction fetches of naturally aligned power-of-2 sizes of at most `min(ILEN,XLEN)` bits are atomic.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        7,
+        10
+      ]
+    },
+    {
+      "text": "An implementation with the Ziccif extension fetches instructions in a manner equivalent to the following state machine.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        12,
+        13
+      ]
+    },
+    {
+      "text": "Let `M` be the smallest power of 2 such that `M` {ge} `min(ILEN,XLEN)/8`.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        15,
+        18
+      ]
+    },
+    {
+      "text": "Let `N` be the `pc` modulo `M`.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        15,
+        18
+      ]
+    },
+    {
+      "text": "Atomically fetch `M` - `N` bytes from memory at address `pc`.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        15,
+        18
+      ]
+    },
+    {
+      "text": "Let `T` be the running total of bytes fetched, initially `M` - `N`.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        15,
+        18
+      ]
+    },
+    {
+      "text": "If the `T` bytes fetched begin with a complete instruction of length `L` {le} `T`, then execute that instruction, discard the remaining `T` - `L` bytes fetched, and go back to step 1, using the updated `pc`.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        20,
+        24
+      ]
+    },
+    {
+      "text": "Otherwise, atomically fetch `M` bytes from memory at address `pc` + `T`, increment `T` by `M`, and repeat step 2.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        20,
+        24
+      ]
+    },
+    {
+      "text": "Memory protection and executability PMAs are applied only to bytes that are not discarded by this algorithm.",
+      "section": "Preamble > Ziccif Extension for Instruction-Fetch Atomicity, Version 1.0",
+      "line_range": [
+        26,
+        27
+      ]
+    }
+  ]
+}

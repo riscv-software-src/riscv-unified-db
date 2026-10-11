@@ -1,0 +1,30 @@
+{
+  "source_file": "src/unpriv/zihintpause.adoc",
+  "total": 3,
+  "sentences": [
+    {
+      "text": "The PAUSE instruction is a HINT that indicates the current hart's rate of instruction retirement should be temporarily reduced or paused.",
+      "section": "Preamble > \"Zihintpause\" Extension for Pause Hint, Version 2.0",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The duration of its effect must be bounded and may be zero.",
+      "section": "Preamble > \"Zihintpause\" Extension for Pause Hint, Version 2.0",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "PAUSE is encoded as a FENCE instruction with pred=`W`, succ=`0`, fm=`0`, rd=`x0`, and rs1=`x0`.",
+      "section": "Preamble > \"Zihintpause\" Extension for Pause Hint, Version 2.0",
+      "line_range": [
+        9,
+        10
+      ]
+    }
+  ]
+}

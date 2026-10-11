@@ -1,0 +1,1622 @@
+{
+  "source_file": "src/unpriv/cmo.adoc",
+  "total": 202,
+  "sentences": [
+    {
+      "text": "The semantics of each instruction in the chapter is expressed in a SAIL-like syntax.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics",
+      "line_range": [
+        5,
+        6
+      ]
+    },
+    {
+      "text": "[intro-cmo,reftext=\"Introduction\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics",
+      "line_range": [
+        8,
+        8
+      ]
+    },
+    {
+      "text": "Cache-management operation (or CMO) instructions perform operations on copies of data in the memory hierarchy.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        11,
+        15
+      ]
+    },
+    {
+      "text": "In general, CMO instructions operate on cached copies of data, but in some cases, a CMO instruction may operate on memory locations directly.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        11,
+        15
+      ]
+    },
+    {
+      "text": "Furthermore, CMO instructions are grouped by operation into the following classes:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        11,
+        15
+      ]
+    },
+    {
+      "text": "A management instruction manipulates cached copies of data with respect to a set of agents that can access the data * A zero instruction zeros out a range of memory locations, potentially allocating cached copies of data in one or more caches * A prefetch instruction indicates to hardware that data at a given memory location may be accessed in the near future, potentially allocating cached copies of data in one or more caches",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        17,
+        23
+      ]
+    },
+    {
+      "text": "This chapter introduces a base set of CMO ISA extensions that operate specifically on cache blocks or the memory locations corresponding to a cache block; these are known as cache-block operation (or CBO) instructions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        25,
+        29
+      ]
+    },
+    {
+      "text": "Each of the above classes of instructions represents an extension in this specification:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        25,
+        29
+      ]
+    },
+    {
+      "text": "The Zicbom extension defines a set of cache-block management instructions: `CBO.INVAL`, `CBO.CLEAN`, and `CBO.FLUSH` * The Zicboz extension defines a cache-block zero instruction: `CBO.ZERO` * The Zicbop extension defines a set of cache-block prefetch instructions: `PREFETCH.R`, `PREFETCH.W`, and `PREFETCH.I`",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        31,
+        35
+      ]
+    },
+    {
+      "text": "The execution behavior of the above instructions is also modified by CSR state added by this specification.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        37,
+        38
+      ]
+    },
+    {
+      "text": "The remainder of this chapter provides general background information on CMO instructions and describes each of the above ISA extensions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        40,
+        41
+      ]
+    },
+    {
+      "text": "[background,reftext=\"Background\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Introduction",
+      "line_range": [
+        43,
+        43
+      ]
+    },
+    {
+      "text": "This chapter provides information common to all CMO extensions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background",
+      "line_range": [
+        46,
+        46
+      ]
+    },
+    {
+      "text": "[memory-caches,reftext=\"Memory and Caches\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background",
+      "line_range": [
+        48,
+        48
+      ]
+    },
+    {
+      "text": "A memory location is a physical resource in a system uniquely identified by a physical address.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        51,
+        53
+      ]
+    },
+    {
+      "text": "An agent is a logic block, such as a RISC-V hart, accelerator, I/O device, etc., that can access a given memory location.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        51,
+        53
+      ]
+    },
+    {
+      "text": "A load operation (or store operation) is performed by an agent to consume (or modify) the data at a given memory location.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        55,
+        60
+      ]
+    },
+    {
+      "text": "Load and store operations are performed as a result of explicit memory accesses to that memory location.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        55,
+        60
+      ]
+    },
+    {
+      "text": "Additionally, a read transfer from memory fetches the data at the memory location, while a write transfer to memory updates the data at the memory location.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        55,
+        60
+      ]
+    },
+    {
+      "text": "A cache is a structure that buffers copies of data to reduce average memory latency.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        62,
+        65
+      ]
+    },
+    {
+      "text": "Any number of caches may be interspersed between an agent and a memory location, and load and store operations from an agent may be satisfied by a cache instead of the memory location.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        62,
+        65
+      ]
+    },
+    {
+      "text": "Caches organize copies of data into cache blocks, each of which represents a contiguous, naturally aligned power-of-two (or NAPOT) range of memory locations. A cache block is identified by any of the physical addresses corresponding to the underlying memory locations.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        67,
+        74
+      ]
+    },
+    {
+      "text": "The capacity and organization of a cache and the size of a cache block are both implementation-specific, and the execution environment provides software a means to discover information about the caches and cache blocks in a system.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        67,
+        74
+      ]
+    },
+    {
+      "text": "In the initial set of CMO extensions, the size of a cache block shall be uniform throughout the system.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        67,
+        74
+      ]
+    },
+    {
+      "text": "Implementation techniques such as speculative execution or hardware prefetching may cause a given cache to allocate or deallocate a copy of a cache block at any time, provided the corresponding physical addresses are accessible according to the supported access type PMA and are cacheable according to the cacheability PMA.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        76,
+        84
+      ]
+    },
+    {
+      "text": "Allocating a copy of a cache block results in a read transfer from another cache or from memory, while deallocating a copy of a cache block may result in a write transfer to another cache or to memory depending on whether the data in the copy were modified by a store operation.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        76,
+        84
+      ]
+    },
+    {
+      "text": "Additional details are discussed in .",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Memory and Caches",
+      "line_range": [
+        76,
+        84
+      ]
+    },
+    {
+      "text": "A CBO instruction causes one or more operations to be performed on the cache blocks identified by the instruction.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        88,
+        91
+      ]
+    },
+    {
+      "text": "In general, a CBO instruction may identify one or more cache blocks; however, in the initial set of CMO extensions, CBO instructions identify a single cache block only.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        88,
+        91
+      ]
+    },
+    {
+      "text": "A cache-block management instruction performs one of the following operations, relative to the copy of a given cache block allocated in a given cache:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        93,
+        94
+      ]
+    },
+    {
+      "text": "An invalidate operation deallocates the copy of the cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        96,
+        96
+      ]
+    },
+    {
+      "text": "A clean operation performs a write transfer to another cache or to memory if the data in the copy of the cache block have been modified by a store operation",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        98,
+        100
+      ]
+    },
+    {
+      "text": "A flush operation atomically performs a clean operation followed by an invalidate operation",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        102,
+        103
+      ]
+    },
+    {
+      "text": "Additional details, including the actual operation performed by a given cache-block management instruction, are described in .",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        105,
+        106
+      ]
+    },
+    {
+      "text": "A cache-block zero instruction performs a set of store operations that write zeros to the set of bytes corresponding to a cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        108,
+        114
+      ]
+    },
+    {
+      "text": "Unless specified otherwise, the store operations generated by a cache-block zero instruction have the same general properties and behaviors that other store instructions in the architecture have.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        108,
+        114
+      ]
+    },
+    {
+      "text": "An implementation may or may not update the entire set of bytes atomically with a single store operation.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        108,
+        114
+      ]
+    },
+    {
+      "text": "Additional details are described in .",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        108,
+        114
+      ]
+    },
+    {
+      "text": "A cache-block prefetch instruction is a HINT to the hardware that software expects to perform a particular type of memory access in the near future.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        116,
+        118
+      ]
+    },
+    {
+      "text": "Additional details are described in .",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        116,
+        118
+      ]
+    },
+    {
+      "text": "[coherent-agents-caches,reftext=\"Coherent Agents and Caches\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Background > Cache-Block Operations",
+      "line_range": [
+        120,
+        120
+      ]
+    },
+    {
+      "text": "For a given memory location, a set of coherent agents consists of the agents for which all of the following hold:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        123,
+        124
+      ]
+    },
+    {
+      "text": "Store operations from all agents in the set appear to be serialized with respect to each other * Store operations from all agents in the set eventually appear to all other agents in the set * A load operation from an agent in the set returns data from a store operation from an agent in the set (or from the initial data in memory)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        126,
+        131
+      ]
+    },
+    {
+      "text": "The coherent agents within such a set shall access a given memory location with the same physical address and the same physical memory attributes; however, if the coherence PMA for a given agent indicates a given memory location is not coherent, that agent shall not be a member of a set of coherent agents with any other agent for that memory location and shall be the sole member of a set of coherent agents consisting of itself.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        133,
+        138
+      ]
+    },
+    {
+      "text": "An agent who is a member of a set of coherent agents is said to be coherent with respect to the other agents in the set.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        140,
+        143
+      ]
+    },
+    {
+      "text": "On the other hand, an agent who is not a member is said to be non-coherent with respect to the agents in the set.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        140,
+        143
+      ]
+    },
+    {
+      "text": "Caches introduce the possibility that multiple copies of a given cache block may be present in a system at the same time.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        145,
+        151
+      ]
+    },
+    {
+      "text": "An implementation-specific mechanism keeps these copies coherent with respect to the load and store operations from the agents in the set of coherent agents.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        145,
+        151
+      ]
+    },
+    {
+      "text": "Additionally, if a coherent agent in the set executes a CBO instruction that specifies the cache block, the resulting operation shall apply to any and all of the copies in the caches that can be accessed by the load and store operations from the coherent agents.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        145,
+        151
+      ]
+    },
+    {
+      "text": "The set of caches subject to the above mechanism form a set of coherent caches, and each coherent cache has the following behaviors, assuming all operations are performed by the agents in a set of coherent agents:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        153,
+        155
+      ]
+    },
+    {
+      "text": "A coherent cache is permitted to allocate and deallocate copies of a cache block and perform read and write transfers as described in",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        157,
+        158
+      ]
+    },
+    {
+      "text": "A coherent cache is permitted to perform a write transfer to memory provided that a store operation has modified the data in the cache block since the most recent invalidate, clean, or flush operation on the cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        160,
+        162
+      ]
+    },
+    {
+      "text": "At least one coherent cache is responsible for performing a write transfer to memory once a store operation has modified the data in the cache block until the next invalidate, clean, or flush operation on the cache block, after which no coherent cache is responsible (or permitted) to perform a write transfer to memory until the next store operation has modified the data in the cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        164,
+        168
+      ]
+    },
+    {
+      "text": "A coherent cache is required to perform a write transfer to memory if a store operation has modified the data in the cache block since the most recent invalidate, clean, or flush operation on the cache block and if the next clean or flush operation requires a write transfer to memory",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        170,
+        173
+      ]
+    },
+    {
+      "text": "A non-coherent agent may initiate a cache-block operation that operates on the set of coherent caches accessed by a set of coherent agents.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        175,
+        177
+      ]
+    },
+    {
+      "text": "The mechanism to perform such an operation is implementation-specific.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches",
+      "line_range": [
+        175,
+        177
+      ]
+    },
+    {
+      "text": "The preserved program order (abbreviated PPO) rules are defined by the RVWMO memory ordering model.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        183,
+        185
+      ]
+    },
+    {
+      "text": "How the operations resulting from CMO instructions fit into these rules is described below.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        183,
+        185
+      ]
+    },
+    {
+      "text": "For cache-block management instructions, the resulting invalidate, clean, and flush operations behave as stores in the PPO rules subject to one additional overlapping address rule.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        187,
+        190
+      ]
+    },
+    {
+      "text": "Specifically, if a precedes b in program order, then a will precede b in the global memory order if:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        187,
+        190
+      ]
+    },
+    {
+      "text": "a is an invalidate, clean, or flush, b is a load, and a and b access overlapping memory addresses",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        192,
+        193
+      ]
+    },
+    {
+      "text": "Additionally, invalidate, clean, and flush operations are classified as W or O (depending on the physical memory attributes for the corresponding physical addresses) for the purposes of predecessor and successor sets in `FENCE` instructions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        195,
+        199
+      ]
+    },
+    {
+      "text": "These operations are not ordered by other instructions that order stores, e.g. `FENCE.I` and `SFENCE.VMA`.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        195,
+        199
+      ]
+    },
+    {
+      "text": "For cache-block zero instructions, the resulting store operations behave as stores in the PPO rules and are ordered by other instructions that order stores.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        201,
+        202
+      ]
+    },
+    {
+      "text": "Finally, for cache-block prefetch instructions, the resulting operations are not ordered by the PPO rules nor are they ordered by any other ordering instructions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Preserved Program Order",
+      "line_range": [
+        204,
+        206
+      ]
+    },
+    {
+      "text": "An invalidate operation may change the set of values that can be returned by a load.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Load Values",
+      "line_range": [
+        210,
+        211
+      ]
+    },
+    {
+      "text": "In particular, an additional condition is added to the Load Value Axiom:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Load Values",
+      "line_range": [
+        210,
+        211
+      ]
+    },
+    {
+      "text": "If an invalidate operation i precedes a load r and operates on a byte x returned by r, and no store to x appears between i and r in program order or in the global memory order, then r returns any of the following values for x:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Load Values",
+      "line_range": [
+        213,
+        216
+      ]
+    },
+    {
+      "text": "If no clean or flush operations on x precede i in the global memory order, either the initial value of x or the value of any store to x that precedes i",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Load Values",
+      "line_range": [
+        218,
+        220
+      ]
+    },
+    {
+      "text": "If no store to x precedes a clean or flush operation on x in the global memory order and if the clean or flush operation on x precedes i in the global memory order, either the initial value of x or the value of any store to x that precedes i",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Load Values",
+      "line_range": [
+        222,
+        225
+      ]
+    },
+    {
+      "text": "If a store to x precedes a clean or flush operation on x in the global memory order and if the clean or flush operation on x precedes i in the global memory order, either the value of the latest store to x that precedes the latest clean or flush operation on x or the value of any store to x that both precedes i and succeeds the latest clean or flush operation on x that precedes i",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Load Values",
+      "line_range": [
+        227,
+        232
+      ]
+    },
+    {
+      "text": "The value of any store to x by a non-coherent agent regardless of the above conditions",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Memory Ordering > Load Values",
+      "line_range": [
+        234,
+        235
+      ]
+    },
+    {
+      "text": "Execution of certain CMO instructions may result in traps due to CSR state, described in the section, or due to the address translation and protection mechanisms.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps",
+      "line_range": [
+        239,
+        242
+      ]
+    },
+    {
+      "text": "The trapping behavior of CMO instructions is described in the following sections.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps",
+      "line_range": [
+        239,
+        242
+      ]
+    },
+    {
+      "text": "Cache-block management instructions and cache-block zero instructions may raise illegal-instruction exceptions or virtual-instruction exceptions depending on the current privilege mode and the state of the CMO control registers described in the section.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Illegal-Instruction and Virtual-Instruction Exceptions",
+      "line_range": [
+        246,
+        249
+      ]
+    },
+    {
+      "text": "Cache-block prefetch instructions raise neither illegal-instruction exceptions nor virtual-instruction exceptions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Illegal-Instruction and Virtual-Instruction Exceptions",
+      "line_range": [
+        251,
+        252
+      ]
+    },
+    {
+      "text": "Similar to load and store instructions, CMO instructions are explicit memory access instructions that compute an effective address.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        256,
+        260
+      ]
+    },
+    {
+      "text": "The effective address is ultimately translated into a physical address based on the privilege mode and the enabled translation mechanisms, and the CMO extensions impose the following constraints on the physical addresses in a given cache block:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        256,
+        260
+      ]
+    },
+    {
+      "text": "The PMP access control bits shall be the same for all physical addresses in the cache block, and if write permission is granted by the PMP access control bits, read permission shall also be granted",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        262,
+        264
+      ]
+    },
+    {
+      "text": "The PMAs shall be the same for all physical addresses in the cache block, and if write permission is granted by the supported access type PMAs, read permission shall also be granted",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        266,
+        268
+      ]
+    },
+    {
+      "text": "If the above constraints are not met, the behavior of a CBO instruction is UNSPECIFIED.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        270,
+        271
+      ]
+    },
+    {
+      "text": "The Zicboz extension introduces an additional supported access type PMA for cache-block zero instructions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        273,
+        276
+      ]
+    },
+    {
+      "text": "Main memory regions are required to support accesses by cache-block zero instructions; however, I/O regions may specify whether accesses by cache-block zero instructions are supported.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        273,
+        276
+      ]
+    },
+    {
+      "text": "A cache-block management instruction is permitted to access the specified cache block whenever a load instruction or store instruction is permitted to access the corresponding physical addresses.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        278,
+        288
+      ]
+    },
+    {
+      "text": "If neither a load instruction nor store instruction is permitted to access the physical addresses, but an instruction fetch is permitted to access the physical addresses, whether a cache-block management instruction is permitted to access the cache block is UNSPECIFIED.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        278,
+        288
+      ]
+    },
+    {
+      "text": "If access to the cache block is not permitted, a cache-block management instruction raises a store page-fault or store guest-page-fault exception if address translation does not permit any access or raises a store access-fault exception otherwise.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        278,
+        288
+      ]
+    },
+    {
+      "text": "During address translation, the instruction also checks the accessed bit and may either raise an exception or set the bit as required.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        278,
+        288
+      ]
+    },
+    {
+      "text": "A cache-block zero instruction is permitted to access the specified cache block whenever a store instruction is permitted to access the corresponding physical addresses and when the PMAs indicate that cache-block zero instructions are a supported access type.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        290,
+        298
+      ]
+    },
+    {
+      "text": "If access to the cache block is not permitted, a cache-block zero instruction raises a store page-fault or store guest-page-fault exception if address translation does not permit write access or raises a store access-fault exception otherwise.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        290,
+        298
+      ]
+    },
+    {
+      "text": "During address translation, the instruction also checks the accessed and dirty bits and may either raise an exception or set the bits as required.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        290,
+        298
+      ]
+    },
+    {
+      "text": "A cache-block prefetch instruction is permitted to access the specified cache block whenever a load instruction, store instruction, or instruction fetch is permitted to access the corresponding physical addresses.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        300,
+        306
+      ]
+    },
+    {
+      "text": "If access to the cache block is not permitted, a cache-block prefetch instruction does not raise any exceptions and shall not access any caches or memory.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        300,
+        306
+      ]
+    },
+    {
+      "text": "During address translation, the instruction does not check the accessed and dirty bits and neither raises an exception nor sets the bits.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        300,
+        306
+      ]
+    },
+    {
+      "text": "When a page-fault, guest-page-fault, or access-fault exception is taken, the relevant *tval CSR is written with the faulting effective address (i.e. the value of rs1).",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Page-Fault, Guest-Page-Fault, and Access-Fault Exceptions",
+      "line_range": [
+        308,
+        310
+      ]
+    },
+    {
+      "text": "CMO instructions do not generate address-misaligned exceptions.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Address-Misaligned Exceptions",
+      "line_range": [
+        314,
+        315
+      ]
+    },
+    {
+      "text": "Unless otherwise defined by the debug architecture specification, the behavior of trigger modules with respect to CMO instructions is UNSPECIFIED.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Breakpoint Exceptions and Debug Mode Entry",
+      "line_range": [
+        319,
+        320
+      ]
+    },
+    {
+      "text": "For the purposes of writing the `mtinst` or `htinst` register on a trap, the following standard transformation is defined for cache-block management instructions and cache-block zero instructions:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Hypervisor Extension",
+      "line_range": [
+        324,
+        327
+      ]
+    },
+    {
+      "text": "[wavedrom, , svg] .... {reg:[ { bits: 7, name: 'opcode'}, { bits: 5, name: 0x0 }, { bits: 3, name: 'funct3'}, { bits: 5, name: 0x0}, { bits: 12, name: 'operation'}, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Hypervisor Extension",
+      "line_range": [
+        329,
+        338
+      ]
+    },
+    {
+      "text": "The `operation` field corresponds to the 12 most significant bits of the trapping instruction.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Traps > Hypervisor Extension",
+      "line_range": [
+        340,
+        341
+      ]
+    },
+    {
+      "text": "The following event is added to the list of events that satisfy the eventuality guarantee provided by constrained LR/SC loops, as defined in the A extension:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Effects on Constrained LR/SC Loops",
+      "line_range": [
+        345,
+        346
+      ]
+    },
+    {
+      "text": "Some other hart executes a cache-block management instruction or a cache-block zero instruction to the reservation set of the LR instruction in H's constrained LR/SC loop.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Effects on Constrained LR/SC Loops",
+      "line_range": [
+        348,
+        350
+      ]
+    },
+    {
+      "text": "The initial set of CMO extensions requires the following information to be discovered by software:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Software Discovery",
+      "line_range": [
+        354,
+        355
+      ]
+    },
+    {
+      "text": "The size of the cache block for management and prefetch instructions * The size of the cache block for zero instructions * CBIE support at each privilege level",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Software Discovery",
+      "line_range": [
+        357,
+        359
+      ]
+    },
+    {
+      "text": "Other general cache characteristics may also be specified in the discovery mechanism.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Software Discovery",
+      "line_range": [
+        361,
+        362
+      ]
+    },
+    {
+      "text": "[csrstate,reftext=\"Control and Status Register State\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Coherent Agents and Caches > Software Discovery",
+      "line_range": [
+        364,
+        364
+      ]
+    },
+    {
+      "text": "The x{csrname} registers control CBO instruction execution based on the current privilege mode and the state of the appropriate CSRs, as detailed below.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        367,
+        368
+      ]
+    },
+    {
+      "text": "A `CBO.INVAL` instruction executes or raises either an illegal-instruction exception or a virtual-instruction exception based on the state of the `x{csrname}.CBIE` fields:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        370,
+        373
+      ]
+    },
+    {
+      "text": "[source,sail,subs=\"attributes+\"] --",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        375,
+        376
+      ]
+    },
+    {
+      "text": "A `CBO.CLEAN` or `CBO.FLUSH` instruction executes or raises an illegal-instruction or virtual-instruction exception based on the state of the `x{csrname}.CBCFE` bits:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        408,
+        411
+      ]
+    },
+    {
+      "text": "[source,sail,subs=\"attributes+\"] --",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        413,
+        414
+      ]
+    },
+    {
+      "text": "Finally, a `CBO.ZERO` instruction executes or raises an illegal-instruction or virtual-instruction exception based on the state of the `x{csrname}.CBZE` bits:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        436,
+        438
+      ]
+    },
+    {
+      "text": "[source,sail,subs=\"attributes+\"] --",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        440,
+        441
+      ]
+    },
+    {
+      "text": "The CBIE/CBCFE/CBZE fields in each `x{csrname}` register do not affect the read and write behavior of the same fields in the other `x{csrname}` registers.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        463,
+        465
+      ]
+    },
+    {
+      "text": "Each `x{csrname}` register is WARL; however, software should determine the legal values from the execution environment discovery mechanism.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        467,
+        468
+      ]
+    },
+    {
+      "text": "[extensions,reftext=\"Extensions\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > CSR controls for CMO instructions",
+      "line_range": [
+        470,
+        470
+      ]
+    },
+    {
+      "text": "CMO instructions are defined in the following extensions:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions",
+      "line_range": [
+        474,
+        474
+      ]
+    },
+    {
+      "text": "[Zicbom,reftext=\"Cache-Block Management Instructions\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions",
+      "line_range": [
+        480,
+        480
+      ]
+    },
+    {
+      "text": "Cache-block management instructions enable software running on a set of coherent agents to communicate with a set of non-coherent agents by performing one of the following operations:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        483,
+        485
+      ]
+    },
+    {
+      "text": "An invalidate operation makes data from store operations performed by a set of non-coherent agents visible to the set of coherent agents at a point common to both sets by deallocating all copies of a cache block from the set of coherent caches up to that point",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        487,
+        490
+      ]
+    },
+    {
+      "text": "A clean operation makes data from store operations performed by the set of coherent agents visible to a set of non-coherent agents at a point common to both sets by performing a write transfer of a copy of a cache block to that point provided a coherent agent performed a store operation that modified the data in the cache block since the previous invalidate, clean, or flush operation on the cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        492,
+        497
+      ]
+    },
+    {
+      "text": "A flush operation atomically performs a clean operation followed by an invalidate operation",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        499,
+        500
+      ]
+    },
+    {
+      "text": "In the Zicbom extension, the instructions operate to a point common to all agents in the system.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        502,
+        506
+      ]
+    },
+    {
+      "text": "In other words, an invalidate operation ensures that store operations from all non-coherent agents visible to agents in the set of coherent agents, and a clean operation ensures that store operations from coherent agents visible to all non-coherent agents.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        502,
+        506
+      ]
+    },
+    {
+      "text": "These instructions operate on the cache block whose effective address is specified in rs1.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        508,
+        510
+      ]
+    },
+    {
+      "text": "The effective address is translated into a corresponding physical address by the appropriate translation mechanisms.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        508,
+        510
+      ]
+    },
+    {
+      "text": "The following instructions comprise the Zicbom extension:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        512,
+        512
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        514,
+        519
+      ]
+    },
+    {
+      "text": "|{check} |{check} |cbo.clean base |",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        521,
+        524
+      ]
+    },
+    {
+      "text": "|{check} |{check} |cbo.flush base |",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        526,
+        529
+      ]
+    },
+    {
+      "text": "|{check} |{check} |cbo.inval base |",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        531,
+        534
+      ]
+    },
+    {
+      "text": "[Zicboz,reftext=\"Cache-Block Zero Instructions\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Management Instructions",
+      "line_range": [
+        538,
+        538
+      ]
+    },
+    {
+      "text": "Cache-block zero instructions store zeros to the set of bytes corresponding to a cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        541,
+        543
+      ]
+    },
+    {
+      "text": "An implementation may update the bytes in any order and with any granularity and atomicity, including individual bytes.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        541,
+        543
+      ]
+    },
+    {
+      "text": "These instructions operate on the cache block, or the memory locations corresponding to the cache block, whose effective address is specified in rs1.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        545,
+        548
+      ]
+    },
+    {
+      "text": "The effective address is translated into a corresponding physical address by the appropriate translation mechanisms.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        545,
+        548
+      ]
+    },
+    {
+      "text": "The following instructions comprise the Zicboz extension:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        550,
+        550
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        552,
+        557
+      ]
+    },
+    {
+      "text": "|{check} |{check} |cbo.zero base |",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        559,
+        562
+      ]
+    },
+    {
+      "text": "[Zicbop,reftext=\"Cache-Block Prefetch Instructions\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Zero Instructions",
+      "line_range": [
+        566,
+        566
+      ]
+    },
+    {
+      "text": "Cache-block prefetch instructions are HINTs to the hardware to indicate that software intends to perform a particular type of memory access in the near future.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        569,
+        572
+      ]
+    },
+    {
+      "text": "The types of memory accesses are instruction fetch, data read (i.e. load), and data write (i.e. store).",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        569,
+        572
+      ]
+    },
+    {
+      "text": "These instructions operate on the cache block whose effective address is the sum of the base address specified in rs1 and the sign-extended offset encoded in imm[11:0], where imm[4:0] shall equal `0b00000`.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        574,
+        578
+      ]
+    },
+    {
+      "text": "The effective address is translated into a corresponding physical address by the appropriate translation mechanisms.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        574,
+        578
+      ]
+    },
+    {
+      "text": "The following instructions comprise the Zicbop extension:",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        580,
+        580
+      ]
+    },
+    {
+      "text": "| |RV32 |RV64 |Mnemonic |Instruction",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        582,
+        587
+      ]
+    },
+    {
+      "text": "|{check} |{check} |prefetch.i offset(base) |",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        589,
+        592
+      ]
+    },
+    {
+      "text": "|{check} |{check} |prefetch.r offset(base) |",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        594,
+        597
+      ]
+    },
+    {
+      "text": "|{check} |{check} |prefetch.w offset(base) |",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        599,
+        602
+      ]
+    },
+    {
+      "text": "[insns,reftext=\"Instructions\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Extensions > Cache-Block Prefetch Instructions",
+      "line_range": [
+        606,
+        606
+      ]
+    },
+    {
+      "text": "[insns-cboclean,reftext=\"Cache Block Clean\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions",
+      "line_range": [
+        609,
+        609
+      ]
+    },
+    {
+      "text": "Synopsis:: Perform a clean operation on a cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.clean",
+      "line_range": [
+        612,
+        613
+      ]
+    },
+    {
+      "text": "Mnemonic:: cbo.clean offset(base)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.clean",
+      "line_range": [
+        615,
+        616
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0xF, attr: ['MISC-MEM'] }, { bits: 5, name: 0x0 }, { bits: 3, name: 0x2, attr: ['CBO'] }, { bits: 5, name: 'rs1', attr: ['base'] }, { bits: 12, name: 0x001, attr: ['CBO.CLEAN'] }, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.clean",
+      "line_range": [
+        618,
+        628
+      ]
+    },
+    {
+      "text": "A *cbo.clean* instruction performs a clean operation on the cache block whose effective address is the base address specified in rs1.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.clean",
+      "line_range": [
+        632,
+        636
+      ]
+    },
+    {
+      "text": "The offset operand may be omitted; otherwise, any expression that computes the offset shall evaluate to zero.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.clean",
+      "line_range": [
+        632,
+        636
+      ]
+    },
+    {
+      "text": "The instruction operates on the set of coherent caches accessed by the agent executing the instruction.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.clean",
+      "line_range": [
+        632,
+        636
+      ]
+    },
+    {
+      "text": "[insns-cboflush,reftext=\"Cache Block Flush\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.clean",
+      "line_range": [
+        638,
+        638
+      ]
+    },
+    {
+      "text": "Synopsis:: Perform a flush operation on a cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        641,
+        642
+      ]
+    },
+    {
+      "text": "Mnemonic:: cbo.flush offset(base)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        644,
+        645
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0xF, attr: ['MISC-MEM'] }, { bits: 5, name: 0x0 }, { bits: 3, name: 0x2, attr: ['CBO'] }, { bits: 5, name: 'rs1', attr: ['base'] }, { bits: 12, name: 0x002, attr: ['CBO.FLUSH'] }, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        647,
+        657
+      ]
+    },
+    {
+      "text": "A *cbo.flush* instruction performs a flush operation on the cache block whose that contains the address specified in rs1.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        661,
+        666
+      ]
+    },
+    {
+      "text": "It is not required that rs1 is aligned to the size of a cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        661,
+        666
+      ]
+    },
+    {
+      "text": "On faults, the faulting virtual address is considered to be the value in rs1, rather than the base address of the cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        661,
+        666
+      ]
+    },
+    {
+      "text": "The instruction operates on the set of coherent caches accessed by the agent executing the instruction.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        661,
+        666
+      ]
+    },
+    {
+      "text": "The assembly offset operand may be omitted.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        668,
+        669
+      ]
+    },
+    {
+      "text": "If it isn't then any expression that computes the offset shall evaluate to zero.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        668,
+        669
+      ]
+    },
+    {
+      "text": "[insns-cboinval,reftext=\"Cache Block Invalidate\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.flush",
+      "line_range": [
+        671,
+        671
+      ]
+    },
+    {
+      "text": "Synopsis:: Perform an invalidate operation on a cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        674,
+        675
+      ]
+    },
+    {
+      "text": "Mnemonic:: cbo.inval offset(base)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        677,
+        678
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0xF, attr: ['MISC-MEM'] }, { bits: 5, name: 0x0 }, { bits: 3, name: 0x2, attr: ['CBO'] }, { bits: 5, name: 'rs1', attr: ['base'] }, { bits: 12, name: 0x000, attr: ['CBO.INVAL'] }, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        680,
+        690
+      ]
+    },
+    {
+      "text": "A *cbo.inval* instruction performs an invalidate operation on the cache block that contains the address specified in rs1.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        694,
+        699
+      ]
+    },
+    {
+      "text": "It is not required that rs1 is aligned to the size of a cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        694,
+        699
+      ]
+    },
+    {
+      "text": "On faults, the faulting virtual address is considered to be the value in rs1, rather than the base address of the cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        694,
+        699
+      ]
+    },
+    {
+      "text": "The instruction operates on the set of coherent caches accessed by the agent executing the instruction.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        694,
+        699
+      ]
+    },
+    {
+      "text": "Depending on CSR programming, the instruction may perform a flush operation instead of an invalidate operation.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        701,
+        702
+      ]
+    },
+    {
+      "text": "The assembly offset operand may be omitted.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        704,
+        705
+      ]
+    },
+    {
+      "text": "If it isn't then any expression that computes the offset shall evaluate to zero.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        704,
+        705
+      ]
+    },
+    {
+      "text": "[insns-cbozero,reftext=\"Cache Block Zero\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.inval",
+      "line_range": [
+        707,
+        707
+      ]
+    },
+    {
+      "text": "Synopsis:: Store zeros to the full set of bytes corresponding to a cache block",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        710,
+        711
+      ]
+    },
+    {
+      "text": "Mnemonic:: cbo.zero offset(base)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        713,
+        714
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0xF, attr: ['MISC-MEM'] }, { bits: 5, name: 0x0 }, { bits: 3, name: 0x2, attr: ['CBO'] }, { bits: 5, name: 'rs1', attr: ['base'] }, { bits: 12, name: 0x004, attr: ['CBO.ZERO'] }, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        716,
+        726
+      ]
+    },
+    {
+      "text": "A *cbo.zero* instruction performs stores of zeros to the full set of bytes corresponding to the cache block that contains the address specified in rs1.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        730,
+        735
+      ]
+    },
+    {
+      "text": "It is not required that rs1 is aligned to the size of a cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        730,
+        735
+      ]
+    },
+    {
+      "text": "On faults, the faulting virtual address is considered to be the value in rs1, rather than the base address of the cache block.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        730,
+        735
+      ]
+    },
+    {
+      "text": "An implementation may or may not update the entire set of bytes atomically.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        730,
+        735
+      ]
+    },
+    {
+      "text": "The assembly offset operand may be omitted.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        737,
+        739
+      ]
+    },
+    {
+      "text": "If it isn't then any expression that computes the offset shall evaluate to zero.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        737,
+        739
+      ]
+    },
+    {
+      "text": "[insns-prefetchi,reftext=\"Cache Block Prefetch for Instruction Fetch\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > cbo.zero",
+      "line_range": [
+        741,
+        741
+      ]
+    },
+    {
+      "text": "Synopsis:: Provide a HINT to hardware that a cache block is likely to be accessed by an instruction fetch in the near future",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.i",
+      "line_range": [
+        744,
+        746
+      ]
+    },
+    {
+      "text": "Mnemonic:: prefetch.i offset(base)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.i",
+      "line_range": [
+        748,
+        749
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 0x0, attr: ['offset[4:0]'] }, { bits: 3, name: 0x6, attr: ['ORI'] }, { bits: 5, name: 'rs1', attr: ['base'] }, { bits: 5, name: 0x0, attr: ['PREFETCH.I'] }, { bits: 7, name: 'imm[11:5]', attr: ['offset[11:5]'] }, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.i",
+      "line_range": [
+        751,
+        762
+      ]
+    },
+    {
+      "text": "A *prefetch.i* instruction indicates to hardware that the cache block whose effective address is the sum of the base address specified in rs1 and the sign-extended offset encoded in imm[11:0], where imm[4:0] equals `0b00000`, is likely to be accessed by an instruction fetch in the near future.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.i",
+      "line_range": [
+        766,
+        770
+      ]
+    },
+    {
+      "text": "[insns-prefetchr,reftext=\"Cache Block Prefetch for Data Read\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.i",
+      "line_range": [
+        772,
+        772
+      ]
+    },
+    {
+      "text": "Synopsis:: Provide a HINT to hardware that a cache block is likely to be accessed by a data read in the near future",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.r",
+      "line_range": [
+        775,
+        777
+      ]
+    },
+    {
+      "text": "Mnemonic:: prefetch.r offset(base)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.r",
+      "line_range": [
+        779,
+        780
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 0x0, attr: ['offset[4:0]'] }, { bits: 3, name: 0x6, attr: ['ORI'] }, { bits: 5, name: 'rs1', attr: ['base'] }, { bits: 5, name: 0x1, attr: ['PREFETCH.R'] }, { bits: 7, name: 'imm[11:5]', attr: ['offset[11:5]'] }, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.r",
+      "line_range": [
+        782,
+        793
+      ]
+    },
+    {
+      "text": "A *prefetch.r* instruction indicates to hardware that the cache block whose effective address is the sum of the base address specified in rs1 and the sign-extended offset encoded in imm[11:0], where imm[4:0] equals `0b00000`, is likely to be accessed by a data read (i.e. load) in the near future.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.r",
+      "line_range": [
+        797,
+        801
+      ]
+    },
+    {
+      "text": "[insns-prefetchw,reftext=\"Cache Block Prefetch for Data Write\"]",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.r",
+      "line_range": [
+        803,
+        803
+      ]
+    },
+    {
+      "text": "Synopsis:: Provide a HINT to hardware that a cache block is likely to be accessed by a data write in the near future",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.w",
+      "line_range": [
+        806,
+        808
+      ]
+    },
+    {
+      "text": "Mnemonic:: prefetch.w offset(base)",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.w",
+      "line_range": [
+        810,
+        811
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ { bits: 7, name: 0x13, attr: ['OP-IMM'] }, { bits: 5, name: 0x0, attr: ['offset[4:0]'] }, { bits: 3, name: 0x6, attr: ['ORI'] }, { bits: 5, name: 'rs1', attr: ['base'] }, { bits: 5, name: 0x3, attr: ['PREFETCH.W'] }, { bits: 7, name: 'imm[11:5]', attr: ['offset[11:5]'] }, ]} ....",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.w",
+      "line_range": [
+        813,
+        824
+      ]
+    },
+    {
+      "text": "A *prefetch.w* instruction indicates to hardware that the cache block whose effective address is the sum of the base address specified in rs1 and the sign-extended offset encoded in imm[11:0], where imm[4:0] equals `0b00000`, is likely to be accessed by a data write (i.e. store) in the near future.",
+      "section": "Preamble > Cache Management Operations (CMOs) > Pseudocode for instruction semantics > Instructions > prefetch.w",
+      "line_range": [
+        828,
+        832
+      ]
+    }
+  ]
+}

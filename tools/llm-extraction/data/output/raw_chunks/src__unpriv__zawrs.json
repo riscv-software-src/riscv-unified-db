@@ -1,0 +1,214 @@
+{
+  "source_file": "src/unpriv/zawrs.adoc",
+  "total": 26,
+  "sentences": [
+    {
+      "text": "The Zawrs extension defines a pair of instructions to be used in polling loops that allows a core to enter a low-power state and wait on a store to a memory location.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "Waiting for a memory location to be updated is a common pattern in many use cases such as:",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "Contenders for a lock waiting for the lock variable to be updated.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        8,
+        8
+      ]
+    },
+    {
+      "text": "Consumers waiting on the tail of an empty queue for the producer to queue work/data.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        10,
+        12
+      ]
+    },
+    {
+      "text": "The producer may be code executing on a RISC-V hart, an accelerator device, an external I/O agent.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        10,
+        12
+      ]
+    },
+    {
+      "text": "Code waiting on a flag to be set in memory indicative of an event occurring.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        14,
+        17
+      ]
+    },
+    {
+      "text": "For example, software on a RISC-V hart may wait on a \"done\" flag to be set in memory by an accelerator device indicating completion of a job previously submitted to the device.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        14,
+        17
+      ]
+    },
+    {
+      "text": "Such use cases involve polling on memory locations, and such busy loops can be a wasteful expenditure of energy.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        19,
+        26
+      ]
+    },
+    {
+      "text": "To mitigate the wasteful looping in such usages, a `WRS.NTO` (WRS-with-no-timeout) instruction is provided.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        19,
+        26
+      ]
+    },
+    {
+      "text": "Instead of polling for a store to a specific memory location, software registers a reservation set that includes all the bytes of the memory location using the `LR` instruction.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        19,
+        26
+      ]
+    },
+    {
+      "text": "Then a subsequent `WRS.NTO` instruction would cause the hart to temporarily stall execution in a low-power state until a store occurs to the reservation set or an interrupt is observed.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        19,
+        26
+      ]
+    },
+    {
+      "text": "Sometimes the program waiting on a memory update may also need to carry out a task at a future time or otherwise place an upper bound on the wait.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        28,
+        35
+      ]
+    },
+    {
+      "text": "To support such use cases a second instruction `WRS.STO` (WRS-with-short-timeout) is provided that works like `WRS.NTO` but bounds the stall duration to an implementation-define short timeout such that the stall is terminated on the timeout if no other conditions have occurred to terminate the stall.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        28,
+        35
+      ]
+    },
+    {
+      "text": "The program using this instruction may then determine if its deadline has been reached.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01",
+      "line_range": [
+        28,
+        35
+      ]
+    },
+    {
+      "text": "The `WRS.NTO` and `WRS.STO` instructions cause the hart to temporarily stall execution in a low-power state as long as the reservation set is valid and no pending interrupts, even if disabled, are observed.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        40,
+        44
+      ]
+    },
+    {
+      "text": "For `WRS.STO` the stall duration is bounded by an implementation defined short timeout.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        40,
+        44
+      ]
+    },
+    {
+      "text": "These instructions are available in all privilege modes.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        40,
+        44
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr: ['SYSTEM(0x73)'] }, {bits: 5, name: 'rd', attr: ['0'] }, {bits: 3, name: 'funct3', attr: ['0'] }, {bits: 5, name: 'rs1', attr: ['0'] }, {bits: 12, name: 'funct12', attr:['WRS.NTO(0x0d)', 'WRS.STO(0x1d)'] }, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        46,
+        55
+      ]
+    },
+    {
+      "text": "Hart execution may be stalled while the following conditions are all satisfied: [loweralpha] .",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        59,
+        63
+      ]
+    },
+    {
+      "text": "The reservation set is valid .",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        59,
+        63
+      ]
+    },
+    {
+      "text": "If `WRS.STO`, a \"short\" duration since start of stall has not elapsed .",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        59,
+        63
+      ]
+    },
+    {
+      "text": "No pending interrupt is observed (see the rules below)",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        59,
+        63
+      ]
+    },
+    {
+      "text": "While stalled, an implementation is permitted to occasionally terminate the stall and complete execution for any reason.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        65,
+        66
+      ]
+    },
+    {
+      "text": "`WRS.NTO` and `WRS.STO` instructions follow the rules of the `WFI` instruction for resuming execution on a pending interrupt.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        68,
+        69
+      ]
+    },
+    {
+      "text": "When the `TW` (Timeout Wait) bit in `mstatus` is set and `WRS.NTO` is executed in any privilege mode other than M mode, and it does not complete within an implementation-specific bounded time limit, the `WRS.NTO` instruction will cause an illegal-instruction exception.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        71,
+        74
+      ]
+    },
+    {
+      "text": "When executing in VS or VU mode, if the `VTW` bit is set in `hstatus`, the `TW` bit in `mstatus` is clear, and the `WRS.NTO` does not complete within an implementation-specific bounded time limit, the `WRS.NTO` instruction will cause a virtual-instruction exception.",
+      "section": "Preamble > \"Zawrs\" Extension for Wait-on-Reservation-Set instructions, Version 1.01 > Wait-on-Reservation-Set Instructions",
+      "line_range": [
+        76,
+        79
+      ]
+    }
+  ]
+}

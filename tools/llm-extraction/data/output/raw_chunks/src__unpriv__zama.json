@@ -1,0 +1,22 @@
+{
+  "source_file": "src/unpriv/zama.adoc",
+  "total": 2,
+  "sentences": [
+    {
+      "text": "If the Zama16b extension is implemented, then the in main memory regions with both the cacheability and coherence PMAs is 16 bytes.",
+      "section": "Preamble > Zama16b Extension for 16-byte Misaligned Atomicity, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "Misaligned loads, stores, and AMOs to main memory regions that do not cross a naturally aligned 16-byte boundary are atomic.",
+      "section": "Preamble > Zama16b Extension for 16-byte Misaligned Atomicity, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    }
+  ]
+}

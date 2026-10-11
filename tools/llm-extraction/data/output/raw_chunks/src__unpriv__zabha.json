@@ -1,0 +1,166 @@
+{
+  "source_file": "src/unpriv/zabha.adoc",
+  "total": 20,
+  "sentences": [
+    {
+      "text": "The A-extension offers atomic memory operation (AMO) instructions for words, doublewords, and quadwords (only for `AMOCAS`).",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "The absence of atomic operations for subword data types necessitates emulation strategies.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "For bitwise operations, this emulation can be performed via word-sized bitwise AMO* instructions.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "For non-bitwise operations, emulation is achievable using word-sized `LR`/`SC` instructions.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "Several limitations arise from this emulation approach:",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        10,
+        10
+      ]
+    },
+    {
+      "text": "In systems with large-scale or Non-Uniform Memory Access (NUMA) configurations, emulation based on `LR`/`SC` introduces issues related to scalability and fairness, particularly under conditions of high contention.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        12,
+        14
+      ]
+    },
+    {
+      "text": "Emulation of narrower AMOs through wider AMO* instructions on non-idempotent IO memory regions may result in unintended side effects.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        16,
+        17
+      ]
+    },
+    {
+      "text": "Utilizing wider AMO* instructions for emulating narrower AMOs risks activating extraneous breakpoints or watchpoints.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        19,
+        20
+      ]
+    },
+    {
+      "text": "In the absence of native support for subword atomics, compilers often resort to inlining code sequences to provide the required emulation.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        22,
+        25
+      ]
+    },
+    {
+      "text": "This practice contributes to an increase in code size, with consequent impacts on system performance and memory utilization.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        22,
+        25
+      ]
+    },
+    {
+      "text": "The Zabha extension addresses these limitations by adding support for byte and halfword atomic memory operations to the RISC-V Unprivileged ISA.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        27,
+        29
+      ]
+    },
+    {
+      "text": "The Zabha extension depends upon the Zaamo standard extension.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        27,
+        29
+      ]
+    },
+    {
+      "text": "Zabha extension provides the `AMO[ADD|AND|OR|XOR|SWAP|MIN[U]|MAX[U]].[B|H]` instructions.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        33,
+        35
+      ]
+    },
+    {
+      "text": "If Zacas extension is also implemented, Zabha further provides the `AMOCAS.[B|H]` instructions.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        33,
+        35
+      ]
+    },
+    {
+      "text": "[wavedrom, zabha-ext-wavedrom-reg,svg] .... {reg: [ {bits: 7, name: 'opcode', attr:['AMO','AMO','AMO','AMO','AMO','AMO','AMO','AMO']}, {bits: 5, name: 'rd', attr:['dest','dest','dest','dest','dest','dest','dest','dest']}, {bits: 3, name: 'funct3', attr:['width=0/1','width=0/1','width=0/1','width=0/1','width=0/1','width=0/1','width=0/1','width=0/1']}, {bits: 5, name: 'rs1', attr:['addr','addr','addr','addr','addr','addr','addr','addr']}, {bits: 5, name: 'rs2', attr:['src','src','src','src','src','src','src','src']}, {bits: 1, name: 'rl'}, {bits: 1, name: 'aq', attr:['ordering','ordering','ordering','ordering','ordering','ordering','ordering','ordering']}, {bits: 5, name: 'funct5', attr:['AMOSWAP.B/H','AMOADD.B/H','AMOAND.B/H','AMOOR.B/H','AMOXOR.B/H','AMOMAX[U].B/H','AMOMIN[U].B/H','AMOCAS.B/H']}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        37,
+        49
+      ]
+    },
+    {
+      "text": "Byte and halfword AMOs always sign-extend the value placed in `rd`, and ignore the stem:[XLEN-1:2^{(width + 3)}] bits of the original value in `rs2`.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        51,
+        54
+      ]
+    },
+    {
+      "text": "The `AMOCAS.[B|H]` instructions similarly ignore the stem:[XLEN-1:2^{(width + 3)}] bits of the original value in `rd`.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        51,
+        54
+      ]
+    },
+    {
+      "text": "Similar to the AMOs specified in the A extension, the Zabha extension mandates that the address contained in the `rs1` register must be naturally aligned to the size of the operand.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        56,
+        59
+      ]
+    },
+    {
+      "text": "The same exception options as specified in the A extension are applicable in cases where the address is not naturally aligned.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        56,
+        59
+      ]
+    },
+    {
+      "text": "Similar to the AMOs specified in the A and Zacas extensions, the AMOs in the Zabha extension optionally provide release consistency semantics, using the `aq` and `rl` bits, to help implement multiprocessor synchronization.",
+      "section": "Preamble > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0 > Byte and Halfword Atomic Memory Operation Instructions",
+      "line_range": [
+        61,
+        63
+      ]
+    }
+  ]
+}

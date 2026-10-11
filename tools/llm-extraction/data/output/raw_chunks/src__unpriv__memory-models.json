@@ -1,0 +1,38 @@
+{
+  "source_file": "src/unpriv/memory-models.adoc",
+  "total": 4,
+  "sentences": [
+    {
+      "text": "NOTE: This chapter is currently being restructured.",
+      "section": "Preamble > RISC-V Memory Models",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "Its contents are normative, but the presentation might appear disjoint.",
+      "section": "Preamble > RISC-V Memory Models",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "This chapter describes the two RISC-V memory consistency models: , the base weakly ordered model, and , a more strongly ordered model enabled via the Ztso standard extension.",
+      "section": "Preamble > RISC-V Memory Models",
+      "line_range": [
+        6,
+        8
+      ]
+    },
+    {
+      "text": "Additional explanatory material for both models can be found in .",
+      "section": "Preamble > RISC-V Memory Models",
+      "line_range": [
+        10,
+        11
+      ]
+    }
+  ]
+}

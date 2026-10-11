@@ -1,0 +1,1286 @@
+{
+  "source_file": "src/unpriv/cfi.adoc",
+  "total": 160,
+  "sentences": [
+    {
+      "text": "Control-flow Integrity (CFI) capabilities help defend against Return-Oriented Programming (ROP) and Call/Jump-Oriented Programming (COP/JOP) style control-flow subversion attacks.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        2,
+        11
+      ]
+    },
+    {
+      "text": "These attack methodologies use code sequences in authorized modules, with at least one instruction in the sequence being a control transfer instruction that depends on attacker-controlled data either in the return stack or in memory used to obtain the target address for a call or jump.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        2,
+        11
+      ]
+    },
+    {
+      "text": "Attackers stitch these sequences together by diverting the control flow instructions (e.g., `JALR`, `C.JR`, `C.JALR`), from their original target address to a new target via modification in the return stack or in the memory used to obtain the jump/call target address.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        2,
+        11
+      ]
+    },
+    {
+      "text": "RV32/RV64 provides two types of control transfer instructions - unconditional jumps and conditional branches.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        13,
+        20
+      ]
+    },
+    {
+      "text": "Conditional branches encode an offset in the immediate field of the instruction and are thus direct branches that are not susceptible to control-flow subversion.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        13,
+        20
+      ]
+    },
+    {
+      "text": "Unconditional direct jumps using `JAL` transfer control to a target that is in a +/- 1 MiB range from the current `pc`.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        13,
+        20
+      ]
+    },
+    {
+      "text": "Unconditional indirect jumps using the `JALR` obtain their branch target by adding the sign extended 12-bit immediate encoded in the instruction to the `rs1` register.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        13,
+        20
+      ]
+    },
+    {
+      "text": "The RV32I/RV64I does not have a dedicated instruction for calling a procedure or returning from a procedure. A `JAL` or `JALR` may be used to perform a procedure call and `JALR` to return from a procedure.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        22,
+        29
+      ]
+    },
+    {
+      "text": "The RISC-V ABI however defines the convention that a `JAL`/`JALR` where `rd` (i.e. the link register) is `x1` or `x5` is a procedure call, and a `JALR` where `rs1` is the conventional link register (i.e. `x1` or `x5`) is a return from procedure.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        22,
+        29
+      ]
+    },
+    {
+      "text": "The architecture allows for using these hints and conventions to support return address prediction (See ).",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        22,
+        29
+      ]
+    },
+    {
+      "text": "The ext:zca[] standard extension for compressed instructions provides unconditional jump and conditional branch instructions.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        31,
+        39
+      ]
+    },
+    {
+      "text": "The `C.J` and `C.JAL` instructions encode an offset in the immediate field of the instruction and thus are not susceptible to control-flow subversion.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        31,
+        39
+      ]
+    },
+    {
+      "text": "The `C.JR` and `C.JALR` instructions perform an unconditional control transfer to the address in register `rs1`.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        31,
+        39
+      ]
+    },
+    {
+      "text": "The `C.JALR` additionally writes the address of the instruction following the jump (`pc+2`) to the link register `x1` and is a procedure call.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        31,
+        39
+      ]
+    },
+    {
+      "text": "The `C.JR` is a return from procedure if `rs1` is a conventional link register (i.e. `x1` or `x5`); else it is an indirect jump.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        31,
+        39
+      ]
+    },
+    {
+      "text": "The term call is used to refer to a `JAL` or `JALR` instruction with a link register as destination, i.e., rd!=`x0`.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        41,
+        46
+      ]
+    },
+    {
+      "text": "Conventionally, the link register is `x1` or `x5`. A call using `JAL` or `C.JAL` is termed a direct call. A `C.JALR` expands to `JALR x1, 0(rs1)` and is a call. A call using `JALR` or `C.JALR` is termed an indirect-call.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        41,
+        46
+      ]
+    },
+    {
+      "text": "The term return is used to refer to a `JALR` instruction with rd=`x0` and with rs1=`x1` or rs1=`x5`. A `C.JR` instruction expands to `JALR x0, 0(rs1)` and is a return if rs1=`x1` or rs1=`x5`.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        48,
+        51
+      ]
+    },
+    {
+      "text": "The term indirect-jump is used to refer to a `JALR` instruction with rd=`x0` and where the rs1 is not `x1` or `x5` (i.e., not a return). A `C.JR` instruction where rs1 is not `x1` or `x5` (i.e., not a return) is an indirect-jump.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        53,
+        57
+      ]
+    },
+    {
+      "text": "The Zicfiss and Zicfilp extensions build on these conventions and hints and provide backward-edge and forward-edge control flow integrity respectively.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        59,
+        60
+      ]
+    },
+    {
+      "text": "The Unprivileged ISA for Zicfilp extension is specified in and for the Unprivileged ISA for Zicfiss extension is specified in .",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        62,
+        65
+      ]
+    },
+    {
+      "text": "The Privileged ISA for these extensions is specified in the Privileged ISA specification.",
+      "section": "Preamble > Control-flow Integrity (CFI)",
+      "line_range": [
+        62,
+        65
+      ]
+    },
+    {
+      "text": "To enforce forward-edge control-flow integrity, the Zicfilp extension introduces a landing pad (`LPAD`) instruction.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        70,
+        74
+      ]
+    },
+    {
+      "text": "The `LPAD` instruction must be placed at the program locations that are valid targets of indirect jumps or calls.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        70,
+        74
+      ]
+    },
+    {
+      "text": "The `LPAD` instruction (See ) is encoded using the `AUIPC` major opcode with rd=`x0`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        70,
+        74
+      ]
+    },
+    {
+      "text": "Compilers emit a landing pad instruction as the first instruction of an address-taken function, as well as at any indirect jump targets. A landing pad instruction is not required in functions that are only reached using a direct call or direct jump.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        76,
+        79
+      ]
+    },
+    {
+      "text": "The landing pad is designed to provide integrity to control transfers performed using indirect calls and jumps, and this is referred to as forward-edge protection.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "When the Zicfilp is active, the hart tracks an expected landing pad (`ELP`) state that is updated by an indirectcall or indirectjump to require a landing pad instruction at the target of the branch.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "If the instruction at the target is not a landing pad, then a software-check exception is raised.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        81,
+        87
+      ]
+    },
+    {
+      "text": "A landing pad may be optionally associated with a 20-bit label.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        89,
+        96
+      ]
+    },
+    {
+      "text": "With labeling enabled, the number of landing pads that can be reached from an indirect call or jump sites can be defined using programming language-based policies.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        89,
+        96
+      ]
+    },
+    {
+      "text": "Labeling of the landing pads enables software to achieve greater precision in pairing up indirect call/jump sites with valid targets.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        89,
+        96
+      ]
+    },
+    {
+      "text": "When labeling of landing pads is used, indirect call or indirect jump site can specify the expected label of the landing pad and thereby constrain the set of landing pads that may be reached from each indirect call or indirect jump site in the program.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        89,
+        96
+      ]
+    },
+    {
+      "text": "In the simplest form, a program can be built with a single label value to implement a coarse-grained version of forward-edge control-flow integrity.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "By constraining gadgets to be preceded by a landing pad instruction that marks the start of indirect callable functions, the program can significantly reduce the available gadget space. A second form of label generation may generate a signature, such as a MAC, using the prototype of the function.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "Programs that use this approach would further constrain the gadgets accessible from a call site to only indirectly callable functions that match the prototype of the called functions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "Another approach to label generation involves analyzing the control-flow-graph (CFG) of the program, which can lead to even more stringent constraints on the set of reachable gadgets.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "Such programs may further use multiple labels per function, which means that if a function is called from two or more call sites, the functions can be labeled as being reachable from each of the call sites.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "For instance, consider two call sites A and B, where A calls the functions X and Y, and B calls the functions Y and Z.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "In a single label scheme, functions X, Y, and Z would need to be assigned the same label so that both call sites A and B can invoke the common function Y.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "This scheme would allow call site A to also call function Z and call site B to also call function X.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "However, if function Y was assigned two labels - one corresponding to call site A and the other to call site B, then Y can be invoked by both call sites, but X can only be invoked by call site A and Z can only be invoked by call site B.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "To support multiple labels, the compiler could generate a call-site-specific entry point for shared functions, with each entry point having its own landing pad instruction followed by a direct branch to the start of the function.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "This would allow the function to be labeled with multiple labels, each corresponding to a specific call site. A portion of the label space may be dedicated to labeled landing pads that are only valid targets of an indirect jump (and not an indirect call).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        98,
+        125
+      ]
+    },
+    {
+      "text": "The `LPAD` instruction uses the code points defined as HINTs for the `AUIPC` opcode.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        127,
+        132
+      ]
+    },
+    {
+      "text": "When Zicfilp is not active at a privilege level or when the extension is not implemented, the landing pad instruction executes as a no-op. A program that is built with `LPAD` instructions can thus continue to operate correctly, but without forward-edge control-flow integrity, on processors that do not support the Zicfilp extension or if the Zicfilp extension is not active.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        127,
+        132
+      ]
+    },
+    {
+      "text": "Compilers and linkers should provide an attribute flag to indicate if the program has been compiled with the Zicfilp extension and use that to determine if the Zicfilp extension should be activated.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        134,
+        139
+      ]
+    },
+    {
+      "text": "The dynamic loader should activate the use of Zicfilp extension for an application only if all executables (the application and the dependent dynamically linked libraries) used by that application use the Zicfilp extension.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        134,
+        139
+      ]
+    },
+    {
+      "text": "When Zicfilp extension is not active or not implemented, the hart does not require landing pad instructions at the targets of indirect calls/jumps, and the landing instructions revert to being no-ops.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        141,
+        145
+      ]
+    },
+    {
+      "text": "This allows a program compiled with landing pad instructions to operate correctly but without forward-edge control-flow integrity.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        141,
+        145
+      ]
+    },
+    {
+      "text": "The Zicfilp extensions may be activated for use individually and independently for each privilege mode.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        147,
+        148
+      ]
+    },
+    {
+      "text": "The Zicfilp extension depends on the Zicsr extension.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp)",
+      "line_range": [
+        150,
+        150
+      ]
+    },
+    {
+      "text": "To enforce that the target of an indirect call or indirect jump must be a valid landing pad instruction, the hart maintains an expected landing pad (`ELP`) state to determine if a landing pad instruction is required at the target of an indirect call or an indirect jump.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        154,
+        157
+      ]
+    },
+    {
+      "text": "The `ELP` state can be one of:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        154,
+        157
+      ]
+    },
+    {
+      "text": "0 - `NOLPEXPECTED` * 1 - `LPEXPECTED`",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        159,
+        160
+      ]
+    },
+    {
+      "text": "The `ELP` state is initialized to `NOLPEXPECTED` by the hart upon reset.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        162,
+        162
+      ]
+    },
+    {
+      "text": "The Zicfilp extension, when enabled, determines if an indirect call or an indirect jump must land on a landing pad, as specified in .",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        164,
+        167
+      ]
+    },
+    {
+      "text": "If `islpexpected` is 1, then the hart updates the `ELP` to `LPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        164,
+        167
+      ]
+    },
+    {
+      "text": ".Landing pad expected determination [listing] ----",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        169,
+        172
+      ]
+    },
+    {
+      "text": "islpexpected = ( (JALR || C.JR || C.JALR) && (rs1 != x1) && (rs1 != x5) && (rs1 != x7) ) ? 1 : 0; ----",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        174,
+        176
+      ]
+    },
+    {
+      "text": "An indirect branch using `JALR`, `C.JALR`, or `C.JR` with `rs1` as `x7` is termed a software guarded branch.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        178,
+        181
+      ]
+    },
+    {
+      "text": "Such branches do not need to land on a `LPAD` instruction and thus do not set `ELP` to `LPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        178,
+        181
+      ]
+    },
+    {
+      "text": "The landing pad may be labeled.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        183,
+        191
+      ]
+    },
+    {
+      "text": "Zicfilp extension designates the register `x7` for use as the landing pad label register.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        183,
+        191
+      ]
+    },
+    {
+      "text": "To support labeled landing pads, the indirect call/jump sites establish an expected landing pad label (e.g., using the `LUI` instruction) in the bits 31:12 of the `x7` register.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        183,
+        191
+      ]
+    },
+    {
+      "text": "The `LPAD` instruction is encoded with a 20-bit immediate value called the landing-pad-label (`LPL`) that is matched to the expected landing pad label.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        183,
+        191
+      ]
+    },
+    {
+      "text": "When `LPL` is encoded as zero, the `LPAD` instruction does not perform the label check and in programs built with this single label mode of operation the indirect call/jump sites do not need to establish an expected landing pad label value in `x7`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        183,
+        191
+      ]
+    },
+    {
+      "text": "When `ELP` is set to `LPEXPECTED`, if the next instruction in the instruction stream is not 4-byte aligned, or is not `LPAD`, or if the landing pad label encoded in `LPAD` is not zero and does not match the expected landing pad label in bits 31:12 of the `x7` register, then a software-check exception (cause=18) with `xtval` set to \"landing pad fault (code=2)\" is raised else the `ELP` is updated to `NOLPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement",
+      "line_range": [
+        193,
+        199
+      ]
+    },
+    {
+      "text": "When Zicfilp is enabled, `LPAD` is the only instruction allowed to execute when the `ELP` state is `LPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        206,
+        210
+      ]
+    },
+    {
+      "text": "If Zicfilp is not enabled then the instruction is a no-op.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        206,
+        210
+      ]
+    },
+    {
+      "text": "If Zicfilp is enabled, the `LPAD` instruction causes a software-check exception with `xtval` set to \"landing pad fault (code=2)\" if any of the following conditions are true:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        206,
+        210
+      ]
+    },
+    {
+      "text": "The `pc` is not 4-byte aligned and `ELP` is `LPEXPECTED`. * The `ELP` is `LPEXPECTED` and the `LPL` is not zero and the `LPL` does not match the expected landing pad label in bits 31:12 of the `x7` register.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        212,
+        213
+      ]
+    },
+    {
+      "text": "If a software-check exception is not caused then the `ELP` is updated to `NOLPEXPECTED`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        215,
+        217
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr:'AUIPC'}, {bits: 5, name: 'rd', attr:'00000'}, {bits: 20, name: 'LPL'}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        219,
+        226
+      ]
+    },
+    {
+      "text": "The operation of the `LPAD` instruction is as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        228,
+        228
+      ]
+    },
+    {
+      "text": ".`LPAD` operation [listing] ---- if (xLPE 1 && ELP LPEXPECTED) //",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        230,
+        247
+      ]
+    },
+    {
+      "text": "If PC not 4-byte aligned then software-check exception if pc[1:0] != 0 raise software-check exception //",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        230,
+        247
+      ]
+    },
+    {
+      "text": "If landing pad label not matched -> software-check exception else if (inst.LPL != x7[31:12] && inst.LPL != 0) raise software-check exception else ELP = NOLPEXPECTED else no-op endif ---- <<<",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Landing Pad Enforcement > Landing Pad Instruction",
+      "line_range": [
+        230,
+        247
+      ]
+    },
+    {
+      "text": "The Zicfiss extension introduces a shadow stack to enforce backward-edge control-flow integrity. A shadow stack is a second stack used to store a shadow copy of the return address in the link register if it needs to be spilled.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        252,
+        255
+      ]
+    },
+    {
+      "text": "The shadow stack is designed to provide integrity to control transfers performed using a return, where the return may be from a procedure invoked using an indirect call or a direct call, and this is referred to as backward-edge protection.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        257,
+        260
+      ]
+    },
+    {
+      "text": "A program using backward-edge control-flow integrity has two stacks: a regular stack and a shadow stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        262,
+        266
+      ]
+    },
+    {
+      "text": "The shadow stack is used to spill the link register, if required, by non-leaf functions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        262,
+        266
+      ]
+    },
+    {
+      "text": "An additional register, shadow-stack-pointer (`ssp`), is introduced in the architecture to hold the address of the top of the active shadow stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        262,
+        266
+      ]
+    },
+    {
+      "text": "The shadow stack, similar to the regular stack, grows downwards, from higher addresses to lower addresses.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        268,
+        272
+      ]
+    },
+    {
+      "text": "Each entry on the shadow stack is `XLEN` wide and holds the link register value.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        268,
+        272
+      ]
+    },
+    {
+      "text": "The `ssp` points to the top of the shadow stack, which is the address of the last element stored on the shadow stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        268,
+        272
+      ]
+    },
+    {
+      "text": "The shadow stack is architecturally protected from inadvertent corruptions and modifications, as detailed in the Privileged specification.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        274,
+        275
+      ]
+    },
+    {
+      "text": "The Zicfiss extension provides instructions to store and load the link register to/from the shadow stack and to check the integrity of the return address.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        277,
+        280
+      ]
+    },
+    {
+      "text": "The extension provides instructions to support common stack maintenance operations such as stack unwinding and stack switching.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        277,
+        280
+      ]
+    },
+    {
+      "text": "When Zicfiss is enabled, each function that needs to spill the link register, typically non-leaf functions, store the link register value to the regular stack and a shadow copy of the link register value to the shadow stack when the function is entered (the prologue).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        282,
+        291
+      ]
+    },
+    {
+      "text": "When such a function returns (the epilogue), the function loads the link register from the regular stack and the shadow copy of the link register from the shadow stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        282,
+        291
+      ]
+    },
+    {
+      "text": "Then, the link register value from the regular stack and the shadow link register value from the shadow stack are compared. A mismatch of the two values is indicative of a subversion of the return address control variable and causes a software-check exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        282,
+        291
+      ]
+    },
+    {
+      "text": "The Zicfiss instructions, except `SSAMOSWAP.W/D`, are encoded using a subset of May-Be-Operation instructions defined by the Zimop and Zcmop extensions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        293,
+        301
+      ]
+    },
+    {
+      "text": "This subset of instructions revert to their Zimop/Zcmop defined behavior when the Zicfiss extension is not implemented or if the extension has not been activated. A program that is built with Zicfiss instructions can thus continue to operate correctly, but without backward-edge control-flow integrity, on processors that do not support the Zicfiss extension or if the Zicfiss extension is not active.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        293,
+        301
+      ]
+    },
+    {
+      "text": "The Zicfiss extension may be activated for use individually and independently for each privilege mode.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        293,
+        301
+      ]
+    },
+    {
+      "text": "Compilers should flag each object file (for example, using flags in the ELF attributes) to indicate if the object file has been compiled with the Zicfiss instructions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        303,
+        308
+      ]
+    },
+    {
+      "text": "The linker should flag (for example, using flags in the ELF attributes) the binary/executable generated by linking objects as being compiled with the Zicfiss instructions only if all the object files that are linked have the same Zicfiss attributes.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        303,
+        308
+      ]
+    },
+    {
+      "text": "The dynamic loader should activate the use of Zicfiss extension for an application only if all executables (the application and the dependent dynamically-linked libraries) used by that application use the Zicfiss extension.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        310,
+        313
+      ]
+    },
+    {
+      "text": "An application that has the Zicfiss extension active may request the dynamic loader at runtime to load a new dynamic shared object (using dlopen() for example).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        317,
+        323
+      ]
+    },
+    {
+      "text": "If the requested object does not have the Zicfiss attribute then the dynamic loader, based on its policy (e.g., established by the operating system or the administrator) configuration, could either deny the request or deactivate the Zicfiss extension for the application.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        317,
+        323
+      ]
+    },
+    {
+      "text": "It is strongly recommended that the policy enforces a strict security posture and denies the request.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        317,
+        323
+      ]
+    },
+    {
+      "text": "The Zicfiss extension depends on the Zicsr, Zimop and Zaamo extensions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        325,
+        328
+      ]
+    },
+    {
+      "text": "Furthermore, if the Zcmop extension is implemented, the Zicfiss extension also provides the `C.SSPUSH` and `C.SSPOPCHK` instructions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        325,
+        328
+      ]
+    },
+    {
+      "text": "Moreover, use of Zicfiss in U-mode requires S-mode to be implemented.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        325,
+        328
+      ]
+    },
+    {
+      "text": "Use of Zicfiss in M-mode is not supported.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss)",
+      "line_range": [
+        325,
+        328
+      ]
+    },
+    {
+      "text": "The Zicfiss extension introduces the following instructions:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Zicfiss Instructions Summary",
+      "line_range": [
+        332,
+        332
+      ]
+    },
+    {
+      "text": "Push to the shadow stack (See ) ** `SSPUSH x1` and `SSPUSH x5` - encoded using `MOP.RR.7` ** `C.SSPUSH x1` - encoded using `C.MOP.1`",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Zicfiss Instructions Summary",
+      "line_range": [
+        334,
+        336
+      ]
+    },
+    {
+      "text": "Pop from the shadow stack (See ) ** `SSPOPCHK x1` and `SSPOPCHK x5` - encoded using `MOP.R.28` ** `C.SSPOPCHK x5` - encoded using `C.MOP.5`",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Zicfiss Instructions Summary",
+      "line_range": [
+        338,
+        340
+      ]
+    },
+    {
+      "text": "Read the value of `ssp` into a register (See ) ** `SSRDP` - encoded using `MOP.R.28`",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Zicfiss Instructions Summary",
+      "line_range": [
+        342,
+        343
+      ]
+    },
+    {
+      "text": "Perform an atomic swap from a shadow stack location (See ) ** `SSAMOSWAP.W` and `SSAMOSWAP.D`",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Zicfiss Instructions Summary",
+      "line_range": [
+        345,
+        346
+      ]
+    },
+    {
+      "text": "Zicfiss does not use all encodings of `MOP.RR.7` or `MOP.R.28`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Zicfiss Instructions Summary",
+      "line_range": [
+        348,
+        351
+      ]
+    },
+    {
+      "text": "When a `MOP.RR.7` or `MOP.R.28` encoding is not used by the Zicfiss extension, the corresponding instruction adheres to its Zimop-defined behavior, unless redefined by another extension.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Zicfiss Instructions Summary",
+      "line_range": [
+        348,
+        351
+      ]
+    },
+    {
+      "text": "The `ssp` CSR is an unprivileged read-write (URW) CSR that reads and writes `XLEN` low order bits of the shadow stack pointer (`ssp`).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`)",
+      "line_range": [
+        355,
+        359
+      ]
+    },
+    {
+      "text": "There is no high CSR defined as the `ssp` is always as wide as the `XLEN` of the current privilege mode.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`)",
+      "line_range": [
+        355,
+        359
+      ]
+    },
+    {
+      "text": "The bits 1:0 of `ssp` are read-only zero.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`)",
+      "line_range": [
+        355,
+        359
+      ]
+    },
+    {
+      "text": "If the UXLEN or SXLEN may never be 32, then the bit 2 is also read-only zero.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Shadow Stack Pointer (`ssp`)",
+      "line_range": [
+        355,
+        359
+      ]
+    },
+    {
+      "text": "A shadow stack push operation is defined as decrement of the `ssp` by `XLEN/8` followed by a store of the value in the link register to memory at the new top of the shadow stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        368,
+        371
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr:'SYSTEM'}, {bits: 5, name: 'rd', attr:['00000']}, {bits: 3, name: 'funct3', attr:['100']}, {bits: 5, name: 'rs1', attr:['00000']}, {bits: 5, name: 'rs2', attr:['00001', '00101']}, {bits: 7, name: '1100111', attr:['SSPUSH x1','SSPUSH x5']}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        373,
+        383
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 2, name: 'op', attr:'C1'}, {bits: 5, name: '00000'}, {bits: 1, name: '1'}, {bits: 3, name: 'n[3:1]', attr:['000']}, {bits: 1, name: '0'}, {bits: 1, name: '0'}, {bits: 3, name: '011', attr:['C.SSPUSH x1']}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        385,
+        396
+      ]
+    },
+    {
+      "text": "Only `x1` and `x5` registers are supported as `rs2` for `SSPUSH`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        398,
+        400
+      ]
+    },
+    {
+      "text": "Zicfiss provides a 16-bit version of the `SSPUSH x1` instruction using the Zcmop defined `C.MOP.1` encoding.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        398,
+        400
+      ]
+    },
+    {
+      "text": "The `C.SSPUSH x1` expands to `SSPUSH x1`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        398,
+        400
+      ]
+    },
+    {
+      "text": "The `SSPUSH` instruction and its compressed form `C.SSPUSH` can be used to push a link register on the shadow stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        402,
+        406
+      ]
+    },
+    {
+      "text": "The `SSPUSH` and `C.SSPUSH` instructions perform a store identically to the existing store instructions, with the difference that the base is implicitly `ssp` and the width is implicitly `XLEN`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        402,
+        406
+      ]
+    },
+    {
+      "text": "The operation of the `SSPUSH` and `C.SSPUSH` instructions is as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        408,
+        408
+      ]
+    },
+    {
+      "text": ".`SSPUSH` and `C.SSPUSH` operation [listing] ---- if (xSSE 1) mem[ssp - (XLEN/8)] = X(src) Store src value to ssp - XLEN/8 ssp = ssp - (XLEN/8) decrement ssp by XLEN/8 endif ---- The `ssp` is decremented by `SSPUSH` and `C.SSPUSH` only if the store to the shadow stack completes successfully.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Push to the Shadow Stack",
+      "line_range": [
+        410,
+        420
+      ]
+    },
+    {
+      "text": "A shadow stack pop operation is defined as an `XLEN` wide read from the current top of the shadow stack followed by an increment of the `ssp` by `XLEN/8`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        426,
+        429
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr:'SYSTEM'}, {bits: 5, name: 'rd', attr:['00000','00000']}, {bits: 3, name: 'funct3', attr:['100']}, {bits: 5, name: 'rs1', attr:['00001','00101']}, {bits: 12, name: '110011011100', attr:['SSPOPCHK x1','SSPOPCHK x5']}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        431,
+        440
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 2, name: 'op', attr:'C1'}, {bits: 5, name: '00000'}, {bits: 1, name: '1'}, {bits: 3, name: 'n[3:1]', attr:['010']}, {bits: 1, name: '0'}, {bits: 1, name: '0'}, {bits: 3, name: '011', attr:['C.SSPOPCHK x5']}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        442,
+        453
+      ]
+    },
+    {
+      "text": "Only `x1` and `x5` registers are supported as `rs1` for `SSPOPCHK`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        455,
+        457
+      ]
+    },
+    {
+      "text": "Zicfiss provides a 16-bit version of the `SSPOPCHK x5` using the Zcmop defined `C.MOP.5` encoding.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        455,
+        457
+      ]
+    },
+    {
+      "text": "The `C.SSPOPCHK x5` expands to `SSPOPCHK x5`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        455,
+        457
+      ]
+    },
+    {
+      "text": "Programs with a shadow stack push the return address onto the regular stack as well as the shadow stack in the prologue of non-leaf functions.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        459,
+        464
+      ]
+    },
+    {
+      "text": "When returning from these non-leaf functions, such programs pop the link register from the regular stack and pop a shadow copy of the link register from the shadow stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        459,
+        464
+      ]
+    },
+    {
+      "text": "The two values are then compared.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        459,
+        464
+      ]
+    },
+    {
+      "text": "If the values do not match, it is indicative of a corruption of the return address variable on the regular stack.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        459,
+        464
+      ]
+    },
+    {
+      "text": "The `SSPOPCHK` instruction, and its compressed form `C.SSPOPCHK`, can be used to pop the shadow return address value from the shadow stack and check that the value matches the contents of the link register, and if not cause a software-check exception with `xtval` set to \"shadow stack fault (code=3)\".",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        466,
+        470
+      ]
+    },
+    {
+      "text": "While any register may be used as link register, conventionally the `x1` or `x5` registers are used.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        472,
+        474
+      ]
+    },
+    {
+      "text": "The shadow stack instructions are designed to be most efficient when the `x1` and `x5` registers are used as the link register.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        472,
+        474
+      ]
+    },
+    {
+      "text": "The `C.SSPOPCHK`, and `SSPOPCHK` instructions perform a load identically to the existing load instructions, with the difference that the base is implicitly `ssp` and the width is implicitly `XLEN`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        478,
+        481
+      ]
+    },
+    {
+      "text": "The operation of the `SSPOPCHK` and `C.SSPOPCHK` instructions is as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        483,
+        483
+      ]
+    },
+    {
+      "text": ".`SSPOPCHK` and `C.SSPOPCHK` operation [listing] ---- if (xSSE 1) temp = mem[ssp] Load temp from address in ssp and if temp != X(src) Compare temp to value in src and cause a software-check exception if they are not bitwise equal.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        485,
+        499
+      ]
+    },
+    {
+      "text": "Only x1 and x5 may be used as src raise software-check exception else ssp = ssp + (XLEN/8) increment ssp by XLEN/8. endif endif ----",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        485,
+        499
+      ]
+    },
+    {
+      "text": "If the value loaded from the address in `ssp` does not match the value in `rs1`, a software-check exception (cause=18) is raised with `xtval` set to \"shadow stack fault (code=3)\".",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        501,
+        505
+      ]
+    },
+    {
+      "text": "The software-check exception caused by `SSPOPCHK`/ `C.SSPOPCHK` is lower in priority than a load/store/AMO access-fault exception.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        501,
+        505
+      ]
+    },
+    {
+      "text": "The `ssp` is incremented by `SSPOPCHK` and `C.SSPOPCHK` only if the load from the shadow stack completes successfully and no software-check exception is raised.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Pop from the Shadow Stack",
+      "line_range": [
+        507,
+        510
+      ]
+    },
+    {
+      "text": "The `SSRDP` instruction is provided to move the contents of `ssp` to a destination register.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Read `ssp` into a Register",
+      "line_range": [
+        518,
+        520
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr:'SYSTEM'}, {bits: 5, name: 'rd', attr:['dst']}, {bits: 3, name: 'funct3', attr:['100']}, {bits: 5, name: '00000'}, {bits: 12, name: '110011011100', attr:['SSRDP']}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Read `ssp` into a Register",
+      "line_range": [
+        522,
+        531
+      ]
+    },
+    {
+      "text": "Encoding rd as `x0` is not supported for `SSRDP`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Read `ssp` into a Register",
+      "line_range": [
+        533,
+        533
+      ]
+    },
+    {
+      "text": "The operation of the `SSRDP` instructions is as follows:",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Read `ssp` into a Register",
+      "line_range": [
+        535,
+        535
+      ]
+    },
+    {
+      "text": ".`SSRDP` operation [listing] ---- if (xSSE 1) X(dst) = ssp else X(dst) = 0 endif ----",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Read `ssp` into a Register",
+      "line_range": [
+        537,
+        545
+      ]
+    },
+    {
+      "text": "[wavedrom, ,svg] .... {reg: [ {bits: 7, name: 'opcode', attr:'AMO'}, {bits: 5, name: 'rd', attr:'dest'}, {bits: 3, name: 'funct3', attr:['010', '011']}, {bits: 5, name: 'rs1', attr:'addr'}, {bits: 5, name: 'rs2', attr:'src'}, {bits: 1, name: 'rl'}, {bits: 1, name: 'aq'}, {bits: 5, name: '01001', attr:['SSAMOSWAP.W', 'SSAMOSWAP.D']}, ], config:{lanes: 1, hspace:1024}} ....",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        554,
+        566
+      ]
+    },
+    {
+      "text": "For RV32, `SSAMOSWAP.W` atomically loads a 32-bit data value from address of a shadow stack location in `rs1`, puts the loaded value into register `rd`, and stores the 32-bit value held in `rs2` to the original address in `rs1`. `SSAMOSWAP.D` (RV64 only) is similar to `SSAMOSWAP.W` but operates on 64-bit data values.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        568,
+        573
+      ]
+    },
+    {
+      "text": ".`SSAMOSWAP.W` for RV32 and `SSAMOSWAP.D` (RV64 only) operation [listing] ---- if privilegemode != M && menvcfg.SSE 0 raise illegal-instruction exception else if S-mode not implemented raise illegal-instruction exception else if privilegemode U && senvcfg.SSE 0 raise illegal-instruction exception else if privilegemode VS && henvcfg.SSE 0 raise virtual-instruction exception else if privilegemode VU && senvcfg.SSE 0 raise virtual-instruction exception else X(rd) = mem[X(rs1)] mem[X(rs1)] = X(rs2) endif ----",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        575,
+        592
+      ]
+    },
+    {
+      "text": "For RV64, `SSAMOSWAP.W` atomically loads a 32-bit data value from address of a shadow stack location in `rs1`, sign-extends the loaded value and puts it in `rd`, and stores the lower 32 bits of the value held in `rs2` to the original address in `rs1`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        594,
+        598
+      ]
+    },
+    {
+      "text": ".`SSAMOSWAP.W` for RV64 [listing] ---- if privilegemode != M && menvcfg.SSE 0 raise illegal-instruction exception else if S-mode not implemented raise illegal-instruction exception else if privilegemode U && senvcfg.SSE 0 raise illegal-instruction exception else if privilegemode VS && henvcfg.SSE 0 raise virtual-instruction exception else if privilegemode VU && senvcfg.SSE 0 raise virtual-instruction exception else temp[31:0] = mem[X(rs1)] X(rd) = SignExtend(temp[31:0]) mem[X(rs1)] = X(rs2)[31:0] endif ----",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        600,
+        618
+      ]
+    },
+    {
+      "text": "Just as for AMOs in the A extension, `SSAMOSWAP.W/D` requires that the address held in `rs1` be naturally aligned to the size of the operand (i.e., eight-byte aligned for doublewords, and four-byte aligned for words).",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        620,
+        624
+      ]
+    },
+    {
+      "text": "The same exception options apply if the address is not naturally aligned.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        620,
+        624
+      ]
+    },
+    {
+      "text": "Just as for AMOs in the A extension, `SSAMOSWAP.W/D` optionally provides release consistency semantics, using the `aq` and `rl` bits, to help implement multiprocessor synchronization.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        626,
+        629
+      ]
+    },
+    {
+      "text": "An `SSAMOSWAP.W/D` operation has acquire semantics if `aq=1` and release semantics if `rl=1`.",
+      "section": "Preamble > Control-flow Integrity (CFI) > Landing Pad (Zicfilp) > Shadow Stack (Zicfiss) > Atomic Swap from a Shadow Stack Location",
+      "line_range": [
+        626,
+        629
+      ]
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "source_file": "src/unpriv/zcmop.adoc",
+  "total": 13,
+  "sentences": [
+    {
+      "text": "This section defines the ext:zcmop[] extension, which defines eight 16-bit MOP instructions named C.MOP.n, where n is an odd integer between 1 and 15, inclusive. C.MOP.n is encoded in the reserved encoding space corresponding to C.LUI xn, 0, as shown in .",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "Unlike the MOPs defined in the extlink:zimop[] extension, the C.MOP.n instructions are defined to not write any register.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "Their encoding allows future extensions to define them to read register `x[n]`.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        3,
+        10
+      ]
+    },
+    {
+      "text": "The ext:zcmop[] extension depends upon the Zca extension.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        12,
+        12
+      ]
+    },
+    {
+      "text": "NOTE: Very few suitable 16-bit encoding spaces exist.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        17,
+        20
+      ]
+    },
+    {
+      "text": "This space was chosen because it already has unusual behavior with respect to the `rd`/`rs1` field--it encodes `c.addi16sp` when the field contains `x2`--and is therefore of lower value for most purposes.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        17,
+        20
+      ]
+    },
+    {
+      "text": ".C.MOP.n instruction encoding.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        22,
+        23
+      ]
+    },
+    {
+      "text": "| |Mnemonic | Encoding | Redefinable to read register",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        25,
+        26
+      ]
+    },
+    {
+      "text": "|C.MOP.1 | `0110000010000001` | `x1` |C.MOP.3 | `0110000110000001` | `x3` |C.MOP.5 | `0110001010000001` | `x5` |C.MOP.7 | `0110001110000001` | `x7` |C.MOP.9 | `0110010010000001` | `x9` |C.MOP.11 | `0110010110000001` | `x11` |C.MOP.13 | `0110011010000001` | `x13` |C.MOP.15 | `0110011110000001` | `x15` |",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        28,
+        36
+      ]
+    },
+    {
+      "text": "NOTE: The recommended assembly syntax for C.MOP.n is simply the nullary C.MOP.n.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        38,
+        39
+      ]
+    },
+    {
+      "text": "The possibly accessed register is implicitly `xn`.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        38,
+        39
+      ]
+    },
+    {
+      "text": "NOTE: The expectation is that each ext:zcmop[] instruction is equivalent to some ext:zimop[] instruction, but the choice of expansion (if any) is left to the extension that redefines the MOP.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        41,
+        45
+      ]
+    },
+    {
+      "text": "Note, a ext:zcmop[] instruction that does not write a value can expand into a write to `x0`.",
+      "section": "Preamble > ext:zcmop[] Compressed May-Be-Operations Extension",
+      "line_range": [
+        41,
+        45
+      ]
+    }
+  ]
+}

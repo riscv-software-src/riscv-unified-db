@@ -1,0 +1,190 @@
+{
+  "source_file": "src/unpriv/zvfbfmin.adoc",
+  "total": 23,
+  "sentences": [
+    {
+      "text": "This extension provides the minimal set of instructions needed to enable vector support of the BF16 format.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "It enables BF16 as an interchange format as it provides conversion between BF16 values and FP32 values.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "This extension depends upon `Zve32f` vector extension.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions",
+      "line_range": [
+        7,
+        7
+      ]
+    },
+    {
+      "text": "Synopsis:: Vector convert FP32 to BF16",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        11,
+        12
+      ]
+    },
+    {
+      "text": "Mnemonic:: vfncvtbf16.f.f.w vd, vs2, vm",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        14,
+        15
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: '1010111', attr:['OP-V']}, {bits: 5, name: 'vd'}, {bits: 3, name: '001', attr:['OPFVV']}, {bits: 5, name: '11101', attr:['vfncvtbf16']}, {bits: 5, name: 'vs2'}, {bits: 1, name: 'vm'}, {bits: 6, name: '010010', attr:['VFUNARY0']}, ]} ....",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        17,
+        29
+      ]
+    },
+    {
+      "text": "Reserved Encodings:: * `SEW` is any value other than 16",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        31,
+        33
+      ]
+    },
+    {
+      "text": "| |Register |Direction |EEW |Definition",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        37,
+        43
+      ]
+    },
+    {
+      "text": "| Vs2 | input | 32 | FP32 Source | Vd | output | 16 | BF16 Result |",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        45,
+        47
+      ]
+    },
+    {
+      "text": "Description:: Narrowing convert from FP32 to BF16.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        49,
+        51
+      ]
+    },
+    {
+      "text": "Round according to the frm register.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        49,
+        51
+      ]
+    },
+    {
+      "text": "This instruction is similar to `vfncvt.f.f.w` which converts a floating-point value in a 2*SEW-width format into an SEW-width format.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        53,
+        55
+      ]
+    },
+    {
+      "text": "However, here the SEW-width format is limited to BF16.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        53,
+        55
+      ]
+    },
+    {
+      "text": "Exceptions: Overflow, Underflow, Inexact, Invalid",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w",
+      "line_range": [
+        57,
+        57
+      ]
+    },
+    {
+      "text": "Synopsis:: Vector convert BF16 to FP32",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        64,
+        65
+      ]
+    },
+    {
+      "text": "Mnemonic:: vfwcvtbf16.f.f.v vd, vs2, vm",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        67,
+        68
+      ]
+    },
+    {
+      "text": "Encoding:: [wavedrom, , svg] .... {reg:[ {bits: 7, name: '1010111', attr:['OP-V']}, {bits: 5, name: 'vd'}, {bits: 3, name: '001', attr:['OPFVV']}, {bits: 5, name: '01101', attr:['vfwcvtbf16']}, {bits: 5, name: 'vs2'}, {bits: 1, name: 'vm'}, {bits: 6, name: '010010', attr:['VFUNARY0']}, ]} ....",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        70,
+        82
+      ]
+    },
+    {
+      "text": "Reserved Encodings:: * `SEW` is any value other than 16",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        84,
+        86
+      ]
+    },
+    {
+      "text": "Arguments:: | |Register |Direction |EEW |Definition",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        88,
+        95
+      ]
+    },
+    {
+      "text": "| Vs2 | input | 16 | BF16 Source | Vd | output | 32 | FP32 Result |",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        97,
+        99
+      ]
+    },
+    {
+      "text": "Description:: Widening convert from BF16 to FP32.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        101,
+        103
+      ]
+    },
+    {
+      "text": "This instruction is similar to `vfwcvt.f.f.v` which converts a floating-point value in an SEW-width format into a 2*SEW-width format.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        105,
+        107
+      ]
+    },
+    {
+      "text": "However, here the SEW-width format is limited to BF16.",
+      "section": "Preamble > `Zvfbfmin` Extension for Vector BF16 Conversions > vfncvtbf16.f.f.w > vfwcvtbf16.f.f.v",
+      "line_range": [
+        105,
+        107
+      ]
+    }
+  ]
+}
