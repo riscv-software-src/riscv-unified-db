@@ -11,7 +11,6 @@ long_name: Qualcomm uC extensions
 versions:
 - version: "0.1.0"
   state: development
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -21,7 +20,6 @@ versions:
     email: dhower@qti.qualcomm.com
 - version: "0.2.0"
   state: development
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -34,7 +32,6 @@ versions:
     - Removed shXadd instructions in favor of generic shladd
 - version: "0.3.0"
   state: development
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -66,7 +63,6 @@ versions:
         - { name: Xqcisls, version: "= 0.1.0" }
 - version: "0.4.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -100,7 +96,6 @@ versions:
         - { name: Xqcisls, version: "= 0.2.0" }
 - version: "0.5.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -146,7 +141,6 @@ versions:
         - { name: Xqcisync, version: "= 0.1.0" }
 - version: "0.6.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -189,7 +183,6 @@ versions:
         - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.7.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -239,7 +232,6 @@ versions:
         - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.8.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -280,7 +272,6 @@ versions:
         - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.9.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -325,7 +316,6 @@ versions:
         - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.10.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -360,7 +350,6 @@ versions:
         - { name: Xqcisync, version: "= 0.2.0" }
 - version: "0.11.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.
@@ -407,7 +396,6 @@ versions:
         - { name: Xqcisync, version: "= 0.3.0" }
 - version: "0.12.0"
   state: frozen
-  ratification_date: unknown
   contributors:
   - name: Albert Yosher
     company: Qualcomm Technologies, Inc.

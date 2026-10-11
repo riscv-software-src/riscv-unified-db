@@ -62,7 +62,7 @@ versions:
         `pc` to `__x__tval`.
       - Specified relaxed constraints for implicit reads of non-idempotent regions.
   - version: "1.13.0"
-    state: frozen
+    state: ratified
     ratification_date: 2023-12
     changes:
       - Redefined `misa`.MXL to be read-only, making MXLEN a constant.

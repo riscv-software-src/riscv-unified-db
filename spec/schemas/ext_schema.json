@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.1",
+  "$id": "v0.2",
   "description": "An ISA extension defines a named set of instructions, CSRs, and behaviors that can be implemented by a RISC-V processor. Each extension has one or more versioned releases, with various ratification states (development, frozen, public-review, ratification-ready, ratified, or nonstandard-released).\n\n## Key Fields\n\n- `name`: Short identifier used throughout the database (e.g., `I`, `M`, `Zicsr`, `Smstateen`)\n- `long_name`: Human-readable one-line description\n- `description`: Full AsciiDoc documentation of the extension\n- `type`: Whether the extension is `unprivileged` or `privileged`\n- `versions`: Array of versioned releases, each with a `state` and optional `ratification_date`\n- `requirements`: Optional condition that must be true for the extension to be implementable (e.g., requires another extension)\n- `company`: Organization that developed the extension (defaults to RISC-V International for standard extensions)\n- `doc_license`: License for the extension documentation",
   "type": "object",
   "required": [
@@ -150,6 +150,25 @@
                     "type": "null"
                   }
                 }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "state": {
+                  "enum": [
+                    "development",
+                    "frozen",
+                    "public-review",
+                    "ratification-ready"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "ratification_date": false
               }
             }
           }

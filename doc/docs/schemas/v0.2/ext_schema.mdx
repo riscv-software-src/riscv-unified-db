@@ -1,0 +1,141 @@
+---
+title: Ext Schema (v0.2)
+sidebar_label: Ext Schema
+custom_edit_url: null
+# This file is auto-generated from ext_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Ext Schema
+
+<span class="badge badge--secondary">v0.2</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`ext_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/ext_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+An ISA extension defines a named set of instructions, CSRs, and behaviors that can be implemented by a RISC-V processor. Each extension has one or more versioned releases, with various ratification states (development, frozen, public-review, ratification-ready, ratified, or nonstandard-released).
+
+## Key Fields
+
+- `name`: Short identifier used throughout the database (e.g., `I`, `M`, `Zicsr`, `Smstateen`)
+- `long_name`: Human-readable one-line description
+- `description`: Full AsciiDoc documentation of the extension
+- `type`: Whether the extension is `unprivileged` or `privileged`
+- `versions`: Array of versioned releases, each with a `state` and optional `ratification_date`
+- `requirements`: Optional condition that must be true for the extension to be implementable (e.g., requires another extension)
+- `company`: Organization that developed the extension (defaults to RISC-V International for standard extensions)
+- `doc_license`: License for the extension documentation
+
+
+## Quick Start
+
+**Minimal Extension (Zicsr):**
+```yaml
+"$schema": ext_schema.json#
+kind: extension
+name: Zicsr
+long_name: Control and status register instructions
+description: Control and status register instructions
+type: unprivileged
+versions:
+- version: 2.0.0
+  state: ratified
+  ratification_date: 2019-04
+
+```
+
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `string` (const: `ext_schema.json#`) | ✓ | Schema reference - must be `ext_schema.json#` |
+| `kind` | `string` (const: `extension`) | ✓ | Document type identifier - must be `extension` |
+| `name` | Extension name (e.g., `I`, `M`, `Zicsr`, `Smstateen`) | ✓ |  |
+| `long_name` | `string` | ✓ | One-line human-readable name for the extension (e.g., `Address generation`, `Bit Manipulation`) |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; | ✓ | Full AsciiDoc documentation of the extension. May include multiple paragraphs, code examples, and cross-references. |
+| `type` | `unprivileged` \| `privileged` | ✓ | Privilege level of the extension. `unprivileged` extensions add instructions or behaviors accessible in user mode; `privileged` extensions add supervisor- or machine-mode functionality. |
+| `versions` | Array&lt;object&gt; [↓&nbsp;schema](#versions-schema) | ✓ | Ordered list of versioned releases of this extension, from oldest to newest. |
+| `rvi_jira_issue` | `string` |  | JIRA issue number tracking this extension in the RISC-V International issue tracker |
+| `company` | A company |  | Organization that developed this extension. Omit for RISC-V International standard extensions. |
+| `doc_license` | License that applies to the textual documentation for this extension |  | License for the extension documentation |
+| `requirements` | A condition (YAML structure or IDL function). See the conditions reference for details. |  | Condition that must be true for this extension to be implementable. If the condition is false, the extension cannot be implemented. Typically used to express that one extension requires another (e.g., `D` requires `F`). |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="versions-schema"></a><code>versions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `version` | `string` | ✓ | Version number in `MAJOR.MINOR.PATCH` format (e.g., `1.0.0`, `2.1.0`) |
+| `state` | `development` \| `frozen` \| `public-review` \| `ratification-ready` \| `ratified` \| `nonstandard-released` | ✓ | Ratification state of this version. See `spec_state` in schema_defs for all possible values and their meanings. |
+| `repositories` | Array&lt;object&gt; |  | Source repositories where this version of the extension is developed |
+| `ratification_date` | One of: `string` \| `string` \| `null` |  | Month when this version was ratified, in `YYYY-MM` format. Use `unknown` if the date is not recorded. Required when `state` is `ratified`. |
+| `release_date` | One of: `string` \| `string` \| `null` |  |  |
+| `changes` | Array&lt;`string`&gt; |  | List of changes introduced in this version relative to the previous version |
+| `url` | `string` |  | URL to the ratified specification document (e.g., a PDF on the RISC-V website) |
+| `contributors` | Array&lt;object&gt; |  | People who contributed to this version of the extension |
+| `requirements` | `object` \| `object` \| `object` \| `object` \| `object` \| `object` |  | Additional condition that must be true for this specific version to be implementable, beyond any requirements on the extension overall. If the condition is false, this version cannot be implemented. |
+
+</details>
+
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Examples
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Extension with Requirements (B)</summary>
+
+```yaml
+"$schema": ext_schema.json#
+kind: extension
+name: B
+long_name: Bit Manipulation
+description: The B standard extension comprises instructions provided by the Zba,
+  Zbb, and Zbs extensions.
+type: unprivileged
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+versions:
+- version: 1.0.0
+  state: ratified
+  ratification_date: 2024-04
+  url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
+  requirements:
+    extension:
+      allOf:
+      - name: Zba
+        version: "= 1.0.0"
+      - name: Zbb
+        version: "= 1.0.0"
+      - name: Zbs
+        version: "= 1.0.0"
+
+```
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.2` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |
