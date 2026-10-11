@@ -1,0 +1,38 @@
+{
+  "chunk_id": "chunk_063",
+  "source_file": "zabha.adoc",
+  "start_line": 1,
+  "end_line": 68,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "Byte and halfword AMOs always sign-extend the value placed in `rd`, and ignore the stem:[XLEN-1:2^{(width + 3)}] bits of the original value in `rs2`.",
+      "line_number": 40,
+      "reason": "This is a fixed requirement ('always sign-extend') that all implementations must follow. There is no implementation choice here."
+    },
+    {
+      "excerpt": "Similar to the AMOs specified in the A extension, the Zabha extension mandates that the address contained in the `rs1` register must be naturally aligned to the size of the operand.",
+      "line_number": 45,
+      "reason": "This is a fixed requirement ('mandates') about address alignment. All implementations must enforce this - it's not a parameter."
+    },
+    {
+      "excerpt": "The same exception options as specified in the A extension are applicable in cases where the address is not naturally aligned.",
+      "line_number": 47,
+      "reason": "This refers to exception options from the A extension, but doesn't define any new implementation choices specific to Zabha."
+    },
+    {
+      "excerpt": "Zabha omits _byte_ and _halfword_ support for `LR` and `SC` due to low utility.",
+      "line_number": 54,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. It explains a design decision but doesn't define an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"Byte and halfword AMOs always sign-extend the value placed in `rd`, and ignore the stem:[XLEN-1:2^{(width + 3)}] bits of the original value in `rs2`.\",\n      \"line_number\": 40,\n      \"reason\": \"This is a fixed requirement ('always sign-extend') that all implementations must follow. There is no implementation choice here.\"\n    },\n    {\n      \"excerpt\": \"Similar to the AMOs specified in the A extension, the Zabha extension mandates that the address contained in the `rs1` register must be naturally aligned to the size of the operand.\",\n      \"line_number\": 45,\n      \"reason\": \"This is a fixed requirement ('mandates') about address alignment. All implementations must enforce this - it's not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The same exception options as specified in the A extension are applicable in cases where the address is not naturally aligned.\",\n      \"line_number\": 47,\n      \"reason\": \"This refers to exception options from the A extension, but doesn't define any new implementation choices specific to Zabha.\"\n    },\n    {\n      \"excerpt\": \"Zabha omits _byte_ and _halfword_ support for `LR` and `SC` due to low utility.\",\n      \"line_number\": 54,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. It explains a design decision but doesn't define an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 6779,
+  "output_tokens": 387,
+  "latency_ms": 7383,
+  "timestamp": "2026-05-25T20:54:44.159587+00:00",
+  "error": null,
+  "retry_count": 0
+}

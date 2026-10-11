@@ -1,0 +1,94 @@
+{
+  "chunk_id": "chunk_027",
+  "source_file": "priv-cfi.adoc",
+  "start_line": 1,
+  "end_line": 373,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "To store the previous `ELP` state on trap delivery to M-mode, an `MPELP` bit is provided in the `mstatus` CSR.",
+      "line_number": 82,
+      "parameter_name": "REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This describes whether the implementation reports the cause in mtval when a landing pad software check exception occurs. The parameter controls what information is provided in the trap value register."
+    },
+    {
+      "excerpt": "To store the previous `ELP` state on trap delivery to S/HS-mode, an `SPELP` bit is provided in the `mstatus` CSR.",
+      "line_number": 83,
+      "parameter_name": "REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This describes whether the implementation reports the cause in stval when a landing pad software check exception occurs in S-mode. Similar to the M-mode case but for S-mode trap value reporting."
+    },
+    {
+      "excerpt": "To store the previous `ELP` state on traps to VS-mode, a `SPELP` bit is defined in the `vsstatus` (VS-modes version of `sstatus`).",
+      "line_number": 85,
+      "parameter_name": "REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "existing_udb_name": "REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK",
+      "class": "DOC_RULE",
+      "value_type": "binary",
+      "confidence": "medium",
+      "reasoning": "This describes whether the implementation reports the cause in vstval when a landing pad software check exception occurs in VS-mode. Similar pattern for VS-mode trap value reporting."
+    },
+    {
+      "excerpt": "When S-mode is not implemented, then `xSSE` is 0 at both M and U privilege modes.",
+      "line_number": 175,
+      "parameter_name": "ZICFISS_SMODE_XSSE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a direct implementation choice about whether Zicfiss shadow stack extension is supported when S-mode is not implemented. The implementation must choose whether to support this configuration."
+    },
+    {
+      "excerpt": "The encoding `R=0`, `W=1`, and `X=0`, is defined to represent an SS page.",
+      "line_number": 207,
+      "parameter_name": "SS_PAGE_ENCODING",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines a specific page table entry encoding for shadow stack pages. While the encoding is specified, implementations must choose whether to support this encoding based on whether they implement Zicfiss."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The Zicfilp must be explicitly enabled for use at each privilege mode.",
+      "line_number": 46,
+      "reason": "This is inside a [NOTE] block, which is non-normative informational text, not an architectural parameter."
+    },
+    {
+      "excerpt": "When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.",
+      "line_number": 90,
+      "reason": "This describes the required behavior when a trap occurs, not an implementation choice. All implementations must follow this behavior."
+    },
+    {
+      "excerpt": "If the privilege mode is less than M and `menvcfg.SSE` is 0, an illegal-instruction exception is raised.",
+      "line_number": 130,
+      "reason": "This describes the required behavior based on CSR field values at runtime, not an implementation parameter. The behavior is deterministic given the CSR state."
+    },
+    {
+      "excerpt": "Memory mapped as an SS page cannot be written to by instructions other than `SSAMOSWAP.W/D`, `SSPUSH`, and `C.SSPUSH`.",
+      "line_number": 218,
+      "reason": "This is a fixed requirement that all implementations must enforce for shadow stack pages, not an implementation choice."
+    },
+    {
+      "excerpt": "Shadow stack instructions are restricted to accessing shadow stack (`pte.xwr=010b`) pages.",
+      "line_number": 280,
+      "reason": "This describes a fixed architectural requirement about which pages shadow stack instructions can access, not an implementation parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"To store the previous `ELP` state on trap delivery to M-mode, an `MPELP` bit is provided in the `mstatus` CSR.\",\n      \"line_number\": 82,\n      \"parameter_name\": \"REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This describes whether the implementation reports the cause in mtval when a landing pad software check exception occurs. The parameter controls what information is provided in the trap value register.\"\n    },\n    {\n      \"excerpt\": \"To store the previous `ELP` state on trap delivery to S/HS-mode, an `SPELP` bit is provided in the `mstatus` CSR.\",\n      \"line_number\": 83,\n      \"parameter_name\": \"REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This describes whether the implementation reports the cause in stval when a landing pad software check exception occurs in S-mode. Similar to the M-mode case but for S-mode trap value reporting.\"\n    },\n    {\n      \"excerpt\": \"To store the previous `ELP` state on traps to VS-mode, a `SPELP` bit is defined in the `vsstatus` (VS-modes version of `sstatus`).\",\n      \"line_number\": 85,\n      \"parameter_name\": \"REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"existing_udb_name\": \"REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK\",\n      \"class\": \"DOC_RULE\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"medium\",\n      \"reasoning\": \"This describes whether the implementation reports the cause in vstval when a landing pad software check exception occurs in VS-mode. Similar pattern for VS-mode trap value reporting.\"\n    },\n    {\n      \"excerpt\": \"When S-mode is not implemented, then `xSSE` is 0 at both M and U privilege modes.\",\n      \"line_number\": 175,\n      \"parameter_name\": \"ZICFISS_SMODE_XSSE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a direct implementation choice about whether Zicfiss shadow stack extension is supported when S-mode is not implemented. The implementation must choose whether to support this configuration.\"\n    },\n    {\n      \"excerpt\": \"The encoding `R=0`, `W=1`, and `X=0`, is defined to represent an SS page.\",\n      \"line_number\": 207,\n      \"parameter_name\": \"SS_PAGE_ENCODING\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines a specific page table entry encoding for shadow stack pages. While the encoding is specified, implementations must choose whether to support this encoding based on whether they implement Zicfiss.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The Zicfilp must be explicitly enabled for use at each privilege mode.\",\n      \"line_number\": 46,\n      \"reason\": \"This is inside a [NOTE] block, which is non-normative informational text, not an architectural parameter.\"\n    },\n    {\n      \"excerpt\": \"When a trap is taken into privilege mode `x`, the `__x__PELP` is set to `ELP` and `ELP` is set to `NO_LP_EXPECTED`.\",\n      \"line_number\": 90,\n      \"reason\": \"This describes the required behavior when a trap occurs, not an implementation choice. All implementations must follow this behavior.\"\n    },\n    {\n      \"excerpt\": \"If the privilege mode is less than M and `menvcfg.SSE` is 0, an illegal-instruction exception is raised.\",\n      \"line_number\": 130,\n      \"reason\": \"This describes the required behavior based on CSR field values at runtime, not an implementation parameter. The behavior is deterministic given the CSR state.\"\n    },\n    {\n      \"excerpt\": \"Memory mapped as an SS page cannot be written to by instructions other than `SSAMOSWAP.W/D`, `SSPUSH`, and `C.SSPUSH`.\",\n      \"line_number\": 218,\n      \"reason\": \"This is a fixed requirement that all implementations must enforce for shadow stack pages, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Shadow stack instructions are restricted to accessing shadow stack (`pte.xwr=010b`) pages.\",\n      \"line_number\": 280,\n      \"reason\": \"This describes a fixed architectural requirement about which pages shadow stack instructions can access, not an implementation parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 10879,
+  "output_tokens": 1350,
+  "latency_ms": 25458,
+  "timestamp": "2026-05-25T20:44:24.329221+00:00",
+  "error": null,
+  "retry_count": 0
+}

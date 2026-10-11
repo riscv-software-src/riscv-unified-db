@@ -1,0 +1,124 @@
+{
+  "chunk_id": "chunk_017",
+  "source_file": "indirect-csr.adoc",
+  "start_line": 1,
+  "end_line": 344,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "`miselect` is a WARL register.",
+      "line_number": 60,
+      "parameter_name": "MISELECT_WARL",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_WARL",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "miselect is explicitly defined as WARL, meaning implementations can restrict which values are legal. The parameter is the set of legal miselect values."
+    },
+    {
+      "excerpt": "The `miselect` register implements at least enough bits to support all implemented `miselect` values (corresponding to the implemented extensions that utilize `miselect`/`mireg*` to indirectly access register state).",
+      "line_number": 62,
+      "parameter_name": "MISELECT_WIDTH",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "value",
+      "confidence": "high",
+      "reasoning": "The width of miselect is implementation-defined based on which extensions are implemented. This is a direct architectural choice about register width."
+    },
+    {
+      "excerpt": "The `miselect` register may be read-only zero if there are no extensions implemented that utilize it.",
+      "line_number": 64,
+      "parameter_name": "MISELECT_ACCESS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "The implementation chooses whether miselect is read-only zero or read-write, depending on whether extensions that use it are implemented."
+    },
+    {
+      "excerpt": "The behavior upon accessing `mireg*` from M-mode, while `miselect` holds a value that is not implemented, is UNSPECIFIED.",
+      "line_number": 78,
+      "parameter_name": "MIREG_UNIMPLEMENTED_ACCESS_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The behavior when accessing mireg* with unimplemented miselect values is explicitly unspecified, giving implementations freedom to choose (e.g., illegal instruction exception, ignore, etc.)."
+    },
+    {
+      "excerpt": "The `siselect` register will support the value range 0..0xFFF at a minimum.",
+      "line_number": 115,
+      "parameter_name": "SISELECT_MIN_RANGE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "range",
+      "confidence": "high",
+      "reasoning": "siselect must support at least 0-0xFFF, but implementations may support larger ranges. This is a direct implementation choice about the supported range."
+    },
+    {
+      "excerpt": "The behavior upon accessing `sireg*` from M-mode or S-mode, while `siselect` holds a value that is not implemented at supervisor level, is UNSPECIFIED.",
+      "line_number": 133,
+      "parameter_name": "SIREG_UNIMPLEMENTED_ACCESS_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The behavior when accessing sireg* with unimplemented siselect values is explicitly unspecified, giving implementations freedom to choose the response."
+    },
+    {
+      "excerpt": "The `vsiselect` register will support the value range 0..0xFFF at a minimum.",
+      "line_number": 179,
+      "parameter_name": "VSISELECT_MIN_RANGE",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "range",
+      "confidence": "high",
+      "reasoning": "vsiselect must support at least 0-0xFFF, but implementations may support larger ranges. This is a direct implementation choice about the supported range."
+    },
+    {
+      "excerpt": "The behavior upon accessing `vsireg*` from M-mode or HS-mode, or accessing `sireg*` (really `vsireg*`) from VS-mode, while `vsiselect` holds a value that is not implemented at HS level, is UNSPECIFIED.",
+      "line_number": 202,
+      "parameter_name": "VSIREG_UNIMPLEMENTED_ACCESS_BEHAVIOR",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "The behavior when accessing vsireg* with unimplemented vsiselect values is explicitly unspecified, giving implementations freedom to choose the response."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "CSRs are accessed indirectly via this extension using select values, in contrast to being accessed directly using standard CSR numbers.",
+      "line_number": 19,
+      "reason": "This is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks."
+    },
+    {
+      "excerpt": "The value of `miselect` determines which register is accessed upon read or write of each of the machine indirect alias CSRs (`mireg*`).",
+      "line_number": 54,
+      "reason": "This describes the operational behavior of miselect, not an implementation choice. The behavior is fixed by the specification."
+    },
+    {
+      "excerpt": "Values of `miselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for custom use",
+      "line_number": 67,
+      "reason": "This is a fixed allocation rule that applies to all implementations, not an implementation choice. It defines address space partitioning."
+    },
+    {
+      "excerpt": "The CSRs in the table above are required if S-mode is implemented.",
+      "line_number": 113,
+      "reason": "This is a fixed requirement ('required if S-mode is implemented') that applies to all implementations with S-mode, not an implementation choice."
+    },
+    {
+      "excerpt": "A virtual-instruction exception is raised for attempts from VS-mode or VU-mode to directly access `vsiselect` or `vsireg*`",
+      "line_number": 197,
+      "reason": "This describes fixed exception behavior that all implementations must follow, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"`miselect` is a WARL register.\",\n      \"line_number\": 60,\n      \"parameter_name\": \"MISELECT_WARL\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_WARL\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"miselect is explicitly defined as WARL, meaning implementations can restrict which values are legal. The parameter is the set of legal miselect values.\"\n    },\n    {\n      \"excerpt\": \"The `miselect` register implements at least enough bits to support all implemented `miselect` values (corresponding to the implemented extensions that utilize `miselect`/`mireg*` to indirectly access register state).\",\n      \"line_number\": 62,\n      \"parameter_name\": \"MISELECT_WIDTH\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"value\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The width of miselect is implementation-defined based on which extensions are implemented. This is a direct architectural choice about register width.\"\n    },\n    {\n      \"excerpt\": \"The `miselect` register may be read-only zero if there are no extensions implemented that utilize it.\",\n      \"line_number\": 64,\n      \"parameter_name\": \"MISELECT_ACCESS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses whether miselect is read-only zero or read-write, depending on whether extensions that use it are implemented.\"\n    },\n    {\n      \"excerpt\": \"The behavior upon accessing `mireg*` from M-mode, while `miselect` holds a value that is not implemented, is UNSPECIFIED.\",\n      \"line_number\": 78,\n      \"parameter_name\": \"MIREG_UNIMPLEMENTED_ACCESS_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The behavior when accessing mireg* with unimplemented miselect values is explicitly unspecified, giving implementations freedom to choose (e.g., illegal instruction exception, ignore, etc.).\"\n    },\n    {\n      \"excerpt\": \"The `siselect` register will support the value range 0..0xFFF at a minimum.\",\n      \"line_number\": 115,\n      \"parameter_name\": \"SISELECT_MIN_RANGE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"range\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"siselect must support at least 0-0xFFF, but implementations may support larger ranges. This is a direct implementation choice about the supported range.\"\n    },\n    {\n      \"excerpt\": \"The behavior upon accessing `sireg*` from M-mode or S-mode, while `siselect` holds a value that is not implemented at supervisor level, is UNSPECIFIED.\",\n      \"line_number\": 133,\n      \"parameter_name\": \"SIREG_UNIMPLEMENTED_ACCESS_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The behavior when accessing sireg* with unimplemented siselect values is explicitly unspecified, giving implementations freedom to choose the response.\"\n    },\n    {\n      \"excerpt\": \"The `vsiselect` register will support the value range 0..0xFFF at a minimum.\",\n      \"line_number\": 179,\n      \"parameter_name\": \"VSISELECT_MIN_RANGE\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"range\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"vsiselect must support at least 0-0xFFF, but implementations may support larger ranges. This is a direct implementation choice about the supported range.\"\n    },\n    {\n      \"excerpt\": \"The behavior upon accessing `vsireg*` from M-mode or HS-mode, or accessing `sireg*` (really `vsireg*`) from VS-mode, while `vsiselect` holds a value that is not implemented at HS level, is UNSPECIFIED.\",\n      \"line_number\": 202,\n      \"parameter_name\": \"VSIREG_UNIMPLEMENTED_ACCESS_BEHAVIOR\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The behavior when accessing vsireg* with unimplemented vsiselect values is explicitly unspecified, giving implementations freedom to choose the response.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"CSRs are accessed indirectly via this extension using select values, in contrast to being accessed directly using standard CSR numbers.\",\n      \"line_number\": 19,\n      \"reason\": \"This is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE blocks.\"\n    },\n    {\n      \"excerpt\": \"The value of `miselect` determines which register is accessed upon read or write of each of the machine indirect alias CSRs (`mireg*`).\",\n      \"line_number\": 54,\n      \"reason\": \"This describes the operational behavior of miselect, not an implementation choice. The behavior is fixed by the specification.\"\n    },\n    {\n      \"excerpt\": \"Values of `miselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for custom use\",\n      \"line_number\": 67,\n      \"reason\": \"This is a fixed allocation rule that applies to all implementations, not an implementation choice. It defines address space partitioning.\"\n    },\n    {\n      \"excerpt\": \"The CSRs in the table above are required if S-mode is implemented.\",\n      \"line_number\": 113,\n      \"reason\": \"This is a fixed requirement ('required if S-mode is implemented') that applies to all implementations with S-mode, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"A virtual-instruction exception is raised for attempts from VS-mode or VU-mode to directly access `vsiselect` or `vsireg*`\",\n      \"line_number\": 197,\n      \"reason\": \"This describes fixed exception behavior that all implementations must follow, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 10493,
+  "output_tokens": 1687,
+  "latency_ms": 32327,
+  "timestamp": "2026-05-25T20:43:09.166577+00:00",
+  "error": null,
+  "retry_count": 0
+}

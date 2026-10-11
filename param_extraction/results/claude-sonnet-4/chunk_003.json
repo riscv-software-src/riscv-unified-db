@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_003",
+  "source_file": "b-st-ext.adoc",
+  "start_line": 3397,
+  "end_line": 3485,
+  "content_start_line": 3427,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The *zext.h* mnemonic corresponds to different instruction encodings in RV32 and RV64.",
+      "line_number": 3410,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE, TIP, WARNING, or IMPORTANT blocks."
+    },
+    {
+      "excerpt": "This instruction is available only on RV32.",
+      "line_number": 3450,
+      "reason": "This is a fixed requirement that specifies the instruction is only available on RV32. There is no implementation choice - it's a constraint on when the instruction exists."
+    },
+    {
+      "excerpt": "This instruction is useful for implementing the SHA3 cryptographic hash function on a 32-bit architecture, as it implements the bit-interleaving operation used to speed up the 64-bit rotations directly.",
+      "line_number": 3465,
+      "reason": "This text is inside a [NOTE] block labeled 'Software Hint' and is therefore non-normative. It describes a use case, not an architectural parameter."
+    },
+    {
+      "excerpt": "This instruction zero-extends the least-significant halfword of the source to XLEN by inserting 0's into all of the bits more significant than 15.",
+      "line_number": 3398,
+      "reason": "This describes the fixed behavior of the zext.h instruction. The operation is deterministic and not implementation-defined."
+    },
+    {
+      "excerpt": "This instruction gathers bits from the high and low halves of the source word into odd/even bit positions in the destination word.",
+      "line_number": 3447,
+      "reason": "This describes the fixed behavior of the zip instruction. The operation is deterministic and not implementation-defined."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The *zext.h* mnemonic corresponds to different instruction encodings in RV32 and RV64.\",\n      \"line_number\": 3410,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative. Do not extract parameters from NOTE, TIP, WARNING, or IMPORTANT blocks.\"\n    },\n    {\n      \"excerpt\": \"This instruction is available only on RV32.\",\n      \"line_number\": 3450,\n      \"reason\": \"This is a fixed requirement that specifies the instruction is only available on RV32. There is no implementation choice - it's a constraint on when the instruction exists.\"\n    },\n    {\n      \"excerpt\": \"This instruction is useful for implementing the SHA3 cryptographic hash function on a 32-bit architecture, as it implements the bit-interleaving operation used to speed up the 64-bit rotations directly.\",\n      \"line_number\": 3465,\n      \"reason\": \"This text is inside a [NOTE] block labeled 'Software Hint' and is therefore non-normative. It describes a use case, not an architectural parameter.\"\n    },\n    {\n      \"excerpt\": \"This instruction zero-extends the least-significant halfword of the source to XLEN by inserting 0's into all of the bits more significant than 15.\",\n      \"line_number\": 3398,\n      \"reason\": \"This describes the fixed behavior of the zext.h instruction. The operation is deterministic and not implementation-defined.\"\n    },\n    {\n      \"excerpt\": \"This instruction gathers bits from the high and low halves of the source word into odd/even bit positions in the destination word.\",\n      \"line_number\": 3447,\n      \"reason\": \"This describes the fixed behavior of the zip instruction. The operation is deterministic and not implementation-defined.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 6264,
+  "output_tokens": 467,
+  "latency_ms": 8223,
+  "timestamp": "2026-05-25T20:39:50.718466+00:00",
+  "error": null,
+  "retry_count": 0
+}

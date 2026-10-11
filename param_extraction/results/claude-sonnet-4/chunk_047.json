@@ -1,0 +1,54 @@
+{
+  "chunk_id": "chunk_047",
+  "source_file": "smcntrpmf.adoc",
+  "start_line": 1,
+  "end_line": 72,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "For each bit in 61:58, if the associated privilege mode is not implemented, the bit is read-only zero.",
+      "line_number": 35,
+      "parameter_name": "MCYCLECFG_UNIMPLEMENTED_MODE_BITS",
+      "existing_udb_name": null,
+      "class": "NORM_CSR_RW",
+      "value_type": "bitmask",
+      "confidence": "high",
+      "reasoning": "The implementation chooses which privilege modes are implemented, which determines whether the corresponding INH bits in mcyclecfg/minstretcfg are read-only zero or read-write. This controls the RO/RW nature of specific CSR fields."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "mcyclecfg and minstretcfg are 64-bit registers that configure privilege mode filtering for the cycle and instret counters, respectively.",
+      "line_number": 17,
+      "reason": "This describes the fixed size and purpose of the registers, not an implementation choice."
+    },
+    {
+      "excerpt": "When all xINH bits are zero, event counting is enabled in all modes.",
+      "line_number": 33,
+      "reason": "This describes the behavior when CSR fields have specific values, not an implementation parameter."
+    },
+    {
+      "excerpt": "The cycle counter will simply count CPU cycles while the CPU is in a non-inhibited privilege mode.",
+      "line_number": 49,
+      "reason": "This describes the required behavior of the counter based on CSR configuration, not an implementation choice."
+    },
+    {
+      "excerpt": "instructions that retire in a non-inhibited mode increment instret, and instructions that retire in an inhibited mode do not.",
+      "line_number": 56,
+      "reason": "This describes the required counting behavior based on privilege mode filtering configuration, not a parameter."
+    },
+    {
+      "excerpt": "The more natural CSR number for mcyclecfg would be 0x320, but that was allocated to mcountinhibit.",
+      "line_number": 40,
+      "reason": "This text is inside a [NOTE] block and is therefore non-normative commentary about CSR numbering."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"For each bit in 61:58, if the associated privilege mode is not implemented, the bit is read-only zero.\",\n      \"line_number\": 35,\n      \"parameter_name\": \"MCYCLECFG_UNIMPLEMENTED_MODE_BITS\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_CSR_RW\",\n      \"value_type\": \"bitmask\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"The implementation chooses which privilege modes are implemented, which determines whether the corresponding INH bits in mcyclecfg/minstretcfg are read-only zero or read-write. This controls the RO/RW nature of specific CSR fields.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"mcyclecfg and minstretcfg are 64-bit registers that configure privilege mode filtering for the cycle and instret counters, respectively.\",\n      \"line_number\": 17,\n      \"reason\": \"This describes the fixed size and purpose of the registers, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"When all xINH bits are zero, event counting is enabled in all modes.\",\n      \"line_number\": 33,\n      \"reason\": \"This describes the behavior when CSR fields have specific values, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"The cycle counter will simply count CPU cycles while the CPU is in a non-inhibited privilege mode.\",\n      \"line_number\": 49,\n      \"reason\": \"This describes the required behavior of the counter based on CSR configuration, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"instructions that retire in a non-inhibited mode increment instret, and instructions that retire in an inhibited mode do not.\",\n      \"line_number\": 56,\n      \"reason\": \"This describes the required counting behavior based on privilege mode filtering configuration, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"The more natural CSR number for mcyclecfg would be 0x320, but that was allocated to mcountinhibit.\",\n      \"line_number\": 40,\n      \"reason\": \"This text is inside a [NOTE] block and is therefore non-normative commentary about CSR numbering.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7007,
+  "output_tokens": 577,
+  "latency_ms": 10935,
+  "timestamp": "2026-05-25T20:47:51.971858+00:00",
+  "error": null,
+  "retry_count": 0
+}

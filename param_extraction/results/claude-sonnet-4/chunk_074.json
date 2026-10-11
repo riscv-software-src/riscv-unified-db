@@ -1,0 +1,43 @@
+{
+  "chunk_id": "chunk_074",
+  "source_file": "zihintntl.adoc",
+  "start_line": 1,
+  "end_line": 189,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "The NTL instructions do not change architectural state, nor do they alter the architecturally visible effects of the target instruction.",
+      "line_number": 7,
+      "reason": "This is a fixed requirement that applies to all implementations - NTL instructions must not change architectural state. No implementation choice is involved."
+    },
+    {
+      "excerpt": "NTL.P1 is encoded as ADD _x0, x0, x2_.",
+      "line_number": 13,
+      "reason": "This specifies a fixed encoding that all implementations must use. There is no implementation choice in the encoding."
+    },
+    {
+      "excerpt": "The NTL instructions affect all memory-access instructions except the cache-management instructions in the Zicbom extension.",
+      "line_number": 82,
+      "reason": "This defines the fixed scope of NTL instruction effects. All implementations must follow this rule - there is no implementation choice."
+    },
+    {
+      "excerpt": "implementations are discouraged from applying the NTL to the first instruction in the trap handler. Instead, implementations are recommended to ignore the HINT in this case.",
+      "line_number": 147,
+      "reason": "This uses 'discouraged' and 'recommended' language but describes behavioral guidance rather than a binary implementation choice. The spec doesn't define this as a parameter that implementations must choose between."
+    },
+    {
+      "excerpt": "A microarchitecture might use the NTL instructions to inform the cache replacement policy, or to decide which cache to allocate into, or to avoid cache allocation altogether.",
+      "line_number": 25,
+      "reason": "This text is inside a [NOTE] block, which is non-normative. Additionally, it describes possible uses rather than defining implementation-specific parameters."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"The NTL instructions do not change architectural state, nor do they alter the architecturally visible effects of the target instruction.\",\n      \"line_number\": 7,\n      \"reason\": \"This is a fixed requirement that applies to all implementations - NTL instructions must not change architectural state. No implementation choice is involved.\"\n    },\n    {\n      \"excerpt\": \"NTL.P1 is encoded as ADD _x0, x0, x2_.\",\n      \"line_number\": 13,\n      \"reason\": \"This specifies a fixed encoding that all implementations must use. There is no implementation choice in the encoding.\"\n    },\n    {\n      \"excerpt\": \"The NTL instructions affect all memory-access instructions except the cache-management instructions in the Zicbom extension.\",\n      \"line_number\": 82,\n      \"reason\": \"This defines the fixed scope of NTL instruction effects. All implementations must follow this rule - there is no implementation choice.\"\n    },\n    {\n      \"excerpt\": \"implementations are discouraged from applying the NTL to the first instruction in the trap handler. Instead, implementations are recommended to ignore the HINT in this case.\",\n      \"line_number\": 147,\n      \"reason\": \"This uses 'discouraged' and 'recommended' language but describes behavioral guidance rather than a binary implementation choice. The spec doesn't define this as a parameter that implementations must choose between.\"\n    },\n    {\n      \"excerpt\": \"A microarchitecture might use the NTL instructions to inform the cache replacement policy, or to decide which cache to allocate into, or to avoid cache allocation altogether.\",\n      \"line_number\": 25,\n      \"reason\": \"This text is inside a [NOTE] block, which is non-normative. Additionally, it describes possible uses rather than defining implementation-specific parameters.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 8303,
+  "output_tokens": 457,
+  "latency_ms": 11555,
+  "timestamp": "2026-05-25T20:57:32.908002+00:00",
+  "error": null,
+  "retry_count": 0
+}

@@ -1,0 +1,38 @@
+{
+  "chunk_id": "chunk_071",
+  "source_file": "zicond.adoc",
+  "start_line": 1,
+  "end_line": 187,
+  "content_start_line": 1,
+  "model": "claude-sonnet-4",
+  "parameters": [],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "If _rs2_ contains the value zero, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.",
+      "line_number": 44,
+      "reason": "This describes the fixed behavior of the czero.eqz instruction. All implementations must behave this way - it is not an implementation choice."
+    },
+    {
+      "excerpt": "Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in _rs1_ and _rs2_.",
+      "line_number": 47,
+      "reason": "This describes required behavior when Zkt is implemented. The timing independence is a fixed requirement, not an implementation parameter."
+    },
+    {
+      "excerpt": "If _rs2_ contains a nonzero value, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.",
+      "line_number": 75,
+      "reason": "This describes the fixed behavior of the czero.nez instruction. All implementations must behave this way - it is not an implementation choice."
+    },
+    {
+      "excerpt": "This instruction carries a syntactic dependency from both _rs1_ and _rs2_ to _rd_.",
+      "line_number": 46,
+      "reason": "This describes a fixed requirement about instruction dependencies that all implementations must follow. It is not a parameter."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"If _rs2_ contains the value zero, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.\",\n      \"line_number\": 44,\n      \"reason\": \"This describes the fixed behavior of the czero.eqz instruction. All implementations must behave this way - it is not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"Furthermore, if the Zkt extension is implemented, this instruction's timing is independent of the data values in _rs1_ and _rs2_.\",\n      \"line_number\": 47,\n      \"reason\": \"This describes required behavior when Zkt is implemented. The timing independence is a fixed requirement, not an implementation parameter.\"\n    },\n    {\n      \"excerpt\": \"If _rs2_ contains a nonzero value, this instruction writes the value zero to _rd_.  Otherwise, this instruction copies the contents of _rs1_ to _rd_.\",\n      \"line_number\": 75,\n      \"reason\": \"This describes the fixed behavior of the czero.nez instruction. All implementations must behave this way - it is not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"This instruction carries a syntactic dependency from both _rs1_ and _rs2_ to _rd_.\",\n      \"line_number\": 46,\n      \"reason\": \"This describes a fixed requirement about instruction dependencies that all implementations must follow. It is not a parameter.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 7523,
+  "output_tokens": 379,
+  "latency_ms": 7244,
+  "timestamp": "2026-05-25T20:56:49.951269+00:00",
+  "error": null,
+  "retry_count": 0
+}

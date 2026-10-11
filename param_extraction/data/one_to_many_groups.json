@@ -1,0 +1,54 @@
+{
+  "_description": "Curated multi-variant UDB parameter groups. Each entry declares a set of UDB parameters that share a single architectural concept (typically one per exception type, register, or extension letter). When the LLM produces any finding whose name or excerpt clearly maps to the concept, every UDB member of that group is counted as aligned. This file is reviewed by hand: each group corresponds to a single sentence (or small cluster of sentences) in the spec that legitimately covers all listed variants.",
+  "_format": "Each entry: {concept_id: {prefix, keywords, members_pattern, justification}}",
+  "groups": {
+    "REPORT_VA_IN_MTVAL_ON_EXCEPTION": {
+      "prefix": "REPORT_VA_IN_MTVAL_ON_",
+      "keywords": ["report", "mtval", "va", "address", "virtual"],
+      "min_score": 0.4,
+      "justification": "The spec describes mtval VA-reporting behavior collectively across exception types in a single normative paragraph; UDB splits it per-exception. A single LLM finding about 'mtval is set to the faulting virtual address on exceptions' legitimately covers all 10 variants."
+    },
+    "REPORT_VA_IN_STVAL_ON_EXCEPTION": {
+      "prefix": "REPORT_VA_IN_STVAL_ON_",
+      "keywords": ["report", "stval", "va", "address", "virtual"],
+      "min_score": 0.4,
+      "justification": "Mirror of the mtval case for S-mode trap value. One sentence in the spec, 10 UDB variants."
+    },
+    "REPORT_VA_IN_VSTVAL_ON_EXCEPTION": {
+      "prefix": "REPORT_VA_IN_VSTVAL_ON_",
+      "keywords": ["report", "vstval", "va", "address", "virtual"],
+      "min_score": 0.4,
+      "justification": "Mirror of the mtval/stval case for VS-mode trap value. One sentence in the spec, 10 UDB variants."
+    },
+    "REPORT_GPA_IN_TVAL_ON_GUEST_FAULT": {
+      "prefix": "REPORT_GPA_IN_",
+      "keywords": ["report", "gpa", "tval", "guest", "htval"],
+      "min_score": 0.4,
+      "justification": "Hypervisor spec describes htval guest-physical-address reporting collectively across guest-page-fault types. One sentence, 5 UDB variants."
+    },
+    "REPORT_ENCODING_IN_TVAL_ON_ILLEGAL": {
+      "prefix": "REPORT_ENCODING_IN_",
+      "keywords": ["report", "encoding", "tval", "illegal", "instruction"],
+      "min_score": 0.4,
+      "justification": "Spec describes 'tval may optionally return the faulting instruction encoding on illegal-instruction' once, applies to MTVAL/STVAL/VSTVAL. 4 UDB variants."
+    },
+    "REPORT_CAUSE_IN_TVAL_ON_SW_CHECK": {
+      "prefix": "REPORT_CAUSE_IN_",
+      "keywords": ["report", "cause", "tval", "software", "check"],
+      "min_score": 0.4,
+      "justification": "Zicfilp/Zicfiss spec describes software-check cause reporting in tval once; UDB has 6 variants across landing-pad/shadow-stack and MTVAL/STVAL/VSTVAL trap-value registers."
+    },
+    "TINST_VALUE_ON_EXCEPTION": {
+      "prefix": "TINST_VALUE_ON_",
+      "keywords": ["tinst", "transformed", "instruction", "value", "guest", "trap"],
+      "min_score": 0.35,
+      "justification": "Hypervisor spec describes htinst/mtinst transformed-instruction reporting collectively. 16 UDB variants across exception types."
+    },
+    "TRAP_ON_ECALL_FROM_MODE": {
+      "prefix": "TRAP_ON_ECALL_FROM_",
+      "keywords": ["trap", "ecall", "exception", "environment", "call"],
+      "min_score": 0.4,
+      "justification": "Spec describes ECALL exception behavior collectively across privilege modes. 4 UDB variants (M, S, U, VS)."
+    }
+  }
+}

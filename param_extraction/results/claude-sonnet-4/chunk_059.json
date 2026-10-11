@@ -1,0 +1,89 @@
+{
+  "chunk_id": "chunk_059",
+  "source_file": "v-st-ext.adoc",
+  "start_line": 3386,
+  "end_line": 5396,
+  "content_start_line": 3394,
+  "model": "claude-sonnet-4",
+  "parameters": [
+    {
+      "excerpt": "Vector instructions with EGS > VLMAX are reserved.",
+      "line_number": 5251,
+      "parameter_name": "EGS_VLMAX_CONSTRAINT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This is a direct implementation constraint on which element group sizes are supported. Implementations choose whether to support EGS values that exceed VLMAX."
+    },
+    {
+      "excerpt": "When an operand is a vector of element groups, the `vl` setting must correspond to an integer multiple of the element group size, with other values of `vl` reserved.",
+      "line_number": 5267,
+      "parameter_name": "EGS_VL_MULTIPLE_CONSTRAINT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This defines a constraint on vl values for element group instructions. Implementations must enforce this constraint, making it a direct architectural choice."
+    },
+    {
+      "excerpt": "When AVL > VLMAX, the value of `vl` must be set to either VLMAX or a positive integer multiple of EGSMAX.",
+      "line_number": 5274,
+      "parameter_name": "EGS_VL_SETTING_CONSTRAINT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "enum",
+      "confidence": "high",
+      "reasoning": "This constrains how vl is set when element group instructions are present. The implementation chooses between VLMAX or multiples of EGSMAX when AVL > VLMAX."
+    },
+    {
+      "excerpt": "Any of these extensions can be added to base ISAs with XLEN=32 or XLEN=64.",
+      "line_number": 5095,
+      "parameter_name": "ZVE_XLEN_SUPPORT",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "set",
+      "confidence": "high",
+      "reasoning": "This defines which XLEN values are supported for Zve* extensions. Implementations choose which XLEN values to support with these extensions."
+    },
+    {
+      "excerpt": "All Zve* extensions have precise traps.",
+      "line_number": 5108,
+      "parameter_name": "ZVE_TRAP_PRECISION",
+      "existing_udb_name": null,
+      "class": "NORM_DIRECT",
+      "value_type": "binary",
+      "confidence": "high",
+      "reasoning": "This mandates that all Zve* extensions must provide precise traps, not imprecise ones. This is a fixed requirement for these extensions."
+    }
+  ],
+  "skipped_non_parameters": [
+    {
+      "excerpt": "NOTE: The vector mask logical instructions are designed to be easily fused with a following masked vector operation to effectively expand the number of predicate registers by moving values into `v0` before use.",
+      "line_number": 4659,
+      "reason": "This is inside a NOTE block, which is non-normative informational text."
+    },
+    {
+      "excerpt": "The `vmfeq` and `vmfne` instructions raise the invalid operation exception only on signaling NaN inputs.",
+      "line_number": 3756,
+      "reason": "This describes fixed behavioral requirements that all implementations must follow, not an implementation choice."
+    },
+    {
+      "excerpt": "The destination vector register group cannot overlap the source vector register groups, otherwise the instruction encoding is reserved.",
+      "line_number": 4395,
+      "reason": "This is a fixed encoding constraint that applies to all implementations, not a parameter."
+    },
+    {
+      "excerpt": "Traps on vector reduction instructions are always reported with a `vstart` of 0.",
+      "line_number": 4074,
+      "reason": "This describes mandatory trap behavior that all implementations must follow, not an implementation choice."
+    }
+  ],
+  "raw_response": "```json\n{\n  \"parameters\": [\n    {\n      \"excerpt\": \"Vector instructions with EGS > VLMAX are reserved.\",\n      \"line_number\": 5251,\n      \"parameter_name\": \"EGS_VLMAX_CONSTRAINT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This is a direct implementation constraint on which element group sizes are supported. Implementations choose whether to support EGS values that exceed VLMAX.\"\n    },\n    {\n      \"excerpt\": \"When an operand is a vector of element groups, the `vl` setting must correspond to an integer multiple of the element group size, with other values of `vl` reserved.\",\n      \"line_number\": 5267,\n      \"parameter_name\": \"EGS_VL_MULTIPLE_CONSTRAINT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines a constraint on vl values for element group instructions. Implementations must enforce this constraint, making it a direct architectural choice.\"\n    },\n    {\n      \"excerpt\": \"When AVL > VLMAX, the value of `vl` must be set to either VLMAX or a positive integer multiple of EGSMAX.\",\n      \"line_number\": 5274,\n      \"parameter_name\": \"EGS_VL_SETTING_CONSTRAINT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"enum\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This constrains how vl is set when element group instructions are present. The implementation chooses between VLMAX or multiples of EGSMAX when AVL > VLMAX.\"\n    },\n    {\n      \"excerpt\": \"Any of these extensions can be added to base ISAs with XLEN=32 or XLEN=64.\",\n      \"line_number\": 5095,\n      \"parameter_name\": \"ZVE_XLEN_SUPPORT\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"set\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This defines which XLEN values are supported for Zve* extensions. Implementations choose which XLEN values to support with these extensions.\"\n    },\n    {\n      \"excerpt\": \"All Zve* extensions have precise traps.\",\n      \"line_number\": 5108,\n      \"parameter_name\": \"ZVE_TRAP_PRECISION\",\n      \"existing_udb_name\": null,\n      \"class\": \"NORM_DIRECT\",\n      \"value_type\": \"binary\",\n      \"confidence\": \"high\",\n      \"reasoning\": \"This mandates that all Zve* extensions must provide precise traps, not imprecise ones. This is a fixed requirement for these extensions.\"\n    }\n  ],\n  \"skipped_non_parameters\": [\n    {\n      \"excerpt\": \"NOTE: The vector mask logical instructions are designed to be easily fused with a following masked vector operation to effectively expand the number of predicate registers by moving values into `v0` before use.\",\n      \"line_number\": 4659,\n      \"reason\": \"This is inside a NOTE block, which is non-normative informational text.\"\n    },\n    {\n      \"excerpt\": \"The `vmfeq` and `vmfne` instructions raise the invalid operation exception only on signaling NaN inputs.\",\n      \"line_number\": 3756,\n      \"reason\": \"This describes fixed behavioral requirements that all implementations must follow, not an implementation choice.\"\n    },\n    {\n      \"excerpt\": \"The destination vector register group cannot overlap the source vector register groups, otherwise the instruction encoding is reserved.\",\n      \"line_number\": 4395,\n      \"reason\": \"This is a fixed encoding constraint that applies to all implementations, not a parameter.\"\n    },\n    {\n      \"excerpt\": \"Traps on vector reduction instructions are always reported with a `vstart` of 0.\",\n      \"line_number\": 4074,\n      \"reason\": \"This describes mandatory trap behavior that all implementations must follow, not an implementation choice.\"\n    }\n  ]\n}\n```",
+  "input_tokens": 34319,
+  "output_tokens": 1053,
+  "latency_ms": 22283,
+  "timestamp": "2026-05-25T20:52:51.051766+00:00",
+  "error": null,
+  "retry_count": 0
+}
