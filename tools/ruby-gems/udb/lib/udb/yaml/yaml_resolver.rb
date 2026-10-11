@@ -10,6 +10,7 @@ require "fileutils"
 require "json"
 require "json_schemer"
 require "sorbet-runtime"
+require "uri"
 
 require "idlc"
 
@@ -1027,6 +1028,10 @@ module Udb
         if jsonified_obj.key?("$schema")
           bare_schema = File.basename(T.must(jsonified_obj["$schema"].split("#").first)) + "#"
           jsonified_obj["$schema"] = bare_schema
+        end
+
+        if jsonified_obj.key?("$source")
+          jsonified_obj["$source"] = URI::RFC2396_PARSER.escape(jsonified_obj["$source"])
         end
 
         unless schema.valid?(jsonified_obj)

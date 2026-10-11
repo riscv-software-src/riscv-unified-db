@@ -48,29 +48,33 @@ _setup_toolchain_run() {
   fi
 
   local selinux_label=""
-  local user_flags=""
   if [[ "$runtime" == *podman* ]]; then
     selinux_label=":z"
-    user_flags="--userns=keep-id"
+  fi
+
+  TOOLCHAIN_RUN=("$runtime" "run" "--rm")
+  if [ -t 1 ] && [ -t 0 ]; then
+    TOOLCHAIN_RUN+=("-it")
+  fi
+  TOOLCHAIN_RUN+=("-v" "${ROOT}:${ROOT}${selinux_label}")
+
+  if [[ "$runtime" == *podman* ]]; then
+    TOOLCHAIN_RUN+=("--userns=keep-id")
   else
     # For docker: copy /etc/passwd and /etc/group for user resolution (same pattern as bin/setup)
     mkdir -p "${ROOT}/.cache"
     getent passwd > "${ROOT}/.cache/passwd"
     getent group > "${ROOT}/.cache/group"
-    user_flags="--user $(id -u):$(id -g) -v ${ROOT}/.cache/passwd:/etc/passwd:ro -v ${ROOT}/.cache/group:/etc/group:ro"
-  fi
-
-  local tty_flags=""
-  if [ -t 1 ] && [ -t 0 ]; then
-    tty_flags="-it"
+    TOOLCHAIN_RUN+=("--user" "$(id -u):$(id -g)"
+                    "-v" "${ROOT}/.cache/passwd:/etc/passwd:ro"
+                    "-v" "${ROOT}/.cache/group:/etc/group:ro")
   fi
 
   # Handle git worktrees: if .git is a file (worktree), also mount the parent git dir
-  local extra_mounts=""
   if [ -f "${ROOT}/.git" ]; then
     local git_common_dir
     git_common_dir=$(git -C "${ROOT}" rev-parse --git-common-dir | xargs dirname)
-    extra_mounts="-v ${git_common_dir}:${git_common_dir}${selinux_label}"
+    TOOLCHAIN_RUN+=("-v" "${git_common_dir}:${git_common_dir}${selinux_label}")
   fi
 
   local host_pwd container_workdir
@@ -82,7 +86,7 @@ _setup_toolchain_run() {
       ;;
   esac
 
-  TOOLCHAIN_RUN="$runtime run --rm $tty_flags -v ${ROOT}:${ROOT}${selinux_label} $extra_mounts -w ${container_workdir} $user_flags ${TOOLCHAIN_IMAGE}"
+  TOOLCHAIN_RUN+=("-w" "${container_workdir}" "${TOOLCHAIN_IMAGE}")
 }
 
 # Prompt the user to pick a toolchain when they previously selected "neither".

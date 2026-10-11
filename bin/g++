@@ -14,7 +14,7 @@ if [ "${UDB_TOOLCHAIN_CONTAINER:-0}" = "1" ]; then
   # shellcheck source=.toolchain.sh
   source "${ROOT}/.toolchain.sh"
   _setup_toolchain_run
-  exec $TOOLCHAIN_RUN g++ "$@"
+  exec "${TOOLCHAIN_RUN[@]}" g++ "$@"
 elif PATH="${PATH//"${ROOT}:"/}" command -v g++ > /dev/null 2>&1; then
   # Strip bin/ from PATH to avoid infinite recursion (same pattern as bin/rake),
   # then check C++ requirements before delegating to the real g++.

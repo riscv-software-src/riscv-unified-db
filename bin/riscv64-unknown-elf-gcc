@@ -14,7 +14,7 @@ if [ "${UDB_TOOLCHAIN_CONTAINER:-0}" = "1" ]; then
   # shellcheck source=.toolchain.sh
   source "${ROOT}/.toolchain.sh"
   _setup_toolchain_run
-  exec $TOOLCHAIN_RUN riscv64-unknown-elf-gcc "$@"
+  exec "${TOOLCHAIN_RUN[@]}" riscv64-unknown-elf-gcc "$@"
 elif _native=$(PATH="${PATH//"${ROOT}:"/}" command -v riscv64-unknown-elf-gcc 2>/dev/null) && [ -n "$_native" ]; then
   exec "$_native" "$@"
 else

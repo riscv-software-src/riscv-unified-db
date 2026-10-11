@@ -15,7 +15,7 @@ if [ "${UDB_TOOLCHAIN_CONTAINER:-0}" = "1" ]; then
   source "${ROOT}/.toolchain.sh"
   _setup_toolchain_run
   # The container's riscv64-unknown-elf-objdump handles rv32 binaries too
-  exec $TOOLCHAIN_RUN riscv64-unknown-elf-objdump "$@"
+  exec "${TOOLCHAIN_RUN[@]}" riscv64-unknown-elf-objdump "$@"
 elif _native=$(PATH="${PATH//"${ROOT}:"/}" command -v riscv32-unknown-elf-objdump 2>/dev/null) && [ -n "$_native" ]; then
   exec "$_native" "$@"
 elif _native=$(PATH="${PATH//"${ROOT}:"/}" command -v riscv64-unknown-elf-objdump 2>/dev/null) && [ -n "$_native" ]; then

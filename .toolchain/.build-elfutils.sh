@@ -25,7 +25,7 @@ if [ "${UDB_TOOLCHAIN_CONTAINER:-0}" = "1" ]; then
   source "${ROOT}/../bin/.toolchain.sh"
   cd "$BINARY_DIR"
   _setup_toolchain_run
-  exec $TOOLCHAIN_RUN bash -c '
+  exec "${TOOLCHAIN_RUN[@]}" bash -c '
     set -e
     cd "$1"
     "$2/configure" \

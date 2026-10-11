@@ -14,7 +14,7 @@ if [ "${UDB_TOOLCHAIN_CONTAINER:-0}" = "1" ]; then
   # shellcheck source=.toolchain.sh
   source "${ROOT}/.toolchain.sh"
   _setup_toolchain_run
-  exec $TOOLCHAIN_RUN clang-tidy "$@"
+  exec "${TOOLCHAIN_RUN[@]}" clang-tidy "$@"
 elif PATH="${PATH//"${ROOT}:"/}" command -v clang-tidy > /dev/null 2>&1; then
   PATH="${PATH//"${ROOT}:"/}"
   export PATH

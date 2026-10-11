@@ -498,6 +498,35 @@ class TestYamlResolver < Minitest::Test
     end
   end
 
+  def test_schema_validation_accepts_source_paths_with_spaces
+    Dir.mktmpdir do |tmpdir|
+      schemas_dir = Pathname.new(tmpdir) / "schemas"
+      input_dir = Pathname.new(tmpdir) / "input with space"
+      output_dir = Pathname.new(tmpdir) / "output"
+      schemas_dir.mkpath
+      input_dir.mkpath
+
+      (schemas_dir / "mock_schema.json").write(JSON.generate({
+        "$schema" => "http://json-schema.org/draft-07/schema#",
+        "type" => "object",
+        "required" => ["$schema", "$source", "name"],
+        "properties" => {
+          "$schema" => { "type" => "string", "enum" => ["mock_schema.json#"] },
+          "$source" => { "type" => "string", "format" => "uri-reference" },
+          "name" => { "type" => "string" }
+        },
+        "additionalProperties" => false
+      }))
+      (input_dir / "item.yaml").write("$schema: mock_schema.json#\nname: item\n")
+
+      resolver = Udb::Yaml::Resolver.new(quiet: true, schemas_path: schemas_dir)
+      resolver.resolve_files(input_dir, output_dir, no_checks: false)
+
+      resolved_content = File.read(output_dir / "item.yaml")
+      assert_includes resolved_content, "input with space/item.yaml"
+    end
+  end
+
   # Test that resolved files record the versioned $schema
   def test_schema_versioning_in_resolved_files
     gem_schemas = Pathname.new(__dir__).parent / "schemas"
