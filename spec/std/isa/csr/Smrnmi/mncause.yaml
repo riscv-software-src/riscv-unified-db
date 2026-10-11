@@ -44,6 +44,9 @@ fields:
     location_rv32: 30-0
     location_rv64: 62-0
     description: |
-      TODO
+      Encodes the cause of the resumable NMI when `mncause.INT` is set.
+      If resumable NMI causes are not supported, zero is written.
+      When `mncause.INT` is clear, this field holds the exception cause code
+      for the double trap that precipitated the resumable NMI.
     type: RW-H
     reset_value: UNDEFINED_LEGAL

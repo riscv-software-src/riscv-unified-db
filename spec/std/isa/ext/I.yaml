@@ -15,4 +15,7 @@ versions:
     changes:
       - ratified RVWMO memory model and exclusion of FENCE.I, counters, and CSR instructions that were in previous base ISA
 description: |
-  Base integer instructions -- TODO
+  The I extension defines the base integer instruction set for RV32I and RV64I.
+  It provides the integer register state, integer computation, loads and stores,
+  control transfer, and system instructions needed to support compilers, assemblers,
+  linkers, and operating systems.
