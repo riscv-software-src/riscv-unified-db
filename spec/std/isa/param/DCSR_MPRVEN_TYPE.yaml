@@ -14,7 +14,7 @@ description: |
     * 'read-only-0': tied to 0
     * 'read-only-1': tied to 1
     * 'rw': read-write
-long_name: TODO
+long_name: dcsr.MPRVEN implementation type
 schema:
   type: string
   enum: [read-only-0, read-only-1, rw]
