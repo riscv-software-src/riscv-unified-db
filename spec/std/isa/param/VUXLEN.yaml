@@ -22,9 +22,14 @@ schema:
 requirements:
   idl(): |
     !$array_includes?(VSXLEN, 64) -> !$array_includes?(VUXLEN, 64);
+
+    # When VSXLEN=32, vsstatus.UXL does not exist and VU-mode XLEN=32, so a
+    # hart able to run VS-mode in RV32 must support VUXLEN=32.
+    $array_includes?(VSXLEN, 32) -> $array_includes?(VUXLEN, 32);
   reason: |
     XLEN in VU-mode can never be larger than XLEN in VS-mode
-    (and, transitively, cannot be larger than XLEN in S-mode or M-mode).
+    (and, transitively, cannot be larger than XLEN in S-mode or M-mode), and
+    must be able to equal it whenever VS-mode can run in RV32.
 definedBy:
   extension:
     name: H

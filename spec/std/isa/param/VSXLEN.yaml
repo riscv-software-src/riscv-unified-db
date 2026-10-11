@@ -25,9 +25,14 @@ schema:
 requirements:
   idl(): |
     !$array_includes?(SXLEN, 64) -> !$array_includes?(VSXLEN, 64);
+
+    # When HSXLEN=32, hstatus.VSXL does not exist and VSXLEN=32, so a hart
+    # able to run HS-mode in RV32 must support VSXLEN=32.
+    $array_includes?(SXLEN, 32) -> $array_includes?(VSXLEN, 32);
   reason: |
     XLEN in VS-mode can never be larger than XLEN in S-mode
-    (and, transitively, cannot be larger than XLEN in M-mode).
+    (and, transitively, cannot be larger than XLEN in M-mode), and must be
+    able to equal it whenever HS-mode can run in RV32.
 definedBy:
   extension:
     name: H
