@@ -7,7 +7,27 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Zicbop
 long_name: Cache-block prefetch
-description: Cache-block prefetch instructions
+description: |
+  The `Zicbop` extension defines three cache-block prefetch hint instructions:
+
+  * `PREFETCH.I` — hints to the hardware that the cache block at the effective address is
+    likely to be accessed for instruction fetch in the near future.
+  * `PREFETCH.R` — hints that the cache block is likely to be read (load) in the near future.
+  * `PREFETCH.W` — hints that the cache block is likely to be written (store) in the near future.
+
+  Prefetch instructions are **hints**: they have no architecturally visible effect. Implementations
+  may choose to ignore them entirely, or use them to initiate cache fills, TLB warm-up, or other
+  microarchitectural optimizations. A prefetch to an address that would fault is not required to
+  raise an exception.
+
+  The prefetch target address is the effective address computed from a base register and a
+  signed 12-bit immediate. The address is interpreted as a byte address and rounded down to a
+  cache-block-aligned address internally by the implementation.
+
+  Access to prefetch instructions from lower privilege modes may be controlled via
+  `menvcfg.CBZE` (implementations may choose to expose prefetch access independently).
+  These instructions are encoded in the `ORI` opcode space with `rd = x0`, making them
+  backward compatible with older implementations that will treat them as `NOP`s.
 type: unprivileged
 versions:
   - version: "1.0.0"

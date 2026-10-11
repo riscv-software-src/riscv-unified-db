@@ -7,7 +7,31 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Zicbom
 long_name: Cache-block management instructions
-description: Cache-block management instructions
+description: |
+  The `Zicbom` extension defines three cache-block management instructions:
+
+  * `CBO.CLEAN` — writes any dirty data in the cache block containing the effective address
+    back to the next level of the memory hierarchy and marks the block as clean, but leaves
+    the block resident in the cache.
+  * `CBO.FLUSH` — performs a clean operation (as above) and additionally marks the block as
+    not-present (invalidates the block) in all levels of the cache hierarchy.
+  * `CBO.INVAL` — marks the cache block containing the effective address as not-present in
+    all levels of the cache hierarchy, without necessarily writing back dirty data. On systems
+    where coherency is managed by software, this allows discarding stale data.
+
+  These instructions operate on a cache block whose size is discovered via the `cbom_block_size`
+  parameter. The effective address is rounded down to a cache-block-aligned address.
+
+  Access to these instructions from lower privilege modes is controlled by supervisor CSR bits:
+  * `menvcfg.CBCFE` — enables `CBO.CLEAN` and `CBO.FLUSH` for lower privilege modes.
+  * `menvcfg.CBIE` — enables `CBO.INVAL` for lower privilege modes (with configurable
+    behavior: trap-to-higher or convert to `CBO.FLUSH`).
+  * `senvcfg.CBCFE` and `senvcfg.CBIE` — further restrict access at the supervisor level for
+    user-mode access.
+
+  Common use cases include DMA synchronization (ensuring CPU-written data is visible to a
+  device), explicit cache management in real-time systems, and OS-level cache flush routines
+  during context migration or memory reclaim.
 type: unprivileged
 versions:
   - version: "1.0.0"

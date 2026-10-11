@@ -7,7 +7,29 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Zicboz
 long_name: Cache-block zero instruction
-description: Cache-block zero instruction
+description: |
+  The `Zicboz` extension defines the `CBO.ZERO` instruction, which writes zeros to every
+  byte in the cache block containing the effective address. The operation is equivalent to
+  performing a sequence of naturally aligned stores of zero to every byte position in the
+  block, but may be implemented more efficiently in hardware.
+
+  The size of the cache block operated upon is discovered via the `cboz_block_size` parameter.
+  The effective address is rounded down to the appropriate cache-block-aligned address.
+  `CBO.ZERO` has acquire-release memory ordering semantics: it is ordered with respect to all
+  preceding and subsequent memory operations by the same hart.
+
+  Access to `CBO.ZERO` from lower privilege modes is controlled by:
+  * `menvcfg.CBZE` — when set by M-mode, enables `CBO.ZERO` for S-mode and below.
+  * `senvcfg.CBZE` — when set by S-mode, enables `CBO.ZERO` for U-mode.
+
+  If `CBZE` is not enabled for the current mode, executing `CBO.ZERO` raises an
+  illegal-instruction exception.
+
+  Common use cases include:
+  * Fast `memset(buf, 0, n)` implementations — the compiler or libc can emit `CBO.ZERO`
+    for aligned, cache-block-sized zeroing instead of individual stores.
+  * OS kernel page clearing — clearing newly allocated pages before mapping them to user space.
+  * Hardware-accelerated zeroing of large buffers in embedded or HPC workloads.
 type: unprivileged
 versions:
   - version: "1.0.0"
