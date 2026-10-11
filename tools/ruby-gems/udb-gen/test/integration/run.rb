@@ -4,6 +4,8 @@
 # typed: false
 # frozen_string_literal: true
 
+require_relative "../test_helper"
 require_relative "test_helper"
 
 require_relative "test_inst_table"
+require_relative "../test_cfg_headers"
