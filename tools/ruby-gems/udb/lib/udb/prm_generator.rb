@@ -665,12 +665,15 @@ module PrmGenerator
       puts "[INFO] Running command: #{cmd.join(' ')}"
 
       success = T.let(nil, T.nilable(T::Boolean))
-      output = ""
-      error_output = ""
+      output = T.let("", T.untyped)
+      error_output = T.let("", T.untyped)
 
       Dir.chdir(@root_dir) do
         # Capture both stdout and stderr for better error reporting
-        Open3.popen3(cmd.join(" ")) do |stdin, stdout, stderr, wait_thr|
+        # Pass argv directly rather than a joined string: Open3 then execs the
+        # command without a shell, so path components containing spaces stay a
+        # single argument and shell metacharacters are not interpreted.
+        Open3.popen3(*cmd) do |stdin, stdout, stderr, wait_thr|
           stdin.close
           output = stdout.read
           error_output = stderr.read
