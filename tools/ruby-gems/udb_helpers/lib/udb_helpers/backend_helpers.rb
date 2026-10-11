@@ -194,7 +194,21 @@ module Udb
       def link_into_idl_inst_code(inst_name, id)
         "%%IDL_CODE_LINK%inst;#{inst_name.sanitize}.#{id.sanitize};#{inst_name}.#{id}%%"
       end
-      # TODO: Add csr and csr_field support
+
+      # @return [String] A hyperlink into IDL CSR code
+      # @param csr_name [String] Name of the CSR
+      # @param id [String] ID within the CSR code
+      def link_into_idl_csr_code(csr_name, id)
+        "%%IDL_CODE_LINK%csr;#{csr_name.sanitize}.#{id.sanitize};#{csr_name}.#{id}%%"
+      end
+
+      # @return [String] A hyperlink into IDL CSR field code
+      # @param csr_name [String] Name of the CSR
+      # @param field_name [String] Name of the CSR field
+      # @param id [String] ID within the CSR field code
+      def link_into_idl_csr_field_code(csr_name, field_name, id)
+        "%%IDL_CODE_LINK%csr_field;#{csr_name.sanitize}*#{field_name.sanitize}.#{id.sanitize};#{csr_name}.#{field_name}.#{id}%%"
+      end
 
       ###########
       # ANCHORS #
@@ -273,7 +287,21 @@ module Udb
       def anchor_inside_idl_inst_code(inst_name, id)
         "[#idl:code:inst:#{inst_name.sanitize}:#{id.sanitize}]"
       end
-      # TODO: Add csr and csr_field support
+
+      # @return [String] An anchor inside IDL CSR code
+      # @param csr_name [String] Name of the CSR
+      # @param id [String] ID within the CSR code
+      def anchor_inside_idl_csr_code(csr_name, id)
+        "[#idl:code:csr:#{csr_name.sanitize}:#{id.sanitize}]"
+      end
+
+      # @return [String] An anchor inside IDL CSR field code
+      # @param csr_name [String] Name of the CSR
+      # @param field_name [String] Name of the CSR field
+      # @param id [String] ID within the CSR field code
+      def anchor_inside_idl_csr_field_code(csr_name, field_name, id)
+        "[#idl:code:csr_field:#{csr_name.sanitize}:#{field_name.sanitize}:#{id.sanitize}]"
+      end
 
       #@ param s [String]
       def check_no_periods(s)
@@ -352,7 +380,13 @@ module Udb
           when "inst"
             inst_name, id = name.split(".")
             "<<idl:code:inst:#{inst_name}:#{id},#{link_text}>>"
-          # TODO: Add csr and csr_field support
+          when "csr"
+            csr_name, id = name.split(".")
+            "<<idl:code:csr:#{csr_name}:#{id},#{link_text}>>"
+          when "csr_field"
+            csr_field_name, id = name.split(".")
+            csr_name, field_name = csr_field_name.split("*")
+            "<<idl:code:csr_field:#{csr_name}:#{field_name}:#{id},#{link_text}>>"
           else
             raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
           end
@@ -426,7 +460,13 @@ module Udb
           when "inst"
             inst_name, id = name.split(".")
             "xref:insts:#{inst_name}.adoc#idl:code:inst:#{inst_name}:#{id}[#{link_text}]"
-          # TODO: Add csr and csr_field support
+          when "csr"
+            csr_name, id = name.split(".")
+            "xref:csrs:#{csr_name}.adoc#idl:code:csr:#{csr_name}:#{id}[#{link_text}]"
+          when "csr_field"
+            csr_field_name, id = name.split(".")
+            csr_name, field_name = csr_field_name.split("*")
+            "xref:csrs:#{csr_name}.adoc#idl:code:csr_field:#{csr_name}:#{field_name}:#{id}[#{link_text}]"
           else
             raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
           end
