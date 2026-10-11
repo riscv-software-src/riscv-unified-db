@@ -681,15 +681,14 @@ module Idl
       if ary_size.nil?
         "#{type_name.gen_c(symtab)} #{id.gen_c(symtab)}"
       else
-        raise "TODO"
-        cpp = nil
+        c_code = nil
         value_result = value_try do
-          cpp = "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab)},#{ary_size.value(symtab)}>#{ref ? '&' : ''} #{id.gen_cpp(symtab)}"
+          c_code = "#{type_name.gen_c(symtab)} #{id.gen_c(symtab)}[#{ary_size.value(symtab)}]"
         end
         value_else(value_result) do
-          cpp = "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab)}, #{ary_size.gen_cpp(symtab)}>#{ref ? '&' : ''} #{id.gen_cpp(symtab)}"
+          c_code = "#{type_name.gen_c(symtab)} #{id.gen_c(symtab)}[#{ary_size.text_value}]"
         end
-        cpp
+        c_code
       end
     end
 
