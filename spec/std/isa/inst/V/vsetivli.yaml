@@ -30,7 +30,7 @@ data_independent_timing: false
 operation(): |
   XReg new_vtype = vtypei;
   if ((new_vtype[xlen() - 1] == 1'b1) # software is setting the illegal bit
-      || ((new_vtype & 8'd0) != 0)    # reserved bits
+      || ((new_vtype & 10'd768) != 0)    # reserved bits
       || (new_vtype[5] == 1)          # reserved vsew encoding
       || (new_vtype[2:0] == 3'b100)   # reserved vlmul encoding
       || (xlen() == 32 && new_vtype[2:0] == 3'b101)) # reserved LMUL in RV32
