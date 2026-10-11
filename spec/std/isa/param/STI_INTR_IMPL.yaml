@@ -14,7 +14,7 @@ description: |
 
   true::
     Supervisor-level timer interrupts are implemented.
-    `mie.STIE` and `mideleg.STI` are writable.
+    `mie.STIE` is writable, and `mideleg.STI` is writable if `MIDELEG_DELEGATABLE[5]` is true.
 
   false::
     Supervisor-level timer interrupts are not implemented.

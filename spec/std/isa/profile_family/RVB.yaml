@@ -31,11 +31,13 @@ description: |
   variants.
 naming_scheme: |
   The profile family name is RVB (RISC-V Bespoke processor).
-  A profile release name is a integer (currently 2 digits, could grow in the future).
+  A profile release name is a major release number (currently 2 digits, could grow in the future),
+  optionally followed by a minor release number separated by a period.
   A full profile name is comprised of, in order:
 
   * Prefix *RVB* for RISC-V Bespoke
   * Profile release
+  ** In an ISA string, a minor-release period is replaced by the lowercase letter *p*
   * Privilege mode:
   ** *U* Unprivileged (available to any privilege mode, *U* is *not* User-mode)
   ** *S* Supervisor mode (note that Hypervisor support is treated as an option)

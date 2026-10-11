@@ -5,5 +5,5 @@
 # frozen_string_literal: true
 
 module UdbGen
-  def self.version = "0.1.15"
+  def self.version = "0.1.16"
 end

@@ -12,15 +12,15 @@
     "doc"
   ],
   "dependencies": {
-    "@antora/cli": "3.1.15",
+    "@antora/cli": "3.2.0",
     "@antora/lunr-extension": "1.0.0-alpha.13",
-    "@antora/site-generator": "3.1.15",
+    "@antora/site-generator": "3.2.0",
     "@asciidoctor/tabs": "v1.0.0-beta.6",
     "asciidoctor-kroki": "0.18.1",
     "asciidoctor-mathjax": "^0.0.5",
     "bytefield-svg": "^1.8.0",
-    "corepack": "^0.35.0",
-    "prettier": "3.9.6",
+    "corepack": "^0.36.0",
+    "prettier": "3.9.9",
     "wavedrom-cli": "^3.1.1"
   }
 }

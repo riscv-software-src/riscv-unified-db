@@ -294,6 +294,9 @@ add_executable(test_regfile
 )
 target_include_directories(test_regfile PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_regfile PRIVATE hart Catch2::Catch2WithMain)
+target_compile_definitions(test_regfile PRIVATE
+  UDB_RV64_RISCV_TESTS_CFG="${UDB_ROOT}/cfgs/rv64-riscv-tests.yaml"
+)
 
 # add_executable(test_decode
 #   ${CMAKE_SOURCE_DIR}/test/test_decode.cpp

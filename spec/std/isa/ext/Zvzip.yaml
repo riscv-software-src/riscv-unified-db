@@ -1,0 +1,24 @@
+# Copyright (c) 2026 Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvzip
+long_name: Vector Extension for Reordering Structured Data
+type: unprivileged
+versions:
+  - version: "0.3.0"
+    state: development
+    repositories:
+      - url: https://github.com/ptomsich/riscv-isa-manual.git
+        branch: zvzip
+requirements:
+  extension:
+    name: Zve32x
+description: |
+  The `Zvzip` extension provides vector instructions for reordering structured
+  data in vector registers: interleaving and deinterleaving element sequences,
+  and pairwise transposition of elements from two vector register groups.
+  These operations support packing and unpacking structured data and
+  transposing small matrices.

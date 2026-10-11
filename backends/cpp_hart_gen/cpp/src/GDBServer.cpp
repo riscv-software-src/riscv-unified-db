@@ -237,8 +237,6 @@ int GDBServer::OnReceive(int socket)
 int GDBServer::HandlePacket(GDBPacket& packet)
 {
   int result;
-  uint64_t uiAddress;
-  REGISTERFILE regFile;
   const unsigned char cmd = packet[1];
 
   switch(cmd)
@@ -263,7 +261,7 @@ int GDBServer::HandlePacket(GDBPacket& packet)
   //   break;
   case 'g':
     {
-      //Read General purrpose register
+      //Read general purpose register
       REGISTERFILE regFile;
       regFile.nXRegs = 32;
       result = OnReadGPR(regFile);

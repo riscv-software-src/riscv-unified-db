@@ -13,7 +13,7 @@ description: |
 long_name: TODO
 schema:
   type: integer
-  minimum: 1
+  minimum: 0
   maximum: 63
 definedBy:
   extension:

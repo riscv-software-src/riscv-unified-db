@@ -13,7 +13,7 @@ description: |
 
   true::
     Machine-level software interrupts are implemented.
-    `mie.MSIE` and `mideleg.MSI` are writable.
+    `mie.MSIE` is writable, and `mideleg.MSI` is writable if `MIDELEG_DELEGATABLE[3]` is true.
 
   false::
     Machine-level software interrupts are not implemented.

@@ -13,7 +13,7 @@ description: |
 
   true::
     Supervisor-level software interrupts are implemented.
-    `mie.SSIE` and `mideleg.SSI` are writable.
+    `mie.SSIE` is writable, and `mideleg.SSI` is writable if `MIDELEG_DELEGATABLE[1]` is true.
 
   false::
     Supervisor-level software interrupts are not implemented.
