@@ -1,0 +1,54 @@
+{
+  "source_file": "src/unpriv/c-st-ext.adoc",
+  "total": 6,
+  "sentences": [
+    {
+      "text": "This section describes the ext:c[] extension, which incorporates the compressed instruction-set extensions designed for application- and server-class processors.",
+      "section": "Preamble > ext:c[] Extension for Compressed Instructions",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "The ext:c[] extension substantially improves code density across a wide range of applications, thereby improving performance, area-efficiency, and energy-efficiency of processors with instruction caches.",
+      "section": "Preamble > ext:c[] Extension for Compressed Instructions",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "It excludes features that improve code density at the cost of performance.",
+      "section": "Preamble > ext:c[] Extension for Compressed Instructions",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "The ext:c[] extension depends upon the extlink:zca[] extension.",
+      "section": "Preamble > ext:c[] Extension for Compressed Instructions",
+      "line_range": [
+        11,
+        11
+      ]
+    },
+    {
+      "text": "If XLEN=32 and the F extension is present, the ext:c[] extension additionally depends upon the extlink:zcf[] extension.",
+      "section": "Preamble > ext:c[] Extension for Compressed Instructions",
+      "line_range": [
+        13,
+        14
+      ]
+    },
+    {
+      "text": "If the D extension is present, the ext:c[] extension additionally depends upon the extlink:zcd[] extension.",
+      "section": "Preamble > ext:c[] Extension for Compressed Instructions",
+      "line_range": [
+        16,
+        17
+      ]
+    }
+  ]
+}

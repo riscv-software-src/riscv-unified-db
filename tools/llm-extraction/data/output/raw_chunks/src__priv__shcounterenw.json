@@ -1,0 +1,14 @@
+{
+  "source_file": "src/priv/shcounterenw.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "If the Shcounterenw extension is implemented, then for any `hpmcounter` that is not read-only zero, the corresponding bit in `hcounteren` must be writable.",
+      "section": "Preamble > Shcounterenw Extension for Counter-Enable Writability, Version 1.0",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "source_file": "src/unpriv/za.adoc",
+  "total": 15,
+  "sentences": [
+    {
+      "text": "NOTE: This chapter is currently being restructured.",
+      "section": "Preamble > Atomic Instructions",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "Its contents are normative, but the presentation might appear disjoint.",
+      "section": "Preamble > Atomic Instructions",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "RISC-V provides several extensions that atomically read-modify-write memory to support synchronization between multiple RISC-V harts running in the same memory space.",
+      "section": "Preamble > Atomic Instructions",
+      "line_range": [
+        6,
+        15
+      ]
+    },
+    {
+      "text": "The two forms of atomic instruction provided are load-reserved/store-conditional instructions and atomic fetch-and-op memory instructions.",
+      "section": "Preamble > Atomic Instructions",
+      "line_range": [
+        6,
+        15
+      ]
+    },
+    {
+      "text": "Both types of atomic instruction support various memory consistency orderings including unordered, acquire, release, and sequentially consistent semantics.",
+      "section": "Preamble > Atomic Instructions",
+      "line_range": [
+        6,
+        15
+      ]
+    },
+    {
+      "text": "These instructions allow RISC-V to support the RCsc memory consistency model. cite:[Gharachorloo90memoryconsistency]",
+      "section": "Preamble > Atomic Instructions",
+      "line_range": [
+        6,
+        15
+      ]
+    },
+    {
+      "text": "The base RISC-V ISA has a relaxed memory model, with the FENCE instruction used to impose additional ordering constraints.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        22,
+        26
+      ]
+    },
+    {
+      "text": "The address space is divided by the execution environment into memory and I/O domains, and the FENCE instruction provides options to order accesses to one or both of these two address domains.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        22,
+        26
+      ]
+    },
+    {
+      "text": "To provide more efficient support for release consistency cite:[Gharachorloo90memoryconsistency], each atomic instruction has two bits, aq and rl, used to specify additional memory ordering constraints as viewed by other RISC-V harts.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        28,
+        34
+      ]
+    },
+    {
+      "text": "The bits order accesses to one of the two address domains, memory or I/O, depending on which address domain the atomic instruction is accessing.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        28,
+        34
+      ]
+    },
+    {
+      "text": "No ordering constraint is implied to accesses to the other domain, and a FENCE instruction should be used to order across both domains.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        28,
+        34
+      ]
+    },
+    {
+      "text": "If both bits are clear, no additional ordering constraints are imposed on the atomic memory operation.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        36,
+        47
+      ]
+    },
+    {
+      "text": "If only the aq bit is set, the atomic memory operation is treated as an acquire access, i.e., no following memory operations on this RISC-V hart can be observed to take place before the acquire memory operation.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        36,
+        47
+      ]
+    },
+    {
+      "text": "If only the rl bit is set, the atomic memory operation is treated as a release access, i.e., the release memory operation cannot be observed to take place before any earlier memory operations on this RISC-V hart.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        36,
+        47
+      ]
+    },
+    {
+      "text": "If both the aq and rl bits are set, the atomic memory operation is sequentially consistent and cannot be observed to happen before any earlier memory operations or after any later memory operations in the same RISC-V hart and to the same address domain.",
+      "section": "Preamble > Atomic Instructions > Specifying Ordering of Atomic Instructions",
+      "line_range": [
+        36,
+        47
+      ]
+    }
+  ]
+}

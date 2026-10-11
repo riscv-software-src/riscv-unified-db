@@ -1,0 +1,62 @@
+{
+  "source_file": "src/priv/smdbltrp.adoc",
+  "total": 7,
+  "sentences": [
+    {
+      "text": "The Smdbltrp extension addresses a double trap (See ) in M-mode.",
+      "section": "Preamble > \"Smdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "When the Smrnmi extension () is implemented, it enables invocation of the RNMI handler on a double trap in M-mode to handle the critical error.",
+      "section": "Preamble > \"Smdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "If the Smrnmi extension is not implemented or if a double trap occurs during the RNMI handler's execution, this extension helps transition the hart to a critical error state and enables signaling the critical error to the platform.",
+      "section": "Preamble > \"Smdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        3,
+        9
+      ]
+    },
+    {
+      "text": "To improve error diagnosis and resolution, this extension supports debugging harts in a critical error state.",
+      "section": "Preamble > \"Smdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        11,
+        14
+      ]
+    },
+    {
+      "text": "The extension introduces a mechanism to enter Debug Mode instead of asserting a critical-error signal to the platform when the hart is in a critical error state.",
+      "section": "Preamble > \"Smdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        11,
+        14
+      ]
+    },
+    {
+      "text": "See cite:[DEBUGSPEC] for details.",
+      "section": "Preamble > \"Smdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        11,
+        14
+      ]
+    },
+    {
+      "text": "See for the operational details.",
+      "section": "Preamble > \"Smdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        16,
+        16
+      ]
+    }
+  ]
+}

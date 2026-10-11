@@ -1,0 +1,54 @@
+{
+  "source_file": "src/priv/ssdbltrp.adoc",
+  "total": 6,
+  "sentences": [
+    {
+      "text": "The Ssdbltrp extension addresses a double trap (See ) privilege modes lower than M.",
+      "section": "Preamble > \"Ssdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "It enables HS-mode to invoke a critical error handler in a virtual machine on a double trap in VS-mode.",
+      "section": "Preamble > \"Ssdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "It also allows M-mode to invoke a critical error handler in the OS/Hypervisor on a double trap in S/HS-mode.",
+      "section": "Preamble > \"Ssdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        3,
+        7
+      ]
+    },
+    {
+      "text": "The Ssdbltrp extension adds the `menvcfg`.DTE (See ) and the `sstatus`.SDT fields (See ).",
+      "section": "Preamble > \"Ssdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        9,
+        12
+      ]
+    },
+    {
+      "text": "If the hypervisor extension is additionally implemented, then the extension adds the `henvcfg`.DTE (See ) and the `vsstatus`.SDT fields (See ).",
+      "section": "Preamble > \"Ssdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        9,
+        12
+      ]
+    },
+    {
+      "text": "See for the operational details.",
+      "section": "Preamble > \"Ssdbltrp\" Double Trap Extension, Version 1.0",
+      "line_range": [
+        14,
+        14
+      ]
+    }
+  ]
+}

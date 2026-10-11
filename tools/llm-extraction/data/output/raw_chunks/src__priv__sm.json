@@ -1,0 +1,22 @@
+{
+  "source_file": "src/priv/sm.adoc",
+  "total": 2,
+  "sentences": [
+    {
+      "text": "NOTE: This chapter is currently being restructured.",
+      "section": "Preamble > \"Sm\" Machine Extensions",
+      "line_range": [
+        3,
+        4
+      ]
+    },
+    {
+      "text": "Its contents are normative, but the presentation might appear disjoint.",
+      "section": "Preamble > \"Sm\" Machine Extensions",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

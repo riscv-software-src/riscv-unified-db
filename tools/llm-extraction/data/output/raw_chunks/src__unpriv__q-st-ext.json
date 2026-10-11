@@ -1,0 +1,158 @@
+{
+  "source_file": "src/unpriv/q-st-ext.adoc",
+  "total": 19,
+  "sentences": [
+    {
+      "text": "This chapter describes the Q standard extension for quad-precision floating-point, which adds computational instructions compliant with the IEEE 754-2008 arithmetic standard's binary128 format and operations.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "The Q extension depends on the D extension.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "The floating-point registers are now extended to hold either a single, double, or quad-precision floating-point value (FLEN=128).",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2",
+      "line_range": [
+        8,
+        12
+      ]
+    },
+    {
+      "text": "The NaN-boxing scheme described in is now extended recursively to allow a single-precision value to be NaN-boxed inside a double-precision value which is itself NaN-boxed inside a quad-precision value.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2",
+      "line_range": [
+        8,
+        12
+      ]
+    },
+    {
+      "text": "New 128-bit variants of LOAD-FP and STORE-FP instructions are added, encoded with a new value for the funct3 width field.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions",
+      "line_range": [
+        16,
+        18
+      ]
+    },
+    {
+      "text": "FLQ and FSQ are only guaranteed to execute atomically if the effective address is naturally aligned and XLEN=128.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions",
+      "line_range": [
+        24,
+        26
+      ]
+    },
+    {
+      "text": "FLQ and FSQ do not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions",
+      "line_range": [
+        28,
+        30
+      ]
+    },
+    {
+      "text": "A new supported format is added to the format field of most instructions, as shown in",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Computational Instructions",
+      "line_range": [
+        34,
+        35
+      ]
+    },
+    {
+      "text": ".Format field encoding. | |fmt field |Mnemonic |Meaning |00 |S |32-bit single-precision |01 |D |64-bit double-precision |10 |H |16-bit half-precision |11 |Q |128-bit quad-precision |",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Computational Instructions",
+      "line_range": [
+        37,
+        46
+      ]
+    },
+    {
+      "text": "The quad-precision floating-point computational instructions are defined analogously to their double-precision counterparts, but operate on quad-precision operands and produce quad-precision results.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Computational Instructions",
+      "line_range": [
+        48,
+        51
+      ]
+    },
+    {
+      "text": "New floating-point-to-integer and integer-to-floating-point conversion instructions are added.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Convert and Move Instructions",
+      "line_range": [
+        59,
+        68
+      ]
+    },
+    {
+      "text": "These instructions are defined analogously to the double-precision-to-integer and integer-to-double-precision conversion instructions. FCVT.W.Q or FCVT.L.Q converts a quad-precision floating-point number to a signed 32-bit or 64-bit integer, respectively. FCVT.Q.W or FCVT.Q.L converts a 32-bit or 64-bit signed integer, respectively, into a quad-precision floating-point number. FCVT.WU.Q, FCVT.LU.Q, FCVT.Q.WU, and FCVT.Q.LU variants convert to or from unsigned integer values. FCVT.L[U].Q and FCVT.Q.L[U] are RV64-only instructions.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Convert and Move Instructions",
+      "line_range": [
+        59,
+        68
+      ]
+    },
+    {
+      "text": "Note FCVT.Q.L[U] always produces an exact result and is unaffected by rounding mode.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Convert and Move Instructions",
+      "line_range": [
+        59,
+        68
+      ]
+    },
+    {
+      "text": "New floating-point-to-floating-point conversion instructions are added.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Convert and Move Instructions",
+      "line_range": [
+        74,
+        80
+      ]
+    },
+    {
+      "text": "These instructions are defined analogously to the double-precision floating-point-to-floating-point conversion instructions. FCVT.S.Q or FCVT.Q.S converts a quad-precision floating-point number to a single-precision floating-point number, or vice-versa, respectively. FCVT.D.Q or FCVT.Q.D converts a quad-precision floating-point number to a double-precision floating-point number, or vice-versa, respectively.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Convert and Move Instructions",
+      "line_range": [
+        74,
+        80
+      ]
+    },
+    {
+      "text": "Floating-point to floating-point sign-injection instructions, FSGNJ.Q, FSGNJN.Q, and FSGNJX.Q are defined analogously to the double-precision sign-injection instruction.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Convert and Move Instructions",
+      "line_range": [
+        86,
+        89
+      ]
+    },
+    {
+      "text": "FMV.X.Q and FMV.Q.X instructions are not provided in RV32 or RV64, so quad-precision bit patterns must be moved to the integer registers via memory.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Convert and Move Instructions",
+      "line_range": [
+        95,
+        97
+      ]
+    },
+    {
+      "text": "The quad-precision floating-point compare instructions are defined analogously to their double-precision counterparts, but operate on quad-precision operands.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Floating-Point Compare Instructions",
+      "line_range": [
+        101,
+        104
+      ]
+    },
+    {
+      "text": "The quad-precision floating-point classify instruction, FCLASS.Q, is defined analogously to its double-precision counterpart, but operates on quad-precision operands.",
+      "section": "Preamble > \"Q\" Extension for Quad-Precision Floating-Point, Version 2.2 > Quad-Precision Load and Store Instructions > Quad-Precision Floating-Point Classify Instruction",
+      "line_range": [
+        112,
+        115
+      ]
+    }
+  ]
+}

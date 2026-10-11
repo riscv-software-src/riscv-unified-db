@@ -1,0 +1,62 @@
+{
+  "source_file": "src/priv/svadu.adoc",
+  "total": 7,
+  "sentences": [
+    {
+      "text": "The Svadu extension adds support and CSR controls for hardware updating of PTE A/D bits.",
+      "section": "Preamble > \"Svadu\" Extension for Hardware Updating of A/D Bits, Version 1.0",
+      "line_range": [
+        3,
+        3
+      ]
+    },
+    {
+      "text": "If the Svadu extension is implemented, the `menvcfg`.ADUE field is writable.",
+      "section": "Preamble > \"Svadu\" Extension for Hardware Updating of A/D Bits, Version 1.0",
+      "line_range": [
+        5,
+        8
+      ]
+    },
+    {
+      "text": "If the hypervisor extension is additionally implemented, the `henvcfg`.ADUE field is also writable.",
+      "section": "Preamble > \"Svadu\" Extension for Hardware Updating of A/D Bits, Version 1.0",
+      "line_range": [
+        5,
+        8
+      ]
+    },
+    {
+      "text": "See and for the definitions of those fields.",
+      "section": "Preamble > \"Svadu\" Extension for Hardware Updating of A/D Bits, Version 1.0",
+      "line_range": [
+        5,
+        8
+      ]
+    },
+    {
+      "text": "defines the semantics of hardware updating of A/D bits.",
+      "section": "Preamble > \"Svadu\" Extension for Hardware Updating of A/D Bits, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    },
+    {
+      "text": "When hardware updating of A/D bits is disabled, the Svade extension, which mandates exceptions when A/D bits need be set, instead takes effect.",
+      "section": "Preamble > \"Svadu\" Extension for Hardware Updating of A/D Bits, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    },
+    {
+      "text": "The Svade extension is also defined in .",
+      "section": "Preamble > \"Svadu\" Extension for Hardware Updating of A/D Bits, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    }
+  ]
+}

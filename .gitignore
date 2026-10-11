@@ -45,6 +45,8 @@ tools/ruby-gems/udb/ext/z3/**/*.so
 tools/ruby-gems/udb/ext/z3/VERSION
 tools/ruby-gems/udb/ext/udb_download/Makefile
 
+# LLM Extraction Tool local artifacts (regenerable, not stored in git)
+
 # emacs backup files
 *~
 

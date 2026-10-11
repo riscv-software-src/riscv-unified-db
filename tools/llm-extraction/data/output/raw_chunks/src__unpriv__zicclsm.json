@@ -1,0 +1,46 @@
+{
+  "source_file": "src/unpriv/zicclsm.adoc",
+  "total": 5,
+  "sentences": [
+    {
+      "text": "If the Zicclsm extension is implemented, then misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs must be supported.",
+      "section": "Preamble > Zicclsm Extension for Main Memory Misaligned Accesses, Version 1.0",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "NOTE: This definition includes vector memory accesses.",
+      "section": "Preamble > Zicclsm Extension for Main Memory Misaligned Accesses, Version 1.0",
+      "line_range": [
+        7,
+        8
+      ]
+    },
+    {
+      "text": "It does not include any instructions in the various ext:Za*[] extensions.",
+      "section": "Preamble > Zicclsm Extension for Main Memory Misaligned Accesses, Version 1.0",
+      "line_range": [
+        7,
+        8
+      ]
+    },
+    {
+      "text": "NOTE: Even though mandated, misaligned loads and stores might execute extremely slowly.",
+      "section": "Preamble > Zicclsm Extension for Main Memory Misaligned Accesses, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    },
+    {
+      "text": "Standard software distributions should assume their existence only for correctness, not for performance.",
+      "section": "Preamble > Zicclsm Extension for Main Memory Misaligned Accesses, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    }
+  ]
+}

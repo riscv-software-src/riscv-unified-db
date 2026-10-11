@@ -1,0 +1,14 @@
+{
+  "source_file": "src/unpriv/zic64b.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "If the Zic64b extension is implemented, then cache blocks must be 64 bytes in size, naturally aligned in the address space.",
+      "section": "Preamble > Zic64b Extension for 64-byte Cache Blocks, Version 1.0",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

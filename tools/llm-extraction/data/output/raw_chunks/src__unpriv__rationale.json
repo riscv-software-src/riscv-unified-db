@@ -1,0 +1,486 @@
+{
+  "source_file": "src/unpriv/rationale.adoc",
+  "total": 60,
+  "sentences": [
+    {
+      "text": "This appendix contains the rationale for RISC-V ISA extensions at the time they were ratified.",
+      "section": "Preamble > Historical Rationale for Extensions",
+      "line_range": [
+        4,
+        12
+      ]
+    },
+    {
+      "text": "Unlike the ISA specification, this appendix is ordered chronologically, so as to convey the motivation and architectural reasoning underpinning each extension at the time of ratification.",
+      "section": "Preamble > Historical Rationale for Extensions",
+      "line_range": [
+        4,
+        12
+      ]
+    },
+    {
+      "text": "For extensions ratified prior to the conception of this appendix (ca. 2025), the rationale will be added over time.",
+      "section": "Preamble > Historical Rationale for Extensions",
+      "line_range": [
+        4,
+        12
+      ]
+    },
+    {
+      "text": "In cases where the rationale was not recorded, the authors and editors will synthesize it from the historical record.",
+      "section": "Preamble > Historical Rationale for Extensions",
+      "line_range": [
+        4,
+        12
+      ]
+    },
+    {
+      "text": "The PAUSE instruction hints to a hart that it should temporarily reduce its rate of execution.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zihintpause\" Extension for Pause Hint",
+      "line_range": [
+        16,
+        19
+      ]
+    },
+    {
+      "text": "It is normally used to save energy and execution resources while polling, e.g. while waiting for a spinlock to become free.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zihintpause\" Extension for Pause Hint",
+      "line_range": [
+        16,
+        19
+      ]
+    },
+    {
+      "text": "Much of the debate surrounding this extension centered on whether a facility similar to x86's MONITOR/MWAIT should instead be provided.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zihintpause\" Extension for Pause Hint",
+      "line_range": [
+        21,
+        29
+      ]
+    },
+    {
+      "text": "We concluded that, even if such a facility were to be defined for RISC-V, it would not supplant PAUSE. PAUSE is more appropriate when polling for non-memory events, when polling for multiple events, or when software does not know precisely what events it is polling for. (Perhaps surprisingly, the latter case is ubiquitous, in part because it is the mechanism expected by the Linux kernel's `cpurelax` API.)",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zihintpause\" Extension for Pause Hint",
+      "line_range": [
+        21,
+        29
+      ]
+    },
+    {
+      "text": "Replacing unpredictable branches with conditional-select or conditional-move instructions can mitigate a class of costly branch mispredictions.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        33,
+        37
+      ]
+    },
+    {
+      "text": "Unfortunately, conditional-select instructions require three source operands.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        33,
+        37
+      ]
+    },
+    {
+      "text": "These instructions are a logical addition to ISAs that include three-source integer instructions for other reasons, but are too costly otherwise.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        33,
+        37
+      ]
+    },
+    {
+      "text": "Some ISAs have instead furnished conditional-move instructions, which consume less encoding space and avoid the extra register read in simple microarchitectures.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        39,
+        44
+      ]
+    },
+    {
+      "text": "Unfortunately, in register-renamed microarchitectures, these instructions incur costs simlar to conditional select, or require additional microarchitectural structures and micro-op-issue constraints.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        39,
+        44
+      ]
+    },
+    {
+      "text": "The Zicond extension was defined to solve the same problem as conditional select and conditional move, but with very little incremental cost for complex microarchitectures.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        46,
+        56
+      ]
+    },
+    {
+      "text": "It provides conditional-zero instructions, which read two source operands and, based upon the zeroness of the second operand, produce either the first operand or zero.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        46,
+        56
+      ]
+    },
+    {
+      "text": "These instructions can be used as part of a three-instruction sequence to synthesize conditional select.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        46,
+        56
+      ]
+    },
+    {
+      "text": "Several common conditional-execution idioms require only two instructions, as would be the case with conditional select or move, including conditional addition, subtraction, and bitwise AND, OR, and XOR.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        46,
+        56
+      ]
+    },
+    {
+      "text": "Two conditional-zero instructions are included: one that writes zero if the comparand is zero, and one that does so if the comparand is nonzero.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        58,
+        61
+      ]
+    },
+    {
+      "text": "Variants that perform magnitude comparisons with zero were considered but ultimately excluded for insufficient quantitative justification.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zicond\" Extension for Integer Conditional Operations",
+      "line_range": [
+        58,
+        61
+      ]
+    },
+    {
+      "text": "While compare-and-swap for XLEN wide data may be accomplished using LR/SC, the CAS atomic instructions scale better to highly parallel systems than LR/SC.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zacas\" Extension for Atomic Compare-and-Swap (CAS) Instructions",
+      "line_range": [
+        65,
+        74
+      ]
+    },
+    {
+      "text": "Many lock-free algorithms, such as a lock-free queue, require manipulation of pointer variables. A simple CAS operation may not be sufficient to guard against what is commonly referred to as the ABA problem in such algorithms that manipulate pointer variables.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zacas\" Extension for Atomic Compare-and-Swap (CAS) Instructions",
+      "line_range": [
+        65,
+        74
+      ]
+    },
+    {
+      "text": "To avoid the ABA problem, the algorithms associate a reference counter with the pointer variable and perform updates using a quadword compare and swap (of both the pointer and the counter).",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zacas\" Extension for Atomic Compare-and-Swap (CAS) Instructions",
+      "line_range": [
+        65,
+        74
+      ]
+    },
+    {
+      "text": "The double and quadword CAS instructions support implementation of algorithms for ABA problem avoidance.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zacas\" Extension for Atomic Compare-and-Swap (CAS) Instructions",
+      "line_range": [
+        65,
+        74
+      ]
+    },
+    {
+      "text": "The CAS instruction supports the C++11 atomic compare and exchange operation.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zacas\" Extension for Atomic Compare-and-Swap (CAS) Instructions",
+      "line_range": [
+        76,
+        77
+      ]
+    },
+    {
+      "text": "The A-extension offers atomic memory operation (AMO) instructions for words, doublewords, and quadwords (only for `AMOCAS`).",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        81,
+        86
+      ]
+    },
+    {
+      "text": "The absence of atomic operations for subword data types necessitates emulation strategies.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        81,
+        86
+      ]
+    },
+    {
+      "text": "For bitwise operations, this emulation can be performed via word-sized bitwise AMO* instructions.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        81,
+        86
+      ]
+    },
+    {
+      "text": "For non-bitwise operations, emulation is achievable using word-sized `LR`/`SC` instructions.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        81,
+        86
+      ]
+    },
+    {
+      "text": "Several limitations arise from this emulation approach:",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        88,
+        88
+      ]
+    },
+    {
+      "text": "In systems with large-scale or Non-Uniform Memory Access (NUMA) configurations, emulation based on `LR`/`SC` introduces issues related to scalability and fairness, particularly under conditions of high contention.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        90,
+        92
+      ]
+    },
+    {
+      "text": "Emulation of narrower AMOs through wider AMO* instructions on non-idempotent IO memory regions may result in unintended side effects.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        94,
+        95
+      ]
+    },
+    {
+      "text": "Utilizing wider AMO* instructions for emulating narrower AMOs risks activating extraneous breakpoints or watchpoints.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        97,
+        98
+      ]
+    },
+    {
+      "text": "In the absence of native support for subword atomics, compilers often resort to inlining code sequences to provide the required emulation.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        100,
+        103
+      ]
+    },
+    {
+      "text": "This practice contributes to an increase in code size, with consequent impacts on system performance and memory utilization.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        100,
+        103
+      ]
+    },
+    {
+      "text": "The Zabha extension addresses these limitations by adding support for byte and halfword atomic memory operations to the RISC-V Unprivileged ISA.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zabha\" Extension for Byte and Halfword Atomic Memory Operations, Version 1.0",
+      "line_range": [
+        105,
+        106
+      ]
+    },
+    {
+      "text": "NOTE: The following text previously comprised the introduction to the BFloat16 extensions chapter.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        110,
+        112
+      ]
+    },
+    {
+      "text": "It needs to be rewritten to fit into the flow of the Rationale appendix.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        110,
+        112
+      ]
+    },
+    {
+      "text": "When FP16 (officially called binary16) was first introduced by IEEE 754-2008, it was just an interchange format.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        114,
+        117
+      ]
+    },
+    {
+      "text": "It was intended as a space/bandwidth efficient encoding that would be used to transfer information.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        114,
+        117
+      ]
+    },
+    {
+      "text": "This is in line with the Zfhmin extension.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        114,
+        117
+      ]
+    },
+    {
+      "text": "However, there were some applications (notably graphics) that found that the smaller precision and dynamic range was sufficient for their space.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        119,
+        122
+      ]
+    },
+    {
+      "text": "So, FP16 started to see some widespread adoption as an arithmetic format.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        119,
+        122
+      ]
+    },
+    {
+      "text": "This is in line with the Zfh extension.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        119,
+        122
+      ]
+    },
+    {
+      "text": "While it was not the intention of IEEE 754-2008 to have FP16 be an arithmetic format, it is supported by the standard.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        124,
+        130
+      ]
+    },
+    {
+      "text": "Even though IEEE 754 WG recognized that FP16 was gaining popularity, the working group decided to hold off on making it a basic format in IEEE 754-2019.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        124,
+        130
+      ]
+    },
+    {
+      "text": "This means that an IEEE 754-2019 compliant implementation of binary floating point, which needs to support at least one basic format, cannot support only FP16 - it needs to support at least one of binary32, binary64, and binary128.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        124,
+        130
+      ]
+    },
+    {
+      "text": "Experts working in machine learning noticed that FP16 was a much more compact way of storing operands and often provided sufficient precision for them.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        132,
+        144
+      ]
+    },
+    {
+      "text": "However, they also found that intermediate values were much better when accumulated into a higher precision.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        132,
+        144
+      ]
+    },
+    {
+      "text": "The final computations were then typically converted back into the more compact FP16 encoding.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        132,
+        144
+      ]
+    },
+    {
+      "text": "This approach has become very common in machine learning (ML) inference where the weights and activations are stored in FP16 encodings.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        132,
+        144
+      ]
+    },
+    {
+      "text": "There was the added benefit that smaller multiplication blocks could be created for the FP16's smaller number of significant bits.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        132,
+        144
+      ]
+    },
+    {
+      "text": "At this point, widening multiply-accumulate instructions became much more common.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        132,
+        144
+      ]
+    },
+    {
+      "text": "Also, more complicated dot product instructions started to show up including those that packed two FP16 numbers in a 32-bit register, multiplied these by another pair of FP16 numbers in another register, added these two products to an FP32 accumulate value in a 3rd register and returned an FP32 result.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        132,
+        144
+      ]
+    },
+    {
+      "text": "Experts working in machine learning at Google who continued to work with FP32 values noted that the least significant 16 bits of their mantissas were not always needed for good results, even in training.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        146,
+        158
+      ]
+    },
+    {
+      "text": "They proposed a truncated version of FP32, which was the 16 most significant bits of the FP32 encoding.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        146,
+        158
+      ]
+    },
+    {
+      "text": "This format was named BFloat16 (or BF16).",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        146,
+        158
+      ]
+    },
+    {
+      "text": "The B in BF16, stands for Brain since it was initially introduced by the Google Brain team.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        146,
+        158
+      ]
+    },
+    {
+      "text": "Not only did they find that the number of significant bits in BF16 tended to be sufficient for their work (despite being fewer than in FP16), but it was very easy for them to reuse their existing data; FP32 numbers could be readily rounded to BF16 with a minimal amount of work.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        146,
+        158
+      ]
+    },
+    {
+      "text": "Furthermore, the even smaller number of the BF16 significant bits enabled even smaller multiplication blocks to be built.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        146,
+        158
+      ]
+    },
+    {
+      "text": "Similar to FP16, BF16 multiply-accumulate widening and dot-product instructions started to proliferate.",
+      "section": "Preamble > Historical Rationale for Extensions > \"Zfbfmin\" Extension for Scalar BFloat16 Operations",
+      "line_range": [
+        146,
+        158
+      ]
+    }
+  ]
+}

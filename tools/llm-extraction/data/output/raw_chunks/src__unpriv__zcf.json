@@ -1,0 +1,142 @@
+{
+  "source_file": "src/unpriv/zcf.adoc",
+  "total": 17,
+  "sentences": [
+    {
+      "text": "The ext:zcf[] extension adds compressed single-precision floating-point load and store instructions.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "It is an XLEN=32-only extension.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "C.FLWSP is an RV32FC-only instruction that loads a single-precision floating-point value from memory into floating-point register rd.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        9,
+        14
+      ]
+    },
+    {
+      "text": "It computes its effective address by adding the zero-extended offset, scaled by 4, to the stack pointer, `x2`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        9,
+        14
+      ]
+    },
+    {
+      "text": "It expands to `flw rd, offset(x2)`. C.FLWSP uses the .",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        9,
+        14
+      ]
+    },
+    {
+      "text": "C.FSWSP is an RV32FC-only instruction that stores a single-precision floating-point value in floating-point register rs2 to memory.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        16,
+        20
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 4, to the stack pointer, `x2`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        16,
+        20
+      ]
+    },
+    {
+      "text": "It expands to `fsw rs2, offset(x2)`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores",
+      "line_range": [
+        16,
+        20
+      ]
+    },
+    {
+      "text": "These instructions encode their data source or destination as described in the following table.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        24,
+        25
+      ]
+    },
+    {
+      "text": ".Registers specified by the three-bit rs1{prime}, rs2{prime}, and rd{prime} fields of the CIW, CL, CS, CA, and CB formats. //[cols=\"20%,10%,10%,10%,10%,10%,10%,10%,10%\"] [float=\"center\",align=\"center\",cols=\"1a, 1a\",frame=\"none\",grid=\"none\"] | | ! !ext:zcf[] Register Number !Floating-Point Register Number !Floating-Point Register ABI Name ! |",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        27,
+        39
+      ]
+    },
+    {
+      "text": "! !`000` !`001` !`010` !`011` !`100` !`101` !`110` !`111` !`f8` !`f9` !`f10` !`f11` !`f12` !`f13`!`f14` !`f15` !`fs0` !`fs1` !`fa0` !`fa1` !`fa2`!`fa3` !`fa4` !`fa5` ! |",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        41,
+        47
+      ]
+    },
+    {
+      "text": "C.FLW is an RV32FC-only instruction that loads a single-precision floating-point value from memory into floating-point register `rd′`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        49,
+        54
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 4, to the base address in register `rs1′`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        49,
+        54
+      ]
+    },
+    {
+      "text": "It expands to `flw rd′, offset(rs1′)`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        49,
+        54
+      ]
+    },
+    {
+      "text": "C.FSW is an RV32FC-only instruction that stores a single-precision floating-point value in floating-point register `rs2′` to memory.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        56,
+        61
+      ]
+    },
+    {
+      "text": "It computes an effective address by adding the zero-extended offset, scaled by 4, to the base address in register `rs1′`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        56,
+        61
+      ]
+    },
+    {
+      "text": "It expands to `fsw rs2′, offset(rs1′)`.",
+      "section": "Preamble > ext:zcf[] Single-Precision Floating-Point Compressed Instructions Extension > Stack-Pointer-Based Loads and Stores > Register-Based Loads and Stores",
+      "line_range": [
+        56,
+        61
+      ]
+    }
+  ]
+}

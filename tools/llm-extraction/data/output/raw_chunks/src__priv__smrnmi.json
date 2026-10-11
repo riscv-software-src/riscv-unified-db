@@ -1,0 +1,406 @@
+{
+  "source_file": "src/priv/smrnmi.adoc",
+  "total": 50,
+  "sentences": [
+    {
+      "text": "The base machine-level architecture supports only unresumable non-maskable interrupts (UNMIs), where the NMI jumps to a handler in machine mode, overwriting the current `mepc` and `mcause` register values.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "If the hart had been executing machine-mode code in a trap handler, the previous values in `mepc` and `mcause` would not be recoverable and so execution is not generally resumable.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0",
+      "line_range": [
+        3,
+        8
+      ]
+    },
+    {
+      "text": "The Smrnmi extension adds support for resumable non-maskable interrupts (RNMIs) to RISC-V.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    },
+    {
+      "text": "The extension adds four new CSRs (`mnepc`, `mncause`, `mnstatus`, and `mnscratch`) to hold the interrupted state, and one new instruction, MNRET, to resume from the RNMI handler.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0",
+      "line_range": [
+        10,
+        13
+      ]
+    },
+    {
+      "text": "The `rnmi` interrupt signals are inputs to the hart.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals",
+      "line_range": [
+        17,
+        20
+      ]
+    },
+    {
+      "text": "These interrupts have higher priority than any other interrupt or exception on the hart and cannot be disabled by software.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals",
+      "line_range": [
+        17,
+        20
+      ]
+    },
+    {
+      "text": "Specifically, they are not disabled by clearing the `mstatus`.MIE register.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals",
+      "line_range": [
+        17,
+        20
+      ]
+    },
+    {
+      "text": "The RNMI interrupt trap handler address is implementation-defined.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Handler Addresses",
+      "line_range": [
+        24,
+        24
+      ]
+    },
+    {
+      "text": "RNMI also has an associated exception trap handler address, which is implementation defined.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Handler Addresses",
+      "line_range": [
+        26,
+        27
+      ]
+    },
+    {
+      "text": "NOTE: For example, some implementations might use the address specified in `mtvec` as the RNMI exception trap handler.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Handler Addresses",
+      "line_range": [
+        29,
+        30
+      ]
+    },
+    {
+      "text": "This extension adds additional M-mode CSRs to enable a resumable non-maskable interrupt (RNMI).",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        34,
+        35
+      ]
+    },
+    {
+      "text": ".Resumable NMI scratch register `mnscratch` include::images/bytefield/mnscratch.edn[]",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        37,
+        38
+      ]
+    },
+    {
+      "text": "The `mnscratch` CSR holds an MXLEN-bit read-write register which enables the RNMI trap handler to save and restore the context that was interrupted.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        40,
+        42
+      ]
+    },
+    {
+      "text": ".Resumable NMI program counter `mnepc`. include::images/bytefield/mnepc.edn[]",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        44,
+        45
+      ]
+    },
+    {
+      "text": "The `mnepc` CSR is an MXLEN-bit read-write register which on entry to the RNMI trap handler holds the PC of the instruction that took the interrupt.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        47,
+        49
+      ]
+    },
+    {
+      "text": "The low bit of `mnepc` (`mnepc[0]`) is always zero.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        51,
+        53
+      ]
+    },
+    {
+      "text": "On implementations that support only IALIGN=32, the two low bits (`mnepc[1:0]`) are always zero.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        51,
+        53
+      ]
+    },
+    {
+      "text": "If an implementation allows IALIGN to be either 16 or 32 (by changing CSR `misa`, for example), then, whenever IALIGN=32, bit `mnepc[1]` is masked on reads so that it appears to be 0.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        55,
+        59
+      ]
+    },
+    {
+      "text": "This masking occurs also for the implicit read by the MNRET instruction.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        55,
+        59
+      ]
+    },
+    {
+      "text": "Though masked, `mnepc[1]` remains writable when IALIGN=32.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        55,
+        59
+      ]
+    },
+    {
+      "text": "`mnepc` is a *WARL* register that must be able to hold all valid virtual addresses.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        61,
+        65
+      ]
+    },
+    {
+      "text": "It need not be capable of holding all possible invalid addresses.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        61,
+        65
+      ]
+    },
+    {
+      "text": "Prior to writing `mnepc`, implementations may convert an invalid address into some other invalid address that `mnepc` is capable of holding.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        61,
+        65
+      ]
+    },
+    {
+      "text": ".Resumable NMI cause `mncause`. include::images/bytefield/mncause.edn[]",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        67,
+        69
+      ]
+    },
+    {
+      "text": "The `mncause` CSR holds the reason for the RNMI.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        71,
+        79
+      ]
+    },
+    {
+      "text": "If the reason is an interrupt, bit MXLEN-1 is set to 1, and the RNMI cause is encoded in the least-significant bits.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        71,
+        79
+      ]
+    },
+    {
+      "text": "If the reason is an interrupt and RNMI causes are not supported, bit MXLEN-1 is set to 1, and zero is written to the least-significant bits.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        71,
+        79
+      ]
+    },
+    {
+      "text": "If the reason is an exception within M-mode that results in a double trap as specified in the Smdbltrp extension, bit MXLEN-1 is set to 0 and the least-significant bits are set to the cause code corresponding to the exception that precipitated the double trap.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        71,
+        79
+      ]
+    },
+    {
+      "text": ".Resumable NMI status register `mnstatus`. include::images/bytefield/mnstatus.edn[]",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        81,
+        83
+      ]
+    },
+    {
+      "text": "The `mnstatus` CSR holds a two-bit field, MNPP, which on entry to the RNMI trap handler holds the privilege mode of the interrupted context, encoded in the same manner as `mstatus`.MPP.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        85,
+        91
+      ]
+    },
+    {
+      "text": "If the H extension is also implemented, `mnstatus` also holds a one-bit field, MNPV, which on entry to the RNMI trap handler holds the virtualization mode of the interrupted context, encoded in the same manner as `mstatus`.MPV.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        85,
+        91
+      ]
+    },
+    {
+      "text": "If the Zicfilp extension is implemented, `mnstatus` also holds the MNPELP field, which on entry to the RNMI trap handler holds the previous `ELP` state.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        93,
+        95
+      ]
+    },
+    {
+      "text": "When an RNMI trap is taken, MNPELP is set to `ELP` and `ELP` is set to 0.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        93,
+        95
+      ]
+    },
+    {
+      "text": "`mnstatus` also holds the NMIE bit.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        97,
+        98
+      ]
+    },
+    {
+      "text": "When NMIE=1, non-maskable interrupts are enabled.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        97,
+        98
+      ]
+    },
+    {
+      "text": "When NMIE=0, all interrupts are disabled.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        97,
+        98
+      ]
+    },
+    {
+      "text": "When NMIE=0, the hart behaves as though `mstatus`.MPRV were clear, regardless of the current setting of `mstatus`.MPRV.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        100,
+        101
+      ]
+    },
+    {
+      "text": "Upon reset, NMIE contains the value 0.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        103,
+        103
+      ]
+    },
+    {
+      "text": "Software can set NMIE to 1, but attempts to clear NMIE have no effect.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        105,
+        105
+      ]
+    },
+    {
+      "text": "For the purposes of the WFI instruction, NMIE is a global interrupt enable, meaning that the setting of NMIE does not affect the operation of the WFI instruction.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        107,
+        109
+      ]
+    },
+    {
+      "text": "The other bits in `mnstatus` are reserved; software should write zeros and hardware implementations should return zeros.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI CSRs",
+      "line_range": [
+        111,
+        112
+      ]
+    },
+    {
+      "text": "MNRET is an M-mode-only instruction that uses the values in `mnepc` and `mnstatus` to return to the program counter, privilege mode, and virtualization mode of the interrupted context.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > MNRET Instruction",
+      "line_range": [
+        116,
+        121
+      ]
+    },
+    {
+      "text": "This instruction also sets `mnstatus`.NMIE.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > MNRET Instruction",
+      "line_range": [
+        116,
+        121
+      ]
+    },
+    {
+      "text": "If MNRET changes the privilege mode to a mode less privileged than M, it also sets `mstatus`.MPRV to 0.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > MNRET Instruction",
+      "line_range": [
+        116,
+        121
+      ]
+    },
+    {
+      "text": "If the Zicfilp extension is implemented, then if the new privileged mode is y, MNRET sets `ELP` to the logical AND of yLPE (see ) and `mnstatus`.MNPELP.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > MNRET Instruction",
+      "line_range": [
+        116,
+        121
+      ]
+    },
+    {
+      "text": "When an RNMI interrupt is detected, the interrupted PC is written to the `mnepc` CSR, the type of RNMI to the `mncause` CSR, and the privilege mode of the interrupted context to the `mnstatus` CSR.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Operation",
+      "line_range": [
+        125,
+        128
+      ]
+    },
+    {
+      "text": "The `mnstatus`.NMIE bit is cleared, masking all interrupts.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Operation",
+      "line_range": [
+        125,
+        128
+      ]
+    },
+    {
+      "text": "The hart then enters machine-mode and jumps to the RNMI trap handler address.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Operation",
+      "line_range": [
+        130,
+        131
+      ]
+    },
+    {
+      "text": "The RNMI handler can resume original execution using the new MNRET instruction, which restores the PC from `mnepc`, the privilege mode from `mnstatus`, and also sets `mnstatus`.NMIE, which re-enables interrupts.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Operation",
+      "line_range": [
+        133,
+        135
+      ]
+    },
+    {
+      "text": "If the hart encounters an exception while executing in M-mode with the `mnstatus`.NMIE bit clear, the actions taken are the same as if the exception had occurred while `mnstatus`.NMIE were set, except that the program counter is set to the RNMI exception trap handler address.",
+      "section": "Preamble > \"Smrnmi\" Extension for Resumable Non-Maskable Interrupts, Version 1.0 > RNMI Interrupt Signals > RNMI Operation",
+      "line_range": [
+        137,
+        137
+      ]
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "source_file": "src/priv/svinval.adoc",
+  "total": 17,
+  "sentences": [
+    {
+      "text": "The Svinval extension splits SFENCE.VMA, HFENCE.VVMA, and HFENCE.GVMA instructions into finer-grained invalidation and ordering operations that can be more efficiently batched or pipelined on certain classes of high-performance implementation.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        3,
+        6
+      ]
+    },
+    {
+      "text": "The SINVAL.VMA instruction invalidates any address-translation cache entries that an SFENCE.VMA instruction with the same values of rs1 and rs2 would invalidate.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        10,
+        15
+      ]
+    },
+    {
+      "text": "However, unlike SFENCE.VMA, SINVAL.VMA instructions are only ordered with respect to SFENCE.VMA, SFENCE.W.INVAL, and SFENCE.INVAL.IR instructions as defined below.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        10,
+        15
+      ]
+    },
+    {
+      "text": "The SFENCE.W.INVAL instruction guarantees that any previous stores already visible to the current RISC-V hart are ordered before subsequent SINVAL.VMA instructions executed by the same hart.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        21,
+        27
+      ]
+    },
+    {
+      "text": "The SFENCE.INVAL.IR instruction guarantees that any previous SINVAL.VMA instructions executed by the current hart are ordered before subsequent implicit references by that hart to the memory-management data structures.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        21,
+        27
+      ]
+    },
+    {
+      "text": "When executed in order (but not necessarily consecutively) by a single hart, the sequence SFENCE.W.INVAL, SINVAL.VMA, and SFENCE.INVAL.IR has the same effect as a hypothetical SFENCE.VMA instruction in which:",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        29,
+        31
+      ]
+    },
+    {
+      "text": "the values of rs1 and rs2 for the SFENCE.VMA are the same as those used in the SINVAL.VMA, * reads and writes prior to the SFENCE.W.INVAL are considered to be those prior to the SFENCE.VMA, and * reads and writes following the SFENCE.INVAL.IR are considered to be those subsequent to the SFENCE.VMA.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        33,
+        38
+      ]
+    },
+    {
+      "text": "If the hypervisor extension is implemented, the Svinval extension also provides two additional instructions: HINVAL.VVMA and HINVAL.GVMA.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        44,
+        49
+      ]
+    },
+    {
+      "text": "These have the same semantics as SINVAL.VMA, except that they combine with SFENCE.W.INVAL and SFENCE.INVAL.IR to replace HFENCE.VVMA and HFENCE.GVMA, respectively, instead of SFENCE.VMA.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        44,
+        49
+      ]
+    },
+    {
+      "text": "In addition, HINVAL.GVMA uses VMIDs instead of ASIDs.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        44,
+        49
+      ]
+    },
+    {
+      "text": "SINVAL.VMA, HINVAL.VVMA, and HINVAL.GVMA require the same permissions and raise the same exceptions as SFENCE.VMA, HFENCE.VVMA, and HFENCE.GVMA, respectively.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        51,
+        62
+      ]
+    },
+    {
+      "text": "In particular, an attempt to execute any of these instructions in U-mode always raises an illegal-instruction exception.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        51,
+        62
+      ]
+    },
+    {
+      "text": "An attempt to execute SINVAL.VMA or HINVAL.GVMA in S-mode or HS-mode when `mstatus`.TVM=1 also raises an illegal-instruction exception.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        51,
+        62
+      ]
+    },
+    {
+      "text": "An attempt to execute HINVAL.VVMA or HINVAL.GVMA in VS-mode or VU-mode, or to execute SINVAL.VMA in VU-mode, raises a virtual-instruction exception.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        51,
+        62
+      ]
+    },
+    {
+      "text": "When `hstatus`.VTVM=1, an attempt to execute SINVAL.VMA in VS-mode also raises a virtual-instruction exception.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        51,
+        62
+      ]
+    },
+    {
+      "text": "Attempting to execute SFENCE.W.INVAL or SFENCE.INVAL.IR in U-mode raises an illegal-instruction exception.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        64,
+        68
+      ]
+    },
+    {
+      "text": "Doing so in VU-mode raises a virtual-instruction exception. SFENCE.W.INVAL and SFENCE.INVAL.IR are unaffected by the `mstatus`.TVM and `hstatus`.VTVM fields and hence are always permitted in S-mode and VS-mode.",
+      "section": "Preamble > \"Svinval\" Extension for Fine-Grained Address-Translation Cache Invalidation, Version 1.0",
+      "line_range": [
+        64,
+        68
+      ]
+    }
+  ]
+}

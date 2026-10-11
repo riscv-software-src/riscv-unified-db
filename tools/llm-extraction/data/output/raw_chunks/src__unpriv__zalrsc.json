@@ -1,0 +1,278 @@
+{
+  "source_file": "src/unpriv/zalrsc.adoc",
+  "total": 34,
+  "sentences": [
+    {
+      "text": "Complex atomic memory operations on a single memory word or doubleword are performed with the load-reserved (LR) and store-conditional (SC) instructions. LR.W loads a word from the address in rs1, places the sign-extended value in rd, and registers a reservation set—a set of bytes that subsumes the bytes in the addressed word. SC.W conditionally writes a word in rs2 to the address in rs1: the SC.W succeeds only if the reservation is still valid and the reservation set contains the bytes being written.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        5,
+        25
+      ]
+    },
+    {
+      "text": "If the SC.W succeeds, the instruction writes the word in rs2 to memory, and it writes zero to rd.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        5,
+        25
+      ]
+    },
+    {
+      "text": "If the SC.W fails, the instruction does not write to memory, and it writes a nonzero value to rd.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        5,
+        25
+      ]
+    },
+    {
+      "text": "No SC.W instruction shall retire unless it passes memory permission checks, but it is UNSPECIFIED whether any side effects of implicit address translation and protection memory accesses (such as setting a page-table entry D bit) occur on a failed SC.W.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        5,
+        25
+      ]
+    },
+    {
+      "text": "For the purposes of memory protection, a failed SC.W may be treated like a store.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        5,
+        25
+      ]
+    },
+    {
+      "text": "Regardless of success or failure, executing an SC.W instruction invalidates any reservation held by this hart. LR.D and SC.D act analogously on doublewords and are only available on RV64.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        5,
+        25
+      ]
+    },
+    {
+      "text": "For RV64, LR.W and SC.W sign-extend the value placed in rd.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        5,
+        25
+      ]
+    },
+    {
+      "text": "The failure code with value 1 encodes an unspecified failure.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        27,
+        29
+      ]
+    },
+    {
+      "text": "Other failure codes are reserved at this time.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        27,
+        29
+      ]
+    },
+    {
+      "text": "Portable software should only assume the failure code will be non-zero.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        27,
+        29
+      ]
+    },
+    {
+      "text": "For LR and SC, the Zalrsc extension requires that the address held in rs1 be naturally aligned to the size of the operand (i.e., eight-byte aligned for doublewords and four-byte aligned for words).",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "If the address is not naturally aligned, an address-misaligned exception or an access-fault exception will be generated.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "The access-fault exception can be generated for a memory access that would otherwise be able to complete except for the misalignment, if the misaligned access should not be emulated.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "An implementation can register an arbitrarily large reservation set on each LR, provided the reservation set includes all bytes of the addressed data word or doubleword.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "An SC can only pair with the most recent LR in program order.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "An SC may succeed only if no store from another hart to the reservation set can be observed to have occurred between the LR and the SC, and if there is no other SC between the LR and itself in program order.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "An SC may succeed only if no write from a device other than a hart to the bytes accessed by the LR instruction can be observed to have occurred between the LR and SC.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "Note this LR might have had a different effective address and data size, but reserved the SC's address as part of the reservation set.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        31,
+        49
+      ]
+    },
+    {
+      "text": "The SC must fail if the address is not within the reservation set of the most recent LR in program order.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        51,
+        61
+      ]
+    },
+    {
+      "text": "The SC must fail if a store to the reservation set from another hart can be observed to occur between the LR and SC.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        51,
+        61
+      ]
+    },
+    {
+      "text": "The SC must fail if a write from some other device to the bytes accessed by the LR can be observed to occur between the LR and SC. (",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        51,
+        61
+      ]
+    },
+    {
+      "text": "If such a device writes the reservation set but does not write the bytes accessed by the LR, the SC may or may not fail.) An SC must fail if there is another SC (to any address) between the LR and the SC in program order.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        51,
+        61
+      ]
+    },
+    {
+      "text": "The precise statement of the atomicity requirements for successful LR/SC sequences is defined by the Atomicity Axiom in .",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        51,
+        61
+      ]
+    },
+    {
+      "text": "An SC instruction can never be observed by another RISC-V hart before the LR instruction that established the reservation.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        63,
+        64
+      ]
+    },
+    {
+      "text": "Software should not set the rl bit on an LR instruction unless the aq bit is also set, nor should software set the aq bit on an SC instruction unless the rl bit is also set. LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those with both bits clear, but may result in lower performance.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions",
+      "line_range": [
+        66,
+        70
+      ]
+    },
+    {
+      "text": "The Zalrsc extension defines constrained LR/SC loops, which have the following properties:",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        75,
+        76
+      ]
+    },
+    {
+      "text": "The loop comprises only an LR/SC sequence and code to retry the sequence in the case of failure, and must comprise at most 16 instructions placed sequentially in memory. * An LR/SC sequence begins with an LR instruction and ends with an SC instruction.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        78,
+        95
+      ]
+    },
+    {
+      "text": "The dynamic code executed between the LR and SC instructions can only contain instructions from the base ''I'' instruction set, excluding loads, stores, backward jumps, taken backward branches, JALR, FENCE, and SYSTEM instructions.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        78,
+        95
+      ]
+    },
+    {
+      "text": "Compressed forms of the aforementioned ''I'' instructions in the C (hence Zca) and Zcb extensions are also permitted. * The code to retry a failing LR/SC sequence can contain backwards jumps and/or branches to repeat the LR/SC sequence, but otherwise has the same constraint as the code between the LR and SC. * The LR and SC addresses must lie within a memory region with the LR/SC eventuality property.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        78,
+        95
+      ]
+    },
+    {
+      "text": "The execution environment is responsible for communicating which regions have this property. * The SC must be to the same effective address and of the same data size as the latest LR executed by the same hart.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        78,
+        95
+      ]
+    },
+    {
+      "text": "LR/SC sequences that do not lie within constrained LR/SC loops are unconstrained.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        97,
+        100
+      ]
+    },
+    {
+      "text": "Unconstrained LR/SC sequences might succeed on some attempts on some implementations, but might never succeed on other implementations.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        97,
+        100
+      ]
+    },
+    {
+      "text": "If a hart H enters a constrained LR/SC loop, the execution environment must guarantee that one of the following events eventually occurs:",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        102,
+        103
+      ]
+    },
+    {
+      "text": "H or some other hart executes a successful SC to the reservation set of the LR instruction in H's constrained LR/SC loops. * Some other hart executes an unconditional store or AMO instruction to the reservation set of the LR instruction in H's constrained LR/SC loop, or some other device in the system writes to that reservation set. * H executes a branch or jump that exits the constrained LR/SC loop. * H traps.",
+      "section": "Preamble > \"Zalrsc\" Extension for Load-Reserved/Store-Conditional Instructions > Eventual Success of Store-Conditional Instructions",
+      "line_range": [
+        105,
+        111
+      ]
+    }
+  ]
+}

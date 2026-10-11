@@ -1,0 +1,14 @@
+{
+  "source_file": "src/unpriv/a-st-ext.adoc",
+  "total": 1,
+  "sentences": [
+    {
+      "text": "The `A` extension comprises the and extensions, which are defined in the following sections.",
+      "section": "Preamble > `A` Extension for Atomic Instructions",
+      "line_range": [
+        3,
+        4
+      ]
+    }
+  ]
+}

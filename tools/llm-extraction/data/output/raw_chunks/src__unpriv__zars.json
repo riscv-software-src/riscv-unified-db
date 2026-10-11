@@ -1,0 +1,30 @@
+{
+  "source_file": "src/unpriv/zars.adoc",
+  "total": 3,
+  "sentences": [
+    {
+      "text": "The Za128rs extension requires that the reservation sets used by the instructions in the Zalrsc extension be contiguous, naturally aligned, and at most 128 bytes in size.",
+      "section": "Preamble > Za128rs Extension for Reservation-Set Size, Version 1.0",
+      "line_range": [
+        3,
+        5
+      ]
+    },
+    {
+      "text": "The Za64rs extension requires that the reservation sets used by the instructions in the Zalrsc extension be contiguous, naturally aligned, and at most 64 bytes in size.",
+      "section": "Preamble > Za128rs Extension for Reservation-Set Size, Version 1.0 > Za64rs Extension for Reservation-Set Size, Version 1.0",
+      "line_range": [
+        10,
+        12
+      ]
+    },
+    {
+      "text": "The Za64rs extension implies the Za128rs extension.",
+      "section": "Preamble > Za128rs Extension for Reservation-Set Size, Version 1.0 > Za64rs Extension for Reservation-Set Size, Version 1.0",
+      "line_range": [
+        14,
+        14
+      ]
+    }
+  ]
+}

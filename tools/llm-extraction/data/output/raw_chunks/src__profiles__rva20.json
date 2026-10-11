@@ -1,0 +1,486 @@
+{
+  "source_file": "src/profiles/rva20.adoc",
+  "total": 60,
+  "sentences": [
+    {
+      "text": "The RVA20 profiles are intended to be used for 64-bit application processors running rich OS stacks.",
+      "section": "Preamble > RVA20 Profiles",
+      "line_range": [
+        2,
+        4
+      ]
+    },
+    {
+      "text": "Only user-mode (RVA20U64) and supervisor-mode (RVA20S64) profiles are specified in this family.",
+      "section": "Preamble > RVA20 Profiles",
+      "line_range": [
+        2,
+        4
+      ]
+    },
+    {
+      "text": "NOTE: There is no machine-mode profile currently defined for application processor families. A machine-mode profile for application processors would only be used in specifying platforms for portable machine-mode software.",
+      "section": "Preamble > RVA20 Profiles",
+      "line_range": [
+        6,
+        13
+      ]
+    },
+    {
+      "text": "Given the relatively low volume of portable M-mode software in this domain, the wide variety of potential M-mode code, and the very specific needs of each type of M-mode software, we are not specifying individual M-mode ISA requirements in the A-family profiles.",
+      "section": "Preamble > RVA20 Profiles",
+      "line_range": [
+        6,
+        13
+      ]
+    },
+    {
+      "text": "NOTE: Only XLEN=64 application processor profiles are currently defined.",
+      "section": "Preamble > RVA20 Profiles",
+      "line_range": [
+        15,
+        17
+      ]
+    },
+    {
+      "text": "It would be possible to also define very similar XLEN=32 variants.",
+      "section": "Preamble > RVA20 Profiles",
+      "line_range": [
+        15,
+        17
+      ]
+    },
+    {
+      "text": "The RVA20U64 profile specifies the ISA features available to user-mode execution environments in 64-bit applications processors.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile",
+      "line_range": [
+        21,
+        24
+      ]
+    },
+    {
+      "text": "This is the most important profile within the application processor family in terms of the amount of software that targets this profile.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile",
+      "line_range": [
+        21,
+        24
+      ]
+    },
+    {
+      "text": "RVA20U64 has one optional extension (Zihpm).",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile",
+      "line_range": [
+        26,
+        26
+      ]
+    },
+    {
+      "text": "RV64I is the mandatory base ISA for RVA20U64, and is little-endian.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Base",
+      "line_range": [
+        30,
+        30
+      ]
+    },
+    {
+      "text": "As per the unprivileged architecture specification, the `ecall` instruction causes a requested trap to the execution environment.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Base",
+      "line_range": [
+        32,
+        33
+      ]
+    },
+    {
+      "text": "The `fence.tso` instruction is mandatory.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Base",
+      "line_range": [
+        35,
+        35
+      ]
+    },
+    {
+      "text": "NOTE: The `fence.tso` instruction was incorrectly described as optional in the 2019 ratified specifications.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Base",
+      "line_range": [
+        37,
+        39
+      ]
+    },
+    {
+      "text": "Later versions of correctly indicate that the instruction is mandatory.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Base",
+      "line_range": [
+        37,
+        39
+      ]
+    },
+    {
+      "text": "extlink:m[] Integer multiplication and division. - extlink:a[] Atomic instructions. - Single-precision floating-point instructions. - Double-precision floating-point instructions. - extlink:c[] Compressed Instructions. - extlink:zicsr[] CSR instructions.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        43,
+        49
+      ]
+    },
+    {
+      "text": "These are implied by presence of Zicntr or F. - Basic counters.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        43,
+        49
+      ]
+    },
+    {
+      "text": "Main memory regions with both the cacheability and coherence PMAs must support instruction fetch, and any instruction fetches of naturally aligned power-of-2 sizes up to min(ILEN,XLEN) (i.e., 32 bits for RVA20) are atomic.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        51,
+        54
+      ]
+    },
+    {
+      "text": "NOTE: The fetch atomicity requirement facilitates runtime patching of aligned instructions.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        56,
+        57
+      ]
+    },
+    {
+      "text": "Main memory regions with both the cacheability and coherence PMAs must support RsrvEventual.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        59,
+        60
+      ]
+    },
+    {
+      "text": "Main memory regions with both the cacheability and coherence PMAs must support AMOArithmetic.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        62,
+        63
+      ]
+    },
+    {
+      "text": "Reservation sets must be contiguous, naturally aligned, and at most 128 bytes in size.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        65,
+        66
+      ]
+    },
+    {
+      "text": "NOTE: The minimum reservation set size is effectively determined by the size of atomic accesses in the A extension.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        68,
+        69
+      ]
+    },
+    {
+      "text": "Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs must be supported.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        71,
+        72
+      ]
+    },
+    {
+      "text": "NOTE: This requires misaligned support for all regular load and store instructions (including scalar and vector) but not AMOs or other specialized forms of memory access.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        74,
+        78
+      ]
+    },
+    {
+      "text": "Even though mandated, misaligned loads and stores might execute extremely slowly.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        74,
+        78
+      ]
+    },
+    {
+      "text": "Standard software distributions should assume their existence only for correctness, not for performance.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Mandatory Extensions",
+      "line_range": [
+        74,
+        78
+      ]
+    },
+    {
+      "text": "Hardware performance counters.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Optional Extensions",
+      "line_range": [
+        82,
+        82
+      ]
+    },
+    {
+      "text": "NOTE: Hardware performance counters are a supported option in RVA20.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Optional Extensions",
+      "line_range": [
+        84,
+        85
+      ]
+    },
+    {
+      "text": "The number of counters is platform-specific.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Optional Extensions",
+      "line_range": [
+        84,
+        85
+      ]
+    },
+    {
+      "text": "NOTE: The rationale to not make Q an optional extension is that quad-precision floating-point is unlikely to be implemented in hardware, and so we do not require or expect A-profile software to expend effort optimizing use of Q instructions in case they are present.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Optional Extensions",
+      "line_range": [
+        87,
+        91
+      ]
+    },
+    {
+      "text": "NOTE: Zifencei is not classed as a supported option in the user-mode profile because it is not sufficient by itself to produce the desired effect in a multiprogrammed multiprocessor environment without OS support, and so the instruction cache flush should always be performed using an OS call rather than using the `fence.i` instruction. `fence.i` semantics can be expensive to implement for some hardware memory hierarchy designs, and so alternative non-standard instruction-cache coherence mechanisms can be used behind the OS abstraction. A separate extension is being developed for more general and efficient instruction cache coherence.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Optional Extensions",
+      "line_range": [
+        93,
+        102
+      ]
+    },
+    {
+      "text": "NOTE: The execution environment must provide a means to synchronize writes to instruction memory with instruction fetches, the implementation of which likely relies on the Zifencei extension.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Optional Extensions",
+      "line_range": [
+        104,
+        108
+      ]
+    },
+    {
+      "text": "For example, RISC-V Linux supplies the `riscvflushicache` system call and a corresponding vDSO call.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Optional Extensions",
+      "line_range": [
+        104,
+        108
+      ]
+    },
+    {
+      "text": "Recommendations are not strictly mandated but are included to guide implementers making design choices.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Recommendations",
+      "line_range": [
+        112,
+        113
+      ]
+    },
+    {
+      "text": "Implementations are strongly recommended to raise illegal-instruction exceptions on attempts to execute unimplemented opcodes.",
+      "section": "Preamble > RVA20 Profiles > RVA20U64 Profile > RVA20U64 Recommendations",
+      "line_range": [
+        115,
+        116
+      ]
+    },
+    {
+      "text": "The RVA20S64 profile specifies the ISA features available to a supervisor-mode execution environment in 64-bit applications processors. RVA20S64 is based on privileged architecture version 1.11.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile",
+      "line_range": [
+        120,
+        123
+      ]
+    },
+    {
+      "text": "RVA20S64 has one unprivileged option (Zihpm) and one privileged option (Sv48).",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile",
+      "line_range": [
+        125,
+        126
+      ]
+    },
+    {
+      "text": "RV64I is the mandatory base ISA for RVA20S64, and is little-endian.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Base",
+      "line_range": [
+        130,
+        130
+      ]
+    },
+    {
+      "text": "The `ecall` instruction operates as per the unprivileged architecture specification.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Base",
+      "line_range": [
+        132,
+        135
+      ]
+    },
+    {
+      "text": "An `ecall` in user mode causes a contained trap to supervisor mode.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Base",
+      "line_range": [
+        132,
+        135
+      ]
+    },
+    {
+      "text": "An `ecall` in supervisor mode causes a requested trap to the execution environment.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Base",
+      "line_range": [
+        132,
+        135
+      ]
+    },
+    {
+      "text": "The following unprivileged extensions are mandatory:",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        139,
+        139
+      ]
+    },
+    {
+      "text": "The RVA20S64 mandatory unprivileged extensions include all the mandatory unprivileged extensions in RVA20U64.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        141,
+        142
+      ]
+    },
+    {
+      "text": "NOTE: Zifencei is mandated as it is the only standard way to support instruction-cache coherence in RVA20 application processors. A new instruction-cache coherence mechanism is under development which might be added as an option in the future.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        146,
+        149
+      ]
+    },
+    {
+      "text": "The following privileged extensions are mandatory:",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        151,
+        151
+      ]
+    },
+    {
+      "text": "*Ss1p11* Privileged Architecture version 1.11.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        153,
+        153
+      ]
+    },
+    {
+      "text": "The `satp` mode Bare must be supported.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        155,
+        155
+      ]
+    },
+    {
+      "text": "Page-Based 39-bit Virtual-Memory System.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        157,
+        157
+      ]
+    },
+    {
+      "text": "Page-fault exceptions are raised when a page is accessed when A bit is clear, or written when D bit is clear.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        159,
+        160
+      ]
+    },
+    {
+      "text": "Main memory regions with both the cacheability and coherence PMAs must support hardware page-table reads.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        162,
+        163
+      ]
+    },
+    {
+      "text": "`stvec.MODE` must be capable of holding the value 0 (Direct).",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        165,
+        167
+      ]
+    },
+    {
+      "text": "When `stvec.MODE=Direct`, `stvec.BASE` must be capable of holding any valid four-byte-aligned address.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        165,
+        167
+      ]
+    },
+    {
+      "text": "`stval` must be written with the faulting virtual address for load, store, and instruction page-fault, access-fault, and misaligned exceptions, and for breakpoint exceptions that are defined to write an address to stval, other than those caused by execution of the `EBREAK` or `C.EBREAK` instructions.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        169,
+        174
+      ]
+    },
+    {
+      "text": "For virtual-instruction and illegal-instruction exceptions, `stval` must be written with the faulting instruction.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Mandatory Extensions",
+      "line_range": [
+        169,
+        174
+      ]
+    },
+    {
+      "text": "RVA20S64 has one unprivileged option.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Optional Extensions",
+      "line_range": [
+        178,
+        178
+      ]
+    },
+    {
+      "text": "Hardware performance counters.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Optional Extensions",
+      "line_range": [
+        180,
+        180
+      ]
+    },
+    {
+      "text": "NOTE: The number of counters is platform-specific.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Optional Extensions",
+      "line_range": [
+        182,
+        182
+      ]
+    },
+    {
+      "text": "RVA20S64 has the following privileged options:",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Optional Extensions",
+      "line_range": [
+        184,
+        184
+      ]
+    },
+    {
+      "text": "Page-Based 48-bit Virtual-Memory System.",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Optional Extensions",
+      "line_range": [
+        186,
+        186
+      ]
+    },
+    {
+      "text": "`sstatus.UXL` must be capable of holding the value 2 (i.e., UXLEN=64 must be supported).",
+      "section": "Preamble > RVA20 Profiles > RVA20S64 Profile > RVA20S64 Optional Extensions",
+      "line_range": [
+        188,
+        189
+      ]
+    }
+  ]
+}
