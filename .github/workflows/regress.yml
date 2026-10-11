@@ -527,6 +527,7 @@ jobs:
           - mmr_schema
           - schema_versioning
           - instruction
+          - log
           - z3
           - z3_extensions
           - z3_finite_array

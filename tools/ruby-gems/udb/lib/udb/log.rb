@@ -83,6 +83,16 @@ module Udb
     def finish
       # do nothing
     end
+
+    sig { returns(String) }
+    def format
+      ""
+    end
+
+    sig { params(fmt: String).void }
+    def format=(fmt)
+      # do nothing
+    end
   end
 
   class DummyMultiProgressBar
