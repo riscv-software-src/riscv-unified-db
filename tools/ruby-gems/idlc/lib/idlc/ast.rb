@@ -5129,18 +5129,29 @@ module Idl
             end
           end
         elsif ["&&", "||"].include?(op)
-          # these can short circuit, so we might only need to check the lhs
-          lhs_value = lhs.value(symtab)
-          if (op == "&&") && lhs_value == false
-            false
-          elsif (op == "||") && lhs_value == true
-            true
+          # These short circuit, so one operand alone can determine the result. That holds for
+          # either operand: 'false && x' and 'x && false' are both false, and likewise for '||'.
+          # Checking both sides matters because a left-associative chain 'a && b && c' parses as
+          # '(a && b) && c', which puts the deciding operand on the right of the inner expression.
+          dominant = op == "&&" ? false : true
+
+          lhs_value = T.let(nil, T.untyped)
+          value_try do
+            lhs_value = lhs.value(symtab)
+          end
+          rhs_value = T.let(nil, T.untyped)
+          value_try do
+            rhs_value = rhs.value(symtab)
+          end
+
+          if lhs_value == dominant || rhs_value == dominant
+            dominant
+          elsif lhs_value.nil?
+            lhs.value(symtab) # unknown, and the rhs doesn't decide it: re-raise the value error
+          elsif rhs_value.nil?
+            rhs.value(symtab) # ditto
           else
-            if op == "&&"
-              lhs_value && rhs.value(symtab)
-            else
-              lhs_value || rhs.value(symtab)
-            end
+            op == "&&" ? (lhs_value && rhs_value) : (lhs_value || rhs_value)
           end
         elsif op == "=="
           value_result = value_try do

@@ -446,6 +446,40 @@ class TestTypeCheckingComprehensive < Minitest::Test
   end
 
   # ============================================================================
+  # Section: Expressions -> Logical operators -> Short circuiting
+  # ============================================================================
+
+  # Regression test for https://github.com/riscv/riscv-unified-db/issues/1140
+  #
+  # '&&' and '||' short circuit, so a single operand with a known value decides the whole
+  # expression. That is true of either operand, not just the left one. It matters for chains,
+  # because 'a && b && c' is left associative and parses as '(a && b) && c': when only 'b' is
+  # known, the inner expression can only be resolved by looking at its right-hand side.
+  def add_short_circuit_syms
+    @symtab.add!("UNKNOWN", Idl::Var.new("UNKNOWN", Idl::Type.new(:boolean)))
+    @symtab.add!("FALSE", Idl::Var.new("FALSE", Idl::Type.new(:boolean), false))
+    @symtab.add!("TRUE", Idl::Var.new("TRUE", Idl::Type.new(:boolean), true))
+    # a non-boolean operand, so that failing to short circuit is a type error
+    @symtab.add!("STR", Idl::Var.new("STR", Idl::Type.new(:string), "not a boolean"))
+  end
+
+  def test_and_short_circuits_on_either_operand
+    add_short_circuit_syms
+
+    assert_equal false, compile_expression("UNKNOWN && (FALSE && STR)").value(@symtab)
+    assert_equal false, compile_expression("UNKNOWN && FALSE && STR").value(@symtab)
+    assert_equal false, compile_expression("STR && FALSE && UNKNOWN").value(@symtab)
+  end
+
+  def test_or_short_circuits_on_either_operand
+    add_short_circuit_syms
+
+    assert_equal true, compile_expression("UNKNOWN || (TRUE || STR)").value(@symtab)
+    assert_equal true, compile_expression("UNKNOWN || TRUE || STR").value(@symtab)
+    assert_equal true, compile_expression("STR || TRUE || UNKNOWN").value(@symtab)
+  end
+
+  # ============================================================================
   # Negative test cases: Type errors
   # ============================================================================
 
