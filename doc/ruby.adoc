@@ -1,3 +1,21 @@
 = Ruby Database Interface
 
-TODO
+This page is a short entry point for contributors working with the `udb` Ruby
+library and command-line tools.
+
+The canonical project overview lives in the gem README:
+
+* xref:../tools/ruby-gems/udb/README.adoc[Unified Database Gem]
+
+Use the repository wrappers when working on the Ruby toolchain:
+
+* `bin/bundle` for Ruby gem commands
+* `bin/ruby` for running Ruby with the repository's managed environment
+* `bin/chore install gems` when you add or update gem dependencies
+
+The main entry point for Ruby code is `Udb.cfg_arch_for(...)`, which returns a
+configuration-scoped database view. From there you can inspect extensions,
+instructions, CSRs, and other generated objects.
+
+For repository setup and verification, see the top-level README and run
+`bin/setup` followed by `./bin/doctor`.

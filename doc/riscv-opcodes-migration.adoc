@@ -1,3 +1,28 @@
 = RISC-V opcodes migration
 
-TODO
+This page is a short guide for contributors migrating instruction data from
+`riscv-opcodes` into UnifiedDB.
+
+At a high level, the migration maps opcode definitions into the structured UDB
+data model:
+
+* instruction names and mnemonics
+* encodings and bit-pattern constraints
+* operand formats and assembly syntax
+* extension ownership and validation metadata
+
+The authoritative source for repository structure and data conventions is the
+top-level README:
+
+* xref:../README.adoc[Repository overview]
+
+When converting or validating instruction data, use the schema and regression
+tooling in this repository rather than editing generated output by hand.
+Relevant entry points include:
+
+* `./do test:schema`
+* `./bin/regress --tag smoke`
+* `./bin/generate -h`
+
+If you are looking for the source-of-truth instruction data, start in
+`spec/std/isa/` and the related backend generators under `backends/`.
