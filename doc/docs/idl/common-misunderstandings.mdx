@@ -145,3 +145,39 @@ Bits<4> neg_one = 4'b1111;   # explicit 2's complement representation
 ```
 
 See [Literals](./literals).
+
+## `$bits(CSR[x])` is not the same as `sw_read()`
+
+`$bits(CSR[x])` assembles the CSR from field storage — the generated `_hw_read()` path. It does **not** run the CSR's `sw_read()` body.
+
+Use `$bits(CSR[x])` inside a CSR callback when you need stored field values without re-entering `sw_read()`. Use `CSR[x].sw_read()` or `csr_sw_read(handle)` when you need the value software would see from a `Zicsr` read.
+
+See [IDL in CSRs — Hardware vs software reads](./in-csrs#hardware-vs-software-reads).
+
+## YAML `alias:` does not merge CSR storage
+
+The `alias:` field property records that a field corresponds to (a portion of) another CSR field. Generated backends still create separate field storage for each CSR name unless callbacks reference another CSR explicitly.
+
+Do not assume `CSR[vsctrctl]` reads or writes `CSR[mctrctl]` because of `alias:` metadata. Check the `sw_read()` and `sw_write()` bodies and the architecture definition.
+
+See [IDL in CSRs — CSR field aliases](./in-csrs#csr-field-aliases).
+
+## Virtual supervisor CSRs are separate storage
+
+Virtual supervisor CSRs (`priv_mode: VS`, with `virtual_address`) hold guest state. When `V=1`, a supervisor-number access targets the `vs*` CSR, but its callbacks must still use the virtual CSR name — for example `CSR[vsepc].PC`, not `CSR[sepc].PC`.
+
+See [IDL in CSRs — Virtual supervisor CSRs](./in-csrs#virtual-supervisor-csrs).
+
+## WARL `else` branches must target the correct CSR
+
+In `sw_write(csr_value)`, returning `CSR[other_csr].FIELD` in the illegal-write branch is only correct when storage is shared. For independent CSRs, return the current field on the same CSR — for example `CSR[menvcfg].CBIE`, not `CSR[henvcfg].CBIE`, in `menvcfg.yaml`.
+
+See [IDL in CSRs — WARL field writes](./in-csrs#warl-field-writes).
+
+## Upper-half `*h` CSRs use the high slice
+
+On RV32, CSRs whose names end in `h` expose bits `[63:32]` of a 64-bit sibling. `sw_read()` should return the upper half (for example `read_hpm_counter(11)[63:32]` in `spec/std/isa/csr/Zihpm/mhpmcounter11h.yaml`). `sw_write()` on the upper-half CSR typically concatenates `{new_upper, sibling[31:0]}`.
+
+Do not return `[31:0]` from an `*h` CSR's `sw_read()` when the sibling holds the full 64-bit value.
+
+See [IDL in CSRs — Upper-half CSRs](./in-csrs#upper-half-csrs-h).

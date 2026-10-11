@@ -189,9 +189,44 @@ Common field types:
 * `RO` - Read-only
 * `RO-H` - Read-only, hardware-updated
 * `RW` - Read-write
-* `RW-R` - Read-write, with restrictions
+* `RW-R` - Read-write, restricted (WARL). Requires `sw_write(csr_value)`.
 * `RW-H` - Read-write, hardware can also modify
-* `RWR` - Read-write, restricted (WARL)
+* `RW-RH` - Read-write, restricted, hardware can also modify. Requires `sw_write(csr_value)`.
+
+In IDL `type()` bodies, restricted types map to `CsrFieldType::RWR` and `CsrFieldType::RWRH` (see `spec/std/isa/isa/globals.isa`).
+
+=== Common CSR YAML keys
+
+Top-level keys (see `spec/schemas/csr_schema.json`):
+
+[cols="1,3",options="header"]
+|===
+| Key | Role
+| `kind` | Must be `csr`.
+| `name` | CSR identifier used in IDL as `CSR[name]`.
+| `address` | 12-bit CSR number for direct `Zicsr` access.
+| `virtual_address` | Required when `priv_mode: VS` — supervisor-number used when `V=1`.
+| `length` | CSR width in bits (`32`, `64`, `MXLEN`, `SXLEN`, etc.).
+| `definedBy` | Extension(s) that define this CSR.
+| `priv_mode` | Privilege mode: `M`, `S`, `U`, `VS`, or `D`.
+| `writable` | Whether software may write the CSR.
+| `sw_read()` | Optional IDL — value returned on software read.
+| `fields` | Map of field names to field definitions.
+|===
+
+Per-field keys:
+
+[cols="1,3",options="header"]
+|===
+| Key | Role
+| `location` | Bit range within the CSR (or use `location_rv32` / `location_rv64`).
+| `type` | Field type (`RO`, `RW`, `RW-R`, etc.) or use `type()` when configuration-dependent.
+| `alias` | Documents correspondence to another CSR field (metadata only — does not merge storage).
+| `definedBy` | Field present only when extension(s) are implemented (defaults to parent CSR).
+| `affectedBy` | Extension(s) that affect the field beyond its defining extension.
+| `reset_value` / `reset_value()` | Value after reset; may be `UNDEFINED_LEGAL`.
+| `sw_write(csr_value)` | Required for `RW-R` / `RW-RH`; filters software writes.
+|===
 
 === RV32/RV64 Different Locations
 
@@ -260,6 +295,49 @@ fields:
     type: RO-H
     reset_value: UNDEFINED_LEGAL
 ----
+
+The `alias:` key is schema metadata. It documents layout correspondence but does not merge storage in generated code. Use `sw_read()` or `sw_write()` when software-visible behavior must read or write another CSR's fields.
+
+=== Software read behavior
+
+Define `sw_read()` at the CSR level when the value software reads differs from field assembly:
+
+[source,yaml]
+----
+sw_read(): |
+  return $bits(CSR[mip]) & $bits(CSR[mideleg]);
+----
+
+If `sw_read()` is omitted, a software read returns the field-assembled value. See the IDL in CSRs guide (`doc/docs/idl/in-csrs.mdx`).
+
+=== Virtual supervisor CSRs
+
+When `priv_mode: VS`, the schema requires `virtual_address` — the supervisor CSR number used when `V=1`:
+
+[source,yaml]
+----
+kind: csr
+name: vsepc
+address: 0x241
+virtual_address: 0x141
+priv_mode: VS
+writable: true
+length: MXLEN
+sw_read(): |
+  return CSR[vsepc].PC;
+----
+
+Callbacks must reference the virtual CSR name (`CSR[vsepc]`), not the HS supervisor CSR at the virtual address. See the IDL in CSRs guide (`doc/docs/idl/in-csrs.mdx`).
+
+=== Upper-half CSRs (`*h`)
+
+On RV32, CSRs whose names end in `h` expose bits `[63:32]` of a 64-bit sibling. Typical patterns in this repository:
+
+* `sw_read()` returns the upper slice, for example `read_hpm_counter(11)[63:32]` in `spec/std/isa/csr/Zihpm/mhpmcounter11h.yaml`.
+* `sw_write()` concatenates the new upper half with the sibling's lower half, for example `{csr_value.DELTA, CSR[htimedelta].DELTA[31:0]}` in `spec/std/isa/csr/H/htimedeltah.yaml`.
+* Field `alias:` may document the slice, for example `alias: mhpmcounter5h.COUNT[63:32]`.
+
+See the IDL in CSRs guide (`doc/docs/idl/in-csrs.mdx`) for upper-half conventions.
 
 == Parameter Definitions
 

@@ -46,6 +46,57 @@ XReg value = csr_sw_read(csr_handle);
 csr_sw_write(csr_handle, new_value);
 ```
 
+### Hardware vs software reads
+
+| Function / form | View |
+|-----------------|------|
+| `$bits(CSR[name])` | Hardware — field assembly; does not run `sw_read()`. |
+| `CSR[name].sw_read()` | Software — runs the CSR's `sw_read()` body when present. |
+| `csr_hw_read(handle)` | Hardware read for a dynamic `Csr` handle. |
+| `csr_sw_read(handle)` | Software read — applies `sw_read()` when defined. |
+
+Use `csr_sw_read` / `csr_sw_write` in `Zicsr` instruction implementations. Use `$bits(CSR[name])` in CSR callback bodies unless you need the software view of another CSR.
+
+### `indirect_csr_lookup(select, slot)`
+
+Resolves an indirect CSR in an `*ireg*` window (Smcsrind / Sscsrind). See `spec/std/isa/isa/builtin_functions.idl`.
+
+```idl
+Csr handle = indirect_csr_lookup(CSR[miselect].VALUE, 5);
+if (!handle.valid) {
+  unimplemented_csr($encoding);
+}
+return csr_sw_read(handle);
+```
+
+The `slot` argument is 1-indexed (`*ireg<slot>`, for example `mireg5` uses slot `5`).
+
+### `csr_hw_read(csr)`
+
+Returns the field-assembled value without running `sw_read()`. Defined in `spec/std/isa/isa/builtin_functions.idl`.
+
+### `unimplemented_csr(encoding)`
+
+Defined in `spec/std/isa/isa/globals.isa`. Handles access to an unimplemented CSR address or indirect slot (behavior depends on `TRAP_ON_UNIMPLEMENTED_CSR`).
+
+### `Csr` handle
+
+`direct_csr_lookup` and `indirect_csr_lookup` return a `Csr` struct with members such as `valid`, `name`, `address`, and `writable`. Check `valid` before `csr_sw_read` or `csr_sw_write`.
+
+## CSR helper functions
+
+| Function | Purpose |
+|----------|---------|
+| `direct_csr_lookup(addr)` | Resolve a 12-bit direct CSR address. |
+| `indirect_csr_lookup(select, slot)` | Resolve an indirect CSR in an `*ireg*` window. |
+| `csr_hw_read(csr)` | Hardware (field-assembled) read. |
+| `csr_sw_read(csr)` | Software read through `sw_read()`. |
+| `csr_sw_write(csr, value)` | Software write through field `sw_write()` functions. |
+| `implemented_csr?(addr)` | Whether a 12-bit address is implemented. |
+| `unimplemented_csr($encoding)` | Handle illegal CSR access. |
+
+See [IDL in CSRs](./in-csrs) for callback authoring. Signatures are in `spec/std/isa/isa/builtin_functions.idl` and `spec/std/isa/isa/globals.isa`.
+
 ## Extension Checks
 
 ### `implemented?(extension)`

@@ -97,11 +97,11 @@ X[xd] = X[xs1] + $signed(imm);   # sign-extend imm before adding
 
 ## Writing CSR callbacks
 
-CSR YAML definitions can include `sw_read()` and `sw_write()` callbacks for custom read and write behavior. Note that while `sw_read()` can be defined at the CSR or field level, `sw_write()` is defined **per-field** (operating on an individual CSR field).
+CSR YAML definitions can include `sw_read()` at the CSR level and `sw_write(csr_value)` per field. See [IDL in CSRs](./in-csrs) for the full lifecycle (reset, hardware vs software reads, aliases, and virtual CSRs).
 
 ### `sw_read()`
 
-Called when software reads the CSR. Returns the value software should see. Useful for CSRs whose read value differs from stored state:
+Called when software reads the CSR via a `Zicsr` instruction. Returns the value software should see. Defined at the **CSR level only** — not per field. If omitted, the read returns the field-assembled value (same as `$bits(CSR[name])`).
 
 ```yaml
 # sw_read() for a CSR:
@@ -109,9 +109,11 @@ sw_read(): |
   return $bits(CSR[mip]) & $bits(CSR[mideleg]);
 ```
 
+Inside `sw_read()`, use `$bits(CSR[this_csr])` for this CSR's stored fields. Use another CSR name only when the architecture defines a shared or masked view (for example `sctrctl` reading `mctrctl` in `spec/std/isa/csr/Smctr/sctrctl.yaml`).
+
 ### `sw_write(csr_value)`
 
-Defined per field. Called when software writes the CSR. The `csr_value` parameter receives the value written by software and individual fields can be accessed like a CSR, e.g. `csr_value.FIELD`. Apply WARL (Write Any Read Legal) filtering here:
+Defined per field. Called when software writes the CSR. The `csr_value` parameter receives the value written by software and individual fields can be accessed like a CSR, e.g. `csr_value.FIELD`. Apply WARL (Write Any Read Legal) filtering here. Required for fields with type `RW-R` or `RW-RH`.
 
 ```yaml
 # In a field definition, sw_write() for a WARL field:
@@ -121,6 +123,32 @@ sw_write(csr_value): |
     return csr_value.FIELD;
   }
 ```
+
+**Retain current value on illegal write** — from `spec/std/isa/csr/menvcfg.yaml`:
+
+```yaml
+sw_write(csr_value): |
+  if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {
+    return csr_value.CBIE;
+  } else {
+    return CSR[menvcfg].CBIE;
+  }
+```
+
+Return a field from a **different** CSR in the `else` branch only when storage is shared by architecture. For independent CSRs, return the current field on the same CSR.
+
+## Checklist for a new CSR
+
+Before submitting CSR YAML or CSR IDL changes:
+
+- [ ] `./do test:schema` and `./do test:idl CFG=_` pass (and `rv32` / `rv64` when XLEN-sensitive).
+- [ ] `sw_read()` references the intended CSR's storage or shared view.
+- [ ] Virtual `vs*` callbacks use the virtual CSR name (for example `CSR[vsepc]`, not `CSR[sepc]`).
+- [ ] `RW-R` / `RW-RH` fields define `sw_write(csr_value)` with correct WARL behavior.
+- [ ] Upper-half `*h` CSRs use `[63:32]` on read where the sibling holds a 64-bit value.
+- [ ] Field `location` (or `location_rv32` / `location_rv64`) matches the specification.
+
+See also [IDL in CSRs — Contributor checklist](./in-csrs#contributor-checklist).
 
 ## Using configuration constants
 
