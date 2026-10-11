@@ -607,7 +607,12 @@ module Udb
     # @return [Boolean] whether or not the CSR is possibly implemented given the supplied config options
     sig { params(cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
     def exists_in_cfg?(cfg_arch)
-      @exists_in_cfg ||= defined_by_condition.could_be_satisfied_by_cfg_arch?(cfg_arch)
+      @exists_in_cfg_cache ||= {}.compare_by_identity
+
+      return @exists_in_cfg_cache[cfg_arch] if @exists_in_cfg_cache.key?(cfg_arch)
+
+      @exists_in_cfg_cache[cfg_arch] =
+        defined_by_condition.could_be_satisfied_by_cfg_arch?(cfg_arch)
     end
   end
 

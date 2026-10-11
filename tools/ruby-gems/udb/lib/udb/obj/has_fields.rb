@@ -37,7 +37,7 @@ module HasFields
 
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name
   def field_hash
-    @field_hash unless @field_hash.nil?
+    return @field_hash unless @field_hash.nil?   # <-- CHANGED: added 'return'
 
     @field_hash = {}
     fields.each do |field|
@@ -136,7 +136,11 @@ module HasFields
     end
     raise "optional_in_cfg? should only be used by a partially-specified arch def" unless cfg_arch.partially_configured?
 
-    @optional_in_cfg ||=
+    @optional_in_cfg_cache ||= {}.compare_by_identity
+
+    return @optional_in_cfg_cache[cfg_arch] if @optional_in_cfg_cache.key?(cfg_arch)
+
+    @optional_in_cfg_cache[cfg_arch] =
       exists_in_cfg?(cfg_arch) &&
       (defined_by_condition.satisfied_by_cfg_arch?(cfg_arch) == SatisfiedResult::Maybe)
   end
