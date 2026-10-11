@@ -23,7 +23,8 @@ def to_idl_type(value)
   when TrueClass, FalseClass
     Idl::Type.new(:boolean)
   when Array
-    Idl::Type.new(:array, sub_type: to_idl_type(value[0]))
+    # match variable-length parameter types created from JSON Schema
+    Idl::Type.new(:array, width: :unknown, sub_type: to_idl_type(value[0]))
   else
     raise "Unexepected type"
   end
@@ -51,7 +52,7 @@ class ConstraintTestFactory
             if test.key?("p")
               @symtab.push(nil)
               test["p"].each do |name, value|
-                @symtab.add!(name, Idl::Var.new(name, to_idl_type(value), value))
+                @symtab.add!(name, Idl::Var.new(name, to_idl_type(value).make_const, value))
               end
             end
             constraint_ast = nil

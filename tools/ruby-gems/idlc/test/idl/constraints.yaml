@@ -42,3 +42,17 @@ tests:
     p:
       TRUE_ARRAY: [true, true, true, true, true, true, true, true]
     r: true
+  - c: |
+      for (U32 i = 0; i < $array_size(VALS); i++) {
+        true -> (VALS[i] < 100);
+      }
+    p:
+      VALS: [99, 50, 1]
+    r: true
+  - c: |
+      for (U32 i = 0; i < $array_size(VALS); i++) {
+        true -> (VALS[i] < 100);
+      }
+    p:
+      VALS: [99, 50, 100]
+    r: false

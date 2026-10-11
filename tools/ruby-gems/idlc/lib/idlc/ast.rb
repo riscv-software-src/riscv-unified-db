@@ -1604,8 +1604,14 @@ module Idl
     sig { override.params(symtab: SymbolTable).returns(Integer) }
     def value(symtab)
       w = expression.type(symtab).width
-      value_error "Width of the array is unknown" if w == :unknown
-      T.cast(w, Integer)
+      if w == :unknown
+        # a configured array may have a value even when its static width is unknown
+        v = expression.value(symtab)
+        value_error "Width of the array is unknown" unless v.is_a?(Array)
+        v.size
+      else
+        T.cast(w, Integer)
+      end
     end
 
     sig { override.returns(String) }
