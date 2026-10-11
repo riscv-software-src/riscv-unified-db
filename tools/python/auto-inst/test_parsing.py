@@ -4,6 +4,7 @@
 
 import json
 import os
+from typing import Any
 
 import pytest
 from parsing import (
@@ -14,9 +15,9 @@ from parsing import (
 )
 
 # Global variables to store loaded data
-_yaml_instructions = None
-_json_data = None
-_repo_dir = None
+_yaml_instructions: Any = None
+_json_data: Any = None
+_repo_dir: str | None = None
 
 
 def load_test_data():

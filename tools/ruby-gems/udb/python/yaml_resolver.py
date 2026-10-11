@@ -12,8 +12,9 @@ import sys
 import tempfile
 from copy import deepcopy
 from pathlib import Path
+from typing import cast
 
-from deepmerge import Merger
+from deepmerge.merger import Merger
 from jsonschema import Draft7Validator, validators
 from jsonschema.exceptions import ValidationError, best_match
 from referencing import Registry, Resource
@@ -35,10 +36,10 @@ def udb_root(d):
     return d if os.path.exists(os.path.join(d, "do")) else udb_root(os.path.dirname(d))
 
 
-UDB_ROOT = (
+UDB_ROOT: str = (
     udb_root(os.path.dirname(os.path.realpath(__file__)))
-    if os.getenv("UDB_ROOT") == None
-    else os.getenv("UDB_ROOT")
+    if os.getenv("UDB_ROOT") is None
+    else str(os.getenv("UDB_ROOT"))
 )
 
 SCHEMAS_PATH = Path(os.path.join(UDB_ROOT, "spec", "schemas"))
@@ -91,7 +92,7 @@ def retrieve_from_filesystem(uri: str):
     return Resource.from_contents(contents)
 
 
-registry = Registry(retrieve=retrieve_from_filesystem)
+registry = Registry(retrieve=retrieve_from_filesystem)  # pyrefly: ignore[unexpected-keyword]
 
 
 # extend the validator to support default values
@@ -154,13 +155,15 @@ def _merge_patch(base: dict, patch: dict, path_so_far=None) -> None:
     if path_so_far is None:
         path_so_far = []
 
-    patch_obj = patch if len(path_so_far) == 0 else dig(patch, *path_so_far)
+    patch_obj: dict | None = patch if len(path_so_far) == 0 else dig(patch, *path_so_far)
+    assert patch_obj is not None
     for key, patch_value in patch_obj.items():
         if isinstance(patch_value, dict):
             # continue to dig
             _merge_patch(base, patch, (path_so_far + [key]))
         else:
-            base_ptr = dig(base, *path_so_far)
+            base_ptr: dict | None = dig(base, *path_so_far)
+            assert base_ptr is not None
             base_value = dig(base_ptr, key)
             if patch_value == None:
                 # remove from base, if it exists
@@ -175,6 +178,7 @@ def _merge_patch(base: dict, patch: dict, path_so_far=None) -> None:
                             base_ptr[k] = {}
                         base_ptr = base_ptr[k]
                     base_ptr = dig(base, *path_so_far)
+                assert base_ptr is not None
                 base_ptr[key] = patch_value
 
 
@@ -245,7 +249,7 @@ def write_json(file_path: str | Path, data):
         file.close()
 
 
-def dig(obj: dict, *keys):
+def dig(obj: dict | None, *keys):
     """Digs data out of dictionary obj
 
     Parameters
@@ -283,7 +287,7 @@ resolved_objs = {}
 
 def resolve(
     rel_path: str | Path, arch_root: str | Path, do_checks: bool, compile_idl: bool
-) -> dict:
+) -> dict | None:
     """Resolve the file at arch_root/rel_path by expanding operators and applying defaults
 
     Parameters
@@ -312,19 +316,26 @@ def resolve(
                 file=sys.stderr,
             )
             sys.exit(1)
-        resolved_objs[str(rel_path)] = _resolve(
-            unresolved_arch_data,
-            [],
-            rel_path,
-            unresolved_arch_data,
-            arch_root,
-            do_checks,
-            compile_idl,
+        resolved_objs[str(rel_path)] = cast(
+            "dict",
+            _resolve(
+                unresolved_arch_data,
+                [],
+                rel_path,
+                unresolved_arch_data,
+                arch_root,
+                do_checks,
+                compile_idl,
+            ),
         )
-        return resolved_objs[str(rel_path)]
+        out = resolved_objs[str(rel_path)]
+        assert out is not None
+        return out
 
 
-def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compile_idl):
+def _resolve(
+    obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compile_idl
+) -> dict | list | None:
     if not isinstance(obj, (list, dict)):
         return obj
 
@@ -391,6 +402,8 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks, compil
                     compile_idl,
                 )
 
+            assert ref_obj is not None
+            ref_obj = cast("dict", ref_obj)
             for key in ref_obj:
                 if key == "$parent_of" or key == "$child_of":
                     continue  # we don't propagate $parent_of / $child_of
@@ -562,12 +575,14 @@ def merge_file(
             raise ValueError("Must supply with arch_path or overlay_path")
 
         # no arch, just copy overlay
+        assert overlay_dir is not None
         if not os.path.exists(merge_path) or (
             os.path.getmtime(overlay_path) > os.path.getmtime(merge_path)
         ):
             shutil.copyfile(os.path.join(overlay_dir, rel_path), merge_path)
     else:
         # both exist, merge
+        assert overlay_dir is not None
         if (
             not os.path.exists(merge_path)
             or (os.path.getmtime(overlay_path) > os.path.getmtime(merge_path))
@@ -640,6 +655,7 @@ def resolve_file(
         if os.path.exists(resolved_path):
             os.remove(resolved_path)
         resolved_obj = resolve(rel_path, args.arch_dir, do_checks, compile_idl)
+        assert resolved_obj is not None
         resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
         # since already-resolved objects may be updated later with inheritance breadcrumbs ($parent_of),
@@ -651,6 +667,7 @@ def write_resolved_file_and_validate(
 ):
     resolved_path = os.path.join(resolved_dir, rel_path)
     resolved_obj = resolve(rel_path, args.arch_dir, do_checks, compile_idl)
+    assert resolved_obj is not None
     resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
     # Validate against the schema using the bare (unversioned) $schema URI, before

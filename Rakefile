@@ -155,6 +155,13 @@ namespace :test do
       sh "./bin/bundle exec srb tc"
     end
   end
+
+  desc "Type-check the Python library"
+  task :python_typecheck do
+    Dir.chdir($root) do
+      sh "./bin/uv run pyrefly check"
+    end
+  end
 end
 
 desc "Clean up all generated files"

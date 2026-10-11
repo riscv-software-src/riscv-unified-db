@@ -31,7 +31,7 @@ def calculate_mask(match_str):
 
 def extract_instruction_fields(instructions):
     """Extract field names and their positions from instruction definitions."""
-    field_dict = {}
+    field_dict: dict[str, dict[str, object]] = {}
 
     # Define standard field name mapping (architecture-specific to standard)
     field_name_map = {
@@ -245,6 +245,7 @@ def main():
         include_all=args.include_all,
         resolved_codes_file=args.resolved_codes,
     )
+    causes = causes or []
 
     # Process instructions and calculate masks
     instr_dict = {}
