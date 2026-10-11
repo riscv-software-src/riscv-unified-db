@@ -79,10 +79,15 @@ From the repo root, run:
 
 [source,bash]
 ----
+./bin/mise trust
 bin/setup
 ----
 
-That's it. `bin/setup` installs https://mise.jdx.dev[mise] if needed, uses it to install all
+`.mise.toml` sets `[env]` and a `postinstall` hook, so mise will not read it until the checkout
+is explicitly trusted. Trusting is a one-time action per clone, and it is deliberately left to
+you rather than done by `bin/setup`, because a trusted config is allowed to execute code.
+
+`bin/setup` installs https://mise.jdx.dev[mise] if needed, uses it to install all
 tool versions (Ruby, Python, Node.js, CMake, etc.), installs all dependencies (Ruby gems,
 Python packages, npm packages, native binaries), sets up git hooks, and walks you through
 choosing a C++ toolchain. It is safe to re-run at any time.
