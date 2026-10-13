@@ -52,12 +52,21 @@ echo "Using riscv-arch-test at $(git -C "${RISCV_ARCH_TEST_DIR}" rev-parse --sho
 
 REPO_CONFIG_DIR="${ROOT}/cfgs/arch-test/udb-64-max"
 CONFIG_FILE="${REPO_CONFIG_DIR}/test_config.yaml"
+ACT_CONFIG_FILE="${WORKDIR}/test_config.yaml"
+ACT_UDB_CONFIG="${RISCV_ARCH_TEST_DIR}/config/spike/spike-rv64-max/spike-rv64-max.yaml"
 ISS="${ROOT}/gen/cpp_hart_gen/udb-64-max_${BUILD_DIR_TYPE}/build/iss"
 
 if [ ! -f "${CONFIG_FILE}" ]; then
   echo "Missing repository test config ${CONFIG_FILE}." >&2
   exit 2
 fi
+
+# ACT pins UDB 0.1.16, which predates several parameters in the checkout's
+# udb-64-max configuration.  Use its pinned Spike configuration for ACT's
+# test-selection and header-generation pass; test execution below still uses
+# the UDB ISS built from this checkout and cfgs/udb-64-max.yaml.
+mkdir -p "${WORKDIR}"
+sed "s|^udb_config:.*|udb_config: ${ACT_UDB_CONFIG}|" "${CONFIG_FILE}" > "${ACT_CONFIG_FILE}"
 
 # The architecture-test configuration resolves these tools by name.  Do not
 # prepend all of bin/: it also contains wrappers for bash and make, which
@@ -74,7 +83,7 @@ export PATH="${TOOLCHAIN_BIN}:${PATH}"
   "IGNOREUNDEFINED=${IGNOREUNDEFINED}" "JOBS=${JOBS}"
 
 make -C "${RISCV_ARCH_TEST_DIR}" elfs \
-  "CONFIG_FILES=${CONFIG_FILE}" \
+  "CONFIG_FILES=${ACT_CONFIG_FILE}" \
   "WORKDIR=${WORKDIR}" \
   "EXTENSIONS=${EXTENSIONS}" \
   "JOBS=${JOBS}"
