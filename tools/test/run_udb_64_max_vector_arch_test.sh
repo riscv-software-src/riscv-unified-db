@@ -66,7 +66,11 @@ fi
 # test-selection and header-generation pass; test execution below still uses
 # the UDB ISS built from this checkout and cfgs/udb-64-max.yaml.
 mkdir -p "${WORKDIR}"
-sed "s|^udb_config:.*|udb_config: ${ACT_UDB_CONFIG}|" "${CONFIG_FILE}" > "${ACT_CONFIG_FILE}"
+sed \
+  -e "s|^udb_config:.*|udb_config: ${ACT_UDB_CONFIG}|" \
+  -e "s|^linker_script:.*|linker_script: ${REPO_CONFIG_DIR}/link.ld|" \
+  -e "s|^dut_include_dir:.*|dut_include_dir: ${REPO_CONFIG_DIR}|" \
+  "${CONFIG_FILE}" > "${ACT_CONFIG_FILE}"
 
 # The architecture-test configuration resolves these tools by name.  Do not
 # prepend all of bin/: it also contains wrappers for bash and make, which
