@@ -66,7 +66,8 @@ fi
 mkdir -p "${TOOLCHAIN_BIN}"
 ln -sf "${ROOT}/bin/riscv64-unknown-elf-gcc" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-gcc"
 ln -sf "${ROOT}/bin/riscv64-unknown-elf-objdump" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-objdump"
-ln -sf /bin/true "${TOOLCHAIN_BIN}/sail_riscv_sim"
+printf '%s\n' '#!/usr/bin/env sh' 'echo 0.13.1' > "${TOOLCHAIN_BIN}/sail_riscv_sim"
+chmod +x "${TOOLCHAIN_BIN}/sail_riscv_sim"
 export PATH="${TOOLCHAIN_BIN}:${PATH}"
 
 "${ROOT}/do" build:iss "CONFIG=${CONFIG}" "BUILD_TYPE=${BUILD_TYPE}" \
