@@ -5,7 +5,6 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-export PATH="${ROOT}/bin:${PATH}"
 
 CONFIG="${CONFIG:-udb-64-max}"
 BUILD_TYPE="${BUILD_TYPE:-debug}"
@@ -17,6 +16,7 @@ RISCV_ARCH_TEST_REPO="${RISCV_ARCH_TEST_REPO:-https://github.com/riscv-non-isa/r
 RISCV_ARCH_TEST_REF="${RISCV_ARCH_TEST_REF:-edfa48d307ecda3d83b033dcb80ef96cde866994}"
 RISCV_ARCH_TEST_DIR="${RISCV_ARCH_TEST_DIR:-${ROOT}/ext/riscv-arch-test}"
 WORKDIR="${WORKDIR:-${RISCV_ARCH_TEST_DIR}/work/udb-64-max-vector}"
+TOOLCHAIN_BIN="${WORKDIR}/toolchain-bin"
 
 case "${BUILD_TYPE,,}" in
   debug)
@@ -58,6 +58,15 @@ if [ ! -f "${CONFIG_FILE}" ]; then
   echo "Missing repository test config ${CONFIG_FILE}." >&2
   exit 2
 fi
+
+# The architecture-test configuration resolves these tools by name.  Do not
+# prepend all of bin/: it also contains wrappers for bash and make, which
+# causes the framework's long generated commands to exceed exec's argument
+# limit.  Expose only the required cross-toolchain wrappers.
+mkdir -p "${TOOLCHAIN_BIN}"
+ln -sf "${ROOT}/bin/riscv64-unknown-elf-gcc" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-gcc"
+ln -sf "${ROOT}/bin/riscv64-unknown-elf-objdump" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-objdump"
+export PATH="${TOOLCHAIN_BIN}:${PATH}"
 
 "${ROOT}/do" build:iss "CONFIG=${CONFIG}" "BUILD_TYPE=${BUILD_TYPE}" \
   "IGNOREUNDEFINED=${IGNOREUNDEFINED}" "JOBS=${JOBS}"
