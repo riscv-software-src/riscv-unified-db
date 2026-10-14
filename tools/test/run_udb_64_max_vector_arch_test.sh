@@ -87,7 +87,7 @@ printf '%s\n' \
   '    exit 0' \
   '    ;;' \
   '  -march=help)' \
-  '    printf "%s\\n" "All available -march extensions for RISC-V" "  i 1" "  e 1" "  m 1" "  a 1" "  f 1" "  d 1" "  c 1" "  v 1" "  zicsr 1" "  zifencei 1"' \
+  '    printf "%s\\n" "All available -march extensions for RISC-V" "  i 1" "  e 1" "  m 1" "  a 1" "  f 1" "  d 1" "  c 1" "  v 1" "  zicsr 1" "  zifencei 1" "  zve32x 1" "  zve32f 1" "  zve64x 1" "  zve64f 1" "  zve64d 1" "  zvl32b 1" "  zvl64b 1" "  zvl128b 1" "  zvl256b 1" "  zvl512b 1" "  zvl1024b 1"' \
   '    exit 0' \
   '    ;;' \
   '  -print-prog-name=as)' \
@@ -100,7 +100,7 @@ printf '%s\n' \
 printf '%s\n' \
   '#!/usr/bin/env bash' \
   'if [ "${1:-}" = "-march=help" ]; then' \
-  '  printf "%s\\n" "All available -march extensions for RISC-V" "  i 1" "  e 1" "  m 1" "  a 1" "  f 1" "  d 1" "  c 1" "  v 1" "  zicsr 1" "  zifencei 1"' \
+  '  printf "%s\\n" "All available -march extensions for RISC-V" "  i 1" "  e 1" "  m 1" "  a 1" "  f 1" "  d 1" "  c 1" "  v 1" "  zicsr 1" "  zifencei 1" "  zve32x 1" "  zve32f 1" "  zve64x 1" "  zve64f 1" "  zve64d 1" "  zvl32b 1" "  zvl64b 1" "  zvl128b 1" "  zvl256b 1" "  zvl512b 1" "  zvl1024b 1"' \
   '  exit 0' \
   'fi' \
   'echo "Unexpected assembler invocation" >&2' \
