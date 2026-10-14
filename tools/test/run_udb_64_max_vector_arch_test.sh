@@ -107,8 +107,7 @@ printf '%s\n' \
   'exit 1' \
   > "${TOOLCHAIN_BIN}/riscv64-unknown-elf-as"
 ln -sf "${ROOT}/bin/riscv64-unknown-elf-objdump" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-objdump"
-printf '%s\n' '#!/usr/bin/env sh' 'echo 0.13.1' > "${TOOLCHAIN_BIN}/sail_riscv_sim"
-chmod +x "${TOOLCHAIN_BIN}/riscv64-unknown-elf-gcc" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-as" "${TOOLCHAIN_BIN}/sail_riscv_sim"
+chmod +x "${TOOLCHAIN_BIN}/riscv64-unknown-elf-gcc" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-as"
 export PATH="${TOOLCHAIN_BIN}:${PATH}"
 
 "${ROOT}/do" build:iss "CONFIG=${CONFIG}" "BUILD_TYPE=${BUILD_TYPE}" \
