@@ -75,12 +75,40 @@ sed \
 # The architecture-test configuration resolves these tools by name.  Do not
 # prepend all of bin/: it also contains wrappers for bash and make, which
 # causes the framework's long generated commands to exceed exec's argument
-# limit.  Expose only the required cross-toolchain wrappers.
+# limit.  ACT imposes a five-second timeout on its compiler capability probes,
+# shorter than startup of the container-backed compiler wrapper.  Answer those
+# probes locally and delegate all actual compilation to the wrapper.
 mkdir -p "${TOOLCHAIN_BIN}"
-ln -sf "${ROOT}/bin/riscv64-unknown-elf-gcc" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-gcc"
+printf '%s\n' \
+  '#!/usr/bin/env bash' \
+  'case "${1:-}" in' \
+  '  -dumpversion)' \
+  '    echo 15.0.0' \
+  '    exit 0' \
+  '    ;;' \
+  '  -march=help)' \
+  '    printf "%s\\n" "All available -march extensions for RISC-V" "  i 1" "  e 1" "  m 1" "  a 1" "  f 1" "  d 1" "  c 1" "  v 1" "  zicsr 1" "  zifencei 1"' \
+  '    exit 0' \
+  '    ;;' \
+  '  -print-prog-name=as)' \
+  "    echo '${TOOLCHAIN_BIN}/riscv64-unknown-elf-as'" \
+  '    exit 0' \
+  '    ;;' \
+  'esac' \
+  "exec '${ROOT}/bin/riscv64-unknown-elf-gcc' \"\$@\"" \
+  > "${TOOLCHAIN_BIN}/riscv64-unknown-elf-gcc"
+printf '%s\n' \
+  '#!/usr/bin/env bash' \
+  'if [ "${1:-}" = "-march=help" ]; then' \
+  '  printf "%s\\n" "All available -march extensions for RISC-V" "  i 1" "  e 1" "  m 1" "  a 1" "  f 1" "  d 1" "  c 1" "  v 1" "  zicsr 1" "  zifencei 1"' \
+  '  exit 0' \
+  'fi' \
+  'echo "Unexpected assembler invocation" >&2' \
+  'exit 1' \
+  > "${TOOLCHAIN_BIN}/riscv64-unknown-elf-as"
 ln -sf "${ROOT}/bin/riscv64-unknown-elf-objdump" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-objdump"
 printf '%s\n' '#!/usr/bin/env sh' 'echo 0.13.1' > "${TOOLCHAIN_BIN}/sail_riscv_sim"
-chmod +x "${TOOLCHAIN_BIN}/sail_riscv_sim"
+chmod +x "${TOOLCHAIN_BIN}/riscv64-unknown-elf-gcc" "${TOOLCHAIN_BIN}/riscv64-unknown-elf-as" "${TOOLCHAIN_BIN}/sail_riscv_sim"
 export PATH="${TOOLCHAIN_BIN}:${PATH}"
 
 "${ROOT}/do" build:iss "CONFIG=${CONFIG}" "BUILD_TYPE=${BUILD_TYPE}" \
