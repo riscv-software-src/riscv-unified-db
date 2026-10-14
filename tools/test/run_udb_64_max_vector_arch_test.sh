@@ -119,6 +119,13 @@ make -C "${RISCV_ARCH_TEST_DIR}" elfs \
   "EXTENSIONS=${EXTENSIONS}" \
   "JOBS=${JOBS}"
 
-"${RISCV_ARCH_TEST_DIR}/run_tests.py" --debug --jobs "${JOBS}" \
+if ! "${RISCV_ARCH_TEST_DIR}/run_tests.py" --debug --jobs "${JOBS}" \
   "${ISS} -m udb-64-max -c ${ROOT}/cfgs/udb-64-max.yaml --uart-base 0x10000000 --clint-base 0x02000000" \
-  "${WORKDIR}/udb-64-max/elfs"
+  "${WORKDIR}/udb-64-max/elfs"; then
+  first_log=$(find "${WORKDIR}/udb-64-max/logs" -name '*.log' -type f -print -quit)
+  if [ -n "${first_log}" ]; then
+    echo "First failing arch-test log: ${first_log}" >&2
+    sed -n '1,160p' "${first_log}" >&2
+  fi
+  exit 1
+fi
