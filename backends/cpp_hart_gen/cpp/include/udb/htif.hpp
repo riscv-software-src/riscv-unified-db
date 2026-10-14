@@ -26,12 +26,12 @@ union HTIFCOMMAND
 class HTIFDevice
 {
 public:
-  HTIFDevice(udb::IssSocModel* pSoC);
+  HTIFDevice(udb::IssSocModel* pSoC, uint64_t fromHost);
   ~HTIFDevice();
-
   virtual int HandleCommand(HTIFCOMMAND cmd) = 0;
 protected:
   udb::IssSocModel* m_pSoC;
+  uint64_t m_fromHost;
 };
 
 //SysCall Device
@@ -43,7 +43,7 @@ typedef int (SysCallDevice::*SYSCALLHANDLER)(uint64_t a0, uint64_t a1, uint64_t 
 class SysCallDevice : public HTIFDevice
 {
 public:
-  SysCallDevice(udb::IssSocModel* pSoC);
+  SysCallDevice(udb::IssSocModel* pSoC, uint64_t fromHost);
   ~SysCallDevice();
 
   class Pass : public udb::ExitEvent
@@ -78,7 +78,7 @@ protected:
 class BCDDevice : public HTIFDevice
 {
 public:
-  BCDDevice(udb::IssSocModel* pSoC);
+  BCDDevice(udb::IssSocModel* pSoC, uint64_t fromHost);
   ~BCDDevice();
 
   enum BCDCMD
