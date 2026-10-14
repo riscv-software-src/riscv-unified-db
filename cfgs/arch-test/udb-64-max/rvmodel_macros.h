@@ -61,19 +61,19 @@
     sd   t0, 0(t1);                       \
     1: j 1b;                              \
 
-// IO macros — emit ACT4 summary strings through the ISS minimal UART.
+// IO macros — emit ACT4 summary strings through the ISS HTIF console.
+// The ISS's BCD device is HTIF device 1, command 1. The character is the
+// command payload and the request is written to the ELF-provided tohost word.
 #define RVMODEL_IO_INIT(_R1, _R2, _R3)
 #define RVMODEL_IO_WRITE_STR(_R1, _R2, _R3, _STR_PTR) \
 1:                           ;                        \
   lbu  _R1, 0(_STR_PTR)      ;                        \
   beqz _R1, 3f               ;                        \
 2:                           ;                        \
-  li   _R2, 0x10000005       ;                        \
-  lbu  _R3, 0(_R2)           ;                        \
-  andi _R3, _R3, 0x20        ;                        \
-  beqz _R3, 2b               ;                        \
-  li   _R2, 0x10000000       ;                        \
-  sb   _R1, 0(_R2)           ;                        \
+  li   _R2, 0x0101000000000000 ;                    \
+  or   _R1, _R1, _R2         ;                        \
+  la   _R2, tohost           ;                        \
+  sd   _R1, 0(_R2)           ;                        \
   addi _STR_PTR, _STR_PTR, 1 ;                        \
   j 1b                       ;                        \
 3:
