@@ -261,6 +261,14 @@ tests:
   regress-riscv-arch-test-vector-udb-64-max:
     ci_stage: pr
     toolchain_container: true
+    gh_pre:
+      - name: Install Sail reference model
+        run: |
+          runner_uname=$(uname)
+          runner_arch=$(arch)
+          sudo mkdir -p /usr/local
+          curl --fail --location "https://github.com/riscv/sail-riscv/releases/download/0.13.1/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
+            | sudo tar xvz --directory=/usr/local --strip-components=1
     tags:
       - integration
       - vector
