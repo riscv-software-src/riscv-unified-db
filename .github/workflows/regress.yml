@@ -635,6 +635,13 @@ jobs:
         uses: ./.github/actions/mise-setup
         with:
           toolchain: true
+      - name: Install Sail reference model
+        run: |
+          runner_uname=$(uname)
+          runner_arch=$(arch)
+          sudo mkdir -p /usr/local
+          curl --fail --location "https://github.com/riscv/sail-riscv/releases/download/0.13.1/sail-riscv-${runner_uname}-${runner_arch}.tar.gz" \
+            | sudo tar xvz --directory=/usr/local --strip-components=1
       - name: Run udb-64-max vector arch-tests (${{ matrix.extensions }})
         run: >
           EXTENSIONS=${{ matrix.extensions }}
