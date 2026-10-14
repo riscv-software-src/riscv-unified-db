@@ -344,6 +344,108 @@ class TestZ3ParameterConstraints < Minitest::Test
     @solver.pop
   end
 
+  def test_constrain_int_with_oneof
+    schema = {
+      "oneOf" => [
+        { "const" => 1 },
+        { "const" => 2 }
+      ]
+    }
+    param = Udb::Z3ParameterTerm.new("oneof_int", @solver, schema)
+
+    [1, 2].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      assert @solver.satisfiable?
+      @solver.pop
+    end
+
+    @solver.push
+    @solver.assert(param == 3)
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_int_with_noneof
+    schema = {
+      "type" => "integer",
+      "noneOf" => [{ "const" => 0 }, { "const" => 1 }]
+    }
+    param = Udb::Z3ParameterTerm.new("noneof_int", @solver, schema)
+
+    @solver.push
+    @solver.assert(param == 0)
+    refute @solver.satisfiable?
+    @solver.pop
+
+    @solver.push
+    @solver.assert(param == 2)
+    assert @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_int_with_if_then_else
+    schema = {
+      "type" => "integer",
+      "if" => { "minimum" => 10 },
+      "then" => { "maximum" => 20 },
+      "else" => { "minimum" => 0, "maximum" => 5 }
+    }
+    param = Udb::Z3ParameterTerm.new("conditional_int", @solver, schema)
+
+    [15, 3].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      assert @solver.satisfiable?
+      @solver.pop
+    end
+
+    @solver.push
+    @solver.assert(param == 25)
+    refute @solver.satisfiable?
+    @solver.pop
+
+    @solver.push
+    @solver.assert(param == 7)
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_bool_with_oneof_and_noneof
+    oneof = { "oneOf" => [{ "const" => true }, { "const" => false }] }
+    param = Udb::Z3ParameterTerm.new("oneof_bool", @solver, oneof)
+    assert @solver.satisfiable?
+
+    noneof = { "type" => "boolean", "noneOf" => [{ "const" => true }] }
+    param = Udb::Z3ParameterTerm.new("noneof_bool", @solver, noneof)
+    @solver.push
+    @solver.assert(param == true)
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
+  def test_constrain_string_with_oneof_and_noneof
+    schema = {
+      "oneOf" => [
+        { "const" => "alpha" },
+        { "const" => "beta" }
+      ]
+    }
+    param = Udb::Z3ParameterTerm.new("oneof_string", @solver, schema)
+
+    ["alpha", "beta"].each do |value|
+      @solver.push
+      @solver.assert(param == value)
+      assert @solver.satisfiable?
+      @solver.pop
+    end
+
+    @solver.push
+    @solver.assert(param == "gamma")
+    refute @solver.satisfiable?
+    @solver.pop
+  end
+
   # Type detection tests
   def test_detect_type_from_allof_integer
     schema = {

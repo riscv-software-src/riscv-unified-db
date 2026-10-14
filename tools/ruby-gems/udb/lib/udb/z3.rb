@@ -398,17 +398,7 @@ module Udb
         assertions << any_of_constraint(branches)
       end
 
-      if schema_hsh.key?("oneOf")
-        raise "TODO: oneOf not yet implemented for integer constraints"
-      end
-
-      if schema_hsh.key?("noneOf")
-        raise "TODO: noneOf not yet implemented for integer constraints"
-      end
-
-      if schema_hsh.key?("if")
-        raise "TODO: if/then/else not yet implemented for integer constraints"
-      end
+      assertions.concat(combinator_constraints(solver, term, schema_hsh, method(:constrain_int)))
 
       if schema_hsh.key?("$ref")
         # Handle references to shorthand type definitions
@@ -475,17 +465,7 @@ module Udb
         assertions << any_of_constraint(branches)
       end
 
-      if schema_hsh.key?("oneOf")
-        raise "TODO: oneOf not yet implemented for boolean constraints"
-      end
-
-      if schema_hsh.key?("noneOf")
-        raise "TODO: noneOf not yet implemented for boolean constraints"
-      end
-
-      if schema_hsh.key?("if")
-        raise "TODO: if/then/else not yet implemented for boolean constraints"
-      end
+      assertions.concat(combinator_constraints(solver, term, schema_hsh, method(:constrain_bool)))
 
       if assert
         assertions.each { |a| solver.assert a }
@@ -542,21 +522,55 @@ module Udb
         assertions << any_of_constraint(branches)
       end
 
-      if schema_hsh.key?("oneOf")
-        raise "TODO: oneOf not yet implemented for string constraints"
-      end
-
-      if schema_hsh.key?("noneOf")
-        raise "TODO: noneOf not yet implemented for string constraints"
-      end
-
-      if schema_hsh.key?("if")
-        raise "TODO: if/then/else not yet implemented for string constraints"
-      end
+      assertions.concat(combinator_constraints(solver, term, schema_hsh, method(:constrain_string)))
 
       if assert
         assertions.each { |a| solver.assert a }
       end
+      assertions
+    end
+
+    # Convert a schema branch into one boolean expression without asserting it.
+    # Keeping branch expressions local is essential: asserting a branch directly
+    # would turn oneOf/if into an unconditional constraint.
+    sig {
+      params(
+        solver: Z3Solver,
+        term: T.any(Z3::BitvecExpr, Z3::BoolExpr, Z3::IntExpr),
+        schema_hsh: T::Hash[String, T.untyped],
+        constrainer: Method
+      ).returns(T::Array[Z3::BoolExpr])
+    }
+    def self.combinator_constraints(solver, term, schema_hsh, constrainer)
+      branch = lambda do |schema|
+        constrainer.call(solver, term, schema, assert: false).reduce(Z3.True) { |a, b| a & b }
+      end
+      assertions = []
+
+      if schema_hsh.key?("oneOf")
+        branches = schema_hsh.fetch("oneOf").map { |schema| branch.call(schema) }
+        # Exactly one branch must validate: at least one, and no pair may both.
+        assertions << T.unsafe(Z3).And(
+          T.unsafe(Z3).Or(*branches),
+          *branches.combination(2).map { |a, b| !(a & b) }
+        )
+      end
+
+      if schema_hsh.key?("noneOf")
+        branches = schema_hsh.fetch("noneOf").map { |schema| branch.call(schema) }
+        assertions << !T.unsafe(Z3).Or(*branches)
+      end
+
+      if schema_hsh.key?("if")
+        condition = branch.call(schema_hsh.fetch("if"))
+        if schema_hsh.key?("then")
+          assertions << condition.implies(branch.call(schema_hsh.fetch("then")))
+        end
+        if schema_hsh.key?("else")
+          assertions << (!condition).implies(branch.call(schema_hsh.fetch("else")))
+        end
+      end
+
       assertions
     end
 
@@ -741,6 +755,18 @@ module Udb
         else
           raise "unhandled subschema type"
         end
+      elsif schema_hsh.key?("oneOf") || schema_hsh.key?("noneOf")
+        schemas = schema_hsh.fetch(schema_hsh.key?("oneOf") ? "oneOf" : "noneOf")
+        types = schemas.map { |subschema| detect_type(subschema) }.uniq
+        raise "Subschema types do not agree" unless types.size == 1
+
+        types.fetch(0)
+      elsif schema_hsh.key?("if")
+        schemas = [schema_hsh.fetch("if"), schema_hsh["then"], schema_hsh["else"]].compact
+        types = schemas.map { |subschema| detect_type(subschema) }.uniq
+        raise "Subschema types do not agree" unless types.size == 1
+
+        types.fetch(0)
       elsif schema_hsh.key?("$ref")
         case schema_hsh.fetch("$ref").split("/").last
         when "uint32", "uint64", "32bit_unsigned_pow2", "64bit_unsigned_pow2"
