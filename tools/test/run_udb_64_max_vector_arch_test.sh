@@ -120,7 +120,7 @@ make -C "${RISCV_ARCH_TEST_DIR}" elfs \
   "JOBS=${JOBS}"
 
 if ! "${RISCV_ARCH_TEST_DIR}/run_tests.py" --debug --jobs "${JOBS}" \
-  "${ISS} -m udb-64-max -c ${ROOT}/cfgs/udb-64-max.yaml --uart-base 0x10000000 --clint-base 0x02000000" \
+  "${ISS} -m udb-64-max -c ${ROOT}/cfgs/udb-64-max.yaml" \
   "${WORKDIR}/udb-64-max/elfs"; then
   first_log=$(find "${WORKDIR}/udb-64-max/logs" -name '*.log' -type f -print -quit)
   if [ -n "${first_log}" ]; then
