@@ -384,5 +384,33 @@ field is absent from the configured implementation.
 
 `udb.idl.value_bounds.min_value(node, symtab)` and `max_value(node, symtab)` expose
 conservative value bounds. Source spans retain original file coordinates for
-captured includes and YAML bodies. Semantic passes and IDL-condition solving remain
+captured includes and YAML bodies.
+
+## IDL analysis and source generation
+
+`udb.idl.passes` provides standalone passes over ordinary compiled contexts:
+
+```python
+from udb.idl.passes import prune, source_registers, to_adoc
+
+optimized = prune(operation.ast, operation.symtab)
+print(source_registers(optimized, operation.symtab))
+adoc_source = to_adoc(optimized)
+```
+
+Pruning owns its output tree and cloned binding values. `reachable_functions` and
+`reachable_exceptions` compute transitive closures; optional caches are caller-owned
+and specialize function argument contexts. `referenced_csrs`, `source_registers`
+and `destination_registers` discover dependencies, with immutable `RegisterRef`
+records retaining the register file and known or generated index. `return_values`
+returns conditional expression alternatives without inventing a definite value.
+
+`constexpr`, `control_flow` and `written` expose hart analyses without AST monkey
+patches. `DecodeEncoding`, `DecodeVariable`, `build_decode_tree` and
+`DecodeGenerator` expose decoder analysis and C++ source generation, including
+implementation guards, hint ordering and variable exclusions.
+
+`to_adoc` and `to_option_adoc` generate source entirely in Python. Rendering is a
+separate consumer step using official external Asciidoctor/asciidoctor-pdf;
+no renderer or Ruby-backed IDL pass is bundled. IDL-condition solving remains
 subsequent Stage 4 integration work.

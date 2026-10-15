@@ -287,12 +287,37 @@ def check_install() -> None:
     assert symbolic_xlen.symtab.get("MXLEN").value is None
     assert symbolic_xlen.expected_return_type.width == 8
 
+    from udb.idl.passes import (
+        DecodeEncoding,
+        DecodeGenerator,
+        build_decode_tree,
+        destination_registers,
+        prune,
+        reachable_exceptions,
+        source_registers,
+        to_adoc,
+    )
+
+    optimized = prune(operation.ast, operation.symtab)
+    assert optimized is not operation.ast
+    idl.parse_instruction_operation(optimized.to_idl()).type_check(operation.symtab.deep_clone())
+    assert {ref.file for ref in source_registers(operation.ast, operation.symtab)} == {"X"}
+    assert {ref.file for ref in destination_registers(operation.ast, operation.symtab)} == {"X"}
+    assert reachable_exceptions(operation.ast, operation.symtab) == 0
+    assert to_adoc(operation.ast)
+    encodings = (DecodeEncoding("installed", "10--"),)
+    decoder = build_decode_tree(encodings)
+    assert decoder.decode(8) == encodings[0]
+    assert decoder.decode(0) is None
+    assert "return true;" in DecodeGenerator().generate(encodings, 64)
+
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
         f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries, "
         f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files), "
-        "IDL statement typing & execution, captured architecture compilation & value bounds"
+        "IDL statement typing & execution, captured architecture compilation & value bounds, "
+        "standalone analysis and source-generation passes"
     )
 
 
