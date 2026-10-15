@@ -13,10 +13,22 @@
 #ifndef RVMODEL_MACROS_H
 #define RVMODEL_MACROS_H
 
-// ACT's default LA expansion reserves 32-byte slots, whose assembler-created
-// padding is zero-filled and therefore illegal to execute. This RV64 toolchain
-// expands LA to its two-instruction, eight-byte form.
-#define UNROLLSZ 3
+// ACT uses fixed 32-byte LA slots so its trap tables can use known offsets.
+// GNU as zero-fills .p2align padding, which decodes as illegal instructions
+// when control falls through it. Keep the fixed slots but pad them with c.nop.
+#define UNROLLSZ 5
+#undef LA
+#define LA(reg, val) ;\
+  .ifnc(reg, X0) ;\
+    .option push ;\
+    .option rvc ;\
+    .balignw (1 << UNROLLSZ), 0x0001 ;\
+    .option norvc ;\
+    la reg, val ;\
+    .option rvc ;\
+    .balignw (1 << UNROLLSZ), 0x0001 ;\
+    .option pop ;\
+  .endif
 
 // tohost/fromhost symbols in .tohost section
 #define RVMODEL_DATA_SECTION \

@@ -10,10 +10,7 @@ CONFIG="${CONFIG:-udb-64-max}"
 BUILD_TYPE="${BUILD_TYPE:-debug}"
 IGNOREUNDEFINED="${IGNOREUNDEFINED:-YES}"
 JOBS="${JOBS:-4}"
-# ACT's Vls16-vl1re8.v test currently traps in its generated privileged-mode
-# handler under Sail before the DUT is invoked. Keep the remaining vector
-# load/store suites in this non-privileged regression.
-EXTENSIONS="${EXTENSIONS:-Vx8,Vx16,Vx32,Vx64,Vls8,Vls32,Vls64,Vf16,Vf32,Vf64}"
+EXTENSIONS="${EXTENSIONS:-Vx8,Vx16,Vx32,Vx64,Vls8,Vls16,Vls32,Vls64,Vf16,Vf32,Vf64}"
 
 RISCV_ARCH_TEST_REPO="${RISCV_ARCH_TEST_REPO:-https://github.com/riscv-non-isa/riscv-arch-test.git}"
 RISCV_ARCH_TEST_REF="${RISCV_ARCH_TEST_REF:-edfa48d307ecda3d83b033dcb80ef96cde866994}"
