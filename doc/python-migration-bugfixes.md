@@ -41,3 +41,8 @@ Ruby resolver's `insert_property_defaults: false`. Strict rejection of missing,
 unknown, non-local, malformed, wrong-version, or wrong-dialect schemas is a
 documented Python validation policy and is not listed as a Ruby bug without a
 separate compatibility decision.
+
+The Stage 2c recovery review found defects in the new Python authoring,
+serialization, and source-mapping code. Those were corrected with regressions;
+none established an additional Ruby defect, so the confirmed list remains at
+nine entries.

@@ -59,6 +59,19 @@ and `$parent_of` record inheritance relationships. Data `$ref` links remain refe
 not expanded. Resolution does not apply schema defaults, choose extension versions, evaluate
 configurations or conditions, or compile IDL. It does not yet provide a configured architecture.
 
+Raw records and resolved databases also expose immutable source metadata. `record.source_at(...)`
+and `resolved.source_at(document, ...)` return a `SourceSpan` for the exact field that defined the
+value, including its logical source, overlay layer, one-based line and column range, scalar style,
+and associated YAML comments. Inherited fields point to the parent definition and overlay values
+point to the overlay definition; missing exact metadata returns `None` rather than guessing an
+enclosing span. This keeps source details out of `to_dict()` and serialized semantic data.
+
+Use `resolved.reference_at(document, ...)` to inspect a mapping containing `$ref`.
+`DataReference.target` follows a data link lazily and returns a source-aware `ResolvedNode`, so
+cyclic relationships are safe to navigate one edge at a time. `SchemaReference` identifies JSON
+Schema links and is not followed through the architecture database. `resolved.references()`
+enumerates both kinds without recursively expanding them.
+
 Schema validation is explicit and uses only local or bundled Draft 7 schemas:
 
 ```python
@@ -130,6 +143,11 @@ The layout renderer is intentionally limited to interpolation, conditionals, and
 Generation owns the 532 tracked YAML outputs associated with the 31 layout sources, adds a stable
 source warning, writes replacements atomically, and marks generated files read-only. `--check`
 reports drift and exits with status 1 without modifying files.
+
+For other generators, `udb.authoring.GeneratedFile` describes output bytes, ownership,
+dependencies, and permissions. `AuthoringPlan(outputs).apply(root, check=True)` reports drift;
+omitting `check=True` writes the outputs. Replacements are atomic per file. The caller controls
+the output tree while generation runs; applying a plan is not a transaction across the tree.
 
 Layout directives use `{{ value }}` and `{% ... %}`. Any literal `<% ... %>` text in a layout is
 content preserved for a later configured-document rendering stage; it is not executed by the

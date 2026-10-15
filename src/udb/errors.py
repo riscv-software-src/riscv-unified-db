@@ -28,6 +28,10 @@ class LayoutError(UdbError):
     """A source layout cannot be rendered or written safely."""
 
 
+class ReferenceError(DataError):
+    """A resolved data reference is malformed or cannot be followed."""
+
+
 class UnknownKindError(UdbError, KeyError):
     """The requested object kind is not present in the database."""
 

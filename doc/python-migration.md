@@ -8,7 +8,7 @@
 | Stage 1: packaged source database and raw API | Complete locally; CI pending |
 | Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
 | Stage 2b: schema validation | Complete locally; CI pending |
-| Stage 2c: layout authoring, serialization, and remaining resolution work | In progress |
+| Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
 | Stage 3: versions, configurations, conditions, and solving | Pending |
 | Stage 4: IDL compiler and semantic passes | Pending |
 | Stage 5: generators, templates, and document rendering | Pending |
@@ -52,6 +52,9 @@ These are local branches until publication of the PR stack.
 | `migration/python-01-package` | `main` | Installable standard database and raw API |
 | `migration/python-02-resolution` | `migration/python-01-package` | Inheritance, overlays, and profile-report cutover |
 | `migration/python-03-schema` | `migration/python-02-resolution` | Offline schema validation |
+| `migration/python-04-serialization` | `migration/python-03-schema` | Deterministic resolved data and schema publication |
+| `migration/python-05-layout` | `migration/python-04-serialization` | Python layout authoring and publication fixes |
+| `migration/python-06-source-maps` | `migration/python-05-layout` | Source provenance, lazy references, and combined installed-package gate |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -683,5 +686,56 @@ system-installed native dependencies used by UDB itself.
   Python `udb schemas` command; `udb resolve` exposes resolved trees without
   Ruby or repository-relative execution.
 - Fine-grained YAML source spans and provenance propagation through overlays and
-  inheritance remain pending. Adding them requires resolver metadata that does
-  not change the resolved semantic values or leak absolute paths.
+  inheritance were the next integration step, completed in the Stage 2c follow-up
+  below without changing resolved semantic values or embedding absolute paths.
+
+### 2026-09-29: Stage 2c authoring and provenance
+
+- Converted all 31 layouts to restricted Python expressions and explicit
+  generation recipes. `udb generate-layouts --root . [--check]` replaces ERB
+  expansion, and the existing `./do gen:arch` wrapper delegates to it. All 532
+  tracked YAML outputs retain their exact bytes. `AuthoringPlan` exposes output
+  ownership, dependencies, drift checking, and individual atomic replacements.
+- Integrated immutable source maps, YAML comments and scalar styles, provenance
+  through overlays and inheritance, source-aware schema errors, duplicate
+  identity checks, and lazy data-reference navigation. Embedded parameter
+  schema references remain distinct from data links; cycles in data links do
+  not cause recursive expansion.
+- Independent review reproduced and corrected Python defects in quoted layout
+  delimiters, invalid template UTF-8 diagnostics, schema publication preflight,
+  source entries surviving YAML overrides, malformed reference diagnostics, and
+  the source spans of multiple inheritance backlinks. Output paths are checked
+  again before replacement to catch concurrent symlink changes; authoring still
+  assumes callers control the output tree, rather than promising transactions
+  against hostile concurrent filesystem mutation.
+- Rejected a suggested error for literal closing `}}` delimiters: the PMP layout
+  contains valid IDL replication syntax such as `{PMP_GRANULARITY-3{1'b1}}`.
+  A regression preserves that syntax, and all generated outputs remain equal.
+- The installed-package CI gate now checks every resolved value's source span,
+  all 59 data references and 3 schema references, deterministic architecture and
+  schema serialization, and every bundled layout output. It runs for both wheel
+  and isolated-sdist installations outside the checkout with Ruby and Git absent
+  from `PATH`.
+- Both artifact installations passed locally on Linux AArch64 / Python 3.14.7,
+  including all 2,306 records and 73,010 source spans. Installation used an
+  explicit dependency wheelhouse with network, indexes, and the package cache
+  disabled; the source archive built in isolation. The runtime environments
+  contained only UDB and its six runtime dependencies.
+- The combined registered Python regression passed **167 tests** with
+  `UDB_TEST_RUBY=1`, including the live Ruby comparison across every standard
+  document and byte-for-byte comparison of all published schemas. Independent
+  adversarial review has no remaining material findings. The nine confirmed
+  Ruby corrections remain recorded in the bug-fix log.
+- `./do gen:arch gen:schemas`, the registered layout drift and profile-report
+  regressions, Ruff, formatting, and diff checks passed. The generated workflow
+  was regenerated from `tools/test/regress-gh-template.yaml` and the regression
+  definitions. Full repository `./bin/regress --all` and remote platform CI remain
+  pending; the full suite includes later-stage C++, LLVM, and document workflows.
+
+Remaining Ruby callers are the configured architecture/IDL resolver used by
+`./do gen:resolved_arch`, Ruby object-model consumers, and later-stage generators
+and document renderers. Profile reporting, schema publication, and layout
+generation use Python by default. No generator has been removed. Schema defaults
+remain annotations, matching the confirmed resolver policy; configuration
+defaulting and satisfiability belong to Stage 3. The next capability is versions,
+configurations, conditions, and solving, followed by IDL and generator cutovers.

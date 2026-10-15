@@ -21,6 +21,7 @@ from referencing.exceptions import Unresolvable
 from referencing.jsonschema import DRAFT7
 
 from .errors import DataError
+from .source import SourceMap
 
 _BASE_URI = "https://schemas.udb.invalid/"
 _DRAFT7_URI = "http://json-schema.org/draft-07/schema#"
@@ -62,9 +63,21 @@ class SchemaStore:
             )
         return f"{actual_version}/{filename}{fragment}"
 
-    def validate(self, document: Mapping[Any, Any], source: str | Path = "<document>") -> None:
+    def validate(
+        self,
+        document: Mapping[Any, Any],
+        source: str | Path | SourceMap = "<document>",
+    ) -> None:
         """Validate *document* without applying defaults or mutating it."""
-        source_name = str(source)
+        source_map = source if isinstance(source, SourceMap) else None
+        root_span = source_map.at() if source_map is not None else None
+        source_name = (
+            root_span.label
+            if root_span is not None
+            else source.document
+            if source_map is not None
+            else str(source)
+        )
         if not isinstance(document, Mapping):
             raise SchemaError(f"{source_name}: document must be a mapping")
         schema_uri = document.get("$schema")
@@ -91,7 +104,12 @@ class SchemaStore:
                 f"against {versioned_uri!r}: {error}"
             ) from error
         if errors:
-            details = "; ".join(f"{error.json_path}: {error.message}" for error in errors[:8])
+            formatted: list[str] = []
+            for error in errors[:8]:
+                span = source_map.at(*error.absolute_path) if source_map is not None else None
+                location = f"{span.label}: " if span is not None else ""
+                formatted.append(f"{location}{error.json_path}: {error.message}")
+            details = "; ".join(formatted)
             if len(errors) > 8:
                 details += f"; and {len(errors) - 8} more errors"
             raise SchemaError(
