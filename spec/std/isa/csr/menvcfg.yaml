@@ -88,7 +88,7 @@ description: |
   NOTE: The Svade extension requires page-fault exceptions be raised when PTE
   A/D bits need be set, hence Svade is implemented when ADUE=0.
 
-  If the Smcdeleg extension is implemented, the CDE (Counter Delegation Enable) bit controls whether Zicntr and Zihpm counters can be delegated to S-mode. When CDE=1, the Smcdeleg extension is enabled, see <<smcdeleg>>. When CDE=0, the Smcdeleg and Ssccfg extensions appear to be not implemented. If Smcdeleg is not implemented, CDE is read-only zero.
+  The definition of the CDE field is furnished by the Smcdeleg extension.
 
   The definition of the STCE field is furnished by the Sstc extension.
 
@@ -204,6 +204,17 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
+  CDE:
+    location: 60
+    description: |
+      *Counter Delegation Enable*
+
+      If the Smcdeleg extension is implemented, the CDE (Counter Delegation Enable) bit controls whether Zicntr and Zihpm counters can be delegated to S-mode. When CDE=1, the Smcdeleg extension is enabled, see <<smcdeleg>>. When CDE=0, the Smcdeleg and Ssccfg extensions appear to be not implemented. If Smcdeleg is not implemented, CDE is read-only zero.
+    definedBy:
+      extension:
+        name: Smcdeleg
+    type: RW
+    reset_value: UNDEFINED_LEGAL
   CBZE:
     location: 7
     description: |

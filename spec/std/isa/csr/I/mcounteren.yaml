@@ -87,6 +87,13 @@ description: |
   <%- end -%>
   .
   <%- end -%>
+  <%- if ext?(:Smcdeleg) -%>
+
+  When the Smcdeleg/Ssccfg extensions are enabled (`menvcfg.CDE`=1), `mcounteren` further
+  allows M-mode to delegate select counters to S-mode. When a counter _i_ is delegated
+  (`mcounteren`[_i_]=1 and `menvcfg.CDE`=1), the register state associated with counter _i_
+  can be read or written via `sireg*`, while `siselect` holds 0x40+_i_.
+  <%- end -%>
 definedBy:
   extension:
     name: U # actually, defined by RV64, but must implement U-mode for this CSR to exist
