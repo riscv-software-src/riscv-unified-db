@@ -13,6 +13,11 @@
 #ifndef RVMODEL_MACROS_H
 #define RVMODEL_MACROS_H
 
+// ACT's default LA expansion reserves 32-byte slots, whose assembler-created
+// padding is zero-filled and therefore illegal to execute. This RV64 toolchain
+// expands LA to its two-instruction, eight-byte form.
+#define UNROLLSZ 3
+
 // tohost/fromhost symbols in .tohost section
 #define RVMODEL_DATA_SECTION \
     .pushsection .tohost,"aw",@progbits; \
