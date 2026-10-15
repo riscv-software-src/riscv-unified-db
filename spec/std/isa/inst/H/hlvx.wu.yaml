@@ -15,7 +15,7 @@ description: |
 definedBy:
   extension:
     name: H
-assembly: xd, xs1
+assembly: xd, (xs1)
 encoding:
   match: 011010000011-----100-----1110011
   variables:
