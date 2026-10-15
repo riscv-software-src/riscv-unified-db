@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent9h
 long_name: Machine Hardware Performance Counter 9 Control, High half
 address: 0x729
+indirect_address: 0x49
+indirect_slot: 5
 writable: true
 priv_mode: M
 length: 32

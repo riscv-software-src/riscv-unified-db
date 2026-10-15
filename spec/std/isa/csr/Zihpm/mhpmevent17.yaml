@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent17
 long_name: Machine Hardware Performance Counter 17 Control
 address: 0x331
+indirect_address: 0x51
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64

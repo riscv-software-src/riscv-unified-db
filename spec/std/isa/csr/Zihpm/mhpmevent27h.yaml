@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent27h
 long_name: Machine Hardware Performance Counter 27 Control, High half
 address: 0x73B
+indirect_address: 0x5B
+indirect_slot: 5
 writable: true
 priv_mode: M
 length: 32

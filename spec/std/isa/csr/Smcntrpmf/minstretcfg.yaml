@@ -8,6 +8,8 @@ kind: csr
 name: minstretcfg
 long_name: Machine Instructions-Retired Counter Configuration
 address: 0x322
+indirect_address: 0x42
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64
