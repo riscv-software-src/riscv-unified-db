@@ -35,6 +35,17 @@ Schema/Python API documentation and publication indexes remain retained.
 Query/report/disassembly capabilities remain, but final Python CLI spelling
 and compatibility aliases have not been approved by this scope decision.
 
+## Accepted native Bits replacement
+
+Review ID34 is implemented as handwritten native properties, not a Python
+test-source generator. The Ruby authoring script and six generated sources are
+removed. Independent native review accepted all legacy coverage and added
+signed/runtime/unknown boundaries; standalone CTest passed 95 cases. The retained
+backend aggregate passed its 39 property/defect cases through actual Rake asset
+rules and CMake. `regress-native-bits` runs independently of hart generation.
+See [the native contract](stage5-native-bits.md) for exact coverage, narrow
+production fixes, replay, toolchain linking and unchanged limitations.
+
 ## Inventory method and acceptance
 
 ### Accepted schema-documentation slice

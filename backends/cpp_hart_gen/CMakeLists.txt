@@ -244,20 +244,7 @@ target_link_libraries(test_bits_directed PRIVATE hart Catch2::Catch2WithMain)
 target_compile_options(test_bits_directed PRIVATE -fprofile-arcs -ftest-coverage)
 target_link_options(test_bits_directed PRIVATE -fprofile-arcs -ftest-coverage)
 
-set(RANDOM_TESTS "")
-foreach (i RANGE 5)
-  add_executable(test_bits_random_${i}
-    ${CMAKE_SOURCE_DIR}/test/test_bits_random_${i}.cpp
-  )
-  target_include_directories(test_bits_random_${i} PUBLIC ${CMAKE_SOURCE_DIR}/include)
-  target_link_libraries(test_bits_random_${i} PRIVATE hart Catch2::Catch2WithMain)
-  target_compile_options(test_bits_random_${i} PRIVATE -fprofile-arcs -ftest-coverage)
-  target_link_options(test_bits_random_${i} PRIVATE -fprofile-arcs -ftest-coverage)
-
-  list(APPEND RANDOM_TESTS test_bits_random_${i})
-endforeach()
-add_custom_target(test_bits_random)
-add_dependencies(test_bits_random ${RANDOM_TESTS})
+include("${CMAKE_SOURCE_DIR}/test/bits-tests.cmake")
 
 add_executable(test_util
   ${CMAKE_SOURCE_DIR}/test/test_util.cpp
@@ -306,13 +293,9 @@ target_compile_definitions(test_regfile PRIVATE
 
 include(CTest)
 include(Catch)
-catch_discover_tests(test_bits_directed)
+catch_discover_tests(test_bits_directed EXTRA_ARGS --rng-seed 1234)
 catch_discover_tests(test_regfile)
 catch_discover_tests(test_util)
-
-foreach (random_test IN LISTS RANDOM_TESTS)
-  catch_discover_tests(${random_test})
-endforeach()
 
 catch_discover_tests(test_softfloat_fp)
 
