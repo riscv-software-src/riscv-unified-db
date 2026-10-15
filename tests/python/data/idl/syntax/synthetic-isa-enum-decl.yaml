@@ -1,0 +1,57 @@
+input: "%version: 1.0\nenum MyEnum {\n  A 0\n  B 1\n}\n"
+root: isa
+label: synthetic-isa-enum-decl
+expected:
+  kind: isa
+  children:
+    - kind: enum_decl
+      enum_class_name:
+        kind: user_type_reference
+        name: MyEnum
+        source:
+          file: synthetic-isa-enum-decl
+          begin: 19
+          end: 25
+      members:
+        - name:
+            kind: user_type_reference
+            name: A
+            source:
+              file: synthetic-isa-enum-decl
+              begin: 30
+              end: 31
+          value:
+            kind: bits_literal
+            width: "1"
+            value: 0
+            signed: false
+            radix: 10
+            source:
+              file: synthetic-isa-enum-decl
+              begin: 32
+              end: 33
+        - name:
+            kind: user_type_reference
+            name: B
+            source:
+              file: synthetic-isa-enum-decl
+              begin: 36
+              end: 37
+          value:
+            kind: bits_literal
+            width: "1"
+            value: 1
+            signed: false
+            radix: 10
+            source:
+              file: synthetic-isa-enum-decl
+              begin: 38
+              end: 39
+      source:
+        file: synthetic-isa-enum-decl
+        begin: 14
+        end: 41
+  source:
+    file: synthetic-isa-enum-decl
+    begin: 0
+    end: 42

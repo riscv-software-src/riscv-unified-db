@@ -127,3 +127,8 @@ path = [
 ]
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = ["tests/python/data/idl/**"]
+SPDX-FileCopyrightText = "2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>"
+SPDX-License-Identifier = "BSD-3-Clause-Clear"

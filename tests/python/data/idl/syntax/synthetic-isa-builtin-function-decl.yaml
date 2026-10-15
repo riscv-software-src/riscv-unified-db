@@ -1,0 +1,27 @@
+input: "%version: 1.0\nbuiltin function my_builtin {\n  returns Boolean\n  description {\n    A test builtin function.\n  }\n}\n"
+root: isa
+label: synthetic-isa-builtin-function-decl
+expected:
+  kind: isa
+  children:
+    - kind: function_decl
+      name: my_builtin
+      qualifier: builtin
+      return_types:
+        - kind: builtin_type
+          type: Boolean
+          source:
+            file: synthetic-isa-builtin-function-decl
+            begin: 54
+            end: 61
+      arguments: []
+      description: "A test builtin function.\n  "
+      body:
+      source:
+        file: synthetic-isa-builtin-function-decl
+        begin: 14
+        end: 112
+  source:
+    file: synthetic-isa-builtin-function-decl
+    begin: 0
+    end: 113

@@ -1,0 +1,4 @@
+input: (1 + 2
+root: expression
+label: invalid-unbalanced-paren
+rejected: true

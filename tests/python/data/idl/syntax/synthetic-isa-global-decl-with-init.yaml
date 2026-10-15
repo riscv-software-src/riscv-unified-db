@@ -1,0 +1,46 @@
+input: "%version: 1.0\nconst XReg my_const_global = 5;\n"
+root: isa
+label: synthetic-isa-global-decl-with-init
+expected:
+  kind: isa
+  children:
+    - kind: global_var_decl_with_init
+      decl:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: synthetic-isa-global-decl-with-init
+            begin: 20
+            end: 24
+        name:
+          kind: id
+          name: my_const_global
+          source:
+            file: synthetic-isa-global-decl-with-init
+            begin: 25
+            end: 40
+        value:
+          kind: bits_literal
+          width: "3"
+          value: 5
+          signed: false
+          radix: 10
+          source:
+            file: synthetic-isa-global-decl-with-init
+            begin: 43
+            end: 44
+        in_for_loop: false
+        source:
+          file: synthetic-isa-global-decl-with-init
+          begin: 20
+          end: 44
+      source:
+        file: synthetic-isa-global-decl-with-init
+        begin: 14
+        end: 45
+  source:
+    file: synthetic-isa-global-decl-with-init
+    begin: 0
+    end: 46

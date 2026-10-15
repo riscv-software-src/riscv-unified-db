@@ -1,0 +1,211 @@
+input: "return\n (CSR[fcsr].NV `<< 4) |\n (CSR[fcsr].DZ `<< 3) |\n (CSR[fcsr].OF `<< 2) |\n (CSR[fcsr].UF `<< 1) |\n CSR[fcsr].NX;\n"
+root: function_body
+label: csr/F/fflags.yaml#sw_read()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: binary_operator_expr
+            op: "|"
+            lhs:
+              kind: binary_operator_expr
+              op: "|"
+              lhs:
+                kind: binary_operator_expr
+                op: "|"
+                lhs:
+                  kind: binary_operator_expr
+                  op: "|"
+                  lhs:
+                    kind: paren_expr
+                    expr:
+                      kind: binary_operator_expr
+                      op: "`<<"
+                      lhs:
+                        kind: csr_field_read_expr
+                        csr:
+                          kind: csr_read_expr
+                          csr_name: fcsr
+                          source:
+                            file: csr/F/fflags.yaml#sw_read()
+                            begin: 9
+                            end: 18
+                        field_name: NV
+                        source:
+                          file: csr/F/fflags.yaml#sw_read()
+                          begin: 9
+                          end: 21
+                      rhs:
+                        kind: bits_literal
+                        width: "3"
+                        value: 4
+                        signed: false
+                        radix: 10
+                        source:
+                          file: csr/F/fflags.yaml#sw_read()
+                          begin: 26
+                          end: 27
+                      source:
+                        file: csr/F/fflags.yaml#sw_read()
+                        begin: 9
+                        end: 27
+                    source:
+                      file: csr/F/fflags.yaml#sw_read()
+                      begin: 8
+                      end: 28
+                  rhs:
+                    kind: paren_expr
+                    expr:
+                      kind: binary_operator_expr
+                      op: "`<<"
+                      lhs:
+                        kind: csr_field_read_expr
+                        csr:
+                          kind: csr_read_expr
+                          csr_name: fcsr
+                          source:
+                            file: csr/F/fflags.yaml#sw_read()
+                            begin: 33
+                            end: 42
+                        field_name: DZ
+                        source:
+                          file: csr/F/fflags.yaml#sw_read()
+                          begin: 33
+                          end: 45
+                      rhs:
+                        kind: bits_literal
+                        width: "2"
+                        value: 3
+                        signed: false
+                        radix: 10
+                        source:
+                          file: csr/F/fflags.yaml#sw_read()
+                          begin: 50
+                          end: 51
+                      source:
+                        file: csr/F/fflags.yaml#sw_read()
+                        begin: 33
+                        end: 51
+                    source:
+                      file: csr/F/fflags.yaml#sw_read()
+                      begin: 32
+                      end: 52
+                  source:
+                    file: csr/F/fflags.yaml#sw_read()
+                    begin: 8
+                    end: 52
+                rhs:
+                  kind: paren_expr
+                  expr:
+                    kind: binary_operator_expr
+                    op: "`<<"
+                    lhs:
+                      kind: csr_field_read_expr
+                      csr:
+                        kind: csr_read_expr
+                        csr_name: fcsr
+                        source:
+                          file: csr/F/fflags.yaml#sw_read()
+                          begin: 57
+                          end: 66
+                      field_name: OF
+                      source:
+                        file: csr/F/fflags.yaml#sw_read()
+                        begin: 57
+                        end: 69
+                    rhs:
+                      kind: bits_literal
+                      width: "2"
+                      value: 2
+                      signed: false
+                      radix: 10
+                      source:
+                        file: csr/F/fflags.yaml#sw_read()
+                        begin: 74
+                        end: 75
+                    source:
+                      file: csr/F/fflags.yaml#sw_read()
+                      begin: 57
+                      end: 75
+                  source:
+                    file: csr/F/fflags.yaml#sw_read()
+                    begin: 56
+                    end: 76
+                source:
+                  file: csr/F/fflags.yaml#sw_read()
+                  begin: 8
+                  end: 76
+              rhs:
+                kind: paren_expr
+                expr:
+                  kind: binary_operator_expr
+                  op: "`<<"
+                  lhs:
+                    kind: csr_field_read_expr
+                    csr:
+                      kind: csr_read_expr
+                      csr_name: fcsr
+                      source:
+                        file: csr/F/fflags.yaml#sw_read()
+                        begin: 81
+                        end: 90
+                    field_name: UF
+                    source:
+                      file: csr/F/fflags.yaml#sw_read()
+                      begin: 81
+                      end: 93
+                  rhs:
+                    kind: bits_literal
+                    width: "1"
+                    value: 1
+                    signed: false
+                    radix: 10
+                    source:
+                      file: csr/F/fflags.yaml#sw_read()
+                      begin: 98
+                      end: 99
+                  source:
+                    file: csr/F/fflags.yaml#sw_read()
+                    begin: 81
+                    end: 99
+                source:
+                  file: csr/F/fflags.yaml#sw_read()
+                  begin: 80
+                  end: 100
+              source:
+                file: csr/F/fflags.yaml#sw_read()
+                begin: 8
+                end: 100
+            rhs:
+              kind: csr_field_read_expr
+              csr:
+                kind: csr_read_expr
+                csr_name: fcsr
+                source:
+                  file: csr/F/fflags.yaml#sw_read()
+                  begin: 104
+                  end: 113
+              field_name: NX
+              source:
+                file: csr/F/fflags.yaml#sw_read()
+                begin: 104
+                end: 116
+            source:
+              file: csr/F/fflags.yaml#sw_read()
+              begin: 8
+              end: 116
+        source:
+          file: csr/F/fflags.yaml#sw_read()
+          begin: 0
+          end: 116
+      source:
+        file: csr/F/fflags.yaml#sw_read()
+        begin: 0
+        end: 117
+  source:
+    file: csr/F/fflags.yaml#sw_read()
+    begin: 0
+    end: 118

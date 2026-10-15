@@ -16,6 +16,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import udb
+from udb import idl
 
 
 def tree_digest(root: Path) -> dict[str, str]:
@@ -203,10 +204,43 @@ def check_install() -> None:
             )
         subprocess.run(["udb", "show", "instruction", "add"], check=True, stdout=subprocess.DEVNULL)
 
+    function_body = idl.parse_function_body("XReg a = X[rs1] + X[rs2];\nreturn a;\n")
+    assert isinstance(function_body, idl.FunctionBody)
+    isa_snippet = idl.parse_isa(
+        "%version: 1.0\n"
+        "XReg counter = 0;\n"
+        "function f {\n"
+        "  returns XReg\n"
+        "  description { Increment and return the global counter. }\n"
+        "  body {\n"
+        "    counter = counter + 1;\n"
+        "    return counter;\n"
+        "  }\n"
+        "}\n"
+    )
+    assert isinstance(isa_snippet, idl.Isa)
+
+    isa_dir = resources.joinpath("isa", "isa")
+    bundled_isa_files = sorted(entry.name for entry in isa_dir.iterdir() if entry.is_file())
+    assert bundled_isa_files == [
+        "builtin_functions.idl",
+        "fetch.idl",
+        "fp.idl",
+        "globals.isa",
+        "interrupts.idl",
+        "util.idl",
+        "vec.idl",
+    ]
+    for name in bundled_isa_files:
+        text = isa_dir.joinpath(name).read_text(encoding="utf-8")
+        node = idl.parse_isa(text, label=name)
+        assert isinstance(node, idl.Isa)
+
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
-        f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries"
+        f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries, "
+        f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files)"
     )
 
 

@@ -1,0 +1,63 @@
+input: "return CSR[henvcfg].sw_read()[63:32];\n"
+root: function_body
+label: csr/H/henvcfgh.yaml#sw_read()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: array_range_access
+            array:
+              kind: csr_funcall_expr
+              csr:
+                kind: csr_read_expr
+                csr_name: henvcfg
+                source:
+                  file: csr/H/henvcfgh.yaml#sw_read()
+                  begin: 7
+                  end: 19
+              function_name: sw_read
+              arguments: []
+              source:
+                file: csr/H/henvcfgh.yaml#sw_read()
+                begin: 7
+                end: 29
+            range:
+              lsb:
+                kind: bits_literal
+                width: "6"
+                value: 32
+                signed: false
+                radix: 10
+                source:
+                  file: csr/H/henvcfgh.yaml#sw_read()
+                  begin: 33
+                  end: 35
+              msb:
+                kind: bits_literal
+                width: "6"
+                value: 63
+                signed: false
+                radix: 10
+                source:
+                  file: csr/H/henvcfgh.yaml#sw_read()
+                  begin: 30
+                  end: 32
+            source:
+              file: csr/H/henvcfgh.yaml#sw_read()
+              begin: 7
+              end: 36
+        source:
+          file: csr/H/henvcfgh.yaml#sw_read()
+          begin: 0
+          end: 36
+      source:
+        file: csr/H/henvcfgh.yaml#sw_read()
+        begin: 0
+        end: 37
+  source:
+    file: csr/H/henvcfgh.yaml#sw_read()
+    begin: 0
+    end: 38

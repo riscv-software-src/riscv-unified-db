@@ -1,0 +1,138 @@
+input: "# for every bit in an mstateen CSR that is zero, the same bit\n# appears as read-only zero in the matching hstateen CSR\n\nBits<64> mstateen0_mask = $bits(CSR[mstateen0]);\nBits<64> hstateen0_value = $bits(CSR[hstateen0]) & mstateen0_mask;\nreturn hstateen0_value;\n"
+root: function_body
+label: csr/hstateen0.yaml#sw_read()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: bits_type
+          width_expr:
+            kind: bits_literal
+            width: "7"
+            value: 64
+            signed: false
+            radix: 10
+            source:
+              file: csr/hstateen0.yaml#sw_read()
+              begin: 125
+              end: 127
+          source:
+            file: csr/hstateen0.yaml#sw_read()
+            begin: 120
+            end: 128
+        name:
+          kind: id
+          name: mstateen0_mask
+          source:
+            file: csr/hstateen0.yaml#sw_read()
+            begin: 129
+            end: 143
+        value:
+          kind: bits_cast
+          expr:
+            kind: csr_read_expr
+            csr_name: mstateen0
+            source:
+              file: csr/hstateen0.yaml#sw_read()
+              begin: 152
+              end: 166
+          source:
+            file: csr/hstateen0.yaml#sw_read()
+            begin: 146
+            end: 167
+        in_for_loop: false
+        source:
+          file: csr/hstateen0.yaml#sw_read()
+          begin: 120
+          end: 167
+      source:
+        file: csr/hstateen0.yaml#sw_read()
+        begin: 120
+        end: 168
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: bits_type
+          width_expr:
+            kind: bits_literal
+            width: "7"
+            value: 64
+            signed: false
+            radix: 10
+            source:
+              file: csr/hstateen0.yaml#sw_read()
+              begin: 174
+              end: 176
+          source:
+            file: csr/hstateen0.yaml#sw_read()
+            begin: 169
+            end: 177
+        name:
+          kind: id
+          name: hstateen0_value
+          source:
+            file: csr/hstateen0.yaml#sw_read()
+            begin: 178
+            end: 193
+        value:
+          kind: binary_operator_expr
+          op: "&"
+          lhs:
+            kind: bits_cast
+            expr:
+              kind: csr_read_expr
+              csr_name: hstateen0
+              source:
+                file: csr/hstateen0.yaml#sw_read()
+                begin: 202
+                end: 216
+            source:
+              file: csr/hstateen0.yaml#sw_read()
+              begin: 196
+              end: 217
+          rhs:
+            kind: id
+            name: mstateen0_mask
+            source:
+              file: csr/hstateen0.yaml#sw_read()
+              begin: 220
+              end: 234
+          source:
+            file: csr/hstateen0.yaml#sw_read()
+            begin: 196
+            end: 234
+        in_for_loop: false
+        source:
+          file: csr/hstateen0.yaml#sw_read()
+          begin: 169
+          end: 234
+      source:
+        file: csr/hstateen0.yaml#sw_read()
+        begin: 169
+        end: 235
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: id
+            name: hstateen0_value
+            source:
+              file: csr/hstateen0.yaml#sw_read()
+              begin: 243
+              end: 258
+        source:
+          file: csr/hstateen0.yaml#sw_read()
+          begin: 236
+          end: 258
+      source:
+        file: csr/hstateen0.yaml#sw_read()
+        begin: 236
+        end: 259
+  source:
+    file: csr/hstateen0.yaml#sw_read()
+    begin: 0
+    end: 260

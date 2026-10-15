@@ -1,0 +1,25 @@
+input: "%version: 1.0\nstruct MyStruct {\n  XReg field1;\n}\n"
+root: isa
+label: synthetic-isa-struct-decl
+expected:
+  kind: isa
+  children:
+    - kind: struct_decl
+      name: MyStruct
+      members:
+        - name: field1
+          type:
+            kind: builtin_type
+            type: XReg
+            source:
+              file: synthetic-isa-struct-decl
+              begin: 34
+              end: 38
+      source:
+        file: synthetic-isa-struct-decl
+        begin: 14
+        end: 48
+  source:
+    file: synthetic-isa-struct-decl
+    begin: 0
+    end: 49

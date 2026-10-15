@@ -1,0 +1,69 @@
+input: "a == 1 -> b == 2;\n"
+root: constraint_body
+label: synthetic-constraint-implication
+expected:
+  kind: constraint_body
+  stmts:
+    - kind: implication_stmt
+      expr:
+        kind: implication_expr
+        antecedent:
+          kind: binary_operator_expr
+          op: ==
+          lhs:
+            kind: id
+            name: a
+            source:
+              file: synthetic-constraint-implication
+              begin: 0
+              end: 1
+          rhs:
+            kind: bits_literal
+            width: "1"
+            value: 1
+            signed: false
+            radix: 10
+            source:
+              file: synthetic-constraint-implication
+              begin: 5
+              end: 6
+          source:
+            file: synthetic-constraint-implication
+            begin: 0
+            end: 6
+        consequent:
+          kind: binary_operator_expr
+          op: ==
+          lhs:
+            kind: id
+            name: b
+            source:
+              file: synthetic-constraint-implication
+              begin: 10
+              end: 11
+          rhs:
+            kind: bits_literal
+            width: "2"
+            value: 2
+            signed: false
+            radix: 10
+            source:
+              file: synthetic-constraint-implication
+              begin: 15
+              end: 16
+          source:
+            file: synthetic-constraint-implication
+            begin: 10
+            end: 16
+        source:
+          file: synthetic-constraint-implication
+          begin: 0
+          end: 16
+      source:
+        file: synthetic-constraint-implication
+        begin: 0
+        end: 17
+  source:
+    file: synthetic-constraint-implication
+    begin: 0
+    end: 18

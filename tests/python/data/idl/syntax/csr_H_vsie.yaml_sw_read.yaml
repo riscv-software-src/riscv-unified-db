@@ -1,0 +1,412 @@
+input: "XReg result = 0;\nif (CSR[hideleg].VSSI == 1) {\n  result[1] = CSR[hie].VSSIE;\n}\nif (CSR[hideleg].VSTI == 1) {\n  result[5] = CSR[hie].VSTIE;\n}\nif (CSR[hideleg].VSEI == 1) {\n  result[9] = CSR[hie].VSEIE;\n}\nif (CSR[hideleg].LCOFI == 1) {\n  result[13] = CSR[sie].LCOFIE;\n}\nreturn result;\n"
+root: function_body
+label: csr/H/vsie.yaml#sw_read()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 0
+            end: 4
+        name:
+          kind: id
+          name: result
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 5
+            end: 11
+        value:
+          kind: bits_literal
+          width: "1"
+          value: 0
+          signed: false
+          radix: 10
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 14
+            end: 15
+        in_for_loop: false
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 0
+          end: 15
+      source:
+        file: csr/H/vsie.yaml#sw_read()
+        begin: 0
+        end: 16
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: ==
+        lhs:
+          kind: csr_field_read_expr
+          csr:
+            kind: csr_read_expr
+            csr_name: hideleg
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 21
+              end: 33
+          field_name: VSSI
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 21
+            end: 38
+        rhs:
+          kind: bits_literal
+          width: "1"
+          value: 1
+          signed: false
+          radix: 10
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 42
+            end: 43
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 21
+          end: 43
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: array_element_assignment
+              array:
+                kind: id
+                name: result
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 49
+                  end: 55
+              index:
+                kind: bits_literal
+                width: "1"
+                value: 1
+                signed: false
+                radix: 10
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 56
+                  end: 57
+              value:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: hie
+                  source:
+                    file: csr/H/vsie.yaml#sw_read()
+                    begin: 61
+                    end: 69
+                field_name: VSSIE
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 61
+                  end: 75
+              source:
+                file: csr/H/vsie.yaml#sw_read()
+                begin: 49
+                end: 75
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 49
+              end: 76
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 49
+          end: 77
+      else_ifs: []
+      else:
+      source:
+        file: csr/H/vsie.yaml#sw_read()
+        begin: 17
+        end: 78
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: ==
+        lhs:
+          kind: csr_field_read_expr
+          csr:
+            kind: csr_read_expr
+            csr_name: hideleg
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 83
+              end: 95
+          field_name: VSTI
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 83
+            end: 100
+        rhs:
+          kind: bits_literal
+          width: "1"
+          value: 1
+          signed: false
+          radix: 10
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 104
+            end: 105
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 83
+          end: 105
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: array_element_assignment
+              array:
+                kind: id
+                name: result
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 111
+                  end: 117
+              index:
+                kind: bits_literal
+                width: "3"
+                value: 5
+                signed: false
+                radix: 10
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 118
+                  end: 119
+              value:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: hie
+                  source:
+                    file: csr/H/vsie.yaml#sw_read()
+                    begin: 123
+                    end: 131
+                field_name: VSTIE
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 123
+                  end: 137
+              source:
+                file: csr/H/vsie.yaml#sw_read()
+                begin: 111
+                end: 137
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 111
+              end: 138
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 111
+          end: 139
+      else_ifs: []
+      else:
+      source:
+        file: csr/H/vsie.yaml#sw_read()
+        begin: 79
+        end: 140
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: ==
+        lhs:
+          kind: csr_field_read_expr
+          csr:
+            kind: csr_read_expr
+            csr_name: hideleg
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 145
+              end: 157
+          field_name: VSEI
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 145
+            end: 162
+        rhs:
+          kind: bits_literal
+          width: "1"
+          value: 1
+          signed: false
+          radix: 10
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 166
+            end: 167
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 145
+          end: 167
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: array_element_assignment
+              array:
+                kind: id
+                name: result
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 173
+                  end: 179
+              index:
+                kind: bits_literal
+                width: "4"
+                value: 9
+                signed: false
+                radix: 10
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 180
+                  end: 181
+              value:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: hie
+                  source:
+                    file: csr/H/vsie.yaml#sw_read()
+                    begin: 185
+                    end: 193
+                field_name: VSEIE
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 185
+                  end: 199
+              source:
+                file: csr/H/vsie.yaml#sw_read()
+                begin: 173
+                end: 199
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 173
+              end: 200
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 173
+          end: 201
+      else_ifs: []
+      else:
+      source:
+        file: csr/H/vsie.yaml#sw_read()
+        begin: 141
+        end: 202
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: ==
+        lhs:
+          kind: csr_field_read_expr
+          csr:
+            kind: csr_read_expr
+            csr_name: hideleg
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 207
+              end: 219
+          field_name: LCOFI
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 207
+            end: 225
+        rhs:
+          kind: bits_literal
+          width: "1"
+          value: 1
+          signed: false
+          radix: 10
+          source:
+            file: csr/H/vsie.yaml#sw_read()
+            begin: 229
+            end: 230
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 207
+          end: 230
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: array_element_assignment
+              array:
+                kind: id
+                name: result
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 236
+                  end: 242
+              index:
+                kind: bits_literal
+                width: "4"
+                value: 13
+                signed: false
+                radix: 10
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 243
+                  end: 245
+              value:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: sie
+                  source:
+                    file: csr/H/vsie.yaml#sw_read()
+                    begin: 249
+                    end: 257
+                field_name: LCOFIE
+                source:
+                  file: csr/H/vsie.yaml#sw_read()
+                  begin: 249
+                  end: 264
+              source:
+                file: csr/H/vsie.yaml#sw_read()
+                begin: 236
+                end: 264
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 236
+              end: 265
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 236
+          end: 266
+      else_ifs: []
+      else:
+      source:
+        file: csr/H/vsie.yaml#sw_read()
+        begin: 203
+        end: 267
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: id
+            name: result
+            source:
+              file: csr/H/vsie.yaml#sw_read()
+              begin: 275
+              end: 281
+        source:
+          file: csr/H/vsie.yaml#sw_read()
+          begin: 268
+          end: 281
+      source:
+        file: csr/H/vsie.yaml#sw_read()
+        begin: 268
+        end: 282
+  source:
+    file: csr/H/vsie.yaml#sw_read()
+    begin: 0
+    end: 283

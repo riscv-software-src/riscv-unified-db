@@ -1,0 +1,383 @@
+input: "XReg input = X[xs1];\nXReg output = 0;\n\nfor (U32 i=0; i < xlen(); i = i+8) {\n  output[(i+7):i] = (input[(i+7):i] == 0) ? 8'd0 : ~8'd0;\n}\n\nX[xd] = output;\n"
+root: instruction_operation
+label: inst/Zbb/orc.b.yaml#operation()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 0
+            end: 4
+        name:
+          kind: id
+          name: input
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 5
+            end: 10
+        value:
+          kind: array_access
+          array:
+            kind: id
+            name: X
+            source:
+              file: inst/Zbb/orc.b.yaml#operation()
+              begin: 13
+              end: 14
+          index:
+            kind: id
+            name: xs1
+            source:
+              file: inst/Zbb/orc.b.yaml#operation()
+              begin: 15
+              end: 18
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 13
+            end: 19
+        in_for_loop: false
+        source:
+          file: inst/Zbb/orc.b.yaml#operation()
+          begin: 0
+          end: 19
+      source:
+        file: inst/Zbb/orc.b.yaml#operation()
+        begin: 0
+        end: 20
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 21
+            end: 25
+        name:
+          kind: id
+          name: output
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 26
+            end: 32
+        value:
+          kind: bits_literal
+          width: "1"
+          value: 0
+          signed: false
+          radix: 10
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 35
+            end: 36
+        in_for_loop: false
+        source:
+          file: inst/Zbb/orc.b.yaml#operation()
+          begin: 21
+          end: 36
+      source:
+        file: inst/Zbb/orc.b.yaml#operation()
+        begin: 21
+        end: 37
+    - kind: for_loop_stmt
+      init_expr:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: U32
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 44
+            end: 47
+        name:
+          kind: id
+          name: i
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 48
+            end: 49
+        value:
+          kind: bits_literal
+          width: "1"
+          value: 0
+          signed: false
+          radix: 10
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 50
+            end: 51
+        in_for_loop: true
+        source:
+          file: inst/Zbb/orc.b.yaml#operation()
+          begin: 44
+          end: 51
+      condition_expr:
+        kind: binary_operator_expr
+        op: <
+        lhs:
+          kind: id
+          name: i
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 53
+            end: 54
+        rhs:
+          kind: funcall_expr
+          func: xlen
+          args: []
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 57
+            end: 63
+        source:
+          file: inst/Zbb/orc.b.yaml#operation()
+          begin: 53
+          end: 63
+      update_expr:
+        kind: var_assignment
+        var:
+          kind: id
+          name: i
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 65
+            end: 66
+        value:
+          kind: binary_operator_expr
+          op: +
+          lhs:
+            kind: id
+            name: i
+            source:
+              file: inst/Zbb/orc.b.yaml#operation()
+              begin: 69
+              end: 70
+          rhs:
+            kind: bits_literal
+            width: "4"
+            value: 8
+            signed: false
+            radix: 10
+            source:
+              file: inst/Zbb/orc.b.yaml#operation()
+              begin: 71
+              end: 72
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 69
+            end: 72
+        source:
+          file: inst/Zbb/orc.b.yaml#operation()
+          begin: 65
+          end: 72
+      body:
+        - kind: stmt
+          expr:
+            kind: array_range_assignment
+            array:
+              kind: id
+              name: output
+              source:
+                file: inst/Zbb/orc.b.yaml#operation()
+                begin: 78
+                end: 84
+            range:
+              lsb:
+                kind: id
+                name: i
+                source:
+                  file: inst/Zbb/orc.b.yaml#operation()
+                  begin: 91
+                  end: 92
+              msb:
+                kind: paren_expr
+                expr:
+                  kind: binary_operator_expr
+                  op: +
+                  lhs:
+                    kind: id
+                    name: i
+                    source:
+                      file: inst/Zbb/orc.b.yaml#operation()
+                      begin: 86
+                      end: 87
+                  rhs:
+                    kind: bits_literal
+                    width: "3"
+                    value: 7
+                    signed: false
+                    radix: 10
+                    source:
+                      file: inst/Zbb/orc.b.yaml#operation()
+                      begin: 88
+                      end: 89
+                  source:
+                    file: inst/Zbb/orc.b.yaml#operation()
+                    begin: 86
+                    end: 89
+                source:
+                  file: inst/Zbb/orc.b.yaml#operation()
+                  begin: 85
+                  end: 90
+            value:
+              kind: ternary_operator_expr
+              condition:
+                kind: paren_expr
+                expr:
+                  kind: binary_operator_expr
+                  op: ==
+                  lhs:
+                    kind: array_range_access
+                    array:
+                      kind: id
+                      name: input
+                      source:
+                        file: inst/Zbb/orc.b.yaml#operation()
+                        begin: 97
+                        end: 102
+                    range:
+                      lsb:
+                        kind: id
+                        name: i
+                        source:
+                          file: inst/Zbb/orc.b.yaml#operation()
+                          begin: 109
+                          end: 110
+                      msb:
+                        kind: paren_expr
+                        expr:
+                          kind: binary_operator_expr
+                          op: +
+                          lhs:
+                            kind: id
+                            name: i
+                            source:
+                              file: inst/Zbb/orc.b.yaml#operation()
+                              begin: 104
+                              end: 105
+                          rhs:
+                            kind: bits_literal
+                            width: "3"
+                            value: 7
+                            signed: false
+                            radix: 10
+                            source:
+                              file: inst/Zbb/orc.b.yaml#operation()
+                              begin: 106
+                              end: 107
+                          source:
+                            file: inst/Zbb/orc.b.yaml#operation()
+                            begin: 104
+                            end: 107
+                        source:
+                          file: inst/Zbb/orc.b.yaml#operation()
+                          begin: 103
+                          end: 108
+                    source:
+                      file: inst/Zbb/orc.b.yaml#operation()
+                      begin: 97
+                      end: 112
+                  rhs:
+                    kind: bits_literal
+                    width: "1"
+                    value: 0
+                    signed: false
+                    radix: 10
+                    source:
+                      file: inst/Zbb/orc.b.yaml#operation()
+                      begin: 115
+                      end: 116
+                  source:
+                    file: inst/Zbb/orc.b.yaml#operation()
+                    begin: 97
+                    end: 116
+                source:
+                  file: inst/Zbb/orc.b.yaml#operation()
+                  begin: 96
+                  end: 117
+              true_expression:
+                kind: bits_literal
+                width: "8"
+                value: 0
+                signed: false
+                radix: 10
+                source:
+                  file: inst/Zbb/orc.b.yaml#operation()
+                  begin: 120
+                  end: 124
+              false_expression:
+                kind: unary_operator_expr
+                op: "~"
+                expr:
+                  kind: bits_literal
+                  width: "8"
+                  value: 0
+                  signed: false
+                  radix: 10
+                  source:
+                    file: inst/Zbb/orc.b.yaml#operation()
+                    begin: 128
+                    end: 132
+                source:
+                  file: inst/Zbb/orc.b.yaml#operation()
+                  begin: 127
+                  end: 132
+              source:
+                file: inst/Zbb/orc.b.yaml#operation()
+                begin: 96
+                end: 132
+            source:
+              file: inst/Zbb/orc.b.yaml#operation()
+              begin: 78
+              end: 132
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 78
+            end: 133
+      source:
+        file: inst/Zbb/orc.b.yaml#operation()
+        begin: 39
+        end: 137
+    - kind: stmt
+      expr:
+        kind: array_element_assignment
+        array:
+          kind: id
+          name: X
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 137
+            end: 138
+        index:
+          kind: id
+          name: xd
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 139
+            end: 141
+        value:
+          kind: id
+          name: output
+          source:
+            file: inst/Zbb/orc.b.yaml#operation()
+            begin: 145
+            end: 151
+        source:
+          file: inst/Zbb/orc.b.yaml#operation()
+          begin: 137
+          end: 151
+      source:
+        file: inst/Zbb/orc.b.yaml#operation()
+        begin: 137
+        end: 152
+  source:
+    file: inst/Zbb/orc.b.yaml#operation()
+    begin: 0
+    end: 153

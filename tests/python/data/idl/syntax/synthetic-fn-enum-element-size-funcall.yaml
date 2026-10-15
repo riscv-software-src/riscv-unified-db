@@ -1,0 +1,34 @@
+input: "return $enum_element_size(MyEnum);\n"
+root: function_body
+label: synthetic-fn-enum-element-size-funcall
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: enum_element_size_funcall
+            enum_class_name:
+              kind: user_type_reference
+              name: MyEnum
+              source:
+                file: synthetic-fn-enum-element-size-funcall
+                begin: 26
+                end: 32
+            source:
+              file: synthetic-fn-enum-element-size-funcall
+              begin: 7
+              end: 33
+        source:
+          file: synthetic-fn-enum-element-size-funcall
+          begin: 0
+          end: 33
+      source:
+        file: synthetic-fn-enum-element-size-funcall
+        begin: 0
+        end: 34
+  source:
+    file: synthetic-fn-enum-element-size-funcall
+    begin: 0
+    end: 35

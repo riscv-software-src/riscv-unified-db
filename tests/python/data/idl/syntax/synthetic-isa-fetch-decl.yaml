@@ -1,0 +1,39 @@
+input: "%version: 1.0\nfetch {\n  return true;\n}\n"
+root: isa
+label: synthetic-isa-fetch-decl
+expected:
+  kind: isa
+  children:
+    - kind: fetch_decl
+      function_body:
+        kind: function_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: return_expr
+              exprs:
+                - kind: "true"
+                  source:
+                    file: synthetic-isa-fetch-decl
+                    begin: 31
+                    end: 35
+              source:
+                file: synthetic-isa-fetch-decl
+                begin: 24
+                end: 35
+            source:
+              file: synthetic-isa-fetch-decl
+              begin: 24
+              end: 36
+        source:
+          file: synthetic-isa-fetch-decl
+          begin: 24
+          end: 37
+      source:
+        file: synthetic-isa-fetch-decl
+        begin: 14
+        end: 38
+  source:
+    file: synthetic-isa-fetch-decl
+    begin: 0
+    end: 39

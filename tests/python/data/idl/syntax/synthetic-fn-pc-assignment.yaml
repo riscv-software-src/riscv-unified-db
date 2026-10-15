@@ -1,0 +1,31 @@
+input: "$pc = 4;\n"
+root: function_body
+label: synthetic-fn-pc-assignment
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: pc_assignment
+        value:
+          kind: bits_literal
+          width: "3"
+          value: 4
+          signed: false
+          radix: 10
+          source:
+            file: synthetic-fn-pc-assignment
+            begin: 6
+            end: 7
+        source:
+          file: synthetic-fn-pc-assignment
+          begin: 0
+          end: 7
+      source:
+        file: synthetic-fn-pc-assignment
+        begin: 0
+        end: 8
+  source:
+    file: synthetic-fn-pc-assignment
+    begin: 0
+    end: 9

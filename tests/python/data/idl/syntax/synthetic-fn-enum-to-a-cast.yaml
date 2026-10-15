@@ -1,0 +1,34 @@
+input: "return $enum_to_a(MyEnum);\n"
+root: function_body
+label: synthetic-fn-enum-to-a-cast
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: enum_to_array_cast
+            enum_class_name:
+              kind: user_type_reference
+              name: MyEnum
+              source:
+                file: synthetic-fn-enum-to-a-cast
+                begin: 18
+                end: 24
+            source:
+              file: synthetic-fn-enum-to-a-cast
+              begin: 7
+              end: 25
+        source:
+          file: synthetic-fn-enum-to-a-cast
+          begin: 0
+          end: 25
+      source:
+        file: synthetic-fn-enum-to-a-cast
+        begin: 0
+        end: 26
+  source:
+    file: synthetic-fn-enum-to-a-cast
+    begin: 0
+    end: 27

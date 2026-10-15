@@ -1,0 +1,4 @@
+input: String s = "unterminated;
+root: function_body
+label: invalid-unclosed-string
+rejected: true

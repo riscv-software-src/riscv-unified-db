@@ -1,0 +1,222 @@
+input: "XReg lhs = X[xs1];\nXReg rhs = (cimm == 0) ? {MXLEN{1'b1}} : cimm;\n\nif (lhs == rhs) {\n  jump_halfword($pc + $signed(offset));\n}\n"
+root: instruction_operation
+label: inst/Zibi/beqi.yaml#operation()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 0
+            end: 4
+        name:
+          kind: id
+          name: lhs
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 5
+            end: 8
+        value:
+          kind: array_access
+          array:
+            kind: id
+            name: X
+            source:
+              file: inst/Zibi/beqi.yaml#operation()
+              begin: 11
+              end: 12
+          index:
+            kind: id
+            name: xs1
+            source:
+              file: inst/Zibi/beqi.yaml#operation()
+              begin: 13
+              end: 16
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 11
+            end: 17
+        in_for_loop: false
+        source:
+          file: inst/Zibi/beqi.yaml#operation()
+          begin: 0
+          end: 17
+      source:
+        file: inst/Zibi/beqi.yaml#operation()
+        begin: 0
+        end: 18
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 19
+            end: 23
+        name:
+          kind: id
+          name: rhs
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 24
+            end: 27
+        value:
+          kind: ternary_operator_expr
+          condition:
+            kind: paren_expr
+            expr:
+              kind: binary_operator_expr
+              op: ==
+              lhs:
+                kind: id
+                name: cimm
+                source:
+                  file: inst/Zibi/beqi.yaml#operation()
+                  begin: 31
+                  end: 35
+              rhs:
+                kind: bits_literal
+                width: "1"
+                value: 0
+                signed: false
+                radix: 10
+                source:
+                  file: inst/Zibi/beqi.yaml#operation()
+                  begin: 39
+                  end: 40
+              source:
+                file: inst/Zibi/beqi.yaml#operation()
+                begin: 31
+                end: 40
+            source:
+              file: inst/Zibi/beqi.yaml#operation()
+              begin: 30
+              end: 41
+          true_expression:
+            kind: repl_expr
+            count:
+              kind: id
+              name: MXLEN
+              source:
+                file: inst/Zibi/beqi.yaml#operation()
+                begin: 45
+                end: 50
+            expr:
+              kind: bits_literal
+              width: "1"
+              value: 1
+              signed: false
+              radix: 2
+              source:
+                file: inst/Zibi/beqi.yaml#operation()
+                begin: 51
+                end: 55
+            source:
+              file: inst/Zibi/beqi.yaml#operation()
+              begin: 44
+              end: 57
+          false_expression:
+            kind: id
+            name: cimm
+            source:
+              file: inst/Zibi/beqi.yaml#operation()
+              begin: 60
+              end: 64
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 30
+            end: 64
+        in_for_loop: false
+        source:
+          file: inst/Zibi/beqi.yaml#operation()
+          begin: 19
+          end: 64
+      source:
+        file: inst/Zibi/beqi.yaml#operation()
+        begin: 19
+        end: 65
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: ==
+        lhs:
+          kind: id
+          name: lhs
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 71
+            end: 74
+        rhs:
+          kind: id
+          name: rhs
+          source:
+            file: inst/Zibi/beqi.yaml#operation()
+            begin: 78
+            end: 81
+        source:
+          file: inst/Zibi/beqi.yaml#operation()
+          begin: 71
+          end: 81
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: funcall_expr
+              func: jump_halfword
+              args:
+                - kind: binary_operator_expr
+                  op: +
+                  lhs:
+                    kind: builtin_var_expr
+                    name: $pc
+                    source:
+                      file: inst/Zibi/beqi.yaml#operation()
+                      begin: 101
+                      end: 104
+                  rhs:
+                    kind: sign_cast
+                    expr:
+                      kind: id
+                      name: offset
+                      source:
+                        file: inst/Zibi/beqi.yaml#operation()
+                        begin: 115
+                        end: 121
+                    source:
+                      file: inst/Zibi/beqi.yaml#operation()
+                      begin: 107
+                      end: 122
+                  source:
+                    file: inst/Zibi/beqi.yaml#operation()
+                    begin: 101
+                    end: 122
+              source:
+                file: inst/Zibi/beqi.yaml#operation()
+                begin: 87
+                end: 123
+            source:
+              file: inst/Zibi/beqi.yaml#operation()
+              begin: 87
+              end: 124
+        source:
+          file: inst/Zibi/beqi.yaml#operation()
+          begin: 87
+          end: 125
+      else_ifs: []
+      else:
+      source:
+        file: inst/Zibi/beqi.yaml#operation()
+        begin: 67
+        end: 126
+  source:
+    file: inst/Zibi/beqi.yaml#operation()
+    begin: 0
+    end: 127

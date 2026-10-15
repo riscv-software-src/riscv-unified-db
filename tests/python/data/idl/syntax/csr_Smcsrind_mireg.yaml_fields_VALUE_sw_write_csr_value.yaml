@@ -1,0 +1,252 @@
+input: "Csr handle = indirect_csr_lookup(PrivilegeMode::M, CSR[miselect].VALUE, 1);\nif (!handle.valid) {\n  unimplemented_csr($encoding);\n}\nif (!handle.writable) {\n  raise (ExceptionCode::IllegalInstruction, mode(), $encoding);\n}\ncsr_sw_write(handle, csr_value.VALUE);\nreturn csr_hw_read(handle);\n"
+root: function_body
+label: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: user_type_reference
+          name: Csr
+          source:
+            file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+            begin: 0
+            end: 3
+        name:
+          kind: id
+          name: handle
+          source:
+            file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+            begin: 4
+            end: 10
+        value:
+          kind: funcall_expr
+          func: indirect_csr_lookup
+          args:
+            - kind: enum_reference_expr
+              enum_class: PrivilegeMode
+              member_name: M
+              source:
+                file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                begin: 33
+                end: 49
+            - kind: csr_field_read_expr
+              csr:
+                kind: csr_read_expr
+                csr_name: miselect
+                source:
+                  file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                  begin: 51
+                  end: 64
+              field_name: VALUE
+              source:
+                file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                begin: 51
+                end: 70
+            - kind: bits_literal
+              width: "1"
+              value: 1
+              signed: false
+              radix: 10
+              source:
+                file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                begin: 72
+                end: 73
+          source:
+            file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+            begin: 13
+            end: 74
+        in_for_loop: false
+        source:
+          file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+          begin: 0
+          end: 74
+      source:
+        file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+        begin: 0
+        end: 75
+    - kind: if_stmt
+      condition:
+        kind: unary_operator_expr
+        op: "!"
+        expr:
+          kind: field_access_expr
+          expr:
+            kind: id
+            name: handle
+            source:
+              file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+              begin: 81
+              end: 87
+          field_name: valid
+          source:
+            file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+            begin: 81
+            end: 93
+        source:
+          file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+          begin: 80
+          end: 93
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: funcall_expr
+              func: unimplemented_csr
+              args:
+                - kind: builtin_var_expr
+                  name: $encoding
+                  source:
+                    file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                    begin: 117
+                    end: 126
+              source:
+                file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                begin: 99
+                end: 127
+            source:
+              file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+              begin: 99
+              end: 128
+        source:
+          file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+          begin: 99
+          end: 129
+      else_ifs: []
+      else:
+      source:
+        file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+        begin: 76
+        end: 130
+    - kind: if_stmt
+      condition:
+        kind: unary_operator_expr
+        op: "!"
+        expr:
+          kind: field_access_expr
+          expr:
+            kind: id
+            name: handle
+            source:
+              file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+              begin: 136
+              end: 142
+          field_name: writable
+          source:
+            file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+            begin: 136
+            end: 151
+        source:
+          file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+          begin: 135
+          end: 151
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: funcall_expr
+              func: raise
+              args:
+                - kind: enum_reference_expr
+                  enum_class: ExceptionCode
+                  member_name: IllegalInstruction
+                  source:
+                    file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                    begin: 164
+                    end: 197
+                - kind: funcall_expr
+                  func: mode
+                  args: []
+                  source:
+                    file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                    begin: 199
+                    end: 205
+                - kind: builtin_var_expr
+                  name: $encoding
+                  source:
+                    file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                    begin: 207
+                    end: 216
+              source:
+                file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                begin: 157
+                end: 217
+            source:
+              file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+              begin: 157
+              end: 218
+        source:
+          file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+          begin: 157
+          end: 219
+      else_ifs: []
+      else:
+      source:
+        file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+        begin: 131
+        end: 220
+    - kind: stmt
+      expr:
+        kind: funcall_expr
+        func: csr_sw_write
+        args:
+          - kind: id
+            name: handle
+            source:
+              file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+              begin: 234
+              end: 240
+          - kind: field_access_expr
+            expr:
+              kind: id
+              name: csr_value
+              source:
+                file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                begin: 242
+                end: 251
+            field_name: VALUE
+            source:
+              file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+              begin: 242
+              end: 257
+        source:
+          file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+          begin: 221
+          end: 258
+      source:
+        file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+        begin: 221
+        end: 259
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: funcall_expr
+            func: csr_hw_read
+            args:
+              - kind: id
+                name: handle
+                source:
+                  file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+                  begin: 279
+                  end: 285
+            source:
+              file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+              begin: 267
+              end: 286
+        source:
+          file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+          begin: 260
+          end: 286
+      source:
+        file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+        begin: 260
+        end: 287
+  source:
+    file: csr/Smcsrind/mireg.yaml#fields/VALUE/sw_write(csr_value)
+    begin: 0
+    end: 288

@@ -1,0 +1,44 @@
+input: "return $array_includes?(X, 1);\n"
+root: function_body
+label: synthetic-fn-array-includes-funcall
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: array_includes_funcall
+            array:
+              kind: id
+              name: X
+              source:
+                file: synthetic-fn-array-includes-funcall
+                begin: 24
+                end: 25
+            expr:
+              kind: bits_literal
+              width: "1"
+              value: 1
+              signed: false
+              radix: 10
+              source:
+                file: synthetic-fn-array-includes-funcall
+                begin: 27
+                end: 28
+            source:
+              file: synthetic-fn-array-includes-funcall
+              begin: 7
+              end: 29
+        source:
+          file: synthetic-fn-array-includes-funcall
+          begin: 0
+          end: 29
+      source:
+        file: synthetic-fn-array-includes-funcall
+        begin: 0
+        end: 30
+  source:
+    file: synthetic-fn-array-includes-funcall
+    begin: 0
+    end: 31

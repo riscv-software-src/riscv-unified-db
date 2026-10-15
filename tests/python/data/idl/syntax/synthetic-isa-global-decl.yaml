@@ -1,0 +1,35 @@
+input: "%version: 1.0\nXReg my_global;\n"
+root: isa
+label: synthetic-isa-global-decl
+expected:
+  kind: isa
+  children:
+    - kind: global_var_decl
+      decl:
+        kind: var_decl
+        type:
+          kind: builtin_type
+          type: XReg
+          source:
+            file: synthetic-isa-global-decl
+            begin: 14
+            end: 18
+        name:
+          kind: id
+          name: my_global
+          source:
+            file: synthetic-isa-global-decl
+            begin: 19
+            end: 28
+        source:
+          file: synthetic-isa-global-decl
+          begin: 14
+          end: 28
+      source:
+        file: synthetic-isa-global-decl
+        begin: 14
+        end: 29
+  source:
+    file: synthetic-isa-global-decl
+    begin: 0
+    end: 30

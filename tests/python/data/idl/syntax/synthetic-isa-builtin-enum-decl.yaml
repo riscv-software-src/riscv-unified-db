@@ -1,0 +1,22 @@
+input: "%version: 1.0\ngenerated enum MyGeneratedEnum;\n"
+root: isa
+label: synthetic-isa-builtin-enum-decl
+expected:
+  kind: isa
+  children:
+    - kind: builtin_enum_decl
+      name:
+        kind: user_type_reference
+        name: MyGeneratedEnum
+        source:
+          file: synthetic-isa-builtin-enum-decl
+          begin: 29
+          end: 44
+      source:
+        file: synthetic-isa-builtin-enum-decl
+        begin: 14
+        end: 45
+  source:
+    file: synthetic-isa-builtin-enum-decl
+    begin: 0
+    end: 46

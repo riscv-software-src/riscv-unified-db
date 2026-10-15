@@ -1,0 +1,91 @@
+input: "if (HCOUNTENABLE_EN[0]) {\n  return CsrFieldType::RW;\n} else {\n  return CsrFieldType::RO;\n}\n"
+root: function_body
+label: csr/H/hcounteren.yaml#fields/CY/type()
+expected:
+  kind: function_body
+  stmts:
+    - kind: if_stmt
+      condition:
+        kind: array_access
+        array:
+          kind: id
+          name: HCOUNTENABLE_EN
+          source:
+            file: csr/H/hcounteren.yaml#fields/CY/type()
+            begin: 4
+            end: 19
+        index:
+          kind: bits_literal
+          width: "1"
+          value: 0
+          signed: false
+          radix: 10
+          source:
+            file: csr/H/hcounteren.yaml#fields/CY/type()
+            begin: 20
+            end: 21
+        source:
+          file: csr/H/hcounteren.yaml#fields/CY/type()
+          begin: 4
+          end: 22
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: return_expr
+              exprs:
+                - kind: enum_reference_expr
+                  enum_class: CsrFieldType
+                  member_name: RW
+                  source:
+                    file: csr/H/hcounteren.yaml#fields/CY/type()
+                    begin: 35
+                    end: 51
+              source:
+                file: csr/H/hcounteren.yaml#fields/CY/type()
+                begin: 28
+                end: 51
+            source:
+              file: csr/H/hcounteren.yaml#fields/CY/type()
+              begin: 28
+              end: 52
+        source:
+          file: csr/H/hcounteren.yaml#fields/CY/type()
+          begin: 28
+          end: 53
+      else_ifs: []
+      else:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: return_expr
+              exprs:
+                - kind: enum_reference_expr
+                  enum_class: CsrFieldType
+                  member_name: RO
+                  source:
+                    file: csr/H/hcounteren.yaml#fields/CY/type()
+                    begin: 71
+                    end: 87
+              source:
+                file: csr/H/hcounteren.yaml#fields/CY/type()
+                begin: 64
+                end: 87
+            source:
+              file: csr/H/hcounteren.yaml#fields/CY/type()
+              begin: 64
+              end: 88
+        source:
+          file: csr/H/hcounteren.yaml#fields/CY/type()
+          begin: 64
+          end: 89
+      source:
+        file: csr/H/hcounteren.yaml#fields/CY/type()
+        begin: 0
+        end: 90
+  source:
+    file: csr/H/hcounteren.yaml#fields/CY/type()
+    begin: 0
+    end: 91

@@ -1,0 +1,81 @@
+input: return $array_size(VSXLEN) == 1 && $array_includes?(VSXLEN, 32);
+root: function_body
+label: csr/hstatus.yaml#fields/VSXL/description/1/when()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: binary_operator_expr
+            op: "&&"
+            lhs:
+              kind: binary_operator_expr
+              op: ==
+              lhs:
+                kind: array_size_funcall
+                array:
+                  kind: id
+                  name: VSXLEN
+                  source:
+                    file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+                    begin: 19
+                    end: 25
+                source:
+                  file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+                  begin: 7
+                  end: 26
+              rhs:
+                kind: bits_literal
+                width: "1"
+                value: 1
+                signed: false
+                radix: 10
+                source:
+                  file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+                  begin: 30
+                  end: 31
+              source:
+                file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+                begin: 7
+                end: 31
+            rhs:
+              kind: array_includes_funcall
+              array:
+                kind: id
+                name: VSXLEN
+                source:
+                  file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+                  begin: 52
+                  end: 58
+              expr:
+                kind: bits_literal
+                width: "6"
+                value: 32
+                signed: false
+                radix: 10
+                source:
+                  file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+                  begin: 60
+                  end: 62
+              source:
+                file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+                begin: 35
+                end: 63
+            source:
+              file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+              begin: 7
+              end: 63
+        source:
+          file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+          begin: 0
+          end: 63
+      source:
+        file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+        begin: 0
+        end: 64
+  source:
+    file: csr/hstatus.yaml#fields/VSXL/description/1/when()
+    begin: 0
+    end: 64

@@ -1,0 +1,398 @@
+input: "Bits<64> value = $bits(CSR[senvcfg]);\nif (implemented?(ExtensionName::Zicfiss) && (CSR[menvcfg].SSE == 0 || CSR[henvcfg].SSE == 0)) {\n  # senvcfg.SSE must read-as-zero\n  value = value & ~(1 `<< 3);\n}\nif (implemented?(ExtensionName::Zicfilp) && CSR[menvcfg].LPE == 0) {\n  # senvcfg.LPE must read-as-zero when menvcfg.LPE is 0\n  value = value & ~(1 `<< 2);\n}\nreturn value;\n"
+root: function_body
+label: csr/senvcfg.yaml#sw_read()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: var_decl_init
+        type:
+          kind: bits_type
+          width_expr:
+            kind: bits_literal
+            width: "7"
+            value: 64
+            signed: false
+            radix: 10
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 5
+              end: 7
+          source:
+            file: csr/senvcfg.yaml#sw_read()
+            begin: 0
+            end: 8
+        name:
+          kind: id
+          name: value
+          source:
+            file: csr/senvcfg.yaml#sw_read()
+            begin: 9
+            end: 14
+        value:
+          kind: bits_cast
+          expr:
+            kind: csr_read_expr
+            csr_name: senvcfg
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 23
+              end: 35
+          source:
+            file: csr/senvcfg.yaml#sw_read()
+            begin: 17
+            end: 36
+        in_for_loop: false
+        source:
+          file: csr/senvcfg.yaml#sw_read()
+          begin: 0
+          end: 36
+      source:
+        file: csr/senvcfg.yaml#sw_read()
+        begin: 0
+        end: 37
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: "&&"
+        lhs:
+          kind: funcall_expr
+          func: implemented?
+          args:
+            - kind: enum_reference_expr
+              enum_class: ExtensionName
+              member_name: Zicfiss
+              source:
+                file: csr/senvcfg.yaml#sw_read()
+                begin: 55
+                end: 77
+          source:
+            file: csr/senvcfg.yaml#sw_read()
+            begin: 42
+            end: 78
+        rhs:
+          kind: paren_expr
+          expr:
+            kind: binary_operator_expr
+            op: "||"
+            lhs:
+              kind: binary_operator_expr
+              op: ==
+              lhs:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: menvcfg
+                  source:
+                    file: csr/senvcfg.yaml#sw_read()
+                    begin: 83
+                    end: 95
+                field_name: SSE
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 83
+                  end: 99
+              rhs:
+                kind: bits_literal
+                width: "1"
+                value: 0
+                signed: false
+                radix: 10
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 103
+                  end: 104
+              source:
+                file: csr/senvcfg.yaml#sw_read()
+                begin: 83
+                end: 104
+            rhs:
+              kind: binary_operator_expr
+              op: ==
+              lhs:
+                kind: csr_field_read_expr
+                csr:
+                  kind: csr_read_expr
+                  csr_name: henvcfg
+                  source:
+                    file: csr/senvcfg.yaml#sw_read()
+                    begin: 108
+                    end: 120
+                field_name: SSE
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 108
+                  end: 124
+              rhs:
+                kind: bits_literal
+                width: "1"
+                value: 0
+                signed: false
+                radix: 10
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 128
+                  end: 129
+              source:
+                file: csr/senvcfg.yaml#sw_read()
+                begin: 108
+                end: 129
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 83
+              end: 129
+          source:
+            file: csr/senvcfg.yaml#sw_read()
+            begin: 82
+            end: 130
+        source:
+          file: csr/senvcfg.yaml#sw_read()
+          begin: 42
+          end: 130
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: var_assignment
+              var:
+                kind: id
+                name: value
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 170
+                  end: 175
+              value:
+                kind: binary_operator_expr
+                op: "&"
+                lhs:
+                  kind: id
+                  name: value
+                  source:
+                    file: csr/senvcfg.yaml#sw_read()
+                    begin: 178
+                    end: 183
+                rhs:
+                  kind: unary_operator_expr
+                  op: "~"
+                  expr:
+                    kind: paren_expr
+                    expr:
+                      kind: binary_operator_expr
+                      op: "`<<"
+                      lhs:
+                        kind: bits_literal
+                        width: "1"
+                        value: 1
+                        signed: false
+                        radix: 10
+                        source:
+                          file: csr/senvcfg.yaml#sw_read()
+                          begin: 188
+                          end: 189
+                      rhs:
+                        kind: bits_literal
+                        width: "2"
+                        value: 3
+                        signed: false
+                        radix: 10
+                        source:
+                          file: csr/senvcfg.yaml#sw_read()
+                          begin: 194
+                          end: 195
+                      source:
+                        file: csr/senvcfg.yaml#sw_read()
+                        begin: 188
+                        end: 195
+                    source:
+                      file: csr/senvcfg.yaml#sw_read()
+                      begin: 187
+                      end: 196
+                  source:
+                    file: csr/senvcfg.yaml#sw_read()
+                    begin: 186
+                    end: 196
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 178
+                  end: 196
+              source:
+                file: csr/senvcfg.yaml#sw_read()
+                begin: 170
+                end: 196
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 170
+              end: 197
+        source:
+          file: csr/senvcfg.yaml#sw_read()
+          begin: 170
+          end: 198
+      else_ifs: []
+      else:
+      source:
+        file: csr/senvcfg.yaml#sw_read()
+        begin: 38
+        end: 199
+    - kind: if_stmt
+      condition:
+        kind: binary_operator_expr
+        op: "&&"
+        lhs:
+          kind: funcall_expr
+          func: implemented?
+          args:
+            - kind: enum_reference_expr
+              enum_class: ExtensionName
+              member_name: Zicfilp
+              source:
+                file: csr/senvcfg.yaml#sw_read()
+                begin: 217
+                end: 239
+          source:
+            file: csr/senvcfg.yaml#sw_read()
+            begin: 204
+            end: 240
+        rhs:
+          kind: binary_operator_expr
+          op: ==
+          lhs:
+            kind: csr_field_read_expr
+            csr:
+              kind: csr_read_expr
+              csr_name: menvcfg
+              source:
+                file: csr/senvcfg.yaml#sw_read()
+                begin: 244
+                end: 256
+            field_name: LPE
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 244
+              end: 260
+          rhs:
+            kind: bits_literal
+            width: "1"
+            value: 0
+            signed: false
+            radix: 10
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 264
+              end: 265
+          source:
+            file: csr/senvcfg.yaml#sw_read()
+            begin: 244
+            end: 265
+        source:
+          file: csr/senvcfg.yaml#sw_read()
+          begin: 204
+          end: 265
+      taken_body:
+        kind: if_body
+        stmts:
+          - kind: stmt
+            expr:
+              kind: var_assignment
+              var:
+                kind: id
+                name: value
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 327
+                  end: 332
+              value:
+                kind: binary_operator_expr
+                op: "&"
+                lhs:
+                  kind: id
+                  name: value
+                  source:
+                    file: csr/senvcfg.yaml#sw_read()
+                    begin: 335
+                    end: 340
+                rhs:
+                  kind: unary_operator_expr
+                  op: "~"
+                  expr:
+                    kind: paren_expr
+                    expr:
+                      kind: binary_operator_expr
+                      op: "`<<"
+                      lhs:
+                        kind: bits_literal
+                        width: "1"
+                        value: 1
+                        signed: false
+                        radix: 10
+                        source:
+                          file: csr/senvcfg.yaml#sw_read()
+                          begin: 345
+                          end: 346
+                      rhs:
+                        kind: bits_literal
+                        width: "2"
+                        value: 2
+                        signed: false
+                        radix: 10
+                        source:
+                          file: csr/senvcfg.yaml#sw_read()
+                          begin: 351
+                          end: 352
+                      source:
+                        file: csr/senvcfg.yaml#sw_read()
+                        begin: 345
+                        end: 352
+                    source:
+                      file: csr/senvcfg.yaml#sw_read()
+                      begin: 344
+                      end: 353
+                  source:
+                    file: csr/senvcfg.yaml#sw_read()
+                    begin: 343
+                    end: 353
+                source:
+                  file: csr/senvcfg.yaml#sw_read()
+                  begin: 335
+                  end: 353
+              source:
+                file: csr/senvcfg.yaml#sw_read()
+                begin: 327
+                end: 353
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 327
+              end: 354
+        source:
+          file: csr/senvcfg.yaml#sw_read()
+          begin: 327
+          end: 355
+      else_ifs: []
+      else:
+      source:
+        file: csr/senvcfg.yaml#sw_read()
+        begin: 200
+        end: 356
+    - kind: stmt
+      expr:
+        kind: return_expr
+        exprs:
+          - kind: id
+            name: value
+            source:
+              file: csr/senvcfg.yaml#sw_read()
+              begin: 364
+              end: 369
+        source:
+          file: csr/senvcfg.yaml#sw_read()
+          begin: 357
+          end: 369
+      source:
+        file: csr/senvcfg.yaml#sw_read()
+        begin: 357
+        end: 370
+  source:
+    file: csr/senvcfg.yaml#sw_read()
+    begin: 0
+    end: 371

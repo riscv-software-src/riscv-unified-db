@@ -1,0 +1,75 @@
+input: X[xd] = X[xs1] + $signed(imm);
+root: instruction_operation
+label: inst/I/addi.yaml#operation()
+expected:
+  kind: function_body
+  stmts:
+    - kind: stmt
+      expr:
+        kind: array_element_assignment
+        array:
+          kind: id
+          name: X
+          source:
+            file: inst/I/addi.yaml#operation()
+            begin: 0
+            end: 1
+        index:
+          kind: id
+          name: xd
+          source:
+            file: inst/I/addi.yaml#operation()
+            begin: 2
+            end: 4
+        value:
+          kind: binary_operator_expr
+          op: +
+          lhs:
+            kind: array_access
+            array:
+              kind: id
+              name: X
+              source:
+                file: inst/I/addi.yaml#operation()
+                begin: 8
+                end: 9
+            index:
+              kind: id
+              name: xs1
+              source:
+                file: inst/I/addi.yaml#operation()
+                begin: 10
+                end: 13
+            source:
+              file: inst/I/addi.yaml#operation()
+              begin: 8
+              end: 15
+          rhs:
+            kind: sign_cast
+            expr:
+              kind: id
+              name: imm
+              source:
+                file: inst/I/addi.yaml#operation()
+                begin: 25
+                end: 28
+            source:
+              file: inst/I/addi.yaml#operation()
+              begin: 17
+              end: 29
+          source:
+            file: inst/I/addi.yaml#operation()
+            begin: 8
+            end: 29
+        source:
+          file: inst/I/addi.yaml#operation()
+          begin: 0
+          end: 29
+      source:
+        file: inst/I/addi.yaml#operation()
+        begin: 0
+        end: 30
+  source:
+    file: inst/I/addi.yaml#operation()
+    begin: 0
+    end: 30
