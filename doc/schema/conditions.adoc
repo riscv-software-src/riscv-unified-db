@@ -22,6 +22,8 @@ During resolution, both forms are generated and placed in the resolved file so t
 
 [NOTE]
 UDB supports mixing and matching conditions so that hand-written data can use whichever form is easiest to produce by hand.
+A YAML logical tree may contain IDL leaves alongside ordinary YAML conditions;
+each leaf uses one representation.
 By generating both forms in the resolved data, downstream users only need to interpret one form for
 machine-driven use of the data.
 

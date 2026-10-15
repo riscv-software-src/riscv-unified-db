@@ -152,7 +152,8 @@ same-version artifacts remain byte-identical to Ruby output. `dumps_yaml()` and 
 expose the canonical encoders for callers that own their output stream; generic JSON sorts mapping
 keys, while YAML preserves scalar key types and quotes strings that YAML 1.1 would misinterpret.
 
-The package also installs a small command-line interface for inspecting raw records:
+The package also installs a small command-line interface for inspecting records and validating
+configurations:
 
 ```shell
 udb list extension
@@ -164,9 +165,24 @@ udb --resolved --overlay my-isa-overlay show profile RVI20U64
 udb --path my-isa --schemas my-schemas --resolved --validate show extension Xdemo
 udb --path my-isa --schemas my-schemas --validate resolve build/resolved-isa
 udb --schemas my-schemas schemas build/schemas
+udb validate-cfg rv64
+udb validate-cfg my-configuration.yaml
+udb --overlay my-isa-overlay validate-cfg my-configuration.yaml
+udb --path my-isa --schemas my-schemas validate-cfg my-configuration.yaml
+udb --path spec/std/isa --schemas spec/schemas --overlay spec/custom/isa/qc_iu validate-cfg cfgs/qc_iu.yaml
 ```
 
 The same commands are available through `python -m udb`.
+
+`validate-cfg` accepts a YAML configuration path or a bundled name (`_`, `rv32`, or `rv64`).
+It resolves the selected database and explicit overlays, then checks configuration consistency,
+including IDL requirements. It prints `<name>: valid`, `unsat`, or `deferred`; diagnostics go to
+standard error. Exit status is 0 only for `valid`, 1 for inconsistent configurations, and 2 for
+configuration input errors or an undecided check. `--validate` additionally validates resolved ISA documents
+against their schemas; it is not needed for configuration checking. This command does not
+type-check every instruction or CSR body, and it does not implicitly follow a configuration's
+`arch_overlay` declaration. Overlays with checkout-relative IDL includes, such as `qc_iu`, need
+the checkout source database (`--path`) as shown above rather than the bundled snapshot.
 
 Repository authors can regenerate every layout-derived architecture file without Ruby, Rake, or
 ERB:
@@ -273,8 +289,9 @@ and unresolved `idl()` blocks. `parse_condition(data)` parses raw YAML condition
 `condition.to_data()` converts back to deterministic data, `condition.evaluate(context)` performs
 three-valued concrete evaluation (`TRUE`, `FALSE`, `UNKNOWN`), `condition.partial_evaluate(context)`
 simplifies known subexpressions, and `normalize(condition)` applies Boolean identities.
-Conditions containing `idl()` return `has_unresolved == True` and evaluate to `UNKNOWN` when their
-truth depends on IDL logic. Full compilation and proof of IDL logic are deferred to Stage 4.
+Plainly parsed conditions containing `idl()` return `has_unresolved == True` and evaluate to
+`UNKNOWN` when their truth depends on IDL logic. The IDL condition compiler resolves those leaves
+into the ordinary condition algebra; configured architectures do this before solver encoding.
 
 `ResolvedDatabase.configure(configuration)` creates an immutable `ConfiguredArchitecture`:
 
@@ -286,19 +303,19 @@ arch = db.configure(Configuration.builtin("rv64"))
 
 assert arch.extension_presence("I") is QueryPresence.MANDATORY
 check = arch.check()
-# rv64 includes idl()-gated extensions and parameters, so it is DEFERRED until Stage 4.
-assert check.status.name == "DEFERRED"
+assert check.status.name == "VALID"
 print([inst.name for inst in arch.possible_instructions])
 ```
 
-`ConfiguredArchitecture` combines extension-version catalogs, parameter domains, YAML conditions,
-and configuration declarations. Queries return `QueryPresence` (`MANDATORY`, `POSSIBLE`, `ABSENT`,
+`ConfiguredArchitecture` combines extension-version catalogs, parameter domains, YAML and compiled
+IDL conditions, and configuration declarations. Queries return `QueryPresence` (`MANDATORY`, `POSSIBLE`, `ABSENT`,
 `DEFERRED`). Supported queries include extension presence, version presence, instructions, CSRs, CSR
 fields, exception codes, interrupt codes, parameters, profiles, encoding overlaps, CSR address
 overlaps, and compatibility checking via `arch.compatible_with(other)`. Queries that depend on
-unresolved IDL logic return `DEFERRED` or `UNKNOWN` without failing unrelated data queries.
-`arch.check()` returns an `ArchitectureCheckResult` with status `VALID`, `UNSAT`, or `DEFERRED`.
-Unsatisfiable configurations report labeled diagnostic conflicts.
+undecidable solver queries return `DEFERRED` or `UNKNOWN`; supported IDL requirements no longer
+cause deferral. `arch.check()` returns an `ArchitectureCheck` with status `VALID`, `UNSAT`, or
+`DEFERRED`. Unsatisfiable configurations report labeled diagnostic conflicts. Invalid custom
+IDL requirements produce source-aware `invalid-idl-condition` diagnostics.
 
 ## IDL parsing and semantics
 
@@ -368,6 +385,11 @@ Field reset evaluation uses machine MXLEN, not instruction XLEN; a requested
 execution width is still validated. `return_value()` evaluates a fresh clone
 without mutating the compiled context.
 
+`arch.instruction_operation("addi", effective_xlen=64)` and
+`arch.csr_behavior("misa", effective_xlen=64)` expose these genuine compiled contexts
+directly. Instruction XLEN is required explicitly; CSR behavior retains its compiler-owned
+return context and source mapping.
+
 `compiler.type_check()` returns `ArchitectureTypeCheckResult`. Its `checked` tuple
 records attempted contexts and `diagnostics` records failures. Applicable
 instructions without an optional `operation()` produce immutable `unavailable`
@@ -412,5 +434,30 @@ implementation guards, hint ordering and variable exclusions.
 
 `to_adoc` and `to_option_adoc` generate source entirely in Python. Rendering is a
 separate consumer step using official external Asciidoctor/asciidoctor-pdf;
-no renderer or Ruby-backed IDL pass is bundled. IDL-condition solving remains
-subsequent Stage 4 integration work.
+no renderer or Ruby-backed IDL pass is bundled.
+
+The existing canonical syntax-highlighting definition is `doc/src/prism/idl.js`,
+registered with the documentation site's Prism renderer. Its generated TextMate
+counterpart supports the VS Code extension. These definitions are separate from
+the Python compiler and add no parser or highlighting dependency to the default
+installed package.
+
+## IDL conditions
+
+`udb.idl_conditions.compile_idl_condition(text, symtab, source=...)` parses and type-checks
+a constraint body, returning a symbolic `udb.conditions.Condition`. Parameters and extension
+predicates stay symbolic even when the supplied table contains configured values. The caller's
+bindings and scope are unchanged. `resolve_idl_conditions(condition, symtab)` recursively replaces
+IDL leaves while retaining logical siblings, owner/version antecedents and reason metadata.
+
+Translation supports Boolean logic and implication, the six comparisons, parameter element,
+range and size selectors, array membership, extension/version predicates, XLEN equality and
+statically bounded loops. Loop controls and comparison operands must be compile-time evaluatable
+and parameter-independent. Unknown operands, unsupported constructs and unbounded loops raise
+source-aware IDL errors; there are no free-proposition or guessed-value fallbacks.
+
+Architecture requirements use a separate lazy, translation-only symbol table, avoiding a circular
+dependency on runtime presence queries. Captured YAML and configuration source coordinates are
+retained. Generic configurations are valid with compiled requirements, and the rv32 SXLEN invariant
+proves the seven 64-bit supervisor extensions absent. Runtime version callbacks also prove
+catalog-impossible versions absent, rather than retaining Ruby's weaker unknown answer.

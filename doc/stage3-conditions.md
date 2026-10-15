@@ -95,8 +95,10 @@ code never invokes Ruby.
   version catalogs and compatibility boundaries, array equality/index/size/includes/contains/
   uniqueness, repeated push/pop checks, independent contexts, and model tests. Unsupported schema
   forms are rejected by `ParameterDomain` rather than approximated.
-- `Constraint` compilation and `test_idl_funcs` are the only condition categories deferred to
-  Stage 4. Stage 3 preserves their source text and reason in `UnresolvedIdlCondition`.
+- At the Stage 3 boundary, `Constraint` compilation and `test_idl_funcs` were deferred to
+  Stage 4. Plain condition parsing still preserves their text and reason in
+  `UnresolvedIdlCondition`; the [IDL condition compiler](stage4-idl-conditions.md) now resolves
+  these leaves before configured architecture solving, preserving owner/version antecedents.
 
 The implementation intentionally corrects three reproduced legacy behaviors: empty conjunction
 uses the true identity, bit-range extraction uses a full-width mask, and equivalence checks both

@@ -1,13 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Contributors to the RISCV UnifiedDB <https://github.com/riscv/riscv-unified-db>
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Configured, data-only architecture queries.
-
-This layer deliberately stops at the IDL boundary.  It can prove facts from
-YAML conditions, extension metadata, parameter schemas, and configuration
-declarations.  A result that depends on an ``idl()`` requirement is reported
-as deferred instead of being guessed.
-"""
+"""Configured architecture queries over YAML and compiled symbolic IDL conditions."""
 
 from __future__ import annotations
 
@@ -15,7 +9,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import StrEnum
 from types import MappingProxyType
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from .conditions import (
     Condition,
@@ -33,6 +27,8 @@ from .configuration import Configuration, ConfigurationKind, Presence
 from .database import Csr, DatabaseObject, Extension, Instruction, ResolvedDatabase, _freeze
 from .domains import DomainError, ParameterDomain
 from .errors import DataError, ObjectNotFoundError
+from .idl.errors import IdlError
+from .idl_condition_binding import IdlConditionBinding
 from .schema import SchemaStore
 from .solver import (
     ConditionModel,
@@ -42,7 +38,11 @@ from .solver import (
     SolverStatus,
     SolverUnknownError,
 )
+from .source import SourceMap
 from .versions import ExtensionVersion, VersionRequirement, parse_version_requirements
+
+if TYPE_CHECKING:
+    from .idl_architecture import CompiledIdl
 
 
 class ArchitectureError(DataError):
@@ -107,13 +107,6 @@ class CsrField:
 
 
 @dataclass(frozen=True, slots=True)
-class _DeferredConstraint:
-    antecedent: Condition
-    label: str
-    source: str | None
-
-
-@dataclass(frozen=True, slots=True)
 class ConfiguredArchitecture:
     """An immutable configured view of one resolved database.
 
@@ -131,13 +124,16 @@ class ConfiguredArchitecture:
     _static_diagnostics: tuple[ArchitectureDiagnostic, ...] = field(
         init=False, repr=False, compare=False
     )
-    _deferred: tuple[_DeferredConstraint, ...] = field(init=False, repr=False, compare=False)
+    _condition_binding: IdlConditionBinding = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if not isinstance(self.database, ResolvedDatabase):
             raise TypeError("ConfiguredArchitecture requires a ResolvedDatabase")
         if not isinstance(self.configuration, Configuration):
             raise TypeError("ConfiguredArchitecture requires an explicit Configuration")
+        object.__setattr__(
+            self, "_condition_binding", IdlConditionBinding(self.database, self.configuration)
+        )
 
         diagnostics: list[ArchitectureDiagnostic] = []
         catalog = {extension.name: extension.version_set for extension in self.database.extensions}
@@ -145,10 +141,8 @@ class ConfiguredArchitecture:
         object.__setattr__(self, "parameter_domains", MappingProxyType(domains))
         object.__setattr__(self, "_catalog", MappingProxyType(catalog))
         constraints: list[tuple[Condition, str]] = []
-        deferred: list[_DeferredConstraint] = []
-
-        self._add_architecture_invariants(constraints, deferred, diagnostics)
-        self._add_configuration_constraints(constraints, deferred, diagnostics, catalog, domains)
+        self._add_architecture_invariants(constraints, diagnostics)
+        self._add_configuration_constraints(constraints, diagnostics, catalog, domains)
 
         solver: ConditionSolver | None = None
         base_status: SolverStatus | None = None
@@ -168,7 +162,6 @@ class ConfiguredArchitecture:
                 )
 
         object.__setattr__(self, "_constraints", tuple(constraints))
-        object.__setattr__(self, "_deferred", tuple(deferred))
         object.__setattr__(self, "_static_diagnostics", tuple(diagnostics))
         object.__setattr__(self, "_solver", solver)
         object.__setattr__(self, "_base_status", base_status)
@@ -203,7 +196,7 @@ class ConfiguredArchitecture:
         )
 
     def check(self) -> ArchitectureCheck:
-        """Check data-only configuration consistency and report IDL deferrals."""
+        """Check configuration consistency, including compiled IDL requirements."""
 
         if self._static_diagnostics:
             return ArchitectureCheck(ArchitectureCheckStatus.UNSAT, self._static_diagnostics)
@@ -225,25 +218,13 @@ class ConfiguredArchitecture:
                 (ArchitectureDiagnostic("solver-unknown", "the solver could not decide validity"),),
             )
 
-        deferred = tuple(
-            ArchitectureDiagnostic(
-                "idl-deferred",
-                f"{item.label} requires Stage 4 IDL condition compilation",
-                label=item.label,
-                source=item.source,
-            )
-            for item in self._deferred
-            if solver.check((item.antecedent,)) is not SolverStatus.UNSAT
-        )
-        if deferred:
-            return ArchitectureCheck(ArchitectureCheckStatus.DEFERRED, deferred)
         return _checked_model(solver)
 
     def condition_presence(self, condition: Condition | bool | Mapping[str, Any]) -> QueryPresence:
         """Classify whether *condition* is necessary, possible, or impossible."""
 
         self._ensure_queryable()
-        parsed = parse_condition(condition)
+        parsed = self._resolve_condition(parse_condition(condition))
         solver = self._require_solver()
         possible = solver.check((parsed,))
         if possible is SolverStatus.UNSAT:
@@ -399,7 +380,9 @@ class ConfiguredArchitecture:
         for name, data in fields.items():
             if not isinstance(name, str) or not isinstance(data, Mapping):
                 continue
-            local = self._condition(data.get("definedBy", True), record, ("fields", name))
+            local = self._condition(
+                data.get("definedBy", True), record, ("fields", name, "definedBy")
+            )
             result.append(CsrField(record, name, data, all_of(parent, local)))
         return tuple(result)
 
@@ -489,7 +472,9 @@ class ConfiguredArchitecture:
                     conditions.append(requirement)
                 elif presence == "prohibited":
                     conditions.append(negate(requirement))
-        conditions.append(self._condition(record.data.get("requirements", True), record))
+        conditions.append(
+            self._condition(record.data.get("requirements", True), record, ("requirements",))
+        )
         return all_of(*conditions)
 
     def profile_presence(self, profile: str | DatabaseObject) -> QueryPresence:
@@ -561,37 +546,44 @@ class ConfiguredArchitecture:
                 ArchitectureCheckStatus.DEFERRED,
                 (
                     ArchitectureDiagnostic(
-                        "solver-unknown", "the solver could not decide compatibility"
-                    ),
-                ),
-            )
-        deferred = (*self._deferred, *candidate._deferred)
-        if any(solver.check((item.antecedent,)) is not SolverStatus.UNSAT for item in deferred):
-            return ArchitectureCheck(
-                ArchitectureCheckStatus.DEFERRED,
-                (
-                    ArchitectureDiagnostic(
-                        "idl-deferred",
-                        "compatibility depends on Stage 4 IDL condition compilation",
+                        "solver-unknown",
+                        "the solver could not decide compatibility",
                     ),
                 ),
             )
         return _checked_model(solver, compatibility=True)
 
-    def instruction_operation(self, instruction: str) -> DeferredQuery:
-        record = self.database.instruction(instruction)
-        return DeferredQuery(
-            f"instruction {instruction} operation",
-            "instruction operation semantics require the Stage 4 IDL compiler",
-            str(record.path),
+    def instruction_operation(
+        self,
+        instruction: str,
+        *,
+        effective_xlen: int,
+        type_check: bool = True,
+    ) -> CompiledIdl:
+        """Compile an instruction operation with explicit effective XLEN and captured source."""
+
+        from .idl_architecture import ArchitectureCompiler
+
+        self._ensure_queryable()
+        return ArchitectureCompiler(self).compile_instruction(
+            instruction, effective_xlen=effective_xlen, type_check=type_check
         )
 
-    def csr_behavior(self, csr: str, operation: str = "sw_read()") -> DeferredQuery:
-        record = self.database.csr(csr)
-        return DeferredQuery(
-            f"CSR {csr} {operation}",
-            "CSR behavioral semantics require the Stage 4 IDL compiler",
-            str(record.path),
+    def csr_behavior(
+        self,
+        csr: str,
+        operation: str = "sw_read()",
+        *,
+        effective_xlen: int | None = None,
+        type_check: bool = True,
+    ) -> CompiledIdl:
+        """Compile a CSR behavior in its owned source, XLEN, and expected-return context."""
+
+        from .idl_architecture import ArchitectureCompiler
+
+        self._ensure_queryable()
+        return ArchitectureCompiler(self).compile_csr(
+            csr, operation, effective_xlen=effective_xlen, type_check=type_check
         )
 
     def encoding_overlaps(self, instructions: Iterable[Instruction] | None = None):
@@ -641,7 +633,6 @@ class ConfiguredArchitecture:
     def _add_architecture_invariants(
         self,
         constraints: list[tuple[Condition, str]],
-        deferred: list[_DeferredConstraint],
         diagnostics: list[ArchitectureDiagnostic],
     ) -> None:
         for extension in self.database.extensions:
@@ -652,18 +643,24 @@ class ConfiguredArchitecture:
                 f"extension {extension.name} requirements",
                 str(extension.path),
                 constraints,
-                deferred,
                 diagnostics,
+                sources=extension.sources,
             )
             for version in extension.versions:
+                index = next(
+                    index
+                    for index, declaration in enumerate(extension.data["versions"])
+                    if declaration["version"] == version.metadata["version"]
+                )
                 self._add_requirement(
                     ExtensionTerm(extension.name, _exact(version.canonical)),
                     version.metadata.get("requirements"),
                     f"extension {extension.name}@{version.canonical} requirements",
                     str(extension.path),
                     constraints,
-                    deferred,
                     diagnostics,
+                    sources=extension.sources,
+                    path=("versions", index, "requirements"),
                 )
         for parameter in self.database.objects("parameter"):
             antecedent = self._defined_by(parameter, diagnostics=diagnostics)
@@ -673,14 +670,13 @@ class ConfiguredArchitecture:
                 f"parameter {parameter.name} requirements",
                 str(parameter.path),
                 constraints,
-                deferred,
                 diagnostics,
+                sources=parameter.sources,
             )
 
     def _add_configuration_constraints(
         self,
         constraints: list[tuple[Condition, str]],
-        deferred: list[_DeferredConstraint],
         diagnostics: list[ArchitectureDiagnostic],
         catalog: Mapping[str, Any],
         domains: Mapping[str, ParameterDomain],
@@ -757,18 +753,25 @@ class ConfiguredArchitecture:
 
         try:
             requirements = parse_condition(
-                self.configuration.requirements, source=self.configuration.sources.document
+                self.configuration.requirements,
+                source=self.configuration.sources.document,
+                path=("requirements",),
             )
-            if requirements.has_unresolved:
-                deferred.append(
-                    _DeferredConstraint(
-                        parse_condition(True),
-                        "configuration requirements",
-                        self.configuration.sources.document,
-                    )
+            requirements = self._resolve_condition(
+                requirements,
+                sources=self.configuration.sources,
+                source_text=self.configuration.source_text,
+            )
+            constraints.append((requirements, "configuration requirements"))
+        except IdlError as error:
+            diagnostics.append(
+                ArchitectureDiagnostic(
+                    "invalid-idl-condition",
+                    str(error),
+                    label="configuration requirements",
+                    source=self.configuration.sources.document,
                 )
-            else:
-                constraints.append((requirements, "configuration requirements"))
+            )
         except DataError as error:
             diagnostics.append(
                 ArchitectureDiagnostic(
@@ -805,22 +808,30 @@ class ConfiguredArchitecture:
         label: str,
         source: str,
         constraints: list[tuple[Condition, str]],
-        deferred: list[_DeferredConstraint],
         diagnostics: list[ArchitectureDiagnostic],
+        *,
+        sources: SourceMap | None = None,
+        path: Sequence[str | int] = ("requirements",),
     ) -> None:
         if raw_requirement is None:
             return
         try:
-            requirement = parse_condition(raw_requirement, source=source)
+            requirement = self._resolve_condition(
+                parse_condition(raw_requirement, source=source, path=path), sources=sources
+            )
+        except IdlError as error:
+            diagnostics.append(
+                ArchitectureDiagnostic(
+                    "invalid-idl-condition", str(error), label=label, source=source
+                )
+            )
+            return
         except DataError as error:
             diagnostics.append(
                 ArchitectureDiagnostic("invalid-condition", str(error), source=source)
             )
             return
-        if requirement.has_unresolved:
-            deferred.append(_DeferredConstraint(antecedent, label, source))
-        else:
-            constraints.append((implies(antecedent, requirement), label))
+        constraints.append((implies(antecedent, requirement), label))
 
     def _defined_by(
         self,
@@ -833,11 +844,15 @@ class ConfiguredArchitecture:
             raw = {"extension": {"name": raw}}
         try:
             return self._condition(raw, record)
-        except DataError as error:
+        except (DataError, IdlError) as error:
             if diagnostics is None:
                 raise ArchitectureError(str(error)) from error
             diagnostics.append(
-                ArchitectureDiagnostic("invalid-condition", str(error), source=str(record.path))
+                ArchitectureDiagnostic(
+                    "invalid-idl-condition" if isinstance(error, IdlError) else "invalid-condition",
+                    str(error),
+                    source=str(record.path),
+                )
             )
             return parse_condition(False)
 
@@ -847,7 +862,16 @@ class ConfiguredArchitecture:
         record: DatabaseObject,
         path: Sequence[str | int] = ("definedBy",),
     ) -> Condition:
-        return parse_condition(raw, source=str(record.path), path=path)
+        return self._condition_binding.resolve_record(raw, record, path)
+
+    def _resolve_condition(
+        self,
+        condition: Condition,
+        *,
+        sources: SourceMap | None = None,
+        source_text: str | None = None,
+    ) -> Condition:
+        return self._condition_binding.resolve(condition, sources=sources, source_text=source_text)
 
     def _matching_versions(
         self, name: str, requirements: Sequence[VersionRequirement]
@@ -894,6 +918,8 @@ class ConfiguredArchitecture:
         self, assumptions: Sequence[Condition], condition: Condition
     ) -> QueryPresence:
         self._ensure_queryable()
+        assumptions = tuple(self._resolve_condition(item) for item in assumptions)
+        condition = self._resolve_condition(condition)
         solver = self._require_solver()
         possible = solver.check((*assumptions, condition))
         if possible is SolverStatus.UNSAT:

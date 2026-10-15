@@ -72,8 +72,12 @@ class EvaluationContext:
         object.__setattr__(self, "version_sets", MappingProxyType(dict(self.version_sets)))
 
 
+@dataclass(frozen=True, slots=True, kw_only=True)
 class Condition:
     """Base class for immutable condition expressions."""
+
+    reason: str | None = field(default=None, compare=False, hash=False)
+    source: str | None = field(default=None, compare=False, hash=False)
 
     @property
     def has_unresolved(self) -> bool:
@@ -262,7 +266,6 @@ class ParameterTerm(Condition):
     index: int | None = None
     size: bool = False
     bit_range: tuple[int, int] | None = None
-    reason: str | None = field(default=None, compare=False, hash=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "_value_identity", _json_identity(self.value))
@@ -379,8 +382,7 @@ class FreeTerm(Condition):
 @dataclass(frozen=True, slots=True)
 class UnresolvedIdlCondition(Condition):
     text: str
-    reason: str | None = field(default=None, compare=False, hash=False)
-    source: str | None = field(default=None, compare=False, hash=False)
+    source_path: tuple[str | int, ...] = field(default=(), compare=False, hash=False, kw_only=True)
 
     def evaluate(self, context: EvaluationContext) -> TruthValue:
         del context
@@ -468,7 +470,7 @@ def parse_condition(
     reason = value.get("reason")
     if reason is not None and not isinstance(reason, str):
         raise _error(source, (*path, "reason"), "condition reason must be a string")
-    return UnresolvedIdlCondition(text, reason=reason, source=source)
+    return UnresolvedIdlCondition(text, reason=reason, source=source, source_path=(*path, "idl()"))
 
 
 def _parse_extension(value: Any, source: str | None, path: tuple[str | int, ...]) -> Condition:

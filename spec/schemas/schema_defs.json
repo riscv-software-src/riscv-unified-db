@@ -728,33 +728,33 @@
             "allOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/yaml_condition"
+                "$ref": "#/$defs/condition"
               },
               "minItems": 2
             },
             "anyOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/yaml_condition"
+                "$ref": "#/$defs/condition"
               },
               "minItems": 2
             },
             "oneOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/yaml_condition"
+                "$ref": "#/$defs/condition"
               },
               "minItems": 2
             },
             "noneOf": {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/yaml_condition"
+                "$ref": "#/$defs/condition"
               },
               "minItems": 2
             },
             "not": {
-              "$ref": "#/$defs/yaml_condition"
+              "$ref": "#/$defs/condition"
             }
           },
           "minProperties": 1,
@@ -766,10 +766,10 @@
           "required": ["if", "then"],
           "properties": {
             "if": {
-              "$ref": "#/$defs/yaml_condition"
+              "$ref": "#/$defs/condition"
             },
             "then": {
-              "$ref": "#/$defs/yaml_condition"
+              "$ref": "#/$defs/condition"
             }
           },
           "additionalProperties": false

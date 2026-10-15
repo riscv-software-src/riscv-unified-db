@@ -65,7 +65,7 @@ def database():
         "ext/A.yaml": extension("A"),
         "ext/B.yaml": extension("B", requirements=ext("A")),
         "ext/C.yaml": extension("C", requirements={"if": ext("A"), "then": ext("B")}),
-        "ext/D.yaml": extension("D", requirements={"idl()": "custom_requirement();"}),
+        "ext/D.yaml": extension("D", requirements={"idl()": "-> P > 0;"}),
         "param/MXLEN.yaml": parameter("MXLEN", True, {"type": "integer", "enum": [32, 64]}),
         "param/P.yaml": parameter(
             "P",
@@ -74,7 +74,9 @@ def database():
             requirements={"param": {"name": "P", "greaterThan": 0}},
         ),
         "param/Q.yaml": parameter("Q", ext("C"), {"type": "boolean"}),
-        "inst/i_a.yaml": instruction("i_a", ext("A"), "0000------------0011"),
+        "inst/i_a.yaml": instruction(
+            "i_a", ext("A"), "0000------------0011", **{"operation()": "Bits<8> value = 1;"}
+        ),
         "inst/i_b.yaml": instruction("i_b", ext("B"), "0001------------0011"),
         "inst/i_32.yaml": instruction(
             "i_32", {"allOf": [ext("B"), {"xlen": 32}]}, "0010------------0011"
@@ -83,6 +85,8 @@ def database():
             "c_b",
             ext("B"),
             address=0x100,
+            length=32,
+            **{"sw_read()": "return 3;"},
             fields={
                 "INHERITED": {"location": 0},
                 "ONLY_A": {"location": 1, "definedBy": ext("A")},
@@ -142,22 +146,8 @@ def test_generic_repository_configurations(database):
     }
     for name, add_presence in expected.items():
         architecture = real.configure(Configuration.from_file(ROOT / "cfgs" / f"{name}.yaml"))
-        assert architecture.check().status is ArchitectureCheckStatus.DEFERRED
+        assert architecture.check().status is ArchitectureCheckStatus.VALID
         assert architecture.object_presence(real.instruction("add")) is add_presence
-
-
-def test_full_repository_configuration_with_huge_array_domain():
-    # qc_iu assigns HPM_EVENTS (maxItems 2**64); the solver must not refuse it.
-    configuration = Configuration.from_file(ROOT / "cfgs/qc_iu.yaml")
-    real = Database.from_path(ROOT / "spec/std/isa", schemas_path=ROOT / "spec/schemas").resolve(
-        overlays=[ROOT / "spec/custom/isa" / configuration.overlay]
-    )
-    architecture = real.configure(configuration)
-    result = architecture.check()
-    assert result.status is ArchitectureCheckStatus.DEFERRED
-    assert {item.code for item in result.diagnostics} == {"idl-deferred"}
-    assert architecture.object_presence(real.instruction("add")) is QueryPresence.MANDATORY
-    assert architecture.extension_presence("H") is QueryPresence.ABSENT
 
 
 def test_full_config_checks_exact_set_domains_and_defined_parameters(database):
@@ -260,15 +250,21 @@ def test_parameters_and_object_queries(database):
     }
 
 
-def test_idl_requirements_are_explicitly_deferred(database):
+def test_idl_requirements_are_compiled(database):
     architecture = database.configure(
         config(mandatory_extensions=[{"name": "D", "version": ">= 1"}])
     )
     result = architecture.check()
-    assert result.status is ArchitectureCheckStatus.DEFERRED
-    assert any(item.code == "idl-deferred" for item in result.diagnostics)
-    assert "Stage 4" in architecture.instruction_operation("i_a").reason
-    assert "Stage 4" in architecture.csr_behavior("c_b").reason
+    assert result.status is ArchitectureCheckStatus.VALID
+    assert not any(item.code == "idl-deferred" for item in result.diagnostics)
+    assert all(not condition.has_unresolved for condition, _ in architecture._constraints)
+    operation = architecture.instruction_operation("i_a", effective_xlen=32)
+    assert operation.effective_xlen == 32
+    assert operation.source.label == "inst/i_a.yaml#/operation()"
+    assert "Bits<8> value" in operation.ast.to_idl()
+    behavior = architecture.csr_behavior("c_b", effective_xlen=32)
+    assert behavior.source.label == "csr/c_b.yaml#/sw_read()"
+    assert behavior.return_value() == 3
 
 
 def test_profile_and_manual_membership(database):

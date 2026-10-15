@@ -1,12 +1,13 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-"""Inspect UDB source records or resolved records from the command line."""
+"""Inspect UDB records and validate configurations from the command line."""
 
 from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -60,6 +61,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
     resolve_parser.add_argument("output", type=Path, help="output directory")
 
+    config_parser = subparsers.add_parser(
+        "validate-cfg", help="check configuration consistency, including IDL requirements"
+    )
+    config_parser.add_argument(
+        "configuration", help="configuration YAML path or bundled name (_, rv32, rv64)"
+    )
+
     schemas_parser = subparsers.add_parser(
         "schemas", help="write versioned schemas for publication"
     )
@@ -83,7 +91,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    resolves_database = args.resolved or args.command == "resolve"
+    resolves_database = args.resolved or args.command in ("resolve", "validate-cfg")
     if args.overlay and not resolves_database:
         parser.error("--overlay requires --resolved")
     if args.validate and not resolves_database:
@@ -119,6 +127,32 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         if resolves_database:
             database = database.resolve(overlays=args.overlay, validate=args.validate)
+        if args.command == "validate-cfg":
+            from .architecture import ArchitectureCheckStatus
+            from .configuration import Configuration
+
+            assert isinstance(database, ResolvedDatabase)
+            configuration = (
+                Configuration.builtin(args.configuration)
+                if args.configuration in ("_", "rv32", "rv64")
+                else Configuration.from_file(
+                    args.configuration,
+                    schema_store=(
+                        SchemaStore(database.schemas_root)
+                        if database.schemas_root is not None
+                        else None
+                    ),
+                )
+            )
+            result = database.configure(configuration).check()
+            print(f"{configuration.name}: {result.status.value}")
+            for diagnostic in result.diagnostics:
+                location = diagnostic.source or diagnostic.label
+                prefix = f"{location}: " if location else ""
+                print(f"{prefix}{diagnostic.code}: {diagnostic.message}", file=sys.stderr)
+            if result.status is ArchitectureCheckStatus.VALID:
+                return 0
+            return 1 if result.status is ArchitectureCheckStatus.UNSAT else 2
         if args.command == "list":
             for record in database.objects(args.kind):
                 print(record.name)
