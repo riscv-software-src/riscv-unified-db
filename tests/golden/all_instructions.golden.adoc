@@ -21912,7 +21912,7 @@ Base::
 |===
 
 Assembly::
-flq fd, xs1, imm
+flq fd, imm(xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -26821,7 +26821,7 @@ Base::
 |===
 
 Assembly::
-hlv.b xd, xs1
+hlv.b xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -26873,7 +26873,7 @@ Base::
 |===
 
 Assembly::
-hlv.bu xd, xs1
+hlv.bu xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -26925,7 +26925,7 @@ Base::
 |===
 
 Assembly::
-hlv.d xd, xs1
+hlv.d xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -26980,7 +26980,7 @@ Base::
 |===
 
 Assembly::
-hlv.h xd, xs1
+hlv.h xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27032,7 +27032,7 @@ Base::
 |===
 
 Assembly::
-hlv.hu xd, xs1
+hlv.hu xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27084,7 +27084,7 @@ Base::
 |===
 
 Assembly::
-hlv.w xd, xs1
+hlv.w xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27136,7 +27136,7 @@ Base::
 |===
 
 Assembly::
-hlv.wu xd, xs1
+hlv.wu xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27191,7 +27191,7 @@ Base::
 |===
 
 Assembly::
-hlvx.hu xd, xs1
+hlvx.hu xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27245,7 +27245,7 @@ Base::
 |===
 
 Assembly::
-hlvx.wu xd, xs1
+hlvx.wu xd, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27299,7 +27299,7 @@ Base::
 |===
 
 Assembly::
-hsv.b xs1, xs2
+hsv.b xs2, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27351,7 +27351,7 @@ Base::
 |===
 
 Assembly::
-hsv.d xs1, xs2
+hsv.d xs2, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27406,7 +27406,7 @@ Base::
 |===
 
 Assembly::
-hsv.h xs1, xs2
+hsv.h xs2, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -27458,7 +27458,7 @@ Base::
 |===
 
 Assembly::
-hsv.w xs1, xs2
+hsv.w xs2, (xs1)
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
