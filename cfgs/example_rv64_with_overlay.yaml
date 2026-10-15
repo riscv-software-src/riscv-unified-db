@@ -23,8 +23,8 @@ implemented_extensions:
   - [H, "1.0.0"]
   - [M, "2.0.0"]
   - [Zmmul, "1.0.0"]
-  - [S, "1.12.0"]
-  - [Sm, "1.12.0"]
+  - [S, "1.13.0"]
+  - [Sm, "1.13.0"]
   - [U, "1.0.0"]
   - [V, "1.0.0"]
   - [Zve64f, "1.0.0"]
@@ -41,11 +41,13 @@ implemented_extensions:
   - [Smaia, "1.0.0"]
   - [Smcdeleg, "1.0.0"]
   - [Smcntrpmf, "1.0.0"]
+  - [Smcsrind, "1.0.0"]
   - [Smstateen, "1.0.0"]
   - [Ssstateen, "1.0.0"]
   - [Sscofpmf, "1.0.0"]
   - [Ssaia, "1.0.0"]
   - [Ssccfg, "1.0.0"]
+  - [Sscsrind, "1.0.0"]
   - [Sstc, "1.0.0"]
   - [Sv39, "1.0"]
   - [Sv48, "1.0"]
@@ -613,14 +615,14 @@ params:
   MSTATEEN_IMSIC_TYPE: rw
   HSTATEEN_AIA_TYPE: rw
   HSTATEEN_IMSIC_TYPE: rw
+  MSTATEEN_CSRIND_TYPE: rw
+  HSTATEEN_CSRIND_TYPE: rw
   MEI_INTR_IMPL: false
   MSI_INTR_IMPL: false
   MTI_INTR_IMPL: false
   SEI_INTR_IMPL: false
   SSI_INTR_IMPL: false
   STI_INTR_IMPL: true
-  VSEI_INTR_IMPL: false
-  VSSI_INTR_IMPL: false
   VSTI_INTR_IMPL: true
   WFI_U_MODE: false
   WFI_FINITE: true
@@ -633,3 +635,137 @@ params:
   HPM_COUNTER8_WIDTH: 64
   HPM_COUNTER9_WIDTH: 64
   HPM_COUNTER10_WIDTH: 64
+  MEDELEG_DELEGATABLE:
+    [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]
+  MIDELEG_DELEGATABLE:
+    [
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ]

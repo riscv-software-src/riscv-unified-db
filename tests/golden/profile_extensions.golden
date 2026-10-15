@@ -261,6 +261,79 @@ RVA23U64:
 - Zvfh ~>1.0 {'optional': 'expansion'}
 - Zvkng ~>1.0 {'optional': 'localized'}
 - Zvksg ~>1.0 {'optional': 'localized'}
+RVA23p1S64:
+- A ~> 2.1 mandatory
+- B ~> 1.0.0 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2.0 mandatory
+- F ~> 2.2.0 mandatory
+- I ~> 2.1 mandatory
+- M ~> 2.0 mandatory
+- S ~>1.13 mandatory
+- Sha ~> 1.0 mandatory
+- Ssccptr ~>1.0 mandatory
+- Sscofpmf ~>1.0 mandatory
+- Sscounterenw ~>1.0 mandatory
+- Ssnpm ~> 1.0 mandatory
+- Sstc ~>1.0 mandatory
+- Sstvala ~>1.0 mandatory
+- Sstvecd ~>1.0 mandatory
+- Ssu64xl ~>1.0 mandatory
+- Supm ~> 1.0 mandatory
+- Sv39 ~>1.0 mandatory
+- Svade ~>1.0 mandatory
+- Svbare ~>1.0 mandatory
+- Svinval ~>1.0 mandatory
+- Svnapot ~>1.0 mandatory
+- Svpbmt ~>1.0 mandatory
+- U ~> 1.0 mandatory
+- V ~> 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
+- Za64rs ~>1.0 mandatory
+- Zawrs ~>1.0 mandatory
+- Zba ~> 1.0 mandatory
+- Zbb ~> 1.0 mandatory
+- Zbs ~> 1.0 mandatory
+- Zcb ~>1.0 mandatory
+- Zcmop ~>1.0 mandatory
+- Zfa ~>1.0 mandatory
+- Zfhmin ~> 1.0 mandatory
+- Zic64b = 1.0 mandatory
+- Zicbom ~> 1.0 mandatory
+- Zicbop ~> 1.0 mandatory
+- Zicboz ~> 1.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
+- Zicond ~>1.0 mandatory
+- Zicsr ~> 2.0 mandatory
+- Zifencei ~>2.0 mandatory
+- Zihintntl ~>1.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
+- Zimop ~>1.0 mandatory
+- Zkt ~> 1.0 mandatory
+- Zvbb ~> 1.0 mandatory
+- Zvfhmin ~> 1.0 mandatory
+- Zvkt ~> 1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
+- Ssccfg ~> 1.0 {'optional': 'development'}
+- Ssdbltrp ~> 1.0 {'optional': 'development'}
+- Svrsw60t59b ~> 1.0 {'optional': 'development'}
+- Sdtrig ~>1.0 {'optional': 'expansion'}
+- Ssctr ~> 1.0 {'optional': 'expansion'}
+- Sspm ~>1.0 {'optional': 'expansion'}
+- Ssqosid ~> 1.0 {'optional': 'expansion'}
+- Ssstrict ~>1.0 {'optional': 'expansion'}
+- Sv48 ~>1.0 {'optional': 'expansion'}
+- Sv57 ~>1.0 {'optional': 'expansion'}
+- Svadu ~>1.0 {'optional': 'expansion'}
+- Svvptc ~>1.0 {'optional': 'expansion'}
+- Zkr ~>1.0 {'optional': 'expansion'}
 RVB23S64:
 - A ~> 2.1 mandatory
 - B ~> 1.0.0 mandatory
@@ -390,6 +463,77 @@ RVB23U64:
 - Zvkng ~>1.0 {'optional': 'localized'}
 - Zvksc ~>1.0 {'optional': 'localized'}
 - Zvksg ~>1.0 {'optional': 'localized'}
+RVB23p1S64:
+- A ~> 2.1 mandatory
+- B ~> 1.0.0 mandatory
+- C ~> 2.0 mandatory
+- D ~> 2.2.0 mandatory
+- F ~> 2.2.0 mandatory
+- I ~> 2.1 mandatory
+- M ~> 2.0 mandatory
+- S ~>1.13 mandatory
+- Ssccptr ~>1.0 mandatory
+- Sscofpmf ~>1.0 mandatory
+- Sscounterenw ~>1.0 mandatory
+- Sstc ~>1.0 mandatory
+- Sstvala ~>1.0 mandatory
+- Sstvecd ~>1.0 mandatory
+- Ssu64xl ~>1.0 mandatory
+- Sv39 ~>1.0 mandatory
+- Svade ~>1.0 mandatory
+- Svbare ~>1.0 mandatory
+- Svinval ~>1.0 mandatory
+- Svnapot ~>1.0 mandatory
+- Svpbmt ~>1.0 mandatory
+- U ~> 1.0 mandatory
+- Za128rs ~> 1.0 mandatory
+- Za64rs ~>1.0 mandatory
+- Zawrs ~>1.0 mandatory
+- Zba ~> 1.0 mandatory
+- Zbb ~> 1.0 mandatory
+- Zbs ~> 1.0 mandatory
+- Zcb ~>1.0 mandatory
+- Zcmop ~>1.0 mandatory
+- Zfa ~>1.0 mandatory
+- Zic64b = 1.0 mandatory
+- Zicbom ~> 1.0 mandatory
+- Zicbop ~> 1.0 mandatory
+- Zicboz ~> 1.0 mandatory
+- Ziccamoa ~> 1.0 mandatory
+- Ziccif ~> 1.0 mandatory
+- Zicclsm ~> 1.0 mandatory
+- Ziccrse ~> 1.0 mandatory
+- Zicntr ~> 2.0 mandatory
+- Zicond ~>1.0 mandatory
+- Zicsr ~> 2.0 mandatory
+- Zifencei ~>2.0 mandatory
+- Zihintntl ~>1.0 mandatory
+- Zihintpause ~> 2.0 mandatory
+- Zihpm ~> 2.0 mandatory
+- Zimop ~>1.0 mandatory
+- Zkt ~> 1.0 mandatory
+- Zca ~> 1.0 optional
+- Zcd ~> 1.0 optional
+- Zcf ~> 1.0 optional
+- Ssdbltrp ~> 1.0 {'optional': 'development'}
+- Svrsw60t59b ~> 1.0 {'optional': 'development'}
+- Sdtrig ~>1.0 {'optional': 'expansion'}
+- Sha ~> 1.0 {'optional': 'expansion'}
+- Ssccfg ~> 1.0 {'optional': 'expansion'}
+- Ssctr ~> 1.0 {'optional': 'expansion'}
+- Ssnpm ~>1.0 {'optional': 'expansion'}
+- Sspm ~>1.0 {'optional': 'expansion'}
+- Ssqosid ~> 1.0 {'optional': 'expansion'}
+- Ssstrict ~>1.0 {'optional': 'expansion'}
+- Sv48 ~>1.0 {'optional': 'expansion'}
+- Sv57 ~>1.0 {'optional': 'expansion'}
+- Svadu ~>1.0 {'optional': 'expansion'}
+- Svvptc ~>1.0 {'optional': 'expansion'}
+- Zfh ~>1.0 {'optional': 'expansion'}
+- Zfhmin ~> 1.0 {'optional': 'expansion'}
+- Zkr ~>1.0 {'optional': 'expansion'}
+- Zkn ~>1.0 {'optional': 'localized'}
+- Zks ~>1.0 {'optional': 'localized'}
 RVI20U32:
 - I ~> 2.1 mandatory
 - A ~> 2.1 optional

@@ -1,0 +1,75 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: seed
+long_name: Seed for cryptographic random bit generators
+address: 0x015
+writable: true
+priv_mode: U
+length: 32
+description: |
+  The seed CSR provides an interface to a NIST SP 800-90B (Turan et al., 2018)
+  or BSI AIS-31 (Killmann & Schindler, 2011) compliant physical Entropy Source (ES).
+
+  The CSR provides up to 16 physical entropy bits that can be used to seed
+  cryptographic random bit generators. The write value is ignored by
+  implementations; the write is used to signal polling and flushing.
+definedBy:
+  extension:
+    name: Zkr
+fields:
+  OPST:
+    location: 31-30
+    description: |
+      Status bits returned by the entropy source.
+
+      Encodings are:
+
+      * 0 - BIST
+      * 1 - WAIT
+      * 2 - ES16
+      * 3 - DEAD
+    type: RW-H
+    sw_write(csr_value): |
+      write_seed();
+      return CSR[seed].OPST;
+    reset_value: 0
+  ENTROPY:
+    location: 15-0
+    description: |
+      Sixteen bits of randomness.
+
+      This field is valid only when `OPST` is ES16. When `OPST` is not ES16,
+      `ENTROPY` must be zero.
+    type: RW-H
+    sw_write(csr_value): |
+      return CSR[seed].ENTROPY;
+    reset_value: 0
+sw_read(): |
+  # CSRRS/CSRRC/CSRRSI/CSRRCI are the CSR instructions with funct3[1] set.
+  # Bits 19:15 hold rs1 for the register forms and uimm for the immediate
+  # forms, so a single zero check covers rs1 == x0 and uimm == 0.
+  Boolean read_only_access = ($encoding[13] == 1'b1) && ($encoding[19:15] == 5'b00000);
+
+  if (read_only_access) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  if (mode() == PrivilegeMode::U && CSR[mseccfg].USEED == 1'b0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (mode() == PrivilegeMode::S && CSR[mseccfg].SSEED == 1'b0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU) {
+    if (CSR[mseccfg].SSEED == 1'b1) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  }
+
+  # A single poll returns both the status and the entropy it goes with.
+  return read_seed();

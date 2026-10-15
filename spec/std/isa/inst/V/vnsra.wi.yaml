@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vnsra.wi
-long_name: "Vector widening signed shift right arithmetic with immediate"
+long_name: "Vector narrowing signed shift right arithmetic with immediate"
 description: |
-  Performs widening signed arithmetic right shift on elements from vector register vs2 by immediate shift amount and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and widens the result.
+  Performs narrowing signed arithmetic right shift on double-width elements from vector register vs2 by immediate shift amount and stores results in vector register vd, using vector mask vm. The operation preserves the sign bit and writes a single-width destination.
 definedBy:
   extension:
     name: Zvl32b

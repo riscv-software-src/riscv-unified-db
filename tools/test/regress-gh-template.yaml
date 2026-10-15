@@ -185,7 +185,7 @@ jobs:
       - name: Build & test (whole reactor)
         working-directory: tools/eclipse/dev/org.xtext.udb.parent
         env:
-          MAVEN_OPTS: "-Djdk.xml.maxGeneralEntitySizeLimit=0 -Djdk.xml.totalEntitySizeLimit=0 -Djdk.xml.entityExpansionLimit=0"
+          MAVEN_OPTS: "-Dmaven.resolver.validation=MILD -Djdk.xml.maxGeneralEntitySizeLimit=0 -Djdk.xml.totalEntitySizeLimit=0 -Djdk.xml.entityExpansionLimit=0"
         run: mvn -B -U -Dheadless=true verify
       - name: Archive surefire reports (always)
         if: always()
@@ -211,6 +211,11 @@ jobs:
           java-version: "21"
       - name: Compile
         run: ./bin/aubr -C tools/eclipse/udb-vscode --frozen-lockfile compile
+      - name: Cache VS Code runtime
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: tools/eclipse/udb-vscode/.vscode-test/vscode-*
+          key: ${{ runner.os }}-${{ runner.arch }}-vscode-${{ hashFiles('tools/eclipse/udb-vscode/src/test/runTests.ts') }}
       - name: Run VS Code tests
         run: xvfb-run -a ./bin/aubr -C tools/eclipse/udb-vscode --frozen-lockfile test
       - name: Archive VS Code test logs (always)

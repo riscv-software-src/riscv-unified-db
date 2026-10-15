@@ -1,0 +1,33 @@
+# Copyright (c) 2026 Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+$schema: "inst_schema.json#"
+kind: instruction
+name: vunzipo.v
+long_name: Vector unzip odd
+description: |
+  Extracts odd-indexed elements from source vector register group `vs2`,
+  with EMUL=2*LMUL, into destination `vd`, with EMUL=LMUL. For `0 <= i < vl`,
+  `vd[i] = vs2[2*i+1]`; source indices below `2*vl` may be read. `LMUL=8`
+  and masked encodings (`vm=0`) are illegal. Destination/source overlap is
+  allowed only when `vd` equals `vs2`, as for narrowing instructions.
+definedBy:
+  extension:
+    name: Zvzip
+assembly: vd, vs2, vm
+encoding:
+  match: 010010------01111010-----1010111
+  variables:
+    - name: vm
+      location: 25
+    - name: vs2
+      location: 24-20
+    - name: vd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): |
