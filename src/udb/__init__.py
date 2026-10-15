@@ -4,6 +4,13 @@
 """Python access to the RISC-V Unified Database."""
 
 from .authoring import AuthoringPlan, GeneratedFile
+from .configuration import (
+    Configuration,
+    ConfigurationError,
+    ConfigurationKind,
+    ExtensionSelection,
+    Presence,
+)
 from .database import (
     Csr,
     Database,
@@ -57,12 +64,16 @@ __all__ = [
     "SCHEMAS_BASE_URL",
     "AuthoringError",
     "AuthoringPlan",
+    "Configuration",
+    "ConfigurationError",
+    "ConfigurationKind",
     "Csr",
     "DataError",
     "DataReference",
     "Database",
     "DatabaseObject",
     "Extension",
+    "ExtensionSelection",
     "ExtensionVersion",
     "ExtensionVersionSet",
     "GeneratedFile",
@@ -70,6 +81,7 @@ __all__ = [
     "LayoutError",
     "LayoutJob",
     "ObjectNotFoundError",
+    "Presence",
     "Profile",
     "Reference",
     "ReferenceError",

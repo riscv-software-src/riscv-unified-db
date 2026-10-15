@@ -458,7 +458,7 @@ module Udb
         "kind" => "architecture configuration",
         "type" => "partially configured",
         "name" => name,
-        "description" => description,
+        "description" => description.to_s,
         "params" => all_in_scope_params.sort.map do |p|
           if p.single_value?
             [p.name, p.value]
@@ -537,7 +537,7 @@ module Udb
             "kind" => "architecture configuration",
             "type" => "partially configured",
             "name" => name,
-            "description" => description,
+            "description" => description.to_s,
             "params" => all_in_scope_params.map do |p|
               if p.single_value?
                 [p.name, p.value]

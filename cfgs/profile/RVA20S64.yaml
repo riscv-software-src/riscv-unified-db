@@ -9,7 +9,7 @@
 kind: architecture configuration
 type: partially configured
 name: RVA20S64
-description:
+description: ''
 params: {}
 mandatory_extensions:
 - name: A
