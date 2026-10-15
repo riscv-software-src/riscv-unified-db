@@ -320,25 +320,10 @@ namespace :gen do
 
   desc "Generate strict config files for profiles"
   task :cfg do
-    cfg_arch = $resolver.cfg_arch_for("_")
-    FileUtils.mkdir_p $resolver.cfgs_path / "profile"
-    cfg_arch.profiles.each do |profile|
-      path = $resolver.cfgs_path / "profile" / "#{profile.name}.yaml"
-      FileUtils.rm_f path
-      File.write(
-        path,
-        <<~YAML.strip.concat("\n")
-          # SPDX-License-Identifier: CC0-1.0
-
-          # AUTO-GENERATED FILE. DO NOT EDIT
-          # To regenerate, run `./do gen:cfg` in the UDB root directory
-          # The data comes from the UDB profile definitions in spec/std/isa/profile/
-
-          #{YAML.dump(profile.to_strict_config)}
-        YAML
-      )
-      File.chmod(0444, path)
-    end
+    sh ($root / "bin/python").to_s, "-m", "udb",
+      "--path", ($root / "spec/std/isa").to_s,
+      "--schemas", ($root / "spec/schemas").to_s,
+      "generate", "profile-configs", "-o", ($resolver.cfgs_path / "profile").to_s
   end
 end
 

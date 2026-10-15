@@ -182,6 +182,55 @@ def check_configuration_diagnostics(resolved: udb.ResolvedDatabase) -> None:
         assert "reason: This fixture requires a different machine width." in checked.stderr
 
 
+def check_profile_configurations(resolved: udb.ResolvedDatabase) -> None:
+    from udb.profile_configs import profile_configuration, profile_configuration_plan
+
+    config = profile_configuration(resolved, "RVI20U32")
+    data = config.to_dict()
+    assert data["params"] == {}
+    assert data["mandatory_extensions"] == [{"name": "I", "version": "~> 2.1.0"}]
+    assert {entry["name"] for entry in data["non_mandatory_extensions"]} == {
+        "A",
+        "C",
+        "D",
+        "F",
+        "M",
+        "Zca",
+        "Zcd",
+        "Zcf",
+        "Zicntr",
+        "Zifencei",
+        "Zihpm",
+    }
+    assert data["requirements"] == {
+        "param": {
+            "allOf": [
+                {"name": "U_MODE_ENDIANNESS", "equal": "little"},
+                {"name": "UXLEN", "includes": 32},
+            ]
+        }
+    }
+    with TemporaryDirectory(prefix="udb-installed-profile-") as temporary:
+        root = Path(temporary)
+        expected = root / "api"
+        profile_configuration_plan(resolved, ["RVI20U32"]).apply(expected)
+        output = root / "cli"
+        command = [
+            str(Path(sys.executable).with_name("udb")),
+            "generate",
+            "profile-configs",
+            "--profile",
+            "RVI20U32",
+            "-o",
+            str(output),
+        ]
+        for arguments in (command, [*command, "--check"]):
+            result = subprocess.run(arguments, check=True, capture_output=True, text=True)
+            assert not result.stdout and not result.stderr
+        assert (output / "RVI20U32.yaml").read_bytes() == (expected / "RVI20U32.yaml").read_bytes()
+        assert udb.Configuration.from_file(output / "RVI20U32.yaml").to_dict() == data
+
+
 def check_install() -> None:
     assert shutil.which("ruby") is None
     assert shutil.which("git") is None
@@ -271,6 +320,7 @@ def check_install() -> None:
     assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
     check_configuration_diagnostics(resolved)
     check_config_headers(resolved)
+    check_profile_configurations(resolved)
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()

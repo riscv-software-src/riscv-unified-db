@@ -1,47 +1,46 @@
 # SPDX-License-Identifier: CC0-1.0
 
 # AUTO-GENERATED FILE. DO NOT EDIT
-# To regenerate, run `./do gen:cfg` in the UDB root directory
-# The data comes from the UDB profile definitions in spec/std/isa/profile/
+# To regenerate, run `udb generate profile-configs -o cfgs/profile`
+# The data comes from the resolved UDB profile definitions.
 
----
-"$schema": config_schema.json#
+$schema: config_schema.json#
+additional_extensions: true
+description: ""
 kind: architecture configuration
-type: partially configured
-name: RVI20U32
-description: ''
-params: {}
 mandatory_extensions:
 - name: I
-  version: "~> 2.1"
+  version: ~> 2.1.0
+name: RVI20U32
 non_mandatory_extensions:
 - name: A
-  version: "~> 2.1"
+  version: ~> 2.1.0
 - name: C
-  version: "~> 2.0"
+  version: ~> 2.0.0
 - name: D
-  version: "~> 2.2.0"
+  version: ~> 2.2.0
 - name: F
-  version: "~> 2.2.0"
+  version: ~> 2.2.0
 - name: M
-  version: "~> 2.0"
+  version: ~> 2.0.0
 - name: Zca
-  version: "~> 1.0"
+  version: ~> 1.0.0
 - name: Zcd
-  version: "~> 1.0"
+  version: ~> 1.0.0
 - name: Zcf
-  version: "~> 1.0"
+  version: ~> 1.0.0
 - name: Zicntr
-  version: "~> 2.0"
+  version: ~> 2.0.0
 - name: Zifencei
-  version: "~> 2.0"
+  version: ~> 2.0.0
 - name: Zihpm
-  version: "~> 2.0"
-additional_extensions: true
+  version: ~> 2.0.0
+params: {}
 requirements:
   param:
     allOf:
-    - name: U_MODE_ENDIANNESS
-      equal: little
-    - name: UXLEN
-      includes: 32
+    - equal: little
+      name: U_MODE_ENDIANNESS
+    - includes: 32
+      name: UXLEN
+type: partially configured

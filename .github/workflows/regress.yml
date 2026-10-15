@@ -361,6 +361,20 @@ jobs:
       - name: Compare complete configuration header artifacts with Ruby
         run: UDB_TEST_RUBY=1 uv run --locked python -m pytest -n 0 --basetemp=gen/config-headers/pytest-ruby tests/python/test_config_headers.py -k live_ruby
 
+  regress-python-profile-configs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compare the frozen profile configuration oracle with live Ruby
+        run: >-
+          UDB_TEST_RUBY=1 uv run --locked python -m pytest -n 0
+          tests/python/test_profile_configs.py -k live_profile_configuration_oracle
+      - name: Check native profile generation and CLI behavior
+        run: uv run --locked python -m pytest -n 8 tests/python/test_profile_configs.py
+
   regress-python-conditions-parity:
     runs-on: ubuntu-latest
     steps:
@@ -1255,6 +1269,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - regress-python-config-headers
+      - regress-python-profile-configs
       - regress-python-conditions-parity
       - regress-python-configured-parity
       - regress-python-configuration-parity

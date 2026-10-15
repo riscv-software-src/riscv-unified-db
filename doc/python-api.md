@@ -244,6 +244,9 @@ For other generators, `udb.authoring.GeneratedFile` describes output bytes, owne
 dependencies, and permissions. `AuthoringPlan(outputs).apply(root, check=True)` reports drift;
 omitting `check=True` writes the outputs. Replacements are atomic per file. The caller controls
 the output tree while generation runs; applying a plan is not a transaction across the tree.
+An optional `GeneratedFile.overwrite_prefixes` tuple restricts replacement to files starting
+with one of the nonempty byte prefixes. When supplied, unowned existing files are rejected
+before writes, including in check mode. Omitting it preserves ordinary authoring behavior.
 
 Layout directives use `{{ value }}` and `{% ... %}`. Any literal `<% ... %>` text in a layout is
 content preserved for a later configured-document rendering stage; it is not executed by the
@@ -365,6 +368,40 @@ in exactly `check.conflict` order. Each retains its complete original `label`, i
 display is truncated, plus any captured source spans and details. `format_check_diagnostics(arch,
 check)` returns the corresponding stderr lines without rereading sources or performing solver
 queries. The underlying `ArchitectureCheck` and its diagnostics are unchanged.
+
+## Profile configuration generation
+
+`udb.profile_configs.profile_configuration(resolved, name)` converts a profile
+into an immutable partial `Configuration`. Declared mandatory/optional
+requirements and profile requirements are retained; strict conversion adds
+solver-proven mandatory extensions at their minimum possible compatible
+versions. Invalid or undecidable inputs are errors. `strict=False` requests only
+the declared configuration, without solving or claiming its consistency.
+
+`profile_configuration_plan(resolved, names=None)` returns an `AuthoringPlan` of
+deterministic read-only `<profile>.yaml` files. It computes every selected
+configuration before writing and reuses atomic output and symlink checks.
+Explicit selections leave other files untouched. The installed CLI resolves
+bundled or explicitly selected source data and supports explicit overlays:
+
+```shell
+udb generate profile-configs -o generated-profiles
+udb generate profile-configs --profile RVI20U32 -o generated-profiles
+udb generate profile-configs --profile RVI20U32 -o generated-profiles --check
+udb --path my-isa --overlay my-overlay generate profile-configs -o generated-profiles
+```
+
+Generation exits 0 on success. `--check` prints differing relative paths and
+exits 1 without writing; invalid input or output errors exit 2. No repository,
+Ruby or network access is needed. YAML quoting and version spelling use the
+Python serializer; extension and constraint semantics match the retained native
+profile artifacts. Profile execution-width requirements do not implicitly
+assign machine MXLEN.
+
+Existing selected outputs must have the generated-profile header, so accidentally
+choosing a source-profile directory cannot overwrite its records. Portable names
+must not collide under case folding; unrepresentable IDL/YAML output is rejected
+before writing.
 
 ## IDL parsing and semantics
 
