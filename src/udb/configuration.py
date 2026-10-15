@@ -43,6 +43,12 @@ class ExtensionSelection:
     requirements: tuple[VersionRequirement, ...]
     presence: Presence
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.name, str) or not self.name:
+            raise ConfigurationError("Extension selection name must be a non-empty string")
+        object.__setattr__(self, "requirements", parse_version_requirements(self.requirements))
+        object.__setattr__(self, "presence", Presence(self.presence))
+
 
 @dataclass(frozen=True, slots=True, init=False)
 class Configuration:

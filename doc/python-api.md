@@ -197,3 +197,40 @@ layouts = files("udb") / "_data" / "layouts"
 The Python source code is licensed under BSD-3-Clause-Clear. The bundled database snapshot contains
 material under BSD-3-Clause-Clear and CC-BY-4.0. The license texts, attribution notice, and REUSE
 metadata are included in the distribution.
+
+Configuration declarations are immutable values, separate from architecture solving:
+
+```python
+from udb import Configuration
+
+rv64 = Configuration.builtin("rv64")
+assert rv64.mxlen == 64
+custom = Configuration.from_file("my-config.yaml")
+for selection in custom.extensions:
+    print(selection.name, selection.presence, selection.requirements)
+```
+
+`Configuration(mapping)` and `Configuration.from_yaml(text, source=...)` accept explicit inputs.
+The generic `_`, `rv32`, and `rv64` configurations are bundled. Parsing validates schemas and
+version syntax, accepts legacy full-configuration extension pairs, and preserves parameter
+values and requirements. `non_mandatory_extensions` becomes optional presence in the Python API.
+`to_dict()` returns a mutable serializable copy. Overlay and compatible-configuration declarations
+are retained as metadata; parsing never follows repository paths implicitly.
+
+`ParameterDomain` interprets parameter schemas without initializing a solver:
+
+```python
+from udb import Database, ParameterDomain, SchemaStore
+
+db = Database.bundled().resolve()
+record = db.get("parameter", "MXLEN")
+domain = ParameterDomain.from_schema(record["schema"], schema_store=SchemaStore(db.schemas_root))
+assert domain.enumerate_values(limit=2) == (32, 64)
+assert domain.accepts(64)
+```
+
+Domains support bounds, enums, arrays, local references, and `allOf` intersections. Membership,
+emptiness, singleton values, and complete bounded enumeration use JSON Schema semantics.
+Defaults remain annotations. Enumeration raises when the complete result exceeds the supplied
+limit; unsupported schema shapes or analyses fail explicitly. See
+[the domain contract](stage3-domains.md) for the supported subset and analysis limits.

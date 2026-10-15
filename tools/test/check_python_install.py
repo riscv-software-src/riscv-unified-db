@@ -57,6 +57,25 @@ def check_install() -> None:
         "2.0.0",
         "3.0.0",
     )
+    for name, width in (("_", None), ("rv32", 32), ("rv64", 64)):
+        config = udb.Configuration.builtin(name)
+        assert config.mxlen == width
+        assert udb.Configuration(config.to_dict()) == config
+    domain_schemas = udb.SchemaStore(database.schemas_root)
+    domains = {
+        record.name: udb.ParameterDomain.from_schema(
+            record["schema"],
+            schema_store=domain_schemas,
+            source=str(record.path),
+        )
+        for record in resolved.objects("parameter")
+    }
+    assert len(domains) == 271
+    assert all(not domain.is_empty for domain in domains.values())
+    assert domains["MXLEN"].enumerate_values(limit=2) == (32, 64)
+    assert domains["SUPPORTED_PMLEN_SMMPM"].accepts([0, 7])
+    assert not domains["SUPPORTED_PMLEN_SMMPM"].accepts([7])
+    assert not domains["SUPPORTED_PMLEN_SMMPM"].accepts([0, 0])
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()

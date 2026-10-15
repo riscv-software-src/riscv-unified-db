@@ -6,7 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from udb.configuration import Configuration, ConfigurationError, ConfigurationKind, Presence
+from udb.configuration import (
+    Configuration,
+    ConfigurationError,
+    ConfigurationKind,
+    ExtensionSelection,
+    Presence,
+)
+from udb.versions import VersionRequirement
 
 
 def partial(**changes):
@@ -33,6 +40,16 @@ def test_config_is_immutable_and_round_trips():
     assert Configuration(config.to_dict()) == config
     assert config.extensions[0].presence is Presence.MANDATORY
     assert config.kind is ConfigurationKind.PARTIAL
+
+
+def test_public_extension_selections_detach_caller_sequences():
+    requirements = [VersionRequirement.parse(">= 1")]
+    selection = ExtensionSelection("I", requirements, "mandatory")
+    requirements.clear()
+    assert selection.requirements == (VersionRequirement.parse(">= 1"),)
+    assert selection.presence is Presence.MANDATORY
+    with pytest.raises(ConfigurationError, match="non-empty"):
+        ExtensionSelection("", (), Presence.OPTIONAL)
 
 
 @pytest.mark.parametrize("name,width", [("_", None), ("rv32", 32), ("rv64", 64)])
