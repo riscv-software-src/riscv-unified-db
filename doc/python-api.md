@@ -15,10 +15,11 @@ The distribution name is `udb`, so a future published release can be installed w
 `python -m pip install udb`. This project has not yet established that the name is published or
 available from the Python Package Index.
 
-The package supports querying the bundled, raw standard ISA records and schemas. The data
+The package supports querying the bundled, raw standard ISA records and schemas. The raw data
 is the unconfigured source database: it has not been resolved for an XLEN, extension set, or named
-configuration. Configuration resolution and the full behavior of the existing Ruby implementation
-are still being ported.
+configuration. To analyze full architecture semantics or evaluation rules, pass a resolved database
+and configuration to `database.resolve().configure(configuration)`. Full compilation and proof of
+IDL logic are still being ported in Stage 4.
 
 ```python
 from udb import Database
@@ -85,7 +86,8 @@ versions remain compatible upward until the next release marked `breaking: true`
 `resolved.documents` exposes the resolved mappings keyed by relative source path. `$child_of`
 and `$parent_of` record inheritance relationships. Data `$ref` links remain references; they are
 not expanded. Resolution does not apply schema defaults, choose extension versions, evaluate
-configurations or conditions, or compile IDL. It does not yet provide a configured architecture.
+configurations or conditions, or compile IDL. Use `resolved.configure(configuration)` to create a
+configured architecture with solver-backed condition and presence queries.
 
 Raw records and resolved databases also expose immutable source metadata. `record.source_at(...)`
 and `resolved.source_at(document, ...)` return a `SourceSpan` for the exact field that defined the
@@ -234,3 +236,56 @@ emptiness, singleton values, and complete bounded enumeration use JSON Schema se
 Defaults remain annotations. Enumeration raises when the complete result exceeds the supplied
 limit; unsupported schema shapes or analyses fail explicitly. See
 [the domain contract](stage3-domains.md) for the supported subset and analysis limits.
+
+Conditions parse into immutable expressions that support three-valued evaluation and Z3 solving:
+
+```python
+from udb import EvaluationContext, TruthValue, parse_condition
+
+condition = parse_condition(
+    {
+        "allOf": [
+            {"extension": {"name": "Zicsr"}},
+            {"param": {"name": "MXLEN", "equal": 64}},
+        ]
+    }
+)
+assert condition.evaluate(EvaluationContext(xlen=64)) is TruthValue.UNKNOWN
+known = EvaluationContext(extensions={"Zicsr": "2.0.0"}, parameters={"MXLEN": 64})
+assert condition.evaluate(known) is TruthValue.TRUE
+closed = EvaluationContext(xlen=64, closed_world_extensions=True, closed_world_parameters=True)
+assert condition.evaluate(closed) is TruthValue.FALSE
+```
+
+Condition expressions represent extension requirements, parameter comparisons, XLEN constraints,
+free terms, conjunction, disjunction, negation, implication, exact-one (`oneOf`), none-of (`noneOf`),
+and unresolved `idl()` blocks. `parse_condition(data)` parses raw YAML condition structures,
+`condition.to_data()` converts back to deterministic data, `condition.evaluate(context)` performs
+three-valued concrete evaluation (`TRUE`, `FALSE`, `UNKNOWN`), `condition.partial_evaluate(context)`
+simplifies known subexpressions, and `normalize(condition)` applies Boolean identities.
+Conditions containing `idl()` return `has_unresolved == True` and evaluate to `UNKNOWN` when their
+truth depends on IDL logic. Full compilation and proof of IDL logic are deferred to Stage 4.
+
+`ResolvedDatabase.configure(configuration)` creates an immutable `ConfiguredArchitecture`:
+
+```python
+from udb import Configuration, Database, QueryPresence
+
+db = Database.bundled().resolve()
+arch = db.configure(Configuration.builtin("rv64"))
+
+assert arch.extension_presence("I") is QueryPresence.MANDATORY
+check = arch.check()
+# rv64 includes idl()-gated extensions and parameters, so it is DEFERRED until Stage 4.
+assert check.status.name == "DEFERRED"
+print([inst.name for inst in arch.possible_instructions])
+```
+
+`ConfiguredArchitecture` combines extension-version catalogs, parameter domains, YAML conditions,
+and configuration declarations. Queries return `QueryPresence` (`MANDATORY`, `POSSIBLE`, `ABSENT`,
+`DEFERRED`). Supported queries include extension presence, version presence, instructions, CSRs, CSR
+fields, exception codes, interrupt codes, parameters, profiles, encoding overlaps, CSR address
+overlaps, and compatibility checking via `arch.compatible_with(other)`. Queries that depend on
+unresolved IDL logic return `DEFERRED` or `UNKNOWN` without failing unrelated data queries.
+`arch.check()` returns an `ArchitectureCheckResult` with status `VALID`, `UNSAT`, or `DEFERRED`.
+Unsatisfiable configurations report labeled diagnostic conflicts.

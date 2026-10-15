@@ -9,7 +9,7 @@
 | Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
 | Stage 2b: schema validation | Complete locally; CI pending |
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Complete locally; CI pending |
-| Stage 3: versions, configurations, conditions, and solving | In progress: version/configuration/domain foundations implemented; solving and configured queries underway |
+| Stage 3: versions, configurations, conditions, and solving | Complete locally; CI pending |
 | Stage 4: IDL compiler and semantic passes | Pending |
 | Stage 5: generators, templates, and document rendering | Pending |
 | Stage 6: CLI, build, release, and Ruby removal | Pending |
@@ -58,6 +58,9 @@ These are local branches until publication of the PR stack.
 | `migration/python-07-versions` | `migration/python-06-source-maps` | Immutable RISC-V versions and release requirements |
 | `migration/python-08-configurations` | `migration/python-07-versions` | Immutable configurations and bundled generic configurations |
 | `migration/python-09-domains` | `migration/python-08-configurations` | Offline JSON Schema parameter domains and combined foundation gates |
+| `migration/python-10-conditions` | `migration/python-09-domains` | Condition parsing, normalization, concrete evaluation, and Z3 condition solving |
+| `migration/python-11-configured-queries` | `migration/python-10-conditions` | Data-only configured architecture queries, overlap checks, and solver integration |
+| `migration/python-12-stage3-gates` | `migration/python-11-configured-queries` | Stage 3 integration and installed offline package acceptance gates |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -773,8 +776,38 @@ configurations, conditions, and solving, followed by IDL and generator cutovers.
   generated from `tools/test/regress-tests.yaml`. The default Python unit and
   installed-package jobs exercise the new Python APIs.
 
-Conditions, symbolic solving, configured queries, conflict checks, and their
-acceptance gates are still in progress. Ruby callers remain the configured
-architecture/IDL resolver, existing object-model consumers, and every later-stage
-generator and renderer. No generator has been removed. Full repository regression
-and remote CI remain pending.
+### 2026-09-29: Stage 3 completion and integration gates
+
+- Added condition AST parsing, canonical data serialization, three-valued concrete
+  evaluation, partial evaluation, normalization, and Z3 condition solving in `udb.conditions`
+  and `udb.solver`. Unresolved `idl()` blocks are explicitly preserved as `UnresolvedIdlCondition`
+  and defer evaluation/solving proofs to Stage 4 without crashing data queries.
+- Added data-only configured architecture queries in `ConfiguredArchitecture` via
+  `ResolvedDatabase.configure(configuration)`. Supported queries cover extension version
+  catalogs, mandatory/optional/prohibited presence, instruction/CSR/field presence, exception/interrupt
+  codes, parameter values, profile membership, encoding overlaps, CSR address overlaps, and
+  architecture compatibility checks. IDL-backed queries return explicit `DEFERRED` or `UNKNOWN`
+  results without claiming complete IDL evaluation.
+- Added dedicated CI regression definitions in `tools/test/regress-tests.yaml` for
+  `regress-python-conditions-parity` and `regress-python-configured-parity`. Regenerated `.github/workflows/regress.yml`
+  from `tools/test/regress-gh-template.yaml` using the generator script.
+- Extended `tools/test/check_python_install.py` in the installed wheel/sdist offline gate
+  to import and exercise representative condition solving and configured queries from outside
+  the checkout with Ruby and Git absent from `PATH`. The bundled `rv64` configuration checks as
+  `DEFERRED` because some of its extensions and parameters are gated by `idl()` conditions.
+  `tests/python/test_distribution.py` now runs this same script against a wheel rebuilt from the
+  sdist in a fresh virtual environment, so the CI gate cannot drift unexercised.
+- Confirmed Ruby corrections remain recorded as entries 1–17 in `doc/python-migration-bugfixes.md`.
+  Fresh reviews found and fixed Python-only defects: typed `ParameterTerm` equality, unconstrained
+  `oneOf` sort inference, missing top-level `udb` exports for the condition and solver API,
+  `solver.implies`/`solver.equivalent` returning `False` instead of raising `SolverUnknownError`
+  when finite enumeration was unavailable, and incorrect assertions in the installed-package gate
+  and API examples. Because these were Python implementation issues rather than Ruby divergences,
+  they are explicitly not added to the Ruby bug log.
+- Local validation: 340+ Python tests pass with `UDB_TEST_RUBY=1` Ruby-oracle differentials, both
+  Stage 3 parity regress jobs pass, the installed wheel gate passes from `/tmp` with a restricted
+  `PATH`, and `prek` hooks pass for the Stage 3 range.
+- Every existing generator is preserved. Remaining Ruby callers are the configured architecture/IDL
+  resolver used by `./do gen:resolved_arch`, Ruby object-model consumers, and later-stage generators
+  and document renderers. Full repository `./bin/regress --all` and remote CI remain pending.
+  Stage 3 is complete locally against its acceptance gate.

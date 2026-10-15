@@ -36,9 +36,19 @@ from .domains import (
     InfiniteDomainError,
     ParameterDomain,
 )
+from .solver_arrays import (
+    MAX_INDEXED_SOLVER_RESOURCES,
+    make_array,
+    materializable_model,
+    solve_witness,
+)
+from .solver_arrays import (
+    MAX_MATERIALIZED_ARRAY_ITEMS as _MAX_MATERIALIZED_ARRAY_ITEMS,
+)
+from .solver_arrays import (
+    ArraySymbol as _ArraySymbol,
+)
 from .versions import ExtensionVersionSet, Version
-
-_MAX_MATERIALIZED_ARRAY_ITEMS = 4096
 
 
 class SolverError(RuntimeError):
@@ -46,7 +56,7 @@ class SolverError(RuntimeError):
 
 
 class SolverUnknownError(SolverError):
-    """A Boolean solver query depends on an unresolved condition."""
+    """A Boolean query is unresolved or cannot be decided by the solver."""
 
 
 class SolverStatus(str, Enum):
@@ -108,15 +118,17 @@ class ConditionModel:
         object.__setattr__(self, "free_terms", MappingProxyType(dict(self.free_terms)))
 
 
-@dataclass(slots=True)
-class _ArraySymbol:
-    length: Any
-    items: tuple[Any, ...]
-    item_domains: tuple[ParameterDomain | None, ...]
-
-
 class ConditionSolver:
-    """An isolated incremental solver with labeled constraints and models."""
+    """An isolated incremental solver with labeled constraints and exact models.
+
+    Indexed arrays do not allocate their maximum length. Quantified array
+    solver attempts have deterministic resource budgets and may return UNKNOWN;
+    Boolean helpers then raise SolverUnknownError. Model extraction retries an
+    oversized witness against the original query with concrete lengths <=4096.
+    If this is impossible it raises SolverError, without truncation. If the retry
+    is undecidable it raises SolverUnknownError. These model-only bounds never
+    restrict subsequent satisfiability queries.
+    """
 
     def __init__(self, context: SolverContext | None = None) -> None:
         try:
@@ -142,6 +154,7 @@ class ConditionSolver:
             self._solver.add(self._xlen == self.context.xlen)
         self._last_status: SolverStatus | None = None
         self._last_model: Any = None
+        self._last_assertions: tuple[Any, ...] = ()
         self._last_core: tuple[str, ...] = ()
         self._initialize_extensions()
         self._initialize_fixed_parameters()
@@ -156,6 +169,7 @@ class ConditionSolver:
         self._base_has_unresolved |= parsed.has_unresolved
         self._last_status = None
         self._last_model = None
+        self._last_assertions = ()
         self._last_core = ()
         if label is None:
             self._solver.add(expression)
@@ -176,7 +190,7 @@ class ConditionSolver:
         self._solver.push()
         try:
             self._solver.add(*expressions)
-            result = self._solver.check()
+            result, result_model, result_core = self._solve()
             if result == self._z3.sat:
                 if has_unresolved:
                     definite = [
@@ -188,32 +202,64 @@ class ConditionSolver:
                     self._solver.push()
                     try:
                         self._solver.add(*definite)
-                        definite_result = self._solver.check()
+                        definite_result, definite_model, _ = self._solve()
                         self._last_status = (
                             SolverStatus.SAT
                             if definite_result == self._z3.sat
                             else SolverStatus.UNKNOWN
                         )
                         self._last_model = (
-                            self._solver.model() if self._last_status is SolverStatus.SAT else None
+                            definite_model if self._last_status is SolverStatus.SAT else None
+                        )
+                        self._last_assertions = (
+                            tuple(self._solver.assertions())
+                            if self._last_status is SolverStatus.SAT
+                            else ()
                         )
                     finally:
                         self._solver.pop()
                 else:
                     self._last_status = SolverStatus.SAT
-                    self._last_model = self._solver.model()
+                    self._last_model = result_model
+                    self._last_assertions = tuple(self._solver.assertions())
                 self._last_core = ()
             elif result == self._z3.unsat:
                 self._last_status = SolverStatus.UNSAT
                 self._last_model = None
+                self._last_assertions = ()
                 self._last_core = tuple(
-                    self._labels.get(str(item), str(item)) for item in self._solver.unsat_core()
+                    self._labels.get(str(item), str(item)) for item in result_core
                 )
             else:
                 self._last_status = SolverStatus.UNKNOWN
                 self._last_model = None
+                self._last_assertions = ()
                 self._last_core = ()
             return self._last_status
+        finally:
+            self._solver.pop()
+
+    def _solve(self) -> tuple[Any, Any, tuple[Any, ...]]:
+        """Try compact exact witnesses, falling back to the unrestricted theory."""
+        arrays = [
+            symbol
+            for symbol in self._parameter_symbols.values()
+            if isinstance(symbol, _ArraySymbol)
+        ]
+        indexed = any(symbol.tail is not None for symbol in arrays)
+        self._solver.set(rlimit=MAX_INDEXED_SOLVER_RESOURCES if indexed else 0)
+        witness_model = solve_witness(self, arrays)
+        if witness_model is not None:
+            return self._z3.sat, witness_model, ()
+        self._solver.push()
+        try:
+            self._solver.add(*(axiom for symbol in arrays for axiom in symbol.axioms))
+            result = self._solver.check()
+            return (
+                result,
+                self._solver.model() if result == self._z3.sat else None,
+                tuple(self._solver.unsat_core()) if result == self._z3.unsat else (),
+            )
         finally:
             self._solver.pop()
 
@@ -223,13 +269,24 @@ class ConditionSolver:
     ) -> bool:
         status = self.check(extra)
         if status is SolverStatus.UNKNOWN:
-            raise SolverUnknownError("satisfiability depends on an unresolved condition")
+            raise SolverUnknownError(
+                "satisfiability is unresolved or the solver could not decide the theory"
+            )
         return status is SolverStatus.SAT
 
     def model(self) -> ConditionModel:
         if self._last_status is not SolverStatus.SAT or self._last_model is None:
             raise SolverError("a model is available only after a satisfiable check")
         model = self._last_model
+        if any(
+            isinstance(symbol, _ArraySymbol)
+            and model.eval(symbol.length, model_completion=True).as_long()
+            > _MAX_MATERIALIZED_ARRAY_ITEMS
+            for symbol in self._parameter_symbols.values()
+        ):
+            smaller_model = materializable_model(self, self._last_assertions)
+            if smaller_model is not None:
+                self._last_model = model = smaller_model
         xlen_value = model.eval(self._xlen, model_completion=True).as_long()
         extensions: dict[str, str | None] = {}
         for name, versions in self._extension_catalogs.items():
@@ -477,9 +534,9 @@ class ConditionSolver:
         if term.index is not None:
             if not isinstance(symbol, _ArraySymbol):
                 raise SolverError(f"parameter {term.name!r} is not an array")
-            if term.index >= len(symbol.items):
+            if term.index >= symbol.maximum:
                 return z3.BoolVal(False, ctx=self._z3_context)
-            selected = symbol.items[term.index]
+            selected = symbol.item(z3, term.index)
             in_range = symbol.length > term.index
         elif term.size:
             if not isinstance(symbol, _ArraySymbol):
@@ -498,14 +555,7 @@ class ConditionSolver:
         if term.operator is ParameterOperator.INCLUDES:
             if not isinstance(symbol, _ArraySymbol):
                 raise SolverError(f"parameter {term.name!r} is not an array")
-            matches = tuple(
-                z3.And(
-                    symbol.length > index,
-                    self._scalar_equals(item, term.value),
-                )
-                for index, item in enumerate(symbol.items)
-            )
-            comparison = self._or(*matches)
+            comparison = symbol.exists(self, lambda item: self._scalar_equals(item, term.value))
         elif term.operator is ParameterOperator.ONE_OF:
             comparison = self._or(*(self._equals(selected, value) for value in term.value))
         elif term.operator is ParameterOperator.EQUAL:
@@ -545,70 +595,7 @@ class ConditionSolver:
         return symbol
 
     def _array_symbol(self, name: str, domain: ArrayDomain | None, value_hint: Any) -> _ArraySymbol:
-        minimum = int(getattr(domain, "min_items", 0) or 0)
-        maximum = getattr(domain, "effective_max_items", None)
-        if callable(maximum):
-            maximum = maximum()
-        if maximum is None:
-            maximum = getattr(domain, "max_items", None)
-        if maximum is None and isinstance(value_hint, (list, tuple)):
-            maximum = len(value_hint)
-        if maximum is None:
-            raise SolverError(f"array parameter {name!r} needs a finite maxItems domain")
-        maximum = int(maximum)
-        if maximum > _MAX_MATERIALIZED_ARRAY_ITEMS:
-            raise SolverError(
-                f"array parameter {name!r} maxItems {maximum} exceeds the solver limit "
-                f"of {_MAX_MATERIALIZED_ARRAY_ITEMS}"
-            )
-        if maximum < minimum:
-            raise SolverError(f"array parameter {name!r} has an empty length domain")
-        length = self._z3.Int(f"udb_param_{_safe_name(name)}_length", ctx=self._z3_context)
-        item_domains = tuple(
-            domain.domain_for_index(index) if domain is not None else None
-            for index in range(maximum)
-        )
-        items = tuple(
-            _make_scalar(
-                self._z3,
-                _domain_kind(
-                    item_domains[index],
-                    value_hint[index]
-                    if isinstance(value_hint, (list, tuple)) and index < len(value_hint)
-                    else None,
-                ),
-                f"udb_param_{_safe_name(name)}_{index}",
-                self._z3_context,
-            )
-            for index in range(maximum)
-        )
-        symbol = _ArraySymbol(length, items, item_domains)
-        self._solver.add(length >= minimum, length <= maximum)
-        for index, (item, item_domain) in enumerate(zip(items, item_domains, strict=True)):
-            if item_domain is not None:
-                self._solver.add(
-                    self._z3.Implies(length > index, self._domain_expression(item, item_domain))
-                )
-        if getattr(domain, "unique_items", False):
-            for left in range(maximum):
-                for right in range(left + 1, maximum):
-                    if items[left].sort() == items[right].sort():
-                        self._solver.add(
-                            self._z3.Implies(length > right, items[left] != items[right])
-                        )
-        contains = getattr(domain, "contains", ())
-        if contains and not isinstance(contains, tuple):
-            contains = (contains,)
-        for contained in contains or ():
-            self._solver.add(
-                self._or(
-                    *(
-                        self._z3.And(length > index, self._domain_expression(item, contained))
-                        for index, item in enumerate(items)
-                    )
-                )
-            )
-        return symbol
+        return make_array(self, name, domain, value_hint)
 
     def _constrain_domain(self, symbol: Any, domain: Any) -> None:
         if isinstance(symbol, _ArraySymbol):
@@ -648,12 +635,12 @@ class ConditionSolver:
         if isinstance(symbol, _ArraySymbol):
             if not isinstance(value, (tuple, list)):
                 return self._z3.BoolVal(False, ctx=self._z3_context)
-            if len(value) > len(symbol.items):
+            if len(value) > symbol.maximum:
                 return self._z3.BoolVal(False, ctx=self._z3_context)
             return self._z3.And(
                 symbol.length == len(value),
                 *(
-                    self._scalar_equals(symbol.items[index], item)
+                    self._scalar_equals(symbol.item(self._z3, index), item)
                     for index, item in enumerate(value)
                 ),
             )
@@ -689,7 +676,14 @@ class ConditionSolver:
     def _model_value(self, symbol: Any, model: Any) -> Any:
         if isinstance(symbol, _ArraySymbol):
             length = model.eval(symbol.length, model_completion=True).as_long()
-            return tuple(self._model_value(item, model) for item in symbol.items[:length])
+            if length > _MAX_MATERIALIZED_ARRAY_ITEMS:
+                raise SolverError(
+                    f"array model length {length} exceeds the solver limit of "
+                    f"{_MAX_MATERIALIZED_ARRAY_ITEMS} concrete items"
+                )
+            return tuple(
+                self._model_value(symbol.item(self._z3, index), model) for index in range(length)
+            )
         value = model.eval(symbol, model_completion=True)
         if self._z3.is_true(value):
             return True

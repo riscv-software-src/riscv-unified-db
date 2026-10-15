@@ -46,10 +46,27 @@ Models are available after `SAT`; labeled constraints provide Z3 unsat cores and
 deletion-minimal conflict relative to any unlabeled background constraints.
 
 The Z3 adapter consumes `ParameterDomain` metadata and does not add solver state to the domain
-objects. Array solving currently materializes one symbol per possible index, so a referenced array
-domain must have a practical finite `maxItems`; an unbounded array without a fixed-value length is
-rejected with `SolverError`. This does not affect large array domains that are present in the
-catalog but never referenced by a condition or fixed value, because parameter symbols are lazy.
+objects. A referenced array must have a finite `maxItems` or a fixed-value length; otherwise
+solving raises `SolverError`. Small domains use explicit item symbols. Larger domains, including
+`HPM_EVENTS` with `maxItems = 2**64`, use a shared indexed Z3 array and their full symbolic length.
+Typed tuple prefixes and quantified tail predicates enforce item domains, uniqueness, `contains`,
+membership, indexed reads, and equality exactly; no unmaterialized tail is over-approximated.
+Parameter symbols are lazy, so unreferenced large array domains cost nothing.
+
+For unique bounded integer intervals, a cyclic-rotation certificate cheaply proves SAT when it
+satisfies the actual constraints. A rejected certificate never proves UNSAT: the unrestricted
+indexed theory must establish that result. Indexed solving uses a deterministic Z3 `rlimit` of
+10,000,000 resource units per exact attempt; optional certificates use only 25,000 units.
+Resource exhaustion or theory incompleteness produces `UNKNOWN`, not an approximate answer.
+
+Concrete models contain every actual item and are limited to 4096 items per array. If the initial
+symbolic witness is larger, model extraction retries the **same query**, including tracked and
+temporary constraints, with model-only length bounds. These bounds never constrain subsequent
+SAT/UNSAT queries. A successful retry returns an exact small model; proven impossibility raises
+`SolverError`, while an undecidable retry raises `SolverUnknownError`. A tuple is never silently
+truncated or presented as a complete model. Architecture validity and compatibility checks report
+undecidable solver/model queries with a `solver-unknown` diagnostic instead of accessing a model
+after an unchecked solver result.
 
 `tests/python/test_conditions.py` covers parsing, canonical serialization, three-valued evaluation,
 partial evaluation, actual `ExtensionVersionSet` compatibility, actual scalar and array domains,

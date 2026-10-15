@@ -451,12 +451,65 @@ def test_solver_rejects_impractically_large_materialized_arrays() -> None:
     pytest.importorskip("z3")
     solver_api = _solver_module()
     array = ParameterDomain.from_schema(
-        {"type": "array", "items": {"type": "integer"}, "maxItems": 5000}
+        {
+            "type": "array",
+            "items": {"type": "integer", "minimum": 0, "maximum": 2**60},
+            "uniqueItems": True,
+            "maxItems": 2**64,
+        }
     )
-    solver = solver_api.ConditionSolver(solver_api.SolverContext(parameter_domains={"A": array}))
+    context = solver_api.SolverContext(parameter_domains={"A": array})
 
-    with pytest.raises(solver_api.SolverError, match="exceeds the solver limit"):
-        solver.add(parse_condition({"param": {"name": "A", "size": True, "equal": 1}}))
+    def sat(raw: object) -> bool:
+        return solver_api.is_satisfiable(parse_condition(raw), context)
+
+    assert sat({"param": {"name": "A", "equal": []}})
+    assert sat({"param": {"name": "A", "size": True, "equal": 2**59}})
+    assert not sat({"param": {"name": "A", "size": True, "equal": 2**60 + 2}})
+    # Symbolic array capacity does not limit indexed reads or exact equality.
+    assert sat({"param": {"name": "A", "equal": list(range(100))}})
+    assert sat({"param": {"name": "A", "index": 500, "equal": 7}})
+    assert sat(
+        {
+            "allOf": [
+                {"param": {"name": "A", "size": True, "equal": 200}},
+                {"param": {"name": "A", "includes": 2**60}},
+                {"not": {"param": {"name": "A", "index": 0, "equal": 2**60}}},
+            ]
+        }
+    )
+    # Item domains and the length still constrain every index.
+    assert not sat({"param": {"name": "A", "index": 500, "equal": 2**60 + 1}})
+    assert not sat({"param": {"name": "A", "includes": 2**60 + 1}})
+    assert not sat(
+        {
+            "allOf": [
+                {"param": {"name": "A", "size": True, "equal": 0}},
+                {"param": {"name": "A", "includes": 1}},
+            ]
+        }
+    )
+
+    minimum = ParameterDomain.from_schema(
+        {"type": "array", "items": {"type": "integer"}, "minItems": 5000, "maxItems": 2**64}
+    )
+    solver = solver_api.ConditionSolver(solver_api.SolverContext(parameter_domains={"A": minimum}))
+    solver.add(parse_condition({"param": {"name": "A", "size": True, "equal": 5000}}))
+    assert solver.check() is solver_api.SolverStatus.SAT
+    with pytest.raises(solver_api.SolverError, match=r"5000.*exceeds the solver limit.*4096"):
+        solver.model()
+
+    for length in (65, 4096, 4097):
+        solver = solver_api.ConditionSolver(context)
+        solver.add({"param": {"name": "A", "size": True, "equal": length}})
+        assert solver.check() is solver_api.SolverStatus.SAT
+        if length > 4096:
+            with pytest.raises(solver_api.SolverError, match=r"4097.*4096"):
+                solver.model()
+        else:
+            concrete = solver.model().parameters["A"]
+            assert len(concrete) == length
+            assert array.accepts(concrete)
 
 
 def test_solver_links_xlen_to_mxlen() -> None:
