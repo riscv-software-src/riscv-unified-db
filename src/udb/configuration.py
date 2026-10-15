@@ -65,6 +65,7 @@ class Configuration:
     requirements: Any
     additional_extensions: bool
     sources: SourceMap = field(repr=False, compare=False)
+    source_text: str | None = field(repr=False, compare=False)
     _data: Mapping[str, Any] = field(repr=False)
 
     def __init__(
@@ -72,10 +73,13 @@ class Configuration:
         data: Mapping[str, Any],
         *,
         source: str | SourceMap = "<configuration>",
+        source_text: str | None = None,
         schema_store: SchemaStore | None = None,
     ) -> None:
         if not isinstance(data, Mapping):
             raise ConfigurationError(f"{source}: configuration must be a mapping")
+        if source_text is not None and not isinstance(source_text, str):
+            raise ConfigurationError("Configuration source_text must be a string or None")
         sources = source if isinstance(source, SourceMap) else synthetic_source_map(source, data)
         copied = _thaw(_freeze(data))
 
@@ -155,6 +159,7 @@ class Configuration:
             kind is not ConfigurationKind.FULL and copied.get("additional_extensions", True),
         )
         object.__setattr__(self, "sources", sources)
+        object.__setattr__(self, "source_text", source_text)
         object.__setattr__(self, "_data", _freeze(copied))
 
     @classmethod
@@ -163,7 +168,12 @@ class Configuration:
     ) -> Configuration:
         try:
             parsed = parse_yaml(text, source=source)
-            return cls(parsed.value, source=parsed.sources, schema_store=schema_store)
+            return cls(
+                parsed.value,
+                source=parsed.sources,
+                source_text=text,
+                schema_store=schema_store,
+            )
         except DataError as error:
             raise ConfigurationError(str(error)) from error
         except (YAMLError, ValueError) as error:

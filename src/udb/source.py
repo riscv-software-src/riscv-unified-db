@@ -8,6 +8,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
+from posixpath import dirname, isabs, join, normpath
 from types import MappingProxyType
 from typing import Any
 
@@ -18,6 +19,147 @@ from .errors import DataError
 
 type PathPart = str | int
 type ValuePath = tuple[PathPart, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SourceText:
+    """A captured source file, independent of its original resource or directory."""
+
+    source: str
+    text: str = field(repr=False)
+    layer: str = "source"
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.source, str) or not self.source:
+            raise DataError("SourceText source must be a non-empty string")
+        if not isinstance(self.text, str):
+            raise DataError("SourceText text must be a string")
+        if not isinstance(self.layer, str) or not self.layer:
+            raise DataError("SourceText layer must be a non-empty string")
+
+    @property
+    def label(self) -> str:
+        return self.source if self.layer == "source" else f"{self.layer}:{self.source}"
+
+
+@dataclass(frozen=True, slots=True, init=False)
+class IdlSourceProvider:
+    """Captured effective and layered IDL files with lexical include provenance."""
+
+    sources: Mapping[str, SourceText]
+    layers: Mapping[tuple[str, str], SourceText]
+    roots: Mapping[str, str]
+    _origins: Mapping[str, tuple[SourceText, ...]] = field(repr=False)
+
+    def __init__(
+        self,
+        sources: Mapping[str, SourceText] | None = None,
+        *,
+        layers: Mapping[tuple[str, str], SourceText] | None = None,
+        roots: Mapping[str, str] | None = None,
+    ) -> None:
+        effective: dict[str, SourceText] = {}
+        captured: dict[tuple[str, str], SourceText] = {}
+        for path, source in (sources or {}).items():
+            if (
+                not isinstance(source, SourceText)
+                or path != source.source
+                or not self._relative_path(path)
+            ):
+                raise DataError("IDL sources require paths matching their SourceText source")
+            effective[path] = source
+            captured[(source.layer, path)] = source
+        for key, source in (layers or {}).items():
+            if (
+                not isinstance(key, tuple)
+                or len(key) != 2
+                or not isinstance(source, SourceText)
+                or key != (source.layer, source.source)
+                or not self._relative_path(source.source)
+            ):
+                raise DataError(
+                    "Layered IDL sources require (layer, path) keys matching their SourceText"
+                )
+            if key in captured and captured[key] != source:
+                raise DataError(f"Conflicting captured IDL source {source.label}")
+            captured[key] = source
+        root_paths: dict[str, str] = {}
+        for layer, root in (roots or {}).items():
+            if (
+                not isinstance(layer, str)
+                or not layer
+                or not isinstance(root, str)
+                or not isabs(root)
+                or "\\" in root
+            ):
+                raise DataError("IDL source roots require layer keys and absolute POSIX paths")
+            root_paths[layer] = normpath(root)
+        origins: dict[str, list[SourceText]] = {}
+        for (layer, path), source in captured.items():
+            if layer in root_paths:
+                origins.setdefault(join(root_paths[layer], path), []).append(source)
+        object.__setattr__(self, "sources", MappingProxyType(effective))
+        object.__setattr__(self, "layers", MappingProxyType(captured))
+        object.__setattr__(self, "roots", MappingProxyType(root_paths))
+        object.__setattr__(
+            self,
+            "_origins",
+            MappingProxyType({key: tuple(value) for key, value in origins.items()}),
+        )
+
+    @staticmethod
+    def _relative_path(path: Any) -> bool:
+        return (
+            isinstance(path, str)
+            and bool(path)
+            and "\\" not in path
+            and not isabs(path)
+            and path not in (".", "..")
+            and not path.startswith("../")
+            and normpath(path) == path
+        )
+
+    def include(self, owner: SourceText, filename: str) -> SourceText:
+        """Resolve only captured identities; root paths are metadata, never reopened."""
+        if (
+            not isinstance(owner, SourceText)
+            or self.layers.get((owner.layer, owner.source)) != owner
+        ):
+            raise DataError("IDL include owner must be a captured source")
+        if not isinstance(filename, str) or not filename or isabs(filename) or "\\" in filename:
+            raise DataError(f"IDL include escapes the source provider: {filename!r}")
+        relative = normpath(join(dirname(owner.source), filename))
+        root = self.roots.get(owner.layer)
+        if root is not None:
+            origin = normpath(join(root, dirname(owner.source), filename))
+            candidates = self._origins.get(origin, ())
+            same_layer = next(
+                (source for source in candidates if source.layer == owner.layer), None
+            )
+            if same_layer is not None:
+                return same_layer
+            if len(candidates) == 1:
+                return candidates[0]
+            if candidates:
+                raise DataError(f"Ambiguous captured IDL include {filename!r} from {owner.label}")
+            rootless = [
+                source.label
+                for (layer, path), source in self.layers.items()
+                if path == relative and layer not in self.roots
+            ]
+            if rootless:
+                raise DataError(
+                    f"No captured physical origin for IDL include {filename!r} "
+                    f"from {owner.label}; supply idl_source_roots provenance for "
+                    f"{', '.join(rootless)}"
+                )
+        elif self._relative_path(relative):
+            source = self.layers.get((owner.layer, relative), self.sources.get(relative))
+            if source is not None:
+                return source
+        if not self._relative_path(relative):
+            raise DataError(f"IDL include escapes the source provider: {filename!r}")
+        raise DataError(f"Missing captured IDL source {relative!r}, required by {owner.label}")
 
 
 @dataclass(frozen=True, slots=True)

@@ -265,12 +265,34 @@ def check_install() -> None:
     assert statement_body.return_value(statement_symtab) == 2
     statement_symtab.pop()
 
+    from udb.idl.value_bounds import max_value, min_value
+    from udb.idl_architecture import ArchitectureCompiler
+    from udb.idl_environment import condition_symbol_table
+
+    configured = resolved.configure(udb.Configuration.builtin("rv64"))
+    compiler = ArchitectureCompiler(configured)
+    operation = compiler.compile_instruction("addi", effective_xlen=64)
+    assert operation.effective_xlen == 64
+    assert operation.symtab.get("__effective_xlen").value == 64
+    assert operation.symtab.get("imm").decode_var
+    assert operation.source.label.endswith("inst/I/addi.yaml")
+    assert "X[xd]" in operation.source.text
+    bootstrap = condition_symbol_table(resolved)
+    assert bootstrap.get("INSTR_ENC_SIZE").value == 32
+    literal = idl.parse_expression("6'd3")
+    assert min_value(literal, operation.symtab) == max_value(literal, operation.symtab) == 3
+    symbolic_compiler = ArchitectureCompiler(resolved.configure(udb.Configuration.builtin("_")))
+    symbolic_xlen = symbolic_compiler.compile_function("xlen")
+    assert symbolic_xlen.effective_xlen is None
+    assert symbolic_xlen.symtab.get("MXLEN").value is None
+    assert symbolic_xlen.expected_return_type.width == 8
+
     print(
         f"Installed package passed: {len(raw_records)} records, {source_values} source spans, "
         f"{data_references} data / {schema_references} schema references, "
         f"{len(sm_versions)} Sm versions, 532 layout outputs, condition solving & configured queries, "
         f"IDL syntax parsing ({len(bundled_isa_files)} bundled isa/*.{{idl,isa}} files), "
-        "IDL statement typing & execution"
+        "IDL statement typing & execution, captured architecture compilation & value bounds"
     )
 
 

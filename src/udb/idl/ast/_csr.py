@@ -210,7 +210,11 @@ class CsrFieldReadExpression(Node):
         fd = self.field_def(symtab)
         if not fd.exists:
             return 0
-        for effective_xlen in symtab.possible_xlens:
+        bases = {32: fd.defined_in_base32, 64: fd.defined_in_base64}
+        applicable_xlens = tuple(xlen for xlen in symtab.possible_xlens if bases[xlen])
+        if not applicable_xlens:
+            self.value_error(f"'{self.csr_name()}.{self.field_name}' has no applicable XLEN")
+        for effective_xlen in applicable_xlens:
             if fd.type(effective_xlen) != "RO":
                 self.value_error(f"'{self.csr_name()}.{self.field_name}' is not RO")
         v = fd.reset_value

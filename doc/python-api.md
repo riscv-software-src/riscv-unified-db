@@ -96,6 +96,13 @@ and associated YAML comments. Inherited fields point to the parent definition an
 point to the overlay definition; missing exact metadata returns `None` rather than guessing an
 enclosing span. This keeps source details out of `to_dict()` and serialized semantic data.
 
+Resolution also captures original source text. `resolved.source_text(path, layer=...)`
+retrieves the defining YAML text, while `resolved.idl_sources` holds effective IDL files
+and `resolved.idl_source_layers` retains their original overlay versions.
+`resolved.resolve_idl_include(owner, filename)` resolves only captured sources using the
+owner's layer and original location; it never reopens input directories or substitutes
+bundled files. These snapshots remain usable after custom input files are removed.
+
 Use `resolved.reference_at(document, ...)` to inspect a mapping containing `$ref`.
 `DataReference.target` follows a data link lazily and returns a source-aware `ResolvedNode`, so
 cyclic relationships are safe to navigate one edge at a time. `SchemaReference` identifies JSON
@@ -218,6 +225,9 @@ version syntax, accepts legacy full-configuration extension pairs, and preserves
 values and requirements. `non_mandatory_extensions` becomes optional presence in the Python API.
 `to_dict()` returns a mutable serializable copy. Overlay and compatible-configuration declarations
 are retained as metadata; parsing never follows repository paths implicitly.
+Configurations parsed from text, files, or bundled resources retain their original YAML
+in `source_text` for exact IDL diagnostics. Mapping-only inputs have no original text;
+this metadata is neither compared nor emitted by `to_dict()`.
 
 `ParameterDomain` interprets parameter schemas without initializing a solver:
 
@@ -335,6 +345,44 @@ same environment also own their mutable bindings independently.
 
 Python rejects duplicate declarations in the same scope but permits outer-scope
 shadowing. Unknown conditional writes invalidate their destination rather than
-retaining a previously known value. Architecture-bound global/include loading,
-full configured type checking, semantic passes and IDL-condition solving remain
+retaining a previously known value.
+
+## Architecture-bound IDL
+
+`udb.idl_architecture.ArchitectureCompiler(architecture)` loads captured global and
+include sources and returns owned `CompiledIdl` contexts:
+
+```python
+from udb.idl_architecture import ArchitectureCompiler
+
+compiler = ArchitectureCompiler(arch)
+operation = compiler.compile_instruction("addi", effective_xlen=64)
+operation.ast.type_check(operation.symtab)
+print(operation.source.label, operation.effective_xlen)
+```
+
+`compile_function`, `compile_csr` and `compile_field` expose the corresponding
+bodies, binding environments and expected return types. Explicit execution widths
+must be possible for the architecture and structurally applicable to the object.
+Field reset evaluation uses machine MXLEN, not instruction XLEN; a requested
+execution width is still validated. `return_value()` evaluates a fresh clone
+without mutating the compiled context.
+
+`compiler.type_check()` returns `ArchitectureTypeCheckResult`. Its `checked` tuple
+records attempted contexts and `diagnostics` records failures. Applicable
+instructions without an optional `operation()` produce immutable `unavailable`
+records with context, actual record/behavior source, behavior and reason. They are
+not checked successes. `.ok` means no type diagnostics; `.complete` additionally
+requires no unavailable contexts. `.raise_errors()` reports diagnostics only;
+direct compilation of a missing body raises `DataError`. Present empty bodies
+are checked and malformed bodies remain errors.
+
+Native CSR descriptors expose integer addresses and field existence/base/reset
+properties; dynamic access types use `field.type(effective_xlen)`. Field sw-write
+bitfields retain all structurally applicable source fields, even when an explicit
+field is absent from the configured implementation.
+
+`udb.idl.value_bounds.min_value(node, symtab)` and `max_value(node, symtab)` expose
+conservative value bounds. Source spans retain original file coordinates for
+captured includes and YAML bodies. Semantic passes and IDL-condition solving remain
 subsequent Stage 4 integration work.
