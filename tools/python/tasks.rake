@@ -5,8 +5,7 @@ namespace :chore do
 
   desc "Update golden profile_extensions output"
   task :update_golden_profile_extensions do
-    Rake::Task["gen:resolved_arch"].invoke
-    sh "uv run #{$root}/tools/python/profile_extensions.py #{$root}/gen/resolved_spec/_ > #{$root}/tests/golden/profile_extensions.golden"
+    sh "uv run #{$root}/tools/python/profile_extensions.py > #{$root}/tests/golden/profile_extensions.golden"
   end
 
 end
@@ -15,10 +14,8 @@ namespace :test do
 
   desc "Test that generated profile_extensions matched golden version"
   task :profile_extensions do
-    Rake::Task["gen:resolved_arch"].invoke
-
     $logger.info "Testing profile_extensions"
-    sh "uv run #{$root}/tools/python/profile_extensions.py #{$root}/gen/resolved_spec/_ > test-profile_extensions.txt"
+    sh "uv run #{$root}/tools/python/profile_extensions.py > test-profile_extensions.txt"
     sh "diff -u #{$root}/tests/golden/profile_extensions.golden test-profile_extensions.txt" do |ok, res|
 
       rm "test-profile_extensions.txt", :force => true, :verbose => false

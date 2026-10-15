@@ -6,7 +6,9 @@
 | --- | --- |
 | Migration planning and repository inventory | Complete |
 | Stage 1: packaged source database and raw API | Complete locally; CI pending |
-| Stage 2: YAML, schema, overlay, and layout resolution | Pending |
+| Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
+| Stage 2b: schema validation | Implemented separately; integration pending |
+| Stage 2c: layout authoring, serialization, and remaining resolution work | Pending |
 | Stage 3: versions, configurations, conditions, and solving | Pending |
 | Stage 4: IDL compiler and semantic passes | Pending |
 | Stage 5: generators, templates, and document rendering | Pending |
@@ -35,6 +37,21 @@ mutable object behavior, exception hierarchies, or incidental output ordering.
 Python interfaces should be designed as maintainable Python APIs with type
 annotations, explicit inputs, immutable values where practical, useful errors,
 and no process-wide mutable state.
+
+Confirmed Ruby defects corrected during the port are recorded in the running
+[bug-fix log](python-migration-bugfixes.md), with regression tests. The migration
+does not preserve a bug merely to obtain an exact match with Ruby.
+
+## Review stack
+
+Each branch contains one logical capability and builds on the preceding branch.
+These are local branches until publication of the PR stack.
+
+| Branch | Base | Capability |
+| --- | --- | --- |
+| `migration/python-01-package` | `main` | Installable standard database and raw API |
+| `migration/python-02-resolution` | `migration/python-01-package` | Inheritance, overlays, and profile-report cutover |
+| `migration/python-03-schema` (next) | `migration/python-02-resolution` | Offline schema validation |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -607,3 +624,22 @@ system-installed native dependencies used by UDB itself.
   IDL, or generation. The next implementation chunk is Stage 2a: inheritance,
   merge, and schema-default semantics with Ruby parity tests, before layout
   authoring is ported.
+
+### 2026-09-29: Stage 2a resolution and first consumer cutover
+
+- Added in-memory inheritance resolution, ordered overlays, immutable resolved
+  records, and CLI inspection through `--resolved` and `--overlay`.
+- Switched the default profile report to bundled Python resolution. Its Rake
+  wrappers no longer generate a resolved architecture before running it, and
+  the existing profile-output golden remains unchanged.
+- Passed all 63 Python tests with `UDB_TEST_RUBY=1`, including the live Ruby
+  comparison across every standard YAML record. The comparison asserts 12
+  specific corrected backlinks; other semantic content matches.
+- Recorded eight confirmed Ruby defects and their regression tests in
+  [the running bug-fix log](python-migration-bugfixes.md).
+- Wheel/source-archive tests exercise resolution from packaged resources;
+  Python-only CI checks installed resolution and a separate transitional CI
+  job enforces the Ruby differential comparison.
+- Schema defaults are annotations, not values inserted by this resolver.
+  Stage 2b adds explicit schema validation; layout generation, serialization,
+  source spans, and the remaining Stage 2 authoring workflow are still pending.

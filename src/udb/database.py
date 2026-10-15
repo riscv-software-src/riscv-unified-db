@@ -11,7 +11,7 @@ added without implying semantics that are not implemented yet.
 
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from importlib import metadata, resources
 from pathlib import Path, PurePosixPath
@@ -21,7 +21,8 @@ from typing import Any, Self
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
-from .errors import DataError, ObjectNotFoundError, UnknownKindError
+from .errors import DataError, ObjectNotFoundError, ResolutionError, UnknownKindError
+from .resolver import YamlResolver, merge_patch
 
 _KIND_DIRECTORIES = {
     "csr": "csr",
@@ -198,6 +199,11 @@ class Database:
         return self._schemas_root
 
     @property
+    def is_resolved(self) -> bool:
+        """Whether this database has completed YAML inheritance resolution."""
+        return False
+
+    @property
     def kinds(self) -> tuple[str, ...]:
         return tuple(sorted(_KIND_DIRECTORIES))
 
@@ -249,6 +255,29 @@ class Database:
     def profile(self, name: str) -> Profile:
         return self.get("profile", name)  # type: ignore[return-value]
 
+    def resolve(self, *, overlays: Sequence[str | Path] = ()) -> ResolvedDatabase:
+        """Resolve inheritance after applying overlay trees in order.
+
+        Overlay files are matched to source documents by their POSIX path
+        relative to each overlay root and combined with JSON Merge Patch.
+        Schema validation and default insertion are intentionally deferred.
+        """
+        documents = self._load_documents(self._isa_root)
+        for overlay in overlays:
+            overlay_root = Path(overlay).resolve()
+            if not overlay_root.is_dir():
+                raise ResolutionError(f"Overlay ISA directory does not exist: {overlay_root}")
+            for path, patch in self._load_documents(overlay_root, allow_non_mapping=True).items():
+                merged = merge_patch(documents.get(path), patch)
+                if not isinstance(merged, Mapping):
+                    raise ResolutionError(
+                        f"Overlay document {path} must produce a top-level mapping"
+                    )
+                documents[path] = dict(merged)
+
+        resolved = YamlResolver(documents).resolve()
+        return ResolvedDatabase(resolved, schemas_root=self._schemas_root)
+
     def _canonical_kind(self, kind: str) -> str:
         normalized = kind.strip().lower().replace("-", "_")
         normalized = _ALIASES.get(normalized, normalized)
@@ -281,6 +310,18 @@ class Database:
         self._objects[kind] = tuple(records)
         self._object_maps[kind] = MappingProxyType(by_name)
 
+    def _load_documents(self, root: Any, *, allow_non_mapping: bool = False) -> dict[str, Any]:
+        documents: dict[str, Any] = {}
+        for resource, relative_path in sorted(
+            self._yaml_files(root, PurePosixPath()), key=lambda entry: entry[1].as_posix()
+        ):
+            path = relative_path.as_posix()
+            data = self._load_yaml(resource, relative_path)
+            if not allow_non_mapping and not isinstance(data, Mapping):
+                raise DataError(f"UDB document {relative_path} must contain a mapping")
+            documents[path] = _thaw(_freeze(data))
+        return documents
+
     def _yaml_files(self, directory: Any, relative_dir: PurePosixPath):
         for child in directory.iterdir():
             relative_path = relative_dir / child.name
@@ -292,14 +333,23 @@ class Database:
     def _load_record(
         self, resource: Any, relative_path: PurePosixPath, *, expected_kind: str
     ) -> DatabaseObject:
-        try:
-            with resource.open("r", encoding="utf-8") as stream:
-                data = self._yaml.load(stream)
-        except (OSError, UnicodeError, YAMLError) as error:
-            raise DataError(f"Cannot parse UDB YAML document {relative_path}: {error}") from error
+        data = self._load_yaml(resource, relative_path)
 
         if not isinstance(data, Mapping):
             raise DataError(f"UDB document {relative_path} must contain a mapping")
+        return self._record_from_data(data, relative_path, expected_kind=expected_kind)
+
+    def _load_yaml(self, resource: Any, relative_path: PurePosixPath) -> Any:
+        try:
+            with resource.open("r", encoding="utf-8") as stream:
+                return self._yaml.load(stream)
+        except (OSError, UnicodeError, YAMLError) as error:
+            raise DataError(f"Cannot parse UDB YAML document {relative_path}: {error}") from error
+
+    @staticmethod
+    def _record_from_data(
+        data: Mapping[Any, Any], relative_path: PurePosixPath, *, expected_kind: str
+    ) -> DatabaseObject:
         name = data.get("name")
         kind = data.get("kind")
         if not isinstance(name, str) or not name:
@@ -322,3 +372,54 @@ class Database:
             return record_type(name=name, kind=kind, path=relative_path, data=data)
         except DataError as error:
             raise DataError(f"Cannot load UDB YAML document {relative_path}: {error}") from error
+
+
+class ResolvedDatabase(Database):
+    """An immutable database after overlays and YAML inheritance resolution."""
+
+    def __init__(
+        self, documents: Mapping[str, Mapping[Any, Any]], *, schemas_root: Any | None = None
+    ) -> None:
+        super().__init__(None, schemas_root=schemas_root)
+        copied: dict[str, Mapping[Any, Any]] = {}
+        for path, document in documents.items():
+            if not isinstance(document, Mapping):
+                raise ResolutionError(f"Resolved YAML document {path} is not a mapping")
+            copied[path] = _freeze(document)
+        self._resolved_documents = MappingProxyType(copied)
+
+    @property
+    def is_resolved(self) -> bool:
+        return True
+
+    @property
+    def documents(self) -> Mapping[str, Mapping[Any, Any]]:
+        """Resolved documents keyed by their relative POSIX source paths."""
+        return self._resolved_documents
+
+    def resolve(self, *, overlays: Sequence[str | Path] = ()) -> ResolvedDatabase:
+        if overlays:
+            raise ResolutionError("Cannot apply source overlays to an already resolved database")
+        return self
+
+    def _load_kind(self, kind: str) -> None:
+        directory = _KIND_DIRECTORIES[kind]
+        records: list[DatabaseObject] = []
+        by_name: dict[str, DatabaseObject] = {}
+        for path, frozen_data in self._resolved_documents.items():
+            relative_path = PurePosixPath(path)
+            if not relative_path.parts or relative_path.parts[0] != directory:
+                continue
+            data = _thaw(frozen_data)
+            record = self._record_from_data(data, relative_path, expected_kind=kind)
+            if record.name in by_name:
+                previous = by_name[record.name]
+                raise DataError(
+                    f"Duplicate {kind!r} name {record.name!r} in {previous.path} and {record.path}"
+                )
+            by_name[record.name] = record
+            records.append(record)
+
+        records.sort(key=lambda record: (record.name, record.path.as_posix()))
+        self._objects[kind] = tuple(records)
+        self._object_maps[kind] = MappingProxyType(by_name)

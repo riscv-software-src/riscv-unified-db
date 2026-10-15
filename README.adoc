@@ -34,6 +34,7 @@ That said, the following data has been validated against third-party sources:
 ** xref:doc/data-templates.adoc[Data templates]
 ** xref:doc/riscv-opcodes-migration.adoc[`riscv-opcodes` migration]
 ** link:doc/python-migration.md[Ruby-to-Python migration plan]
+** link:doc/python-migration-bugfixes.md[Ruby defects corrected in the Python migration]
 
 == Overview
 
@@ -78,8 +79,8 @@ udb show instruction add
 ----
 
 This package needs Python 3.12 or newer and installs its Python dependencies automatically.
-It runs without Ruby or repository setup. It currently exposes raw records; inheritance,
-configuration resolution, IDL compilation, and generators are covered by the ongoing
+It runs without Ruby or repository setup. It exposes raw records and resolves YAML inheritance
+and overlays. Configuration resolution, IDL compilation, and generators are covered by the ongoing
 link:doc/python-migration.md[migration plan]. See the link:doc/python-api.md[Python API guide].
 
 === Prerequisites
