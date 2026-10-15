@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "v0.3",
+  "$id": "v0.4",
   "title": "Common patterns used by all schemas",
   "$defs": {
     "$source": {
@@ -719,6 +719,9 @@
     },
     "yaml_condition": {
       "oneOf": [
+        {
+          "type": "boolean"
+        },
         {
           "type": "object",
           "properties": {

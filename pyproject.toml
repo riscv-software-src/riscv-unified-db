@@ -21,7 +21,12 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["jsonschema>=4.26.0", "referencing>=0.37.0", "ruamel.yaml>=0.19.1"]
+dependencies = [
+    "jsonschema>=4.26.0",
+    "referencing>=0.37.0",
+    "ruamel.yaml>=0.19.1",
+    "z3-solver>=4.13,<5",
+]
 
 [project.scripts]
 udb = "udb.cli:main"
