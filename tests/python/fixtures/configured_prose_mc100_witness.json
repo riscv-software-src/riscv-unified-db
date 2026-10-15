@@ -1,0 +1,46 @@
+{
+  "configuration": "mc100-32-full-example",
+  "validity": {
+    "valid": true,
+    "reasons": []
+  },
+  "h_implemented": false,
+  "vscall_available": false,
+  "smdbltrp_implemented": false,
+  "double_trap_available": false,
+  "double_trap_solver_available": true,
+  "raw_exception_names": [
+    "InstructionAddressMisaligned",
+    "InstructionAccessFault",
+    "IllegalInstruction",
+    "Breakpoint",
+    "LoadAddressMisaligned",
+    "LoadAccessFault",
+    "StoreAmoAddressMisaligned",
+    "StoreAmoAccessFault",
+    "Ucall",
+    "Scall",
+    "Mcall",
+    "InstructionPageFault",
+    "LoadPageFault",
+    "StoreAmoPageFault",
+    "DoubleTrap"
+  ],
+  "raw_interrupt_names": [
+    "InstructionAddressMisaligned",
+    "InstructionAccessFault",
+    "IllegalInstruction",
+    "Breakpoint",
+    "LoadAddressMisaligned",
+    "LoadAccessFault",
+    "StoreAmoAddressMisaligned",
+    "StoreAmoAccessFault",
+    "Ucall",
+    "Scall",
+    "Mcall",
+    "InstructionPageFault",
+    "LoadPageFault",
+    "StoreAmoPageFault",
+    "DoubleTrap"
+  ]
+}

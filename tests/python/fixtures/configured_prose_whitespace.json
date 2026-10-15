@@ -1,0 +1,2084 @@
+[
+  {
+    "template": "a\n<% if ext?(:H) %>  \nh\n<% end %>\nz",
+    "raw": {
+      "value": "a\nh\nz"
+    }
+  },
+  {
+    "template": "a\n<% if ext?(:H) %>\nh\n<% end %>  \nz",
+    "raw": {
+      "value": "a\nh\nz"
+    }
+  },
+  {
+    "template": "a\n  <% if ext?(:H) %>  \nh\n  <% end %>  \nz",
+    "raw": {
+      "value": "a\nh\nz"
+    }
+  },
+  {
+    "template": "a <% if ext?(:H) -%>\nh<% end %>\nz",
+    "raw": {
+      "value": "a \nh\nz"
+    }
+  },
+  {
+    "template": "a <% if ext?(:Q) -%>\nh<% end -%>\nz",
+    "raw": {
+      "value": "a \nz"
+    }
+  },
+  {
+    "template": "a\nb <%- if ext?(:H) %>h<% end %>\nz",
+    "raw": {
+      "value": "a\nb h\nz"
+    }
+  },
+  {
+    "template": "a\nb <%- if ext?(:Q) %>h<%- end %>\nz",
+    "raw": {
+      "value": "a\nb \nz"
+    }
+  },
+  {
+    "template": "a\n\n  <%- if ext?(:H) -%>\n\nh\n  <%- end -%>\n\nz",
+    "raw": {
+      "value": "a\n\n\nh\n\nz"
+    }
+  },
+  {
+    "template": "a\r\n<% if ext?(:H) %>\r\nh\r\n<% end %>\r\nz",
+    "raw": {
+      "value": "a\nh\nz"
+    }
+  },
+  {
+    "template": "a\r\n<%- if ext?(:H) -%>\r\nh\r\n<%- end -%>\r\nz",
+    "raw": {
+      "value": "a\nh\nz"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %>x<% end %>\n<% if ext?(:H) %>y<% end %>\nz",
+    "raw": {
+      "value": "x\ny\nz"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>\nx\n<% end %><% if ext?(:H) %>\ny\n<% end %>\nz",
+    "raw": {
+      "value": "\ny\nz"
+    }
+  },
+  {
+    "template": "x\n<%= ext?(:H) ? 2 : 1 %>\ny",
+    "raw": {
+      "value": "x\n2\ny"
+    }
+  },
+  {
+    "template": "x\n  <%= ext?(:H) ? 2 : 1 %>  \ny",
+    "raw": {
+      "value": "x\n  2  \ny"
+    }
+  },
+  {
+    "template": "x <%- if ext?(:H) -%> \nz<%- end -%>",
+    "raw": {
+      "value": "x  \nz"
+    }
+  },
+  {
+    "template": "x\n<%- if ext?(:H) -%>\t\nz\n<%- end -%>\t\nw",
+    "raw": {
+      "value": "x\nz\nw"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %>\n\n<% end %>\n",
+    "raw": {
+      "value": "\n"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>\n\n<% else %>\nq\n<% end %>",
+    "raw": {
+      "value": "q\n"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %>body\n<% end %>end",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>body\n<% end %>end",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) %>body\n<%- end %>end",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) %>body\n<%- end %>end",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:H) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "<%- if ext?(:Q) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) %>body\n<% end %>end",
+    "raw": {
+      "value": "xbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) %>body\n<% end %>end",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "xbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) %>body\n<%- end %>end",
+    "raw": {
+      "value": "xbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) %>body\n<%- end %>end",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "xbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "x \nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "x \nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "x \nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "x \nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "x\t\nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "x\t\nbody\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "x\t\nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "x\t\nbody\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "xend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:H) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x<% if ext?(:Q) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:H) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x<%- if ext?(:Q) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) %>body\n<% end %>end",
+    "raw": {
+      "value": "  body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) %>body\n<% end %>end",
+    "raw": {
+      "value": "  end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "  body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "  end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) %>body\n<%- end %>end",
+    "raw": {
+      "value": "  body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) %>body\n<%- end %>end",
+    "raw": {
+      "value": "  end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "  body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "  end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "body\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "end"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:H) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "  <% if ext?(:Q) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:H) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "\nbody\n\nend"
+    }
+  },
+  {
+    "template": "  <%- if ext?(:Q) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) %>body\n<% end %>end",
+    "raw": {
+      "value": "x\n  body\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) %>body\n<% end %>end",
+    "raw": {
+      "value": "x\n  end"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "x\n  body\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "x\n  end"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) %>body\n<%- end %>end",
+    "raw": {
+      "value": "x\n  body\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) %>body\n<%- end %>end",
+    "raw": {
+      "value": "x\n  end"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "x\n  body\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "x\n  end"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:H) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n  <% if ext?(:Q) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:H) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n  <%- if ext?(:Q) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) %>body\n<% end %>end",
+    "raw": {
+      "value": "x\n\tbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) %>body\n<% end %>end",
+    "raw": {
+      "value": "x\n\tend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "x\n\tbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "x\n\tend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) %>body\n<%- end %>end",
+    "raw": {
+      "value": "x\n\tbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) %>body\n<%- end %>end",
+    "raw": {
+      "value": "x\n\tend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "x\n\tbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "x\n\tend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nbody\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "x\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:H) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<% if ext?(:Q) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:H) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\r\n\t<%- if ext?(:Q) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) %>body\n<% end %>end",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) %>body\n<% end %>end",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) -%>body\n<% end -%>end",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) %>body\n<%- end %>end",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) %>body\n<%- end %>end",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) -%>body\n<%- end -%>end",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) %>\nbody\n<% end %>\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) -%>\nbody\n<% end -%>\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) %>\nbody\n<%- end %>\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) -%>\nbody\n<%- end -%>\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) %>\r\nbody\n<% end %>\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) -%>\r\nbody\n<% end -%>\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) %>\r\nbody\n<%- end %>\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) -%>\r\nbody\n<%- end -%>\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) %> \nbody\n<% end %> \nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) -%> \nbody\n<% end -%> \nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) %> \nbody\n<%- end %> \nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) -%> \nbody\n<%- end -%> \nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) %>\t\r\nbody\n<% end %>\t\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) -%>\t\r\nbody\n<% end -%>\t\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) %>\t\r\nbody\n<%- end %>\t\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "x\n\nbody\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) -%>\t\r\nbody\n<%- end -%>\t\r\nend",
+    "raw": {
+      "value": "x\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\n\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) %>\n\nbody\n<% end %>\n\nend",
+    "raw": {
+      "value": "x\n\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:H) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\n\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<% if ext?(:Q) -%>\n\nbody\n<% end -%>\n\nend",
+    "raw": {
+      "value": "x\n\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\n\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) %>\n\nbody\n<%- end %>\n\nend",
+    "raw": {
+      "value": "x\n\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:H) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\n\n\nbody\n\nend"
+    }
+  },
+  {
+    "template": "x\n\n<%- if ext?(:Q) -%>\n\nbody\n<%- end -%>\n\nend",
+    "raw": {
+      "value": "x\n\n\nend"
+    }
+  },
+  {
+    "template": "<%= MXLEN %>end",
+    "raw": {
+      "value": "64end"
+    }
+  },
+  {
+    "template": "<%= MXLEN -%>end",
+    "raw": {
+      "value": "64end"
+    }
+  },
+  {
+    "template": "<%= MXLEN %>\nend",
+    "raw": {
+      "value": "64\nend"
+    }
+  },
+  {
+    "template": "<%= MXLEN -%>\nend",
+    "raw": {
+      "value": "64end"
+    }
+  },
+  {
+    "template": "<%= MXLEN %>\r\nend",
+    "raw": {
+      "value": "64\nend"
+    }
+  },
+  {
+    "template": "<%= MXLEN -%>\r\nend",
+    "raw": {
+      "value": "64end"
+    }
+  },
+  {
+    "template": "<%= MXLEN %> \nend",
+    "raw": {
+      "value": "64 \nend"
+    }
+  },
+  {
+    "template": "<%= MXLEN -%> \nend",
+    "raw": {
+      "value": "64end"
+    }
+  },
+  {
+    "template": "<%= MXLEN %>\n\nend",
+    "raw": {
+      "value": "64\n\nend"
+    }
+  },
+  {
+    "template": "<%= MXLEN -%>\n\nend",
+    "raw": {
+      "value": "64\nend"
+    }
+  },
+  {
+    "template": "  <%= MXLEN %>end",
+    "raw": {
+      "value": "  64end"
+    }
+  },
+  {
+    "template": "  <%= MXLEN -%>end",
+    "raw": {
+      "value": "  64end"
+    }
+  },
+  {
+    "template": "  <%= MXLEN %>\nend",
+    "raw": {
+      "value": "  64\nend"
+    }
+  },
+  {
+    "template": "  <%= MXLEN -%>\nend",
+    "raw": {
+      "value": "  64end"
+    }
+  },
+  {
+    "template": "  <%= MXLEN %>\r\nend",
+    "raw": {
+      "value": "  64\nend"
+    }
+  },
+  {
+    "template": "  <%= MXLEN -%>\r\nend",
+    "raw": {
+      "value": "  64end"
+    }
+  },
+  {
+    "template": "  <%= MXLEN %> \nend",
+    "raw": {
+      "value": "  64 \nend"
+    }
+  },
+  {
+    "template": "  <%= MXLEN -%> \nend",
+    "raw": {
+      "value": "  64end"
+    }
+  },
+  {
+    "template": "  <%= MXLEN %>\n\nend",
+    "raw": {
+      "value": "  64\n\nend"
+    }
+  },
+  {
+    "template": "  <%= MXLEN -%>\n\nend",
+    "raw": {
+      "value": "  64\nend"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN %>end",
+    "raw": {
+      "value": "x\n\t64end"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN -%>end",
+    "raw": {
+      "value": "x\n\t64end"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN %>\nend",
+    "raw": {
+      "value": "x\n\t64\nend"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN -%>\nend",
+    "raw": {
+      "value": "x\n\t64end"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN %>\r\nend",
+    "raw": {
+      "value": "x\n\t64\nend"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN -%>\r\nend",
+    "raw": {
+      "value": "x\n\t64end"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN %> \nend",
+    "raw": {
+      "value": "x\n\t64 \nend"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN -%> \nend",
+    "raw": {
+      "value": "x\n\t64end"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN %>\n\nend",
+    "raw": {
+      "value": "x\n\t64\n\nend"
+    }
+  },
+  {
+    "template": "x\n\t<%= MXLEN -%>\n\nend",
+    "raw": {
+      "value": "x\n\t64\nend"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num %>\n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1\nOne\n2\nTwo\n"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num -%>\n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1One\n2Two\n"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num %> \n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1 \nOne\n2 \nTwo\n"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num -%> \n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1One\n2Two\n"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num %>\r\n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1\nOne\n2\nTwo\n"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num -%>\r\n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1One\n2Two\n"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num %>\n\n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1\n\nOne\n2\n\nTwo\n"
+    }
+  },
+  {
+    "template": "<% implemented_exception_codes.sort_by { |code| code.num }.each do |code| %>\n<%= code.num -%>\n\n<%= code.name %>\n<% end %>\n",
+    "raw": {
+      "value": "1\nOne\n2\nTwo\n"
+    }
+  },
+  {
+    "template": "x\ry\rz",
+    "raw": {
+      "value": "x\ry\rz"
+    }
+  },
+  {
+    "template": "<% if ext?(:Q) %>\nno<% else %>\nyes<% end %>\n",
+    "raw": {
+      "value": "\nyes\n"
+    }
+  },
+  {
+    "template": "<% if ext?(:H) %><% if ext?(:H) %>\na<% end %><% end %>\nz",
+    "raw": {
+      "value": "\na\nz"
+    }
+  }
+]

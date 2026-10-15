@@ -588,6 +588,16 @@ jobs:
       - name: Check layout-derived architecture files
         run: uv run --locked udb generate-layouts --root . --check
 
+  regress-python-configured-prose-frozen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up mise environment
+        uses: ./.github/actions/mise-setup
+      - name: Compare configured prose with frozen Ruby outputs and source inventory
+        run: uv run --locked python -m pytest tests/python/test_configured_prose.py tests/python/test_configured_prose_oracle.py -n 8 --basetemp=gen/prose-tests
+
   regress-python-unit:
     runs-on: ubuntu-latest
     steps:
@@ -1283,6 +1293,7 @@ jobs:
       - regress-python-idl-pass-parity
       - regress-python-idl-condition-parity
       - regress-python-layout-drift
+      - regress-python-configured-prose-frozen
       - regress-python-unit
       - regress-scripts-unit
       - regress-idlc-unit

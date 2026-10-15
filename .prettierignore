@@ -10,3 +10,5 @@ docs/ruby
 ext
 # Preserve the Python generator's byte-for-byte canonical corpus serialization.
 tests/python/data/idl/passes.json
+# Preserve frozen configured-prose templates, raw Ruby oracles and whitespace probes.
+tests/python/fixtures/configured_prose*.json

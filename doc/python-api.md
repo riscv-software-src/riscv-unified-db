@@ -252,6 +252,33 @@ Layout directives use `{{ value }}` and `{% ... %}`. Any literal `<% ... %>` tex
 content preserved for a later configured-document rendering stage; it is not executed by the
 layout renderer.
 
+Configuration-sensitive instruction and CSR prose can be rendered offline from captured database
+and configuration data:
+
+```python
+from udb import Configuration, Database
+from udb.prose import CapturedProse, ProseInputs, render_legacy, render_native
+
+resolved = Database.bundled().resolve()
+inputs = ProseInputs.from_database(resolved, Configuration.builtin("rv64"))
+scalar = CapturedProse.from_record(resolved, resolved.csr("stvec"), "fields", "BASE", "description")
+text = render_legacy(scalar, inputs)
+native = render_native(
+    CapturedProse("{% if extensions.H %}H{% endif %}:{{ params.MXLEN }}"),
+    {"extensions": {"H": True}, "params": {"MXLEN": 64}},
+)
+```
+
+`render_legacy` is a restricted migration adapter for the captured ERB grammar, not a Ruby
+interpreter. Unsupported syntax and unavailable inputs raise `ProseError` with the captured scalar,
+source span, exact tag, configuration facts, and legacy error class when applicable.
+`render_native` uses the bounded layout expression engine and rejects ERB. Structured generator
+consumers should use `resolve_all_exception_records`; `resolved_exception_names` instead selects
+only configuration-available codes. These APIs do not reopen checkout files or invoke Ruby, Git,
+or a solver. There is intentionally no configured-prose CLI. The source YAML remains in legacy
+syntax until its downstream consumers are migrated; see the
+[configured-prose contract and cutover boundary](stage5-configured-prose.md).
+
 The wheel contains the standard ISA YAML, IDL, referenced AsciiDoc sources, authoring layouts, and
 their JSON schemas. The bundled layouts let the authoring command populate an explicit output root
 without reading templates from a repository checkout. Code that needs direct access to those
