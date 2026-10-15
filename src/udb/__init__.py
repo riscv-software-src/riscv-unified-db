@@ -12,11 +12,27 @@ from .database import (
     Profile,
     ResolvedDatabase,
 )
-from .errors import DataError, ObjectNotFoundError, ResolutionError, UdbError, UnknownKindError
+from .errors import (
+    DataError,
+    ObjectNotFoundError,
+    ResolutionError,
+    SerializationError,
+    UdbError,
+    UnknownKindError,
+)
 from .resolver import YamlResolver, merge_patch
 from .schema import SchemaError, SchemaStore
+from .serialization import (
+    SCHEMAS_BASE_URL,
+    dumps_json,
+    dumps_yaml,
+    write_config,
+    write_resolved_database,
+    write_resolved_schemas,
+)
 
 __all__ = [
+    "SCHEMAS_BASE_URL",
     "Csr",
     "DataError",
     "Database",
@@ -29,8 +45,14 @@ __all__ = [
     "ResolvedDatabase",
     "SchemaError",
     "SchemaStore",
+    "SerializationError",
     "UdbError",
     "UnknownKindError",
     "YamlResolver",
+    "dumps_json",
+    "dumps_yaml",
     "merge_patch",
+    "write_config",
+    "write_resolved_database",
+    "write_resolved_schemas",
 ]

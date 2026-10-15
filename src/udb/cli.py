@@ -10,8 +10,10 @@ import json
 from collections.abc import Sequence
 from pathlib import Path
 
-from .database import Database
+from .database import Database, ResolvedDatabase
 from .errors import UdbError
+from .schema import SchemaError, SchemaStore
+from .serialization import write_resolved_schemas
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -51,31 +53,55 @@ def build_parser() -> argparse.ArgumentParser:
     show_parser = subparsers.add_parser("show", help="show one UDB record as JSON")
     show_parser.add_argument("kind", help="record kind, such as extension or instruction")
     show_parser.add_argument("name", help="record name")
+
+    resolve_parser = subparsers.add_parser(
+        "resolve", help="write the resolved database as a deterministic YAML tree"
+    )
+    resolve_parser.add_argument("output", type=Path, help="output directory")
+
+    schemas_parser = subparsers.add_parser(
+        "schemas", help="write versioned schemas for publication"
+    )
+    schemas_parser.add_argument("output", type=Path, help="output directory")
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    if args.overlay and not args.resolved:
+    resolves_database = args.resolved or args.command == "resolve"
+    if args.overlay and not resolves_database:
         parser.error("--overlay requires --resolved")
-    if args.validate and not args.resolved:
+    if args.validate and not resolves_database:
         parser.error("--validate requires --resolved")
-    if args.schemas and not args.path:
+    if args.schemas and not args.path and args.command != "schemas":
         parser.error("--schemas requires --path")
+    if args.command == "schemas" and (args.resolved or args.overlay or args.validate):
+        parser.error("the schemas command does not accept resolution options")
     try:
+        if args.command == "schemas":
+            schema_root = args.schemas
+            if schema_root is None:
+                schema_root = Database.bundled().schemas_root
+            if schema_root is None:
+                raise SchemaError("Database has no schema directory")
+            write_resolved_schemas(SchemaStore(schema_root), args.output)
+            return 0
         database = (
             Database.from_path(args.path, schemas_path=args.schemas)
             if args.path
             else Database.bundled()
         )
-        if args.resolved:
+        if resolves_database:
             database = database.resolve(overlays=args.overlay, validate=args.validate)
         if args.command == "list":
             for record in database.objects(args.kind):
                 print(record.name)
         elif args.command == "show":
             print(json.dumps(database.get(args.kind, args.name).to_dict(), indent=2, default=str))
+        elif args.command == "resolve":
+            assert isinstance(database, ResolvedDatabase)
+            database.write(args.output)
     except UdbError as error:
         parser.exit(2, f"udb: error: {error}\n")
     return 0

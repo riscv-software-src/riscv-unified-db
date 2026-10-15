@@ -16,6 +16,10 @@ class ResolutionError(DataError):
     """Inheritance or overlay resolution failed."""
 
 
+class SerializationError(DataError):
+    """UDB data cannot be serialized deterministically or portably."""
+
+
 class UnknownKindError(UdbError, KeyError):
     """The requested object kind is not present in the database."""
 
