@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from importlib import metadata
 from pathlib import Path, PurePosixPath
 from types import MappingProxyType
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from ruamel.yaml.error import YAMLError
 
@@ -33,6 +33,10 @@ from .resources import package_data_root
 from .schema import SchemaError, SchemaStore
 from .source import ParsedYaml, SourceMap, SourceSpan, merge_patch_with_sources, parse_yaml
 from .versions import ExtensionVersion, ExtensionVersionSet, VersionLike
+
+if TYPE_CHECKING:
+    from .architecture import ConfiguredArchitecture
+    from .configuration import Configuration
 
 _KIND_DIRECTORIES = {
     "csr": "csr",
@@ -592,6 +596,16 @@ class ResolvedDatabase(Database):
         store = SchemaStore(self._schemas_root)
         for path, document in self._resolved_documents.items():
             store.validate(document, source=self._resolved_sources[path])
+
+    def configure(self, configuration: Configuration) -> ConfiguredArchitecture:
+        """Create an immutable configured view from an explicit declaration."""
+
+        from .architecture import ConfiguredArchitecture
+        from .configuration import Configuration
+
+        if not isinstance(configuration, Configuration):
+            raise TypeError("ResolvedDatabase.configure() requires a Configuration")
+        return ConfiguredArchitecture(self, configuration)
 
     def _validate_duplicate_identities(self) -> None:
         identities: dict[tuple[str, str], str] = {}
