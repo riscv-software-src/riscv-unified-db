@@ -685,7 +685,7 @@
     },
     {
       "id": "instruction-table",
-      "status": "pending",
+      "status": "complete locally: native API, CLI, CI and installed wheel/sdist acceptance; repository wrapper cutover pending",
       "legacy_commands": ["./bin/generate inst-table [-c CFG] [-o FILE]"],
       "legacy_sources": [
         "tools/ruby-gems/udb-gen/lib/udb-gen/generators/inst_table/generator.rb",
@@ -701,15 +701,16 @@
         "instruction-table consumers",
         "udb-gen unit/integration tests"
       ],
-      "prospective_owner": "udb.generators.inst_table",
+      "prospective_owner": "udb.instruction_table + udb.instruction_fields",
       "python_cli": "udb generate instruction-table --config CFG [-o FILE]",
       "fixtures": [
-        "tools/ruby-gems/udb-gen/test/{unit,integration}/fixtures/inst_table/expected.txt"
+        "tests/python/fixtures/instruction_table/{legacy-unit,legacy-all-file}.txt",
+        "tests/python/fixtures/instruction_table/native-{all,rv32,rv64,full}-stdout.txt"
       ],
       "comparison_policy": "byte golden incl sort/field modifiers; canonical instruction rows",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: existing unit and integration fixture migration"
+        "installed_wheel_sdist_offline": "passed: wheel rebuilt from sdist, complete artifact hashes and actual installed CLI outside checkout",
+        "repository_ci": "regress-udb-gen-integration: native table/descriptor/CLI tests alongside Ruby oracle"
       }
     },
     {
