@@ -29,6 +29,9 @@ description: |
   In S/HS-mode, `scountovf` bit X is readable when `mcounteren` bit X is set, and otherwise reads as zero.
   Similarly, in VS-mode, it is readable when both `mcounteren` and `hcounteren` bit X are set.
 
+  If the Smcdeleg extension is implemented and `menvcfg.CDE` is set, attempts to read `scountovf`
+  from VS-mode or VU-mode raise a `Virtual Instruction` exception.
+
 fields:
 <%- (3..31).each do |of_num| -%>
   OF<%= of_num %>:
@@ -47,6 +50,10 @@ fields:
 <%- end -%>
 
 sw_read(): |
+  if (virtual_mode?() && implemented?(ExtensionName::Smcdeleg) && CSR[menvcfg].CDE == 1) {
+    # Smcdeleg/Ssccfg: when menvcfg.CDE=1, reads from VS-mode or VU-mode raise a virtual-instruction exception
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
   Bits<32> mask;
   if (mode() == PrivilegeMode::VS) {
     # In VS-mode, scountovf.OFX access is determined by mcounteren/hcounteren

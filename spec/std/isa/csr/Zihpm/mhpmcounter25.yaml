@@ -11,6 +11,8 @@ kind: csr
 name: mhpmcounter25
 long_name: Machine Hardware Performance Counter 25
 address: 0xB19
+indirect_address: 0x59
+indirect_slot: 1
 writable: true
 priv_mode: M
 length: 64

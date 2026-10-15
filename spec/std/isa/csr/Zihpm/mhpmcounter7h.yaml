@@ -11,6 +11,8 @@ kind: csr
 name: mhpmcounter7h
 long_name: Machine Hardware Performance Counter 7, Upper half
 address: 0xB87
+indirect_address: 0x47
+indirect_slot: 4
 writable: true
 priv_mode: M
 length: 32

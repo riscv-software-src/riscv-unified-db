@@ -11,6 +11,8 @@ kind: csr
 name: mhpmcounter6
 long_name: Machine Hardware Performance Counter 6
 address: 0xB06
+indirect_address: 0x46
+indirect_slot: 1
 writable: true
 priv_mode: M
 length: 64

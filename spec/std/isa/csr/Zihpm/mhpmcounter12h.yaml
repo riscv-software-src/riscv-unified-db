@@ -11,6 +11,8 @@ kind: csr
 name: mhpmcounter12h
 long_name: Machine Hardware Performance Counter 12, Upper half
 address: 0xB8C
+indirect_address: 0x4C
+indirect_slot: 4
 writable: true
 priv_mode: M
 length: 32

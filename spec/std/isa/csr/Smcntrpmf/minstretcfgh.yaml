@@ -7,6 +7,8 @@ kind: csr
 name: minstretcfgh
 long_name: Machine Instructions-Retired Counter Configuration High
 address: 0x722
+indirect_address: 0x42
+indirect_slot: 5
 writable: true
 priv_mode: M
 length: 32

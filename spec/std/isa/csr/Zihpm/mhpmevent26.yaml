@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent26
 long_name: Machine Hardware Performance Counter 26 Control
 address: 0x33A
+indirect_address: 0x5A
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64
