@@ -27,6 +27,113 @@ def tree_digest(root: Path) -> dict[str, str]:
     }
 
 
+def check_config_headers(resolved: udb.ResolvedDatabase) -> None:
+    """Use bundled ISA data and an explicit full config, never a checkout path."""
+    from udb.generators.config_headers import generate_config_header
+
+    # Explicit values from the reviewed MC100 full-config artifact oracle.
+    params = {
+        "MXLEN": 32,
+        "MARCHID_IMPLEMENTED": True,
+        "ARCH_ID_VALUE": 1,
+        "MIMPID_IMPLEMENTED": True,
+        "IMP_ID_VALUE": 0,
+        "VENDOR_ID_BANK": 1,
+        "VENDOR_ID_OFFSET": 1,
+        "MISALIGNED_LDST": True,
+        "MISALIGNED_LDST_EXCEPTION_PRIORITY": "low",
+        "MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE": 4,
+        "MISALIGNED_SPLIT_STRATEGY": "sequential_bytes",
+        "PRECISE_SYNCHRONOUS_EXCEPTIONS": True,
+        "TRAP_ON_ECALL_FROM_M": True,
+        "TRAP_ON_EBREAK": True,
+        "M_MODE_ENDIANNESS": "little",
+        "TRAP_ON_ILLEGAL_WLRL": True,
+        "TRAP_ON_UNIMPLEMENTED_INSTRUCTION": True,
+        "TRAP_ON_RESERVED_INSTRUCTION": True,
+        "TRAP_ON_UNIMPLEMENTED_CSR": True,
+        "REPORT_VA_IN_MTVAL_ON_BREAKPOINT": True,
+        "REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED": True,
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED": True,
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED": True,
+        "REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT": True,
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT": True,
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT": True,
+        "REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION": True,
+        "MTVAL_WIDTH": 32,
+        "PMA_GRANULARITY": 12,
+        "PHYS_ADDR_WIDTH": 32,
+        "MISA_CSR_IMPLEMENTED": True,
+        "MCOUNTINHIBIT_IMPLEMENTED": True,
+        "MTVEC_ACCESS": "rw",
+        "MTVEC_ILLEGAL_WRITE_BEHAVIOR": "retain",
+        "MTVEC_MODES": [0, 1],
+        "MTVEC_BASE_ALIGNMENT_DIRECT": 4,
+        "MTVEC_BASE_ALIGNMENT_VECTORED": 4,
+        "MUTABLE_MISA_C": False,
+        "MUTABLE_MISA_M": False,
+        "TIME_CSR_IMPLEMENTED": False,
+        "NUM_PMP_ENTRIES": 0,
+        "COUNTINHIBIT_EN": [False] * 32,
+        "HPM_COUNTER_EN": [False] * 32,
+        "MCOUNTENABLE_EN": [False] * 32,
+        "MEI_INTR_IMPL": False,
+        "MSI_INTR_IMPL": False,
+        "MTI_INTR_IMPL": False,
+        "WFI_U_MODE": False,
+        "WFI_FINITE": True,
+        "NON_STANDARD_EXTENSION_IMPLEMENTED": False,
+    }
+    data = {
+        "$schema": "config_schema.json#",
+        "kind": "architecture configuration",
+        "type": "fully configured",
+        "name": "MC100-32-Full",
+        "description": "Installed representative full configuration",
+        "implemented_extensions": [
+            ["Sm", "1.11.0"],
+            ["I", "2.1"],
+            ["C", "2.0"],
+            ["Zca", "1.0"],
+            ["M", "2.0"],
+            ["Zmmul", "1.0"],
+            ["Zicsr", "2.0"],
+            ["Zicntr", "2.0"],
+            ["Smrnmi", "1.0"],
+        ],
+        "params": params,
+    }
+    architecture = resolved.configure(udb.Configuration(data))
+    command = str(Path(sys.executable).with_name("udb"))
+    config_path = Path("installed-header-config.json")
+    config_path.write_text(json.dumps(data), encoding="utf-8")
+    outputs = []
+    try:
+        for language, digest in (
+            ("c", "30a017e616ec65efe91f54bf42d4a60c239baa705b60d132b4d2e09b9968a825"),
+            ("svh", "f165e1837de0e3caca5532653fb9f3e370104cedd31bed4f5becc4d3a8979030"),
+        ):
+            expected = generate_config_header(architecture, language).encode()
+            assert hashlib.sha256(expected).hexdigest() == digest
+            args = [command, "generate", f"cfg-{language}-header", "-c", str(config_path)]
+            stdout = subprocess.run(args, check=True, capture_output=True)
+            assert stdout.stdout == expected and stdout.stderr == b""
+            output = Path(f"installed-config.{language}")
+            outputs.append(output)
+            written = subprocess.run([*args, "-o", str(output)], check=True, capture_output=True)
+            assert written.stdout == written.stderr == b""
+            assert output.read_bytes() == expected
+        rejected = subprocess.run(
+            [command, "generate", "cfg-c-header"], check=False, capture_output=True
+        )
+        assert rejected.returncode == 2 and rejected.stdout == b""
+        assert b"not fully configured" in rejected.stderr
+    finally:
+        config_path.unlink(missing_ok=True)
+        for output in outputs:
+            output.unlink(missing_ok=True)
+
+
 def check_configuration_diagnostics(resolved: udb.ResolvedDatabase) -> None:
     from udb.configuration_diagnostics import explain_conflict, format_check_diagnostics
 
@@ -163,6 +270,7 @@ def check_install() -> None:
     assert rv64_arch.check().status is udb.ArchitectureCheckStatus.VALID
     assert "add" in [inst.name for inst in rv64_arch.possible_instructions]
     check_configuration_diagnostics(resolved)
+    check_config_headers(resolved)
 
     data_references = schema_references = source_values = 0
     source_documents: set[str] = set()
