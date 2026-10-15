@@ -35,6 +35,9 @@ access:
 operation(): |
   VectorState state = vector_state();
 
+  if (!implemented?(ExtensionName::Zve64x) && state.sew > 32) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
 
   VectorLmulType lmul_type = state.lmul_type;
 
