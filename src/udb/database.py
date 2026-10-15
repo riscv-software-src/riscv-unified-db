@@ -32,6 +32,7 @@ from .resolver import YamlResolver
 from .resources import package_data_root
 from .schema import SchemaError, SchemaStore
 from .source import ParsedYaml, SourceMap, SourceSpan, merge_patch_with_sources, parse_yaml
+from .versions import ExtensionVersion, ExtensionVersionSet, VersionLike
 
 _KIND_DIRECTORIES = {
     "csr": "csr",
@@ -149,6 +150,59 @@ class DatabaseObject(Mapping[Any, Any]):
 
 class Extension(DatabaseObject):
     """A raw extension record."""
+
+    @property
+    def version_set(self) -> ExtensionVersionSet:
+        """Return this extension's immutable, numerically ordered releases."""
+        values = self.data.get("versions")
+        if not isinstance(values, Sequence) or isinstance(values, str | bytes):
+            raise DataError(f"Extension {self.name!r} has no valid versions sequence")
+        try:
+            return ExtensionVersionSet.from_metadata(self.name, values)
+        except (TypeError, ValueError) as error:
+            raise DataError(
+                f"Extension {self.name!r} has invalid version metadata: {error}"
+            ) from error
+
+    @property
+    def versions(self) -> tuple[ExtensionVersion, ...]:
+        return self.version_set.versions
+
+    def version(self, value: VersionLike) -> ExtensionVersion:
+        """Return an exact release by version."""
+        try:
+            result = self.version_set.get(value)
+        except (TypeError, ValueError) as error:
+            raise ObjectNotFoundError(
+                f"Invalid version {value!r} requested for extension {self.name!r}"
+            ) from error
+        if result is None:
+            raise ObjectNotFoundError(f"Extension {self.name!r} has no version {value!r}")
+        return result
+
+    def compatible_versions(self, value: VersionLike) -> tuple[ExtensionVersion, ...]:
+        """Return releases compatible with the requested version boundary."""
+        return self.version_set.compatible_versions(value)
+
+    @property
+    def ratified_versions(self) -> tuple[ExtensionVersion, ...]:
+        return tuple(version for version in self.versions if version.state == "ratified")
+
+    @property
+    def min_version(self) -> ExtensionVersion:
+        if not self.versions:
+            raise DataError(f"Extension {self.name!r} has no versions")
+        return self.versions[0]
+
+    @property
+    def max_version(self) -> ExtensionVersion:
+        if not self.versions:
+            raise DataError(f"Extension {self.name!r} has no versions")
+        return self.versions[-1]
+
+    @property
+    def min_ratified_version(self) -> ExtensionVersion | None:
+        return self.ratified_versions[0] if self.ratified_versions else None
 
 
 class Instruction(DatabaseObject):

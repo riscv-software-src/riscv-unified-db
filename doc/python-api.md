@@ -54,6 +54,34 @@ and scalars replace, and null removes a key. Inheritance then expands `$inherits
 in order followed by child overrides, and applies `$remove`. Null in an inheritance override
 remains null. The source database and files are unchanged.
 
+RISC-V versions and requirements are available as immutable values:
+
+```python
+from udb import Database, Version, VersionRequirement, parse_version_requirements
+
+version = Version.parse("1.2")
+assert version.canonical == "1.2.0"
+assert version.to_rvi() == "1p2"
+
+requirement = VersionRequirement.parse(">= 1.1")
+assert requirement.matches(version)
+assert parse_version_requirements([">= 1", "< 2"]) == (
+    VersionRequirement.parse(">= 1"),
+    VersionRequirement.parse("< 2"),
+)
+
+sm = Database.bundled().extension("Sm")
+assert sm.version("1.12").canonical == "1.12.0"
+assert requirement.matches(sm.version("1.12").version)
+```
+
+`VersionRequirement` supports `=`, `!=`, `<`, `<=`, `>`, `>=`, and `~>`. A bare version is exact
+equality. The compatible operator uses an extension's ordered version metadata rather than SemVer:
+versions remain compatible upward until the next release marked `breaking: true`. Pass
+`versions=extension.version_set` to `matches()` for `~>`, or call
+`extension.compatible_versions(version)` directly. Missing or empty requirement lists normalize to
+`>= 0.0.0`. Extension version metadata, changes, and returned collections are immutable.
+
 `resolved.documents` exposes the resolved mappings keyed by relative source path. `$child_of`
 and `$parent_of` record inheritance relationships. Data `$ref` links remain references; they are
 not expanded. Resolution does not apply schema defaults, choose extension versions, evaluate

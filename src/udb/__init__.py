@@ -44,6 +44,14 @@ from .serialization import (
     write_resolved_schemas,
 )
 from .source import SourceMap, SourceSpan
+from .versions import (
+    ExtensionVersion,
+    ExtensionVersionSet,
+    RequirementOperator,
+    Version,
+    VersionRequirement,
+    parse_version_requirements,
+)
 
 __all__ = [
     "SCHEMAS_BASE_URL",
@@ -55,6 +63,8 @@ __all__ = [
     "Database",
     "DatabaseObject",
     "Extension",
+    "ExtensionVersion",
+    "ExtensionVersionSet",
     "GeneratedFile",
     "Instruction",
     "LayoutError",
@@ -63,6 +73,7 @@ __all__ = [
     "Profile",
     "Reference",
     "ReferenceError",
+    "RequirementOperator",
     "ResolutionError",
     "ResolvedDatabase",
     "ResolvedNode",
@@ -74,6 +85,8 @@ __all__ = [
     "SourceSpan",
     "UdbError",
     "UnknownKindError",
+    "Version",
+    "VersionRequirement",
     "YamlResolver",
     "dumps_json",
     "dumps_yaml",
@@ -82,6 +95,7 @@ __all__ = [
     "layout_plan",
     "layout_sources",
     "merge_patch",
+    "parse_version_requirements",
     "render_layout",
     "write_config",
     "write_resolved_database",
