@@ -30,21 +30,21 @@ description: |
   Similarly, in VS-mode, it is readable when both `mcounteren` and `hcounteren` bit X are set.
 
 fields:
-<%- (3..31).each do |of_num| -%>
-  OF<%= of_num %>:
-    alias: mhpmevent<%= of_num %>.OF
-    location: <%= of_num %>
+{%- for of_num in hpm_numbers -%}
+  OF{{ of_num }}:
+    alias: mhpmevent{{ of_num }}.OF
+    location: {{ of_num }}
     description: |
-      [when="HPM_COUNTER_EN[<%= of_num %>] == true"]
-      Shadow copy of mhpmevent<%= of_num %> overflow (OF) bit.
+      [when="HPM_COUNTER_EN[{{ of_num }}] == true"]
+      Shadow copy of mhpmevent{{ of_num }} overflow (OF) bit.
 
-      [when="HPM_COUNTER_EN[<%= of_num %>] == false"]
+      [when="HPM_COUNTER_EN[{{ of_num }}] == false"]
       This field is read-only zero because the counter is not enabled.
     type(): |
-      return HPM_COUNTER_EN[<%= of_num %>] ? CsrFieldType::ROH : CsrFieldType::RO;
+      return HPM_COUNTER_EN[{{ of_num }}] ? CsrFieldType::ROH : CsrFieldType::RO;
     reset_value(): |
-      return HPM_COUNTER_EN[<%= of_num %>] ? UNDEFINED_LEGAL : 0;
-<%- end -%>
+      return HPM_COUNTER_EN[{{ of_num }}] ? UNDEFINED_LEGAL : 0;
+{%- endfor -%}
 
 sw_read(): |
   Bits<32> mask;
@@ -57,8 +57,8 @@ sw_read(): |
   }
 
   Bits<32> value = 0;
-  <%- (3..31).each do |num| -%>
-    value = value | (CSR[mhpmevent<%= num %>].OF << <%= num %>);
-  <%- end -%>
+  {%- for num in hpm_numbers -%}
+    value = value | (CSR[mhpmevent{{ num }}].OF << {{ num }});
+  {%- endfor -%}
 
   return value & mask;

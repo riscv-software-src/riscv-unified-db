@@ -83,7 +83,10 @@ Key data types and their locations:
 - **CSRs**: `spec/std/isa/csr/<Extension>/<name>.yaml`
 - **Profiles**: `spec/std/isa/profile/`, `spec/std/isa/profile_release/`, `spec/std/isa/profile_family/`
 
-Some files are auto-generated from `.layout` ERB templates (e.g., AMO variants, HPM counters, PMP registers). Run `./do gen:arch` to regenerate them. Auto-generated files are read-only (chmod 0444).
+Some files are auto-generated from Python-native `.layout` templates (e.g., AMO variants, HPM
+counters, PMP registers). Run `./do gen:arch` to regenerate them or
+`udb generate-layouts --root . --check` to check for drift. Auto-generated files are read-only
+(chmod 0444).
 
 ### Configurations (`cfgs/`)
 

@@ -2,61 +2,30 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
-<%-
-  raise "'size' must be defined as 'w' or 'd'" unless %w[w d].include?(size)
-  raise "'aq' must be defined as true or false" unless [true, false].include?(aq)
-  raise "'rl' must be defined as true or false" unless [true, false].include?(rl)
-
-  size_info = {
-    "w" => {
-      long_name_suffix: "Word",
-      funct3: "010",
-      align_bits: "32",
-      load_reserved_bits: "32",
-      aq_not: aq ? "0" : "1",
-      rl_not: rl ? "0" : "1"
-    },
-    "d" => {
-      long_name_suffix: "Doubleword",
-      funct3: "011",
-      align_bits: "64",
-      load_reserved_bits: "64",
-      aq_not: aq ? "0" : "1",
-      rl_not: rl ? "0" : "1"
-    }
-  }
-
-  current_size = size_info[size]
-
-  aq_rl_suffix = ""
-  aq_rl_suffix << "." if aq || rl
-  aq_rl_suffix << "aq" if aq
-  aq_rl_suffix << "rl" if rl
--%>
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: lr.<%= size %><%= aq_rl_suffix %>
-long_name: Load Reserved <%= current_size[:long_name_suffix] %>
+name: lr.{{ size }}{{ aq_rl_suffix }}
+long_name: Load Reserved {{ current_size.long_name_suffix }}
 description: |
-<%- if size == "w" -%>
+{%- if size == "w" -%}
   Loads a word from the address in xs1, places the sign-extended value in xd,
   and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the
   addressed word.
 
-  <%%- if MXLEN == 64 -%>
+  <%- if MXLEN == 64 -%>
   The 32-bit load result is sign-extended to 64-bits.
-  <%%- end -%>
+  <%- end -%>
 
   The address in xs1 must be naturally aligned to the size of the operand
   (_i.e._, eight-byte aligned for doublewords and four-byte aligned for words).
-<%- else -%>
+{%- else -%}
   Loads a word from the address in xs1, places the value in xd,
   and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the
   addressed word.
 
   The address in xs1 must be 8-byte aligned.
-<%- end -%>
+{%- endif -%}
 
   If the address is not naturally aligned, a `LoadAddressMisaligned` exception or an
   `LoadAccessFault` exception will be generated. The access-fault exception can be generated
@@ -90,25 +59,25 @@ description: |
   LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those
   with both bits clear, but may result in lower performance.
 definedBy:
-<%- if size == "d" -%>
+{%- if size == "d" -%}
   allOf:
     - xlen: 64
     - extension:
         name: Zalrsc
-<%- else -%>
+{%- else -%}
   extension:
     name: Zalrsc
-<%- end -%>
+{%- endif -%}
 assembly: xd, (xs1)
 encoding:
-  match: 00010--00000-----<%= current_size[:funct3] %>-----0101111
+  match: 00010--00000-----{{ current_size.funct3 }}-----0101111
   variables:
     - name: aq
       location: 26
-      not: <%= current_size[:aq_not] %>
+      not: {{ current_size.aq_not }}
     - name: rl
       location: 25
-      not: <%= current_size[:rl_not] %>
+      not: {{ current_size.rl_not }}
     - name: xs1
       location: 19-15
     - name: xd
@@ -121,7 +90,7 @@ access:
 operation(): |
   XReg virtual_address = X[xs1];
 
-  if (!is_naturally_aligned(<%= current_size[:align_bits] %>, virtual_address)) {
+  if (!is_naturally_aligned({{ current_size.align_bits }}, virtual_address)) {
     # can raise either LoadAddressMisaligned *or* LoadAccessFault
     #
     # from the spec:
@@ -139,9 +108,9 @@ operation(): |
     }
   }
 
-  XReg load_value = load_reserved(<%= current_size[:load_reserved_bits] %>, virtual_address, aq, rl, $encoding);
-<%- if size == "w" -%>
+  XReg load_value = load_reserved({{ current_size.load_reserved_bits }}, virtual_address, aq, rl, $encoding);
+{%- if size == "w" -%}
   X[xd] = sext(load_value[31:0], 32);
-<%- else -%>
+{%- else -%}
   X[xd] = load_value;
-<%- end -%>
+{%- endif -%}

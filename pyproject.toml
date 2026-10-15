@@ -62,6 +62,7 @@ include = [
     "/spec/std/isa/**/*.adoc",
     "/spec/std/isa/**/*.idl",
     "/spec/std/isa/**/*.isa",
+    "/spec/std/isa/**/*.layout",
     "/spec/std/isa/**/*.yaml",
 ]
 

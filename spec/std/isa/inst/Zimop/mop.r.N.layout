@@ -2,41 +2,22 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
-<%-
-  raise "'n' must be defined as an integer between 0 and 31" unless (0..31).include?(n)
-
-  # Encoding for mop.r.n:
-  # Original match pattern: 1-00--0111-------100-----1110011 (32 bits)
-  # Variable 'n' is encoded in bits: 30|27-26|21-20
-  # Bit 30: n[4], Bits 27-26: n[3:2], Bits 21-20: n[1:0]
-
-  bit_30 = (n >> 4) & 1        # n[4]
-  bit_27 = (n >> 3) & 1        # n[3]
-  bit_26 = (n >> 2) & 1        # n[2]
-  bit_21 = (n >> 1) & 1        # n[1]
-  bit_20 = n & 1               # n[0]
-
-  # Build the 32-bit match string:
-  # Bits: 31  30  29-28 27  26  25-22 21  20  19-15    14-12 11-7     6-0
-  #       1   n4  00    n3  n2  0111  n1  n0  -----    100   -----    1110011
-  match = "1#{bit_30}00#{bit_27}#{bit_26}0111#{bit_21}#{bit_20}-----100-----1110011"
--%>
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: mop.r.<%= n %>
-long_name: May-be-operation <%= n %> (1 source register)
+name: mop.r.{{ n }}
+long_name: May-be-operation {{ n }} (1 source register)
 description: |
   Unless redefined by another extension, this instruction simply writes 0 to X[xd].
   The encoding allows future extensions to define it to read X[xs1], as well as write X[xd].
 
-  This is mop.r.<%= n %> from the MOP.R instruction family (n=<%= n %>).
+  This is mop.r.{{ n }} from the MOP.R instruction family (n={{ n }}).
 definedBy:
   extension:
     name: Zimop
 assembly: xd, xs1
 encoding:
-  match: "<%= match %>"
+  match: "{{ match }}"
   variables:
     - name: xs1
       location: 19-15
@@ -48,10 +29,10 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
-<% if n == 28 -%>
+{% if n == 28 -%}
 hints:
   - { $ref: inst/Zicfiss/sspopchk.yaml# }
   - { $ref: inst/Zicfiss/ssrdp.yaml# }
-<% end -%>
+{% endif -%}
 operation(): |
   X[xd] = 0;

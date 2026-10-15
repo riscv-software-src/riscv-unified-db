@@ -2,71 +2,41 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
-<%-
-  raise "'size' must be defined as 'b', 'h', 'w', or 'd'" unless %w[b h w d].include?(size)
-  raise "'aq' must be defined as true or false" unless [true, false].include?(aq)
-
-  size_info = {
-    "b" => { funct3: "000", long_name_suffix: "Byte", bits: 8 },
-    "h" => { funct3: "001", long_name_suffix: "Halfword", bits: 16 },
-    "w" => { funct3: "010", long_name_suffix: "Word", bits: 32 },
-    "d" => { funct3: "011", long_name_suffix: "Doubleword", bits: 64 }
-  }
-
-  current_size = size_info[size]
-
-  aq_rl_suffix = aq ? ".aqrl" : ".rl"
-  aq_bit = aq ? "1" : "0"
-  acquire_suffix = aq ? " Acquire" : ""
-  release_suffix = " Release"
-
-  aq_bit_val = aq ? "1'b1" : "1'b0"
-  rl_bit_val = "1'b1"
-
-  alignment_bytes = current_size[:bits] / 8
-
-  store_slice = case size
-                when "b" then "[7:0]"
-                when "h" then "[15:0]"
-                when "w" then "[31:0]"
-                when "d" then ""
-                end
--%>
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: s<%= size %><%= aq_rl_suffix %>
-long_name: Store <%= current_size[:long_name_suffix] %><%= acquire_suffix %><%= release_suffix %>
+name: s{{ size }}{{ aq_rl_suffix }}
+long_name: Store {{ current_size.long_name_suffix }}{{ acquire_suffix }}{{ release_suffix }}
 description: |
-  Store the lowest <%= current_size[:bits] %> bits of register `xs2` to the address in `xs1`.
-<% if aq -%>
+  Store the lowest {{ current_size.bits }} bits of register `xs2` to the address in `xs1`.
+{% if aq -%}
 
   This instruction has both acquire and release semantics. No subsequent memory
   operations (in program order) from this hart can be observed to occur before
   this store completes, and no previous memory operations can be observed to occur
   after this store completes.
-<% else -%>
+{% else -%}
 
   This instruction has release semantics, which means that no previous memory
   operations (in program order) from this hart can be observed to occur after
   this store completes. Release semantics provide ordering guarantees useful for
   synchronization, such as writing a lock variable to release it.
-<% end -%>
-<% if current_size[:bits] == 8 -%>
+{% endif -%}
+{% if current_size.bits == 8 -%}
 
   The address must be naturally aligned; if not, an address-misaligned or
   access-fault exception will be raised.
-<% else -%>
+{% else -%}
 
-  The address must be naturally aligned (<%= alignment_bytes %>-byte aligned); if not, an
+  The address must be naturally aligned ({{ alignment_bytes }}-byte aligned); if not, an
   address-misaligned or access-fault exception will be raised.
-<% end -%>
+{% endif -%}
 definedBy:
   extension:
     name: Zalasr
 assembly: xs2, (xs1)
 encoding:
-  match: 00111<%= aq_bit %>1----------<%= current_size[:funct3] %>000000101111
+  match: 00111{{ aq_bit }}1----------{{ current_size.funct3 }}000000101111
   variables:
     - name: xs2
       location: 24-20
@@ -81,8 +51,8 @@ data_independent_timing: false
 operation(): |
   XReg virtual_address = X[xs1];
 
-  if (!is_naturally_aligned(<%= current_size[:bits] %>, virtual_address)) {
+  if (!is_naturally_aligned({{ current_size.bits }}, virtual_address)) {
     raise(ExceptionCode::StoreAmoAddressMisaligned, mode(), virtual_address);
   }
 
-  write_memory_aligned(<%= current_size[:bits] %>, virtual_address, X[xs2]<%= store_slice %>, $encoding, <%= aq_bit_val %>, <%= rl_bit_val %>);
+  write_memory_aligned({{ current_size.bits }}, virtual_address, X[xs2]{{ store_slice }}, $encoding, {{ aq_bit_val }}, {{ rl_bit_val }});

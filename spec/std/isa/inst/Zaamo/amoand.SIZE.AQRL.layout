@@ -3,59 +3,31 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
-<%-
-  raise "'size' must be defined as 'b', 'h', 'w', or 'd'" unless %w[b h w d].include?(size)
-  raise "'aq' must be defined as true or false" unless [true, false].include?(aq)
-  raise "'rl' must be defined as true or false" unless [true, false].include?(rl)
-
-  size_info = {
-    "b" => { name: "byte", bits: 8, funct3: "000", operation_bits: "8" },
-    "h" => { name: "halfword", bits: 16, funct3: "001", operation_bits: "16" },
-    "w" => { name: "word", bits: 32, funct3: "010", operation_bits: "32" },
-    "d" => { name: "doubleword", bits: 64, funct3: "011", operation_bits: "64" }
-  }
-
-  current_size = size_info[size]
-
-  # Generate instruction name suffix based on aq/rl
-  aq_rl_suffix = ""
-  if aq && rl
-    aq_rl_suffix = ".aqrl"
-  elsif aq
-    aq_rl_suffix = ".aq"
-  elsif rl
-    aq_rl_suffix = ".rl"
-  end
-
-  # Generate match string with fixed aq/rl bits
-  aq_bit = aq ? "1" : "0"
-  rl_bit = rl ? "1" : "0"
--%>
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amoand.<%= size %><%= aq_rl_suffix %>
-long_name: Atomic fetch-and-and <%= current_size[:name] %><%= aq && rl ? " (acquire-release)" : (aq ? " (acquire)" : (rl ? " (release)" : "")) %>
+name: amoand.{{ size }}{{ aq_rl_suffix }}
+long_name: Atomic fetch-and-and {{ current_size.name }}{{ ordering_parenthetical }}
 description: |
-  Atomically<%= aq && rl ? " with acquire and release ordering" : (aq ? " with acquire ordering" : (rl ? " with release ordering" : "")) %>:
+  Atomically{{ ordering_description }}:
 
-    * Load the <%= current_size[:name] %> at address _xs1_
-    * Write the <%= %w[b h w].include?(size) ? "sign-extended value" : "loaded value" %> into _xd_
-    * AND the <%= %w[b h w].include?(size) ? "least-significant #{current_size[:name]} of register" : "value of register" %> _xs2_ to the loaded value
+    * Load the {{ current_size.name }} at address _xs1_
+    * Write the {{ load_result_description }} into _xd_
+    * AND the {{ operand_description }} _xs2_ to the loaded value
     * Write the result to the address in _xs1_
 definedBy:
-<%- if size == "d" -%>
+{%- if size == "d" -%}
   allOf:
     - extension:
-        name: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
+        name: {{ amo_extension }}
     - xlen: 64
-<%- else -%>
+{%- else -%}
   extension:
-    name: <%= %w[b h].include?(size) ? "Zabha" : "Zaamo" %>
-<%- end -%>
+    name: {{ amo_extension }}
+{%- endif -%}
 assembly: xd, xs2, (xs1)
 encoding:
-  match: 01100<%= aq_bit %><%= rl_bit %>----------<%= current_size[:funct3] %>-----0101111
+  match: 01100{{ aq_bit }}{{ rl_bit }}----------{{ current_size.funct3 }}-----0101111
   variables:
     - name: xs2
       location: 24-20
@@ -69,13 +41,13 @@ access:
   vs: always
   vu: always
 operation(): |
-<% if aq -%>
+{% if aq -%}
   memory_model_acquire();
 
-<% end -%>
+{% endif -%}
   XReg virtual_address = X[xs1];
-  X[xd] = <%= %w[b h w].include?(size) ? "sext(" : "" %>amo(<%= current_size[:operation_bits] %>, virtual_address, X[xs2]<%= %w[b h w].include?(size) ? "[#{current_size[:bits]-1}:0]" : "" %>, AmoOperation::And, <%= aq ? "1'b1" : "1'b0" %>, <%= rl ? "1'b1" : "1'b0" %>, $encoding)<%= %w[b h w].include?(size) ? ", #{current_size[:bits]})" : "" %>;
-<% if rl -%>
+  X[xd] = {{ sign_extend_prefix }}amo({{ current_size.operation_bits }}, virtual_address, X[xs2]{{ value_slice }}, AmoOperation::And, {{ aq_bool }}, {{ rl_bool }}, $encoding){{ sign_extend_suffix }};
+{% if rl -%}
 
   memory_model_release();
-<% end -%>
+{% endif -%}

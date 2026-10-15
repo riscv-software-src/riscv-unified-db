@@ -2,34 +2,33 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
-<%- raise "'hpm_num' must be defined" if hpm_num.nil? -%>
 
 $schema: csr_schema.json#
 kind: csr
-name: <%= "mhpmcounter#{hpm_num}h" %>
-long_name: Machine Hardware Performance Counter <%= hpm_num %>, Upper half
-address: <%= "0x" + (0xB80 + hpm_num).to_s(16).upcase %>
+name: {{ mhpmcounter_name }}
+long_name: Machine Hardware Performance Counter {{ hpm_num }}, Upper half
+address: {{ address }}
 writable: true
 priv_mode: M
 length: 32
 description: |
-  Upper half of mhpmcounter<%= hpm_num %>.
+  Upper half of mhpmcounter{{ hpm_num }}.
 
-  The `hpmcounter<%= hpm_num %>h` CSR is a read-only shadow of this CSR. Access to `hpmcounter<%= hpm_num %>h`
-  is controlled with `mcounteren.HPM<%= hpm_num %>`
-  <%%- if ext?(:S) -%>
-  , `scounteren.HPM<%= hpm_num %>`
-  <%%- if ext?(:H) -%>
-  , and `hcounteren.HPM<%= hpm_num %>`
-  <%%- end -%>
-  <%%- end -%>
+  The `hpmcounter{{ hpm_num }}h` CSR is a read-only shadow of this CSR. Access to `hpmcounter{{ hpm_num }}h`
+  is controlled with `mcounteren.HPM{{ hpm_num }}`
+  <%- if ext?(:S) -%>
+  , `scounteren.HPM{{ hpm_num }}`
+  <%- if ext?(:H) -%>
+  , and `hcounteren.HPM{{ hpm_num }}`
+  <%- end -%>
+  <%- end -%>
   as follows:
 
-  <%%- if ext?(:H) -%>
+  <%- if ext?(:H) -%>
   [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
   !===
-  .2+h![.rotate]#`mcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`scounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`hcounteren.HPM<%= hpm_num %>`#
-  4+^.>h! `hpmcounter<%= hpm_num %>h` behavior
+  .2+h![.rotate]#`mcounteren.HPM{{ hpm_num }}`# .2+h! [.rotate]#`scounteren.HPM{{ hpm_num }}`# .2+h! [.rotate]#`hcounteren.HPM{{ hpm_num }}`#
+  4+^.>h! `hpmcounter{{ hpm_num }}h` behavior
   .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
   ! 0 ! - ! - ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction`
@@ -38,28 +37,28 @@ description: |
   ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction`
   ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
   !===
-  <%%- elsif ext?(:S) -%>
+  <%- elsif ext?(:S) -%>
   [%autowidth,cols="1,1,1,1",separator="!"]
   !===
-  .2+h![.rotate]#`mcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`scounteren.HPM<%= hpm_num %>`#
-  2+^.>h! `hpmcounter<%= hpm_num %>h` behavior
+  .2+h![.rotate]#`mcounteren.HPM{{ hpm_num }}`# .2+h! [.rotate]#`scounteren.HPM{{ hpm_num }}`#
+  2+^.>h! `hpmcounter{{ hpm_num }}h` behavior
   .^h! S-mode .^h! U-mode
 
   ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
   ! 1 ! 0 ! read-only ! `IllegalInstruction`
   ! 1 ! 1 ! read-only ! read-only
   !===
-  <%%- else -%>
+  <%- else -%>
   [%autowidth,cols="1,1",separator="!"]
   !===
-  .2+h![.rotate]#`mcounteren.HPM<%= hpm_num %>`#
-  ^.>h! `hpmcounter<%= hpm_num %>h` behavior
+  .2+h![.rotate]#`mcounteren.HPM{{ hpm_num }}`#
+  ^.>h! `hpmcounter{{ hpm_num }}h` behavior
   .^h! U-mode
 
   ! 0 ! `IllegalInstruction`
   ! 1 ! read-only
   !===
-  <%%- end -%>
+  <%- end -%>
 definedBy:
   allOf:
     - extension:
@@ -67,21 +66,21 @@ definedBy:
     - xlen: 32
     - param:
         name: HPM_COUNTER_EN
-        index: <%= hpm_num %>
+        index: {{ hpm_num }}
         equal: true
 fields:
   COUNT:
     location: 31-0
-    alias: mhpmcounter<%= hpm_num %>.COUNT[63:32]
+    alias: mhpmcounter{{ hpm_num }}.COUNT[63:32]
     description: |
       Upper bits of counter.
     type(): |
-      return (HPM_COUNTER_EN[<%= hpm_num %>]) ? CsrFieldType::RWH : CsrFieldType::RO;
+      return (HPM_COUNTER_EN[{{ hpm_num }}]) ? CsrFieldType::RWH : CsrFieldType::RO;
     reset_value(): |
-      return (HPM_COUNTER_EN[<%= hpm_num %>]) ? UNDEFINED_LEGAL : 0;
+      return (HPM_COUNTER_EN[{{ hpm_num }}]) ? UNDEFINED_LEGAL : 0;
 sw_read(): |
-  if (HPM_COUNTER_EN[<%= hpm_num %>]) {
-    return read_hpm_counter(<%= hpm_num %>)[63:32];
+  if (HPM_COUNTER_EN[{{ hpm_num }}]) {
+    return read_hpm_counter({{ hpm_num }})[63:32];
   } else {
     return 0;
   }

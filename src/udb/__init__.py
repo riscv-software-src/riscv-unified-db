@@ -3,6 +3,7 @@
 
 """Python access to the RISC-V Unified Database."""
 
+from .authoring import AuthoringPlan, GeneratedFile
 from .database import (
     Csr,
     Database,
@@ -13,12 +14,22 @@ from .database import (
     ResolvedDatabase,
 )
 from .errors import (
+    AuthoringError,
     DataError,
+    LayoutError,
     ObjectNotFoundError,
     ResolutionError,
     SerializationError,
     UdbError,
     UnknownKindError,
+)
+from .layouts import (
+    LayoutJob,
+    generate_layouts,
+    iter_layout_jobs,
+    layout_plan,
+    layout_sources,
+    render_layout,
 )
 from .resolver import YamlResolver, merge_patch
 from .schema import SchemaError, SchemaStore
@@ -33,12 +44,17 @@ from .serialization import (
 
 __all__ = [
     "SCHEMAS_BASE_URL",
+    "AuthoringError",
+    "AuthoringPlan",
     "Csr",
     "DataError",
     "Database",
     "DatabaseObject",
     "Extension",
+    "GeneratedFile",
     "Instruction",
+    "LayoutError",
+    "LayoutJob",
     "ObjectNotFoundError",
     "Profile",
     "ResolutionError",
@@ -51,7 +67,12 @@ __all__ = [
     "YamlResolver",
     "dumps_json",
     "dumps_yaml",
+    "generate_layouts",
+    "iter_layout_jobs",
+    "layout_plan",
+    "layout_sources",
     "merge_patch",
+    "render_layout",
     "write_config",
     "write_resolved_database",
     "write_resolved_schemas",

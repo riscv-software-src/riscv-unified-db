@@ -2,51 +2,34 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../../schemas/inst_schema.json
-<%-
-  # c.mop.n instructions use odd numbers: 1, 3, 5, 7, 9, 11, 13, 15
-  # The 'n' parameter is the actual instruction number (1, 3, 5, 7, 9, 11, 13, 15)
-  valid_n = [1, 3, 5, 7, 9, 11, 13, 15]
-  raise "'n' must be one of #{valid_n}" unless valid_n.include?(n)
-
-  # Encoding for c.mop.n:
-  # Original match pattern: 01100---10000001 (16 bits)
-  # Bits 10-8 contain the index (0-7), where index = (n - 1) / 2
-  index = (n - 1) / 2
-
-  # Build the 16-bit match string
-  bit_10 = (index >> 2) & 1
-  bit_9 = (index >> 1) & 1
-  bit_8 = index & 1
-  match = "01100#{bit_10}#{bit_9}#{bit_8}10000001"
--%>
 
 $schema: inst_schema.json#
 kind: instruction
-name: c.mop.<%= n %>
-long_name: Compressed May-Be-Operation <%= n %>
+name: c.mop.{{ n }}
+long_name: Compressed May-Be-Operation {{ n }}
 description: |
-  C.MOP.<%= n %> is encoded in the reserved encoding space corresponding to C.LUI x<%= n %>, 0.
+  C.MOP.{{ n }} is encoded in the reserved encoding space corresponding to C.LUI x{{ n }}, 0.
   Unlike the MOPs defined in the Zimop extension, the C.MOP.n instructions are defined to not
-  write any register. Their encoding allows future extensions to define them to read register x[<%= n %>].
+  write any register. Their encoding allows future extensions to define them to read register x[{{ n }}].
 
-  This is c.mop.<%= n %> from the compressed MOP instruction family.
+  This is c.mop.{{ n }} from the compressed MOP instruction family.
 definedBy:
   extension:
     name: Zcmop
 assembly: ""
 encoding:
-  match: "<%= match %>"
+  match: "{{ match }}"
 access:
   s: always
   u: always
   vs: always
   vu: always
 data_independent_timing: false
-<% if n == 1 -%>
+{% if n == 1 -%}
 hints:
   - { $ref: inst/Zicfiss/c.sspush.yaml# }
-<% elsif n == 5 -%>
+{% elif n == 5 -%}
 hints:
   - { $ref: inst/Zicfiss/c.sspopchk.yaml# }
-<% end -%>
+{% endif -%}
 operation(): "" #do nothing

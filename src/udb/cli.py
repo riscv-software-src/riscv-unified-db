@@ -12,6 +12,7 @@ from pathlib import Path
 
 from .database import Database, ResolvedDatabase
 from .errors import UdbError
+from .layouts import generate_layouts
 from .schema import SchemaError, SchemaStore
 from .serialization import write_resolved_schemas
 
@@ -63,6 +64,19 @@ def build_parser() -> argparse.ArgumentParser:
         "schemas", help="write versioned schemas for publication"
     )
     schemas_parser.add_argument("output", type=Path, help="output directory")
+
+    layouts_parser = subparsers.add_parser(
+        "generate-layouts", help="regenerate tracked architecture files from source layouts"
+    )
+    layouts_parser.add_argument(
+        "--root",
+        type=Path,
+        default=Path.cwd(),
+        help="repository root containing spec/std/isa (default: current directory)",
+    )
+    layouts_parser.add_argument(
+        "--check", action="store_true", help="report generated-file drift without rewriting files"
+    )
     return parser
 
 
@@ -86,6 +100,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             if schema_root is None:
                 raise SchemaError("Database has no schema directory")
             write_resolved_schemas(SchemaStore(schema_root), args.output)
+            return 0
+        if args.command == "generate-layouts":
+            if args.resolved or args.overlay or args.validate:
+                parser.error("the generate-layouts command does not accept resolution options")
+            if args.path or args.schemas:
+                parser.error("the generate-layouts command does not accept database paths")
+            drift = generate_layouts(args.root, check=args.check)
+            if args.check and drift:
+                for path in drift:
+                    print(path)
+                return 1
             return 0
         database = (
             Database.from_path(args.path, schemas_path=args.schemas)

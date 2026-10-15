@@ -272,6 +272,28 @@ def test_schema_publication_matches_versioned_ruby_contract(tmp_path: Path) -> N
     assert not (output / "json-schema-draft-07.json").exists()
 
 
+def test_schema_publication_preflights_all_targets_before_writing(tmp_path: Path) -> None:
+    schemas = tmp_path / "schemas"
+    output = tmp_path / "published"
+    _write_schema(schemas)
+    (schemas / "z_schema.json").write_bytes((schemas / "demo_schema.json").read_bytes())
+    store = SchemaStore(schemas)
+    written = write_resolved_schemas(store, output)
+    original = written[0].read_bytes()
+    written[-1].unlink()
+    written[-1].mkdir()
+    schema = json.loads((schemas / "demo_schema.json").read_text())
+    schema["description"] = "Changed but must not be published on failure"
+    (schemas / "demo_schema.json").write_text(json.dumps(schema))
+
+    with pytest.raises(SerializationError, match="existing directory"):
+        write_resolved_schemas(SchemaStore(schemas), output)
+
+    assert written[0].read_bytes() == original
+    assert written[-1].is_dir()
+    assert tuple(path for path in output.rglob("*") if path.is_file()) == (written[0],)
+
+
 def test_bundled_database_serializes_every_document(tmp_path: Path) -> None:
     resolved = Database.bundled().resolve()
 

@@ -118,15 +118,34 @@ udb --schemas my-schemas schemas build/schemas
 
 The same commands are available through `python -m udb`.
 
-The wheel contains the standard ISA YAML, IDL, and referenced AsciiDoc sources and their JSON
-schemas. Code that needs direct access to those resources can use `importlib.resources` without a
-repository checkout:
+Repository authors can regenerate every layout-derived architecture file without Ruby, Rake, or
+ERB:
+
+```shell
+udb generate-layouts --root .
+udb generate-layouts --root . --check
+```
+
+The layout renderer is intentionally limited to interpolation, conditionals, and bounded loops.
+Generation owns the 532 tracked YAML outputs associated with the 31 layout sources, adds a stable
+source warning, writes replacements atomically, and marks generated files read-only. `--check`
+reports drift and exits with status 1 without modifying files.
+
+Layout directives use `{{ value }}` and `{% ... %}`. Any literal `<% ... %>` text in a layout is
+content preserved for a later configured-document rendering stage; it is not executed by the
+layout renderer.
+
+The wheel contains the standard ISA YAML, IDL, referenced AsciiDoc sources, authoring layouts, and
+their JSON schemas. The bundled layouts let the authoring command populate an explicit output root
+without reading templates from a repository checkout. Code that needs direct access to those
+resources can use `importlib.resources`:
 
 ```python
 from importlib.resources import files
 
 isa_data = files("udb") / "_data" / "isa"
 schemas = files("udb") / "_data" / "schemas"
+layouts = files("udb") / "_data" / "layouts"
 ```
 
 The Python source code is licensed under BSD-3-Clause-Clear. The bundled database snapshot contains

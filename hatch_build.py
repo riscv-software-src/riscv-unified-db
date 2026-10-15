@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 
 from hatchling.builders.hooks.plugin.interface import BuildHookInterface
 
-_ISA_SUFFIXES = frozenset({".adoc", ".idl", ".isa", ".yaml"})
+_ISA_SUFFIXES = frozenset({".adoc", ".idl", ".isa", ".layout", ".yaml"})
 _SCHEMA_SUFFIXES = frozenset({".json", ".yaml"})
 
 
@@ -29,7 +29,10 @@ def package_data(source_root: Path) -> dict[Path, PurePosixPath]:
 
     mappings: dict[Path, PurePosixPath] = {}
     for path in isa_files:
-        mappings[path] = PurePosixPath("udb/_data/isa") / path.relative_to(isa_root).as_posix()
+        data_kind = "layouts" if path.suffix == ".layout" else "isa"
+        mappings[path] = (
+            PurePosixPath(f"udb/_data/{data_kind}") / path.relative_to(isa_root).as_posix()
+        )
     for path in schema_files:
         mappings[path] = (
             PurePosixPath("udb/_data/schemas") / path.relative_to(schema_root).as_posix()
