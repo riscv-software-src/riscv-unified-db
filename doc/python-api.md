@@ -574,3 +574,37 @@ dependency on runtime presence queries. Captured YAML and configuration source c
 retained. Generic configurations are valid with compiled requirements, and the rv32 SXLEN invariant
 proves the seven 64-bit supervisor extensions absent. Runtime version callbacks also prove
 catalog-impossible versions absent, rather than retaining Ruby's weaker unknown answer.
+
+## Schema documentation
+
+Schema MDX generation is included in the default install and works offline:
+
+```python
+from udb.schema import SchemaStore
+from udb.schema_docs import SchemaDocumentation, generate_schema_docs
+
+docs = SchemaDocumentation()  # bundled schemas; no ISA database or checkout needed
+page = docs.render("config_schema.json")
+plan = docs.plan("schema-docs")
+changed = plan.apply("schema-docs")
+assert not plan.apply("schema-docs", check=True)
+limits = docs.notices  # located, explicitly warned legacy presentation constraints
+
+custom = SchemaDocumentation(SchemaStore("my-schemas"))
+custom.plan("custom-docs").apply("custom-docs")
+drift = generate_schema_docs("schema-docs", check=True)
+```
+
+The CLI is `udb generate schema-docs --out DIR [--schemas DIR] [--check]`.
+`--diagnostics` emits one JSON document containing status, paths, and all
+located notices; input/output failures return exit 2 with an error document.
+`--schema NAME.json --output-file reference/schema.mdx` selects one page.
+All-page generation includes versioned category metadata and an index that
+retains historical pages. Check mode returns missing/different owned paths
+without writing (exit 1 on drift, 2 on invalid input). Differing existing MDX
+is immutable by default; `--replace-current` permits only canonical pages of
+the selected current schemas, never arbitrary/historical output overrides.
+Re-plan if historical page names change. Unknown keywords and unsupported
+schemas fail explicitly; no refs are fetched and no renderer is invoked.
+See [the precise artifact contract](stage5-schema-docs.md), including exact
+Ruby oracles and deliberately retained historical drift.

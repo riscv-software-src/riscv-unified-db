@@ -1,0 +1,65 @@
+---
+title: Peer Schema (v0.10)
+sidebar_label: Peer Schema
+custom_edit_url: null
+# This file is auto-generated from peer_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Peer Schema
+
+<span class="badge badge--secondary">v0.10</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`peer_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/peer_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Variants
+
+This schema accepts **one of** the following variants, distinguished by the `type` field:
+
+- [Full Variant!](#full-variant)
+- [Other Variant](#other-variant)
+
+### `Full Variant!`
+
+First &lt;object&gt;
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `type` | `string` (const: `Full Variant!`) |  |  |
+| `value` | `alpha` \| `beta` |  |  |
+
+### `Other Variant`
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `type` | `string` (const: `Other Variant`) |  |  |
+
+
+
+## Definitions
+
+<details>
+<summary><a id="remote"></a><strong><code>remote</code></strong></summary>
+
+**Type:** `integer`
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.10` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

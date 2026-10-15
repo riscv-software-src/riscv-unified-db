@@ -14,15 +14,15 @@ repos:
       - id: end-of-file-fixer
         priority: 10
         # Exclude reference and generated files
-        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml|hpmcounter.*\.yaml|mhpmevent.*\.yaml|pmp.*\.yaml|mop.*\.yaml|mcountinhibit\.yaml|[smh]counteren\.yaml|scountovf\.yaml|spec/std/isa/inst/Zalrsc/.*\.yaml|spec/std/isa/inst/Zalasr/.*\.yaml|\.github/workflows/regress\.yml|tests/data/golden/.*|^tests/python/fixtures/configured_prose[^/]*\.json$)
+        exclude: (cfgs/profile.*|.*\.golden\.adoc$|.*\.svg|amo.*\.yaml|hpmcounter.*\.yaml|mhpmevent.*\.yaml|pmp.*\.yaml|mop.*\.yaml|mcountinhibit\.yaml|[smh]counteren\.yaml|scountovf\.yaml|spec/std/isa/inst/Zalrsc/.*\.yaml|spec/std/isa/inst/Zalasr/.*\.yaml|\.github/workflows/regress\.yml|tests/data/golden/.*|^tests/python/fixtures/schema_docs/|^tests/python/fixtures/configured_prose[^/]*\.json$)
       - id: trailing-whitespace
         priority: 11
         args: [--markdown-linebreak-ext=md]
-        exclude: \.svg$|cfgs/profile/.*\.yaml$|tests/data/golden/.*|^tests/python/fixtures/configured_prose[^/]*\.json$
+        exclude: \.svg$|cfgs/profile/.*\.yaml$|tests/data/golden/.*|^tests/python/fixtures/schema_docs/|^tests/python/fixtures/configured_prose[^/]*\.json$
       - id: mixed-line-ending
         priority: 12
         args: ["--fix=lf"]
-        exclude: ^.*\.bat$|^tests/python/fixtures/configured_prose[^/]*\.json$
+        exclude: ^.*\.bat$|^tests/python/fixtures/schema_docs/|^tests/python/fixtures/configured_prose[^/]*\.json$
       # Validators (parallel).
       - id: check-case-conflict
         priority: 30

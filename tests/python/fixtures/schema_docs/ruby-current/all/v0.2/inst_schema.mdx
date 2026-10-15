@@ -1,0 +1,145 @@
+---
+title: Inst Schema (v0.2)
+sidebar_label: Inst Schema
+custom_edit_url: null
+# This file is auto-generated from inst_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Inst Schema
+
+<span class="badge badge--secondary">v0.2</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`inst_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/inst_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Definitions
+
+<details>
+<summary><a id="fully-resolved-opcodes"></a><strong><code>fully_resolved_opcodes</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `location` | `schema_defs.json#/$defs/field_location` | ✓ |  |
+| `display_name` | `string` | ✓ | field name, displayed in encoding drawings |
+| `value` | One of: An integer, either native to JSON or a number-like string \| `object` | ✓ |  |
+| `$child_of` | One of: `string` \| Array&lt;`string`&gt; |  |  |
+
+</details>
+
+<details>
+<summary><a id="fully-resolved-variables"></a><strong><code>fully_resolved_variables</code></strong></summary>
+
+
+</details>
+
+<details>
+<summary><a id="fully-resolved-format"></a><strong><code>fully_resolved_format</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="old-encoding"></a><strong><code>old_encoding</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `match` | One of: `string` \| `string` \| `string` |  |  |
+| `variables` | Array&lt;[`field`](#field)&gt; |  |  |
+| `additionalProperties` | `never` |  |  |
+
+</details>
+
+<details>
+<summary><a id="type"></a><strong><code>type</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$ref` | `string` | ✓ | Reference to an instruction type definition |
+
+</details>
+
+<details>
+<summary><a id="subtype"></a><strong><code>subtype</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$ref` | `string` | ✓ | Reference to an instruction subtype definition |
+
+</details>
+
+<details>
+<summary><a id="variable-metadata"></a><strong><code>variable_metadata</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="field"></a><strong><code>field</code></strong> — Decode field</summary>
+
+Decode field
+
+
+</details>
+
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `string` (const: `inst_schema.json#`) | ✓ | Path to schema, relative to &lt;UDB ROOT&gt;/schemas |
+| `kind` | `string` (const: `instruction`) | ✓ |  |
+| `name` | `string` | ✓ | Instruction mnemonic (must be lowercase) |
+| `long_name` | `string` | ✓ | One line description of the instruction |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; | ✓ | Detailed description of the instruction |
+| `definedBy` | A condition (YAML structure or IDL function). See the conditions reference for details. | ✓ | Extension(s) that defines the instruction |
+| `access` | `object` | ✓ |  |
+| `assembly` | `string` | ✓ | Assembly format of the instruction. Can use decode variables |
+| `encoding` | One of: [`old_encoding`](#old-encoding) \| `object` |  | Instruction encoding and decode variables |
+| `format` | `object` |  |  |
+| `pseudoinstructions` | Array&lt;\{`when`, `to`\}&gt; [↓&nbsp;schema](#pseudoinstructions-schema) |  | Variations of this instruction that form a pseudoinstruction |
+| `data_independent_timing` | `boolean` |  | Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported |
+| `operation_ast` | `object` |  |  |
+| `operation()` | `string` |  | Functional description of the instruction using IDL language |
+| `access_detail` | `string` |  | Extra detail about access when at least one mode is 'sometimes' |
+| `hints` | Array&lt;\{`$ref`\}&gt; [↓&nbsp;schema](#hints-schema) |  | List of HINTs that use this instruction's codepoints |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="pseudoinstructions-schema"></a><code>pseudoinstructions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `when` | `string` |  | Condition when the instruction has an alias |
+| `to` | `string` |  | pseudoinstruction format |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="hints-schema"></a><code>hints</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$ref` | `string` | ✓ | Ref to an instruction that is using a HINT codepoint(s) of this instruction |
+
+</details>
+
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.2` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

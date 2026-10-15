@@ -1,0 +1,101 @@
+---
+title: Manual Version Schema (v0.1)
+sidebar_label: Manual Version Schema
+custom_edit_url: null
+# This file is auto-generated from manual_version_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Manual Version Schema
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`manual_version_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/manual_version_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Definitions
+
+<details>
+<summary><a id="volume"></a><strong><code>volume</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `title` | `string` | ✓ | Title of the volume |
+| `description` | `string` | ✓ | Description of the volume |
+| `authors` | Array&lt;\{`name`, `email`, `organization`\}&gt; [↓&nbsp;schema](#authors-schema) | ✓ |  |
+| `chapters` | Array&lt;[`chapter`](#chapter)&gt; |  | Ordered (in display order) list of chapters |
+| `extensions` | Array&lt;\{`name`, `version`\}&gt; [↓&nbsp;schema](#extensions-schema) |  | List of extensions defined in this volume, with version numbers |
+| `changes` | Array&lt;`string`&gt; |  | List of changes made since the last version |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="authors-schema"></a><code>authors</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Author's full name |
+| `email` | `string` |  | Author's email address |
+| `organization` | `object` |  | Author's organization, which should be an RVI member (or individual) |
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="extensions-schema"></a><code>extensions</code> item schema</summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `name` | `string` | ✓ | Extension name (e.g., `I`, `M`, `Zicsr`, `Smstateen`) |
+| `version` | `string` | ✓ | Exact version in `MAJOR[.MINOR[.PATCH]]` format (e.g., `2.1.0`, `2.1`, `2`) |
+
+</details>
+
+
+</details>
+
+<details>
+<summary><a id="chapter"></a><strong><code>chapter</code></strong> — Relative (to the contents.yaml file) path to the chapter source</summary>
+
+Relative (to the contents.yaml file) path to the chapter source
+
+**Type:** `string`
+
+</details>
+
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ |  |
+| `kind` | `any` | ✓ |  |
+| `name` | `string` | ✓ | Name (database key) of this version |
+| `long_name` | `string` | ✓ | One line description of the instruction |
+| `manual` | `object` | ✓ |  |
+| `version` | `string` (pattern: `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`) | ✓ | Semantic version number within the manual |
+| `marketing_version` | `string` | ✓ | The publicly displayed version number |
+| `state` | Ratification state of a specification or extension version: `development` (actively being worked on), `frozen` (feature-complete, under review), `public-review` (open for public comment), `ratification-ready` (approved by the task group, awaiting board vote), `ratified` (officially approved by RISC-V International), or `nonstandard-released` (released but not part of the RISC-V standard). | ✓ | State of this version |
+| `volumes` | Array&lt;[`volume`](#volume)&gt; | ✓ | List of volumes in this version |
+| `url` | `string` |  | URL to the version, if stored external to the database |
+| `uses_isa_manual` | `boolean` |  | Whether or not this manual version is derived from riscv-isa-manual |
+| `isa_manual_tree` | `string` |  | The git tree-ish of the riscv-isa-manual repository used to generate this version |
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

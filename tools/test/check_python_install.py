@@ -429,6 +429,65 @@ def check_install() -> None:
         udb.write_resolved_schemas(schemas, root / "schemas-second")
         assert tree_digest(root / "schemas-first") == tree_digest(root / "schemas-second")
 
+        from udb.schema_docs import SchemaDocumentation
+
+        docs = SchemaDocumentation()
+        docs_first, docs_second = root / "docs-first", root / "docs-second"
+        docs.plan(docs_first).apply(docs_first)
+        docs.plan(docs_second).apply(docs_second)
+        assert len(docs.schema_names) == 23
+        assert len(docs.plan().outputs) == 28
+        assert tree_digest(docs_first) == tree_digest(docs_second)
+        # Frozen real-Ruby artifact manifest, not an expected Python rendering.
+        assert (
+            hashlib.sha256(json.dumps(tree_digest(docs_first), sort_keys=True).encode()).hexdigest()
+            == "6ee3f8e929f4c6f99b513a1074aa3783ed802884cf67e1f40e53bf8dd1e657a7"
+        )
+        assert len(docs.notices) == 911
+        assert docs.plan(docs_first).apply(docs_first, check=True) == ()
+        single = docs.render("config_schema.json").encode("utf-8")
+        assert single == (docs_first / "v0.1/config_schema.mdx").read_bytes()
+        checked = subprocess.run(
+            [
+                sys.executable,
+                "-I",
+                "-m",
+                "udb",
+                "generate",
+                "schema-docs",
+                "--out",
+                str(docs_first),
+                "--check",
+                "--diagnostics",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        result = json.loads(checked.stdout)
+        assert result["status"] == "unchanged" and result["paths"] == []
+        assert len(result["notices"]) == 911
+        rejected = subprocess.run(
+            [
+                sys.executable,
+                "-I",
+                "-m",
+                "udb",
+                "generate",
+                "schema-docs",
+                "--out",
+                str(docs_first),
+                "--schema",
+                "missing.json",
+                "--diagnostics",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        assert rejected.returncode == 2
+        assert json.loads(rejected.stdout)["status"] == "error"
+
         authoring_root = root / "authoring"
         outputs = udb.generate_layouts(authoring_root)
         assert len(outputs) == 532

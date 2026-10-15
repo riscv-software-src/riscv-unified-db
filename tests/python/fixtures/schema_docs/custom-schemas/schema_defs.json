@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "v0.4",
+  "$defs": {
+    "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$", "minLength": 3},
+    "name": {"type": "string", "description": "Item name"},
+    "alias": {"$ref": "#/$defs/name"},
+    "item": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {"$ref": "#/$defs/alias"},
+        "version": {"$ref": "#/$defs/version"}
+      }
+    }
+  }
+}

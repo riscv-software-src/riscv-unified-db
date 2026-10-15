@@ -1,0 +1,69 @@
+---
+title: Instruction Variable Schema (v0.1)
+sidebar_label: Instruction Variable Schema
+custom_edit_url: null
+# This file is auto-generated from inst_var_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Instruction Variable Schema
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`inst_var_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/inst_var_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+Schema for instruction decode variable definitions
+
+
+## Definitions
+
+<details>
+<summary><a id="fully-resolved-data"></a><strong><code>fully_resolved_data</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `location` | Location specifier for a field | ✓ |  |
+| `type` | `object` | ✓ |  |
+| `$parent_of` | `string` (pattern: `^.*/.*\.yaml#.*$`) \| Array&lt;[`ref_url`](#ref-url)&gt; |  |  |
+| `$child_of` | `string` (pattern: `^.*/.*\.yaml#.*$`) \| Array&lt;[`ref_url`](#ref-url)&gt; |  |  |
+
+</details>
+
+<details>
+<summary><a id="polymorphic-data"></a><strong><code>polymorphic_data</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `location` | Location specifier for a field |  |  |
+| `$inherits` | One of: `string` \| Array&lt;`string`&gt; |  |  |
+| `type` | `object` |  |  |
+
+</details>
+
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ |  |
+| `kind` | `any` | ✓ |  |
+| `name` | `string` | ✓ |  |
+| `data` | One of: [`fully_resolved_data`](#fully-resolved-data) \| [`polymorphic_data`](#polymorphic-data) | ✓ |  |
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

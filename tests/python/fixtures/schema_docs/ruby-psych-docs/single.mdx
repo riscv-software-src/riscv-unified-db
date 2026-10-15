@@ -1,0 +1,150 @@
+---
+title: Psych Compatibility (v0.1)
+sidebar_label: Psych Compatibility
+custom_edit_url: null
+# This file is auto-generated from config_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Psych Compatibility
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`config_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/config_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Quick Start
+
+**Example:**
+```yaml
+number: 1.0e+20
+body: 'line1
+
+  '
+empty: {}
+nil:
+
+```
+
+**Example:**
+```yaml
+number: 1.0e-07
+sequence:
+-
+- {}
+- []
+- true
+- false
+
+```
+
+**0:**
+```yaml
+date: '2024-1-1'
+quantity: '1,000'
+exponent: 1e3
+
+```
+
+**1.0e+20:**
+```yaml
+symbol: ":sym"
+body: "\U0001F600"
+"Y": "y"
+merge: !!str '<<'
+
+```
+
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `bound` | `number` (min: 1.0e+20, max: 1.0e-07) |  |  |
+| `constant` | `number` (const: `1.0e+20`) |  |  |
+| `choices` | `1.0e+20` \| `1.0e-07` \| `-3832926594478627.5` |  |  |
+| `text` | `string` |  |  |
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}><a id="text-example"></a><code>text</code> example</summary>
+
+```yaml
+body: "line1\n\n"
+astral: "\U0001F600"
+merge: !!str '<<'
+
+```
+
+</details>
+
+
+
+## Examples
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Example 1</summary>
+
+```yaml
+long: word word word word word word word word word word word word word word word word
+  word word word word word word word word word word word word word word
+
+```
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Example 2</summary>
+
+```yaml
+body: "first \nsecond"
+numbers:
+- 1.0e+20
+- 1.0e-07
+
+```
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Example 3</summary>
+
+```yaml
+-
+- - "line1\n\n"
+  - 1_
+  - "-1"
+  - |-
+    line1
+    line2
+
+```
+
+</details>
+
+<details style={{padding: '1rem', backgroundColor: 'var(--ifm-color-emphasis-100)', borderLeft: '4px solid var(--ifm-color-primary)', borderRadius: '4px', marginBottom: '1rem'}}>
+<summary style={{cursor: 'pointer', fontWeight: 'bold'}}>Example 4</summary>
+
+```yaml
+1.0e+20
+```
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

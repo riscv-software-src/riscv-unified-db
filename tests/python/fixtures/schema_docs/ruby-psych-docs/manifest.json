@@ -1,0 +1,44 @@
+{
+  "capture": "real schema-docs-all --generate-index and schema-doc-gen --output",
+  "schemas": {
+    "config_schema.json": "a8e1cbb655341942d7e0a823e8b012b5dcc0e6ed876db457ec3d605d716658aa",
+    "schema_defs.json": "d74e0c985ec06696fc92051aed523073fc7dd55b57adc1d5d8f2316ea34fd741"
+  },
+  "ruby_sources": {
+    "bin/schema-doc-gen": "68502901bd64e9523648be4cb27e054496717fec4c0d697df8c94eb9d89565ce",
+    "bin/schema-docs-all": "beba424297e5b8a98047e21fc23a37b8d2f07a73d6f39225017c7825ba44a8ce",
+    "lib/schema_doc_gen/index_generator.rb": "07b5cf17330101c688dfb59f026dd0d0c8665b26272996d08ea34fc3292a9dff",
+    "lib/schema_doc_gen/version.rb": "80c471550f5dbaabc39235c78a941e877bab2dd4f20be2a5277703187e8ef85f",
+    "lib/schema_doc_gen.rb": "834ce2cd77edb11f8a2ec2b6b4dbc8e2c48159d7e3d9b41ba0c456456be50b02"
+  },
+  "artifacts": {
+    "index.mdx": "54e5023c25937dcce44a8f50561cd28cd5047ba7835fc8dbb5785b9f742191ff",
+    "v0.1/_category_.json": "c2550592ed05acd94607cb265d094d78b9237ff3f2f1d93e9002609b242bb393",
+    "v0.1/config_schema.mdx": "bfe5d0a043377d9809a84b5266c0e0d8534d59c87d32b6f09236de0d1735f7d0",
+    "v0.2/_category_.json": "b487d9601b9b44305fe462dc10acef34e4549ff0495367e4e970b59551ac24f6",
+    "v0.2/schema_defs.mdx": "d6fe42c8e26a9a4c4e89544ce1817041dce38981122fc537b2ea826115ce8bcf"
+  },
+  "historical_drift": {
+    "index.mdx": {
+      "tracked_sha256": "dd66746194388e86feefd9db5c86d777489df2bb516e23ac1e264d06ba000c66",
+      "ruby_sha256": "54e5023c25937dcce44a8f50561cd28cd5047ba7835fc8dbb5785b9f742191ff"
+    },
+    "v0.1/_category_.json": {
+      "tracked_sha256": "58b4e12891da64e16dea495fe122d0c2d161db591d9554716f816bb53b49fc4c",
+      "ruby_sha256": "c2550592ed05acd94607cb265d094d78b9237ff3f2f1d93e9002609b242bb393"
+    },
+    "v0.1/config_schema.mdx": {
+      "tracked_sha256": "645caa616fd7e7e93e13b379fc7b3c5e1a882fb28293aad549d6377877e5c163",
+      "ruby_sha256": "bfe5d0a043377d9809a84b5266c0e0d8534d59c87d32b6f09236de0d1735f7d0"
+    },
+    "v0.2/_category_.json": {
+      "tracked_sha256": "cefff3c0223557978a3cc89df602c907ef58c8d2e7b3cfdbcf97e22c1a707734",
+      "ruby_sha256": "b487d9601b9b44305fe462dc10acef34e4549ff0495367e4e970b59551ac24f6"
+    },
+    "v0.2/schema_defs.mdx": {
+      "tracked_sha256": "7b85095873de91ef2965924bd676ff3f73555b3230eee20bf3baa4944f7b86d9",
+      "ruby_sha256": "d6fe42c8e26a9a4c4e89544ce1817041dce38981122fc537b2ea826115ce8bcf"
+    }
+  },
+  "historical_missing": []
+}

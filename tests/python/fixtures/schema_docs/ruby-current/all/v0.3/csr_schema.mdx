@@ -1,0 +1,71 @@
+---
+title: CSR description (v0.3)
+sidebar_label: CSR description
+custom_edit_url: null
+# This file is auto-generated from csr_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# CSR description
+
+<span class="badge badge--secondary">v0.3</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`csr_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/csr_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+A CSR register specification
+
+
+## Schema Structure
+
+This schema requires **all of** the following:
+
+- (Complex type)
+- (Complex type)
+
+
+## Definitions
+
+<details>
+<summary><a id="csr-field"></a><strong><code>csr_field</code></strong> — Field in a CSR register</summary>
+
+Field in a CSR register
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; | ✓ | Function of the field |
+| `affectedBy` | One of: `string` \| Array&lt;`string`&gt; |  | Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in |
+| `definedBy` | A condition (YAML structure or IDL function). See the conditions reference for details. |  | Where this field is defined: indicates that the field is only present if the extension(s) are implemented. If definedBy is not given, defaults to the definedBy field of the parent CSR |
+| `alias` | One of: CSR field \| CSR field \| Array&lt;One of: CSR field \| CSR field&gt; |  | When specified, indicates that this field aliases (a portion of) another CSR field |
+| `type_ast` | `object` |  |  |
+| `type()` | `string` |  | Function that returns a configuration-dependent type. The return value should be a CsrFieldType enum, and must be compile-time-known. |
+| `type` | `RO` \| `RO-H` \| `RW` \| `RW-R` \| `RW-H` \| `RW-RH` |  | Type of the field. One of:  * RO: Read-only immutable  * RO-H: Read-only, updated by hardware  * RW: Read-write, not updated by hardware  * RW-R: Read-write, but values are restricted. sw_write(value) must be provided  * RW-H: Read-write, with hardware updates  * RW-RH: Read-write, with hardware updates, but values are restricted. sw_write(value) must be provided |
+| `sw_write_ast` | `object` |  |  |
+| `sw_write(csr_value)` | `string` |  | Function implementing custom write behavior for the CSR. Given a 'value', return either the value to be written in the field or false if the write would be illegal. 'value' is the value of the entire CSR, which is sometimes needed to detect illegal writes |
+| `reset_value_ast` | `object` |  |  |
+| `reset_value()` | `string` |  | Configuration-dependent value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec. |
+| `reset_value` | One of: `integer` \| `string` (const: `UNDEFINED_LEGAL`) |  | Value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec |
+| `location_rv64` | Location of a field in a register |  | Location of the field within the CSR register when the effective XLEN of the current mode is 64 |
+| `location_rv32` | Location of a field in a register |  | Location of the field within the CSR register when the effective XLEN of the current mode is 32 |
+| `location` | Location of a field in a register |  | Location of the field within the CSR register |
+| `long_name` | `string` |  | One line description of the CSR field |
+| `name` | `string` |  | Name of the field. Optional because it is implied by the object key of the CSR object holding the field |
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.3` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

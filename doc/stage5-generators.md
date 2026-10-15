@@ -37,6 +37,20 @@ and compatibility aliases have not been approved by this scope decision.
 
 ## Inventory method and acceptance
 
+### Accepted schema-documentation slice
+
+Layer 24 provides `udb generate schema-docs`, a public `udb.schema_docs` API
+and the Python-backed repository wrapper. Full native current/history/custom
+artifact comparisons and expanded Psych examples preserve exact bytes while
+exposing located presentation limits. Installed wheel/sdist reconstruction
+retains resources, license metadata and third-party notices; the actual
+installed CLI passes complete native-artifact and diagnostic checks.
+Docusaurus compiled an isolated generated-schema site without rewriting
+historical pages. The [schema contract](stage5-schema-docs.md) records deliberate
+historical CI drift and retained legacy anchor/provenance limitations.
+
+### Historical inventory method
+
 Each family below receives its legacy command, implementation/templates, input/config/version matrix, output paths and consumers, fixture and comparison policy, prospective Python API/CLI layer above Stage 4, and pending installed/CI gate. An apparent Python script is **not migrated** if it shells a Ruby script or requires repository paths. All installed generation gates use offline wheels/sdists outside the checkout, no repository, network, or UDB-owned native toolchain. Separate repository gates may compile generated C++/C/Go/SV and separately render documents with external Asciidoctor.
 
 The machine-readable [generator registry](stage5-generators.json) records 46

@@ -1,0 +1,2752 @@
+{
+  "input_sha256": "4ad1439a62c838def5e63174e659046ed21ef79de26737c646fe711af09030c3",
+  "inputs": [
+    {
+      "value": "0b_1"
+    },
+    {
+      "value": "0b1_"
+    },
+    {
+      "value": "0x_FF"
+    },
+    {
+      "value": "0xFF_"
+    },
+    {
+      "value": "0_1"
+    },
+    {
+      "value": "00_"
+    },
+    {
+      "value": "1,"
+    },
+    {
+      "value": "1,,0"
+    },
+    {
+      "value": "0x__"
+    },
+    {
+      "value": "0b_"
+    },
+    {
+      "value": "0,,1"
+    },
+    {
+      "value": "001"
+    },
+    {
+      "value": "09"
+    },
+    {
+      "value": "019"
+    },
+    {
+      "value": "0.0"
+    },
+    {
+      "value": "1.e+3"
+    },
+    {
+      "value": ".e+3"
+    },
+    {
+      "value": "1,0.0"
+    },
+    {
+      "value": "1_0.0"
+    },
+    {
+      "value": "1.0E3"
+    },
+    {
+      "value": "1.0e+3"
+    },
+    {
+      "value": "1.0e3"
+    },
+    {
+      "value": "+.inf"
+    },
+    {
+      "value": ".NAN"
+    },
+    {
+      "value": "\"unclosed"
+    },
+    {
+      "value": "first\n\n\n"
+    },
+    {
+      "value": "\n\n\n"
+    },
+    {
+      "value": "first\nsecond\n\n"
+    },
+    {
+      "value": "first\rsecond"
+    },
+    {
+      "value": "first\r"
+    },
+    {
+      "value": "first second"
+    },
+    {
+      "value": "firstsecond"
+    },
+    {
+      "value": "a b"
+    },
+    {
+      "value": ""
+    },
+    {
+      "value": ""
+    },
+    {
+      "value": "￾"
+    },
+    {
+      "value": "￿"
+    },
+    {
+      "value": "2024-1-1 24:00:00"
+    },
+    {
+      "value": "2024-1-1 24:01:00"
+    },
+    {
+      "value": "2024-1-1 23:59:60"
+    },
+    {
+      "value": "2024-02-31 10:00:00"
+    },
+    {
+      "value": "2024-01-01 10:00:00+25:00"
+    },
+    {
+      "value": "2024-01-01 10:00:00+23:59"
+    },
+    {
+      "value": "2024-01-01 10:00:00+01:99"
+    },
+    {
+      "value": "2024-01-01 10:00:00-00:30"
+    },
+    {
+      "value": "2024-01-01 10:00:00+1200"
+    },
+    {
+      "value": "0000-00-00"
+    },
+    {
+      "value": "0000-02-29"
+    },
+    {
+      "value": "1900-02-29"
+    },
+    {
+      "value": "2000-02-29"
+    },
+    {
+      "value": "ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ"
+    },
+    {
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b"
+    },
+    {
+      "value": "line\n  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "0b_1": {
+        "value": "0b_1"
+      }
+    },
+    {
+      "0b1_": {
+        "value": "0b1_"
+      }
+    },
+    {
+      "0x_FF": {
+        "value": "0x_FF"
+      }
+    },
+    {
+      "0xFF_": {
+        "value": "0xFF_"
+      }
+    },
+    {
+      "0_1": {
+        "value": "0_1"
+      }
+    },
+    {
+      "00_": {
+        "value": "00_"
+      }
+    },
+    {
+      "1,": {
+        "value": "1,"
+      }
+    },
+    {
+      "1,,0": {
+        "value": "1,,0"
+      }
+    },
+    {
+      "0x__": {
+        "value": "0x__"
+      }
+    },
+    {
+      "0b_": {
+        "value": "0b_"
+      }
+    },
+    {
+      "0,,1": {
+        "value": "0,,1"
+      }
+    },
+    {
+      "001": {
+        "value": "001"
+      }
+    },
+    {
+      "09": {
+        "value": "09"
+      }
+    },
+    {
+      "019": {
+        "value": "019"
+      }
+    },
+    {
+      "0.0": {
+        "value": "0.0"
+      }
+    },
+    {
+      "1.e+3": {
+        "value": "1.e+3"
+      }
+    },
+    {
+      ".e+3": {
+        "value": ".e+3"
+      }
+    },
+    {
+      "1,0.0": {
+        "value": "1,0.0"
+      }
+    },
+    {
+      "1_0.0": {
+        "value": "1_0.0"
+      }
+    },
+    {
+      "1.0E3": {
+        "value": "1.0E3"
+      }
+    },
+    {
+      "1.0e+3": {
+        "value": "1.0e+3"
+      }
+    },
+    {
+      "1.0e3": {
+        "value": "1.0e3"
+      }
+    },
+    {
+      "+.inf": {
+        "value": "+.inf"
+      }
+    },
+    {
+      ".NAN": {
+        "value": ".NAN"
+      }
+    },
+    {
+      "\"unclosed": {
+        "value": "\"unclosed"
+      }
+    },
+    {
+      "first\n\n\n": {
+        "value": "first\n\n\n"
+      }
+    },
+    {
+      "\n\n\n": {
+        "value": "\n\n\n"
+      }
+    },
+    {
+      "first\nsecond\n\n": {
+        "value": "first\nsecond\n\n"
+      }
+    },
+    {
+      "first\rsecond": {
+        "value": "first\rsecond"
+      }
+    },
+    {
+      "first\r": {
+        "value": "first\r"
+      }
+    },
+    {
+      "first second": {
+        "value": "first second"
+      }
+    },
+    {
+      "firstsecond": {
+        "value": "firstsecond"
+      }
+    },
+    {
+      "a b": {
+        "value": "a b"
+      }
+    },
+    {
+      "": {
+        "value": ""
+      }
+    },
+    {
+      "": {
+        "value": ""
+      }
+    },
+    {
+      "￾": {
+        "value": "￾"
+      }
+    },
+    {
+      "￿": {
+        "value": "￿"
+      }
+    },
+    {
+      "2024-1-1 24:00:00": {
+        "value": "2024-1-1 24:00:00"
+      }
+    },
+    {
+      "2024-1-1 24:01:00": {
+        "value": "2024-1-1 24:01:00"
+      }
+    },
+    {
+      "2024-1-1 23:59:60": {
+        "value": "2024-1-1 23:59:60"
+      }
+    },
+    {
+      "2024-02-31 10:00:00": {
+        "value": "2024-02-31 10:00:00"
+      }
+    },
+    {
+      "2024-01-01 10:00:00+25:00": {
+        "value": "2024-01-01 10:00:00+25:00"
+      }
+    },
+    {
+      "2024-01-01 10:00:00+23:59": {
+        "value": "2024-01-01 10:00:00+23:59"
+      }
+    },
+    {
+      "2024-01-01 10:00:00+01:99": {
+        "value": "2024-01-01 10:00:00+01:99"
+      }
+    },
+    {
+      "2024-01-01 10:00:00-00:30": {
+        "value": "2024-01-01 10:00:00-00:30"
+      }
+    },
+    {
+      "2024-01-01 10:00:00+1200": {
+        "value": "2024-01-01 10:00:00+1200"
+      }
+    },
+    {
+      "0000-00-00": {
+        "value": "0000-00-00"
+      }
+    },
+    {
+      "0000-02-29": {
+        "value": "0000-02-29"
+      }
+    },
+    {
+      "1900-02-29": {
+        "value": "1900-02-29"
+      }
+    },
+    {
+      "2000-02-29": {
+        "value": "2000-02-29"
+      }
+    },
+    {
+      "ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ": {
+        "value": "ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ"
+      }
+    },
+    {
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b": {
+        "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b"
+      }
+    },
+    {
+      "line\n  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+        "value": "line\n  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "nested": [
+        "0b_1",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0b1_",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0x_FF",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0xFF_",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0_1",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "00_",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1,",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1,,0",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0x__",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0b_",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0,,1",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "001",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "09",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "019",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0.0",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1.e+3",
+        null
+      ]
+    },
+    {
+      "nested": [
+        ".e+3",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1,0.0",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1_0.0",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1.0E3",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1.0e+3",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1.0e3",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "+.inf",
+        null
+      ]
+    },
+    {
+      "nested": [
+        ".NAN",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "\"unclosed",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "first\n\n\n",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "\n\n\n",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "first\nsecond\n\n",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "first\rsecond",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "first\r",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "first second",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "firstsecond",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "a b",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "￾",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "￿",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-1-1 24:00:00",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-1-1 24:01:00",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-1-1 23:59:60",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-02-31 10:00:00",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-01-01 10:00:00+25:00",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-01-01 10:00:00+23:59",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-01-01 10:00:00+01:99",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-01-01 10:00:00-00:30",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2024-01-01 10:00:00+1200",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0000-00-00",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "0000-02-29",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "1900-02-29",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "2000-02-29",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b",
+        null
+      ]
+    },
+    {
+      "nested": [
+        "line\n  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        null
+      ]
+    },
+    {
+      "value": []
+    },
+    {
+      "value": {}
+    },
+    {
+      "value": [
+        null,
+        true,
+        false,
+        1e+20,
+        "😀"
+      ]
+    },
+    {
+      "value": {
+        "caption": "multi\nline",
+        "number": 1e-07,
+        "quoted": "a\"b"
+      }
+    },
+    {
+      "value": [
+        "\u0000\u0007\u000b\u001b",
+        " ",
+        " ",
+        "👩‍💻",
+        "́mark"
+      ]
+    },
+    {
+      "value": {
+        "nested": [
+          "2024-01-01 10:00:00+01:99"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "2024-01-01 10:00:00-00:30"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "2024-01-01 10:00:00+1200"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "0000-00-00"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "0000-02-29"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "1900-02-29"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "2000-02-29"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b"
+        ]
+      }
+    },
+    {
+      "value": {
+        "nested": [
+          "line\n  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      }
+    },
+    {
+      "value": 5e-324
+    },
+    {
+      "value": 2.2250738585072014e-308
+    },
+    {
+      "value": 1.7976931348623157e+308
+    },
+    {
+      "value": 9.999999999999999e-05
+    },
+    {
+      "value": 0.0001
+    },
+    {
+      "value": 0.00015
+    },
+    {
+      "value": 999999999999999.0
+    },
+    {
+      "value": 1234567890123456.0
+    },
+    {
+      "value": -3832926594478627.5
+    },
+    {
+      "value": 4.846847309895004e-97
+    },
+    {
+      "value": -8.478728189694727e-67
+    },
+    {
+      "value": -5.520515490500894e+282
+    },
+    {
+      "value": -5.26065314172179e-111
+    },
+    {
+      "value": -6.8207346356376275e+28
+    },
+    {
+      "value": 2.7254445442459208e-80
+    },
+    {
+      "value": -4.163231899663451e-203
+    },
+    {
+      "value": -3.893233897473582e-172
+    },
+    {
+      "value": 6.828174335317754e-290
+    },
+    {
+      "value": -5.543391693818282e-88
+    },
+    {
+      "value": 8.696361902389781e-172
+    },
+    {
+      "value": 7.843431526572942e-171
+    },
+    {
+      "value": 7.372184695952228e+183
+    },
+    {
+      "value": 1.9513470406366656e-246
+    },
+    {
+      "value": -2.4862720166892946e-91
+    },
+    {
+      "value": 4.6417719225223146e-263
+    },
+    {
+      "value": -7.004051933344323e+260
+    },
+    {
+      "value": 5.475321663104547e-301
+    },
+    {
+      "value": 5.538147946511763e-49
+    },
+    {
+      "value": 3.0254062954343477e+208
+    },
+    {
+      "value": -6.916128981796027e+25
+    },
+    {
+      "value": -4.274803848511385e+243
+    },
+    {
+      "value": -4.1363431248150315e-93
+    },
+    {
+      "value": -8.988270028650076e-156
+    },
+    {
+      "value": -7.801277518356475e+273
+    },
+    {
+      "value": -7.258938566850258e+146
+    },
+    {
+      "value": -8.545213555291514e+268
+    },
+    {
+      "value": -6.062693301749293e+87
+    },
+    {
+      "value": -7.391600513559275e-23
+    },
+    {
+      "value": 2.2985779057691857e+164
+    },
+    {
+      "value": -2.2816522973576296e-189
+    },
+    {
+      "value": -2.195447404636826e-232
+    },
+    {
+      "value": 7.164127133691473e-230
+    },
+    {
+      "value": -3.4441418310389976e+68
+    },
+    {
+      "value": 3.1890117793909965e-21
+    },
+    {
+      "value": 1.5355698620093587e-182
+    },
+    {
+      "value": 5.406630350068974e+250
+    },
+    {
+      "value": 7.882611213161457e+130
+    },
+    {
+      "value": 7.136290789666802e-167
+    },
+    {
+      "value": -5.527885235203111e+165
+    },
+    {
+      "value": 4.529199530296005e-242
+    },
+    {
+      "value": -7.348050778124108e-174
+    },
+    {
+      "value": -7.073826352799272e-263
+    },
+    {
+      "value": 5.556680365907481e+46
+    },
+    {
+      "value": 7.596528854083988e-104
+    },
+    {
+      "value": -5.659650397710508e-265
+    },
+    {
+      "value": 4.174478540475338e+108
+    },
+    {
+      "value": -4.27265062190859e+22
+    },
+    {
+      "value": -3.924013559694527e+236
+    },
+    {
+      "value": -8.25342889457024e+143
+    },
+    {
+      "value": -7.1067240534164675e-149
+    },
+    {
+      "value": 3.4844531191063393e+217
+    },
+    {
+      "value": -2.5903891796259167e+81
+    },
+    {
+      "value": -6.214303917118877e-190
+    },
+    {
+      "value": -7.229437980718217e-229
+    },
+    {
+      "value": 7.384254553923988e-251
+    },
+    {
+      "value": 6.848287302552177e+88
+    },
+    {
+      "value": -6.1874862789772334e+187
+    },
+    {
+      "value": -6.519950888251948e-17
+    },
+    {
+      "value": -6.2050685886672985e+183
+    },
+    {
+      "value": -1.8346113803394112e-159
+    },
+    {
+      "value": -2.929853937664699e-186
+    },
+    {
+      "value": 3.5058869261195337e+108
+    },
+    {
+      "value": 8.982772930246564e+147
+    },
+    {
+      "value": -1.9946772556392255e+216
+    },
+    {
+      "value": 8.146624459550658e+157
+    },
+    {
+      "value": -1.991980205907739e+266
+    },
+    {
+      "value": 1.9758491724580872e-38
+    },
+    {
+      "value": 1.0153105032745627e-112
+    },
+    {
+      "value": 1.0186114896273288e-108
+    },
+    {
+      "value": -7766.355289902984
+    },
+    {
+      "value": 4.6159494272339786e-294
+    },
+    {
+      "value": 8.466272661015215e+255
+    },
+    {
+      "value": -7.94404375626933e+252
+    },
+    {
+      "value": 3.9279433937705156e+213
+    },
+    {
+      "value": -2.5146599139452006e-108
+    },
+    {
+      "value": -1.4236994625424417e+87
+    },
+    {
+      "value": 7.322954910711922e-120
+    },
+    {
+      "value": 5.646615425771413e+87
+    },
+    {
+      "value": 2.0673271260369024e-184
+    },
+    {
+      "value": 5.164950759225482e-279
+    },
+    {
+      "value": -5.709639110480051e+188
+    },
+    {
+      "value": 2.400094218802753e+245
+    },
+    {
+      "value": -3.6866135904767407e+161
+    },
+    {
+      "value": 7.967398194221112e+75
+    },
+    {
+      "value": 330090.2878860766
+    },
+    {
+      "value": 5.43486598256843e-203
+    },
+    {
+      "value": -5.802294191527182e+292
+    },
+    {
+      "value": 3.1210017164504206e-18
+    },
+    {
+      "value": -4.488223175491974e+162
+    },
+    {
+      "value": -6128.630999977183
+    },
+    {
+      "value": -7.178256456359617e+302
+    },
+    {
+      "value": -545591004630132.2
+    },
+    {
+      "value": -6.077577569480333e-284
+    },
+    {
+      "value": -1.795267887384468e-136
+    },
+    {
+      "value": 7.268433505437784e+228
+    },
+    {
+      "value": 8.34782142871578e+53
+    },
+    {
+      "value": 8.371754305105338e+93
+    },
+    {
+      "value": -1.3942467135820352e-19
+    },
+    {
+      "value": -1.1575829800409299e+286
+    },
+    {
+      "value": -5.690175249499406e-155
+    },
+    {
+      "value": 4.351643693262373e-135
+    },
+    {
+      "value": 3.5774118856133886e-15
+    },
+    {
+      "value": -4.6716699466055545e-256
+    },
+    {
+      "value": -5.045556089215746e-98
+    },
+    {
+      "value": -5.880518643503704e-297
+    },
+    {
+      "value": 6.3891615748038454e-167
+    },
+    {
+      "value": -2.3433984543635946e+262
+    },
+    {
+      "value": 1641901818253.0625
+    },
+    {
+      "value": 8.361239256553991e-217
+    },
+    {
+      "value": -4.921283651093989e-104
+    },
+    {
+      "value": 3.738144074885538e-97
+    },
+    {
+      "value": 2.030916149856665e-199
+    },
+    {
+      "value": -4.286786781574362e+233
+    },
+    {
+      "value": 3.440911244210179e+95
+    },
+    {
+      "value": -6.124025588857442e+282
+    },
+    {
+      "value": 4.286812906866931e-254
+    },
+    {
+      "value": -3.4373557881179297e-186
+    },
+    {
+      "value": 7.305668184646269e+167
+    },
+    {
+      "value": 3.113847290583859e+113
+    },
+    {
+      "value": -6.346395996464603e+101
+    },
+    {
+      "value": 3.887455357709115e+41
+    },
+    {
+      "value": -4.330567046870368e+105
+    },
+    {
+      "value": -1.7390662928002952e-114
+    },
+    {
+      "value": 2.6603597856491063e+156
+    },
+    {
+      "value": -2.3948901273622346e-278
+    },
+    {
+      "value": 4.579640643916697e+273
+    },
+    {
+      "value": 8.049067669341578e+35
+    },
+    {
+      "value": 8.294203626065027e+38
+    },
+    {
+      "value": 3.4277404130908304e-104
+    },
+    {
+      "value": -2.6429640980338807e-133
+    },
+    {
+      "value": 7.509135864117085e+108
+    },
+    {
+      "value": -2.757608415212717e+151
+    },
+    {
+      "value": -7.833862881173968e+53
+    },
+    {
+      "value": -9.911425447496995e+211
+    },
+    {
+      "value": -8.112962739035741e-143
+    },
+    {
+      "value": -4.919777931710614e-226
+    },
+    {
+      "value": -8.995881518592743e-105
+    },
+    {
+      "value": 8.685564800834086e+99
+    },
+    {
+      "value": -8.550054001715737e-65
+    },
+    {
+      "value": -2.650527352620425e-293
+    },
+    {
+      "value": -4.266536198563564e+17
+    },
+    {
+      "value": -7.2937958230180655e-258
+    },
+    {
+      "value": -6803758684546037.0
+    },
+    {
+      "value": 7.143142394206779e-227
+    },
+    {
+      "value": -1.511952094243636e-231
+    },
+    {
+      "value": 5.634475728560287e+61
+    },
+    {
+      "value": 1.2886449668413994e-252
+    },
+    {
+      "value": 2.146387764332527e+35
+    },
+    {
+      "value": -5.1925871561460134e-210
+    },
+    {
+      "value": -5.639054362571761e-96
+    },
+    {
+      "value": -1.7307526796994208e-23
+    },
+    {
+      "value": 2.661519480770483e-165
+    },
+    {
+      "value": 1.545030256042425e+150
+    },
+    {
+      "value": -8.760177359339991e-88
+    },
+    {
+      "value": -2.99591989386044e-183
+    },
+    {
+      "value": 4.2308229417639414e-222
+    },
+    {
+      "value": -2.637787295686949e+248
+    },
+    {
+      "value": 8.255547227101413e+278
+    },
+    {
+      "value": 5.926581401275066e+16
+    },
+    {
+      "value": 1.8134513590760194e-26
+    },
+    {
+      "value": -2.9024817532117454e+20
+    },
+    {
+      "value": -9.379162586797811e-05
+    },
+    {
+      "value": -3.0839384276324955e+273
+    },
+    {
+      "value": -4.504772006896395e+251
+    },
+    {
+      "value": -8.675368705728492e-31
+    },
+    {
+      "value": 5.564972102962847e-15
+    },
+    {
+      "value": -3.5115755746183906e-94
+    },
+    {
+      "value": -2.1432142810323588e+142
+    },
+    {
+      "value": 3.834378092029134e-54
+    },
+    {
+      "value": -3.3342787384165464e+45
+    },
+    {
+      "value": -7.345800296572847e-281
+    },
+    {
+      "value": -7.684913054600339e-83
+    },
+    {
+      "value": 4.3499750329780263e+294
+    },
+    {
+      "value": 8.151290587439271e-30
+    },
+    {
+      "value": 7.634550667204802e+128
+    },
+    {
+      "value": -7.706173161029e+151
+    },
+    {
+      "value": -2.0149182631311958e+264
+    },
+    {
+      "value": -6.162792075449606e+70
+    },
+    {
+      "value": -5.102848948043685e-206
+    },
+    {
+      "value": -8.906713784787554e+291
+    },
+    {
+      "value": 5.7212708763250895e+180
+    },
+    {
+      "value": -1.7638117010744036e-130
+    },
+    {
+      "value": 1.1739405225797181e+88
+    },
+    {
+      "value": 1.0533141791652785e+273
+    },
+    {
+      "value": 1.0433212692614652e-174
+    },
+    {
+      "value": 3.454055053097578e-38
+    },
+    {
+      "value": -7.169187390914564e+35
+    },
+    {
+      "value": 5.4485254473509974e-191
+    },
+    {
+      "value": 2.7733489682164676e+216
+    },
+    {
+      "value": -7.280900641543363e-260
+    },
+    {
+      "value": 2.7165339511216544e-233
+    },
+    {
+      "value": -8.586378804433757e-281
+    },
+    {
+      "value": -3.7100122943660174e+33
+    },
+    {
+      "value": -1.2278800463679806e+210
+    },
+    {
+      "value": -8.298103327744535e+272
+    },
+    {
+      "value": -7.378578137692599e-288
+    },
+    {
+      "value": 8998261235856.162
+    },
+    {
+      "value": -3.2241582593576384e-284
+    },
+    {
+      "value": -7.156859170735983e+198
+    },
+    {
+      "value": 1.992496391410798e+187
+    },
+    {
+      "value": -2.5851220790672494e+131
+    },
+    {
+      "value": -2.180805836474182e+206
+    },
+    {
+      "value": -3.636937826458756e+49
+    },
+    {
+      "value": -3.2474925911445486e-252
+    },
+    {
+      "value": -3.252820230988497e-186
+    },
+    {
+      "value": -1.63790771195169e-211
+    },
+    {
+      "value": -3.670864915211654e-26
+    },
+    {
+      "value": 5.940937536332953e-16
+    },
+    {
+      "value": -4.296962317145391e-15
+    },
+    {
+      "value": 6.191340285930857e-57
+    },
+    {
+      "value": -4.119983868509369e-276
+    },
+    {
+      "value": 8.375005857972561e-215
+    },
+    {
+      "value": 3.0612630105588924e+211
+    },
+    {
+      "value": 1.411210702204162e+98
+    },
+    {
+      "value": 1.7546568756285054e-147
+    },
+    {
+      "value": -8.713311106971585e-249
+    },
+    {
+      "value": -4.436155385288351e-246
+    },
+    {
+      "value": -5.937507390630328e-298
+    },
+    {
+      "value": 7.897981796277471e+122
+    },
+    {
+      "value": -8.945587560018503e-40
+    },
+    {
+      "value": 8.195964697886299e-24
+    },
+    {
+      "value": -7.672882742804584e-93
+    },
+    {
+      "value": -8.51564750824952e-51
+    },
+    {
+      "value": -5.800782382003885e-249
+    },
+    {
+      "value": 7.884173721745963e+167
+    },
+    {
+      "value": 6.740676510311997e-257
+    },
+    {
+      "value": -5.151643672713945e-194
+    },
+    {
+      "value": 5.925666623901259e-153
+    },
+    {
+      "value": 4.700766862271152e+300
+    },
+    {
+      "value": 3.493960842616337e+250
+    },
+    {
+      "value": 2.5778275387061845e+228
+    },
+    {
+      "value": -8.728868466260118e-91
+    },
+    {
+      "value": 1.671401229609005e-76
+    },
+    {
+      "value": 3.623388662164702e+179
+    },
+    {
+      "value": 4.76782027079104e-280
+    },
+    {
+      "value": 1.3033564938292415e+41
+    },
+    {
+      "value": -6.704687416129529e-162
+    },
+    {
+      "value": -2.66365909378683e+94
+    },
+    {
+      "value": -3.9581778395683196e+211
+    },
+    {
+      "value": 5.077834654885546e-304
+    },
+    {
+      "value": -5.668715107516756e-260
+    },
+    {
+      "value": -1.0883225905851024e-118
+    },
+    {
+      "value": 1.4863002421731223e+98
+    },
+    {
+      "value": -5.334910772993773e-56
+    },
+    {
+      "value": -6.015243962999512e+111
+    },
+    {
+      "value": 4.540635374003333e+281
+    },
+    {
+      "value": -7.056687688323892e+201
+    },
+    {
+      "value": -4.4648610532585663e+303
+    },
+    {
+      "value": 7.218292543238497e+229
+    },
+    {
+      "value": 7.49358894733465e-305
+    },
+    {
+      "value": 6.622008795646965e-303
+    },
+    {
+      "value": -2.0115282532398418e-199
+    },
+    {
+      "value": -4.8719130441710605e+172
+    },
+    {
+      "value": 5.6714244663897516e-291
+    },
+    {
+      "value": -2.8804874121122613e+44
+    },
+    {
+      "value": -772470759055.5321
+    },
+    {
+      "value": 1.5276566477381e-190
+    },
+    {
+      "value": -2.0858198248385762e-192
+    },
+    {
+      "value": -179090639.79931554
+    },
+    {
+      "value": -3.890392169757006e+249
+    },
+    {
+      "value": 3.441572223273551e+107
+    },
+    {
+      "value": -3.473305104841094e-234
+    },
+    {
+      "value": 2.897894694051267e-172
+    },
+    {
+      "value": 8.844043043095998e+92
+    },
+    {
+      "value": 8.144108105882679e-121
+    },
+    {
+      "value": 7.374298385819799e+104
+    },
+    {
+      "value": 9.752715294272126e+95
+    },
+    {
+      "value": 2.8514794645354583e-100
+    },
+    {
+      "value": 6.488928817750033e+166
+    },
+    {
+      "value": -1.264937977894978e-262
+    },
+    {
+      "value": 6.260207690942484e-295
+    },
+    {
+      "value": -1.006098137966463e+138
+    },
+    {
+      "value": 8.528654432484494e+112
+    },
+    {
+      "value": 5.38052433965511e+167
+    },
+    {
+      "value": -4.103724595318304e+215
+    },
+    {
+      "value": 4.0602093281404432e-289
+    },
+    {
+      "value": -2.0972987747760622e+224
+    },
+    {
+      "value": -6.665087642292086e+180
+    },
+    {
+      "value": -4.387966777326353e-294
+    },
+    {
+      "value": -8.37958045306424e-121
+    },
+    {
+      "value": 5.968476048698292e+253
+    },
+    {
+      "value": -8.151296408408871e-96
+    },
+    {
+      "value": 2.4152529711693518e+266
+    },
+    {
+      "value": -5.135233383842175e-194
+    },
+    {
+      "value": -4.537575329581201e+287
+    },
+    {
+      "value": -8.326244541546667e+260
+    },
+    {
+      "value": -2.4745764943072805e+300
+    },
+    {
+      "value": 2.6983971073689013e+138
+    },
+    {
+      "value": 4.541340404787483e+291
+    },
+    {
+      "value": -4.5395720604329215e+48
+    },
+    {
+      "value": -4.0946816575935525e+219
+    },
+    {
+      "value": 2.383866707993233e+150
+    },
+    {
+      "value": 34751.52846468365
+    },
+    {
+      "value": -6.358874186253409e+89
+    },
+    {
+      "value": 2.8615486806921045e-55
+    },
+    {
+      "value": -6.5545925490194845e-165
+    },
+    {
+      "value": -3.270876380832458e-204
+    },
+    {
+      "value": 6.97953397690789e-296
+    },
+    {
+      "value": -3.177456907305882e+213
+    }
+  ],
+  "ruby_version": "3.4.10",
+  "psych_version": "5.3.1",
+  "libyaml_version": [
+    0,
+    2,
+    5
+  ],
+  "yaml": [
+    "value: '0b_1'\n",
+    "value: '0b1_'\n",
+    "value: '0x_FF'\n",
+    "value: '0xFF_'\n",
+    "value: '0_1'\n",
+    "value: '00_'\n",
+    "value: 1,\n",
+    "value: 1,,0\n",
+    "value: 0x__\n",
+    "value: 0b_\n",
+    "value: '0,,1'\n",
+    "value: '001'\n",
+    "value: '09'\n",
+    "value: '019'\n",
+    "value: '0.0'\n",
+    "value: '1.e+3'\n",
+    "value: \".e+3\"\n",
+    "value: '1,0.0'\n",
+    "value: '1_0.0'\n",
+    "value: 1.0E3\n",
+    "value: '1.0e+3'\n",
+    "value: 1.0e3\n",
+    "value: \"+.inf\"\n",
+    "value: \".NAN\"\n",
+    "value: \"\\\"unclosed\"\n",
+    "value: |+\n  first\n\n\n...\n",
+    "value: |2+\n\n\n\n...\n",
+    "value: |+\n  first\n  second\n\n...\n",
+    "value: \"first\\rsecond\"\n",
+    "value: \"first\\r\"\n",
+    "value: 'first   second'\n",
+    "value: \"first\\Nsecond\"\n",
+    "value: 'a   b'\n",
+    "value: \"\\x7F\"\n",
+    "value: \"\\x9F\"\n",
+    "value: \"\\uFFFE\"\n",
+    "value: \"\\uFFFF\"\n",
+    "value: '2024-1-1 24:00:00'\n",
+    "value: 2024-1-1 24:01:00\n",
+    "value: '2024-1-1 23:59:60'\n",
+    "value: '2024-02-31 10:00:00'\n",
+    "value: 2024-01-01 10:00:00+25:00\n",
+    "value: '2024-01-01 10:00:00+23:59'\n",
+    "value: '2024-01-01 10:00:00+01:99'\n",
+    "value: '2024-01-01 10:00:00-00:30'\n",
+    "value: '2024-01-01 10:00:00+1200'\n",
+    "value: 0000-00-00\n",
+    "value: '0000-02-29'\n",
+    "value: 1900-02-29\n",
+    "value: '2000-02-29'\n",
+    "value: ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ\n",
+    "value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n  b\n",
+    "value: |-\n  line\n    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "'0b_1':\n  value: '0b_1'\n",
+    "'0b1_':\n  value: '0b1_'\n",
+    "'0x_FF':\n  value: '0x_FF'\n",
+    "'0xFF_':\n  value: '0xFF_'\n",
+    "'0_1':\n  value: '0_1'\n",
+    "'00_':\n  value: '00_'\n",
+    "1,:\n  value: 1,\n",
+    "1,,0:\n  value: 1,,0\n",
+    "0x__:\n  value: 0x__\n",
+    "0b_:\n  value: 0b_\n",
+    "'0,,1':\n  value: '0,,1'\n",
+    "'001':\n  value: '001'\n",
+    "'09':\n  value: '09'\n",
+    "'019':\n  value: '019'\n",
+    "'0.0':\n  value: '0.0'\n",
+    "'1.e+3':\n  value: '1.e+3'\n",
+    "\".e+3\":\n  value: \".e+3\"\n",
+    "'1,0.0':\n  value: '1,0.0'\n",
+    "'1_0.0':\n  value: '1_0.0'\n",
+    "1.0E3:\n  value: 1.0E3\n",
+    "'1.0e+3':\n  value: '1.0e+3'\n",
+    "1.0e3:\n  value: 1.0e3\n",
+    "\"+.inf\":\n  value: \"+.inf\"\n",
+    "\".NAN\":\n  value: \".NAN\"\n",
+    "\"\\\"unclosed\":\n  value: \"\\\"unclosed\"\n",
+    "? |+\n  first\n\n\n: value: |+\n    first\n\n\n...\n",
+    "? |2+\n\n\n\n: value: |2+\n\n\n\n...\n",
+    "? |+\n  first\n  second\n\n: value: |+\n    first\n    second\n\n...\n",
+    "? \"first\\rsecond\"\n: value: \"first\\rsecond\"\n",
+    "? \"first\\r\"\n: value: \"first\\r\"\n",
+    "? 'first   second'\n: value: 'first     second'\n",
+    "? \"first\\Nsecond\"\n: value: \"first\\Nsecond\"\n",
+    "? 'a   b'\n: value: 'a     b'\n",
+    "\"\\x7F\":\n  value: \"\\x7F\"\n",
+    "\"\\x9F\":\n  value: \"\\x9F\"\n",
+    "\"\\uFFFE\":\n  value: \"\\uFFFE\"\n",
+    "\"\\uFFFF\":\n  value: \"\\uFFFF\"\n",
+    "'2024-1-1 24:00:00':\n  value: '2024-1-1 24:00:00'\n",
+    "2024-1-1 24:01:00:\n  value: 2024-1-1 24:01:00\n",
+    "'2024-1-1 23:59:60':\n  value: '2024-1-1 23:59:60'\n",
+    "'2024-02-31 10:00:00':\n  value: '2024-02-31 10:00:00'\n",
+    "2024-01-01 10:00:00+25:00:\n  value: 2024-01-01 10:00:00+25:00\n",
+    "'2024-01-01 10:00:00+23:59':\n  value: '2024-01-01 10:00:00+23:59'\n",
+    "'2024-01-01 10:00:00+01:99':\n  value: '2024-01-01 10:00:00+01:99'\n",
+    "'2024-01-01 10:00:00-00:30':\n  value: '2024-01-01 10:00:00-00:30'\n",
+    "'2024-01-01 10:00:00+1200':\n  value: '2024-01-01 10:00:00+1200'\n",
+    "0000-00-00:\n  value: 0000-00-00\n",
+    "'0000-02-29':\n  value: '0000-02-29'\n",
+    "1900-02-29:\n  value: 1900-02-29\n",
+    "'2000-02-29':\n  value: '2000-02-29'\n",
+    "? ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ\n: value: ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ\n",
+    "? aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n  b\n: value: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n    b\n",
+    "? |-\n  line\n    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n: value: |-\n    line\n      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "nested:\n- '0b_1'\n-\n",
+    "nested:\n- '0b1_'\n-\n",
+    "nested:\n- '0x_FF'\n-\n",
+    "nested:\n- '0xFF_'\n-\n",
+    "nested:\n- '0_1'\n-\n",
+    "nested:\n- '00_'\n-\n",
+    "nested:\n- 1,\n-\n",
+    "nested:\n- 1,,0\n-\n",
+    "nested:\n- 0x__\n-\n",
+    "nested:\n- 0b_\n-\n",
+    "nested:\n- '0,,1'\n-\n",
+    "nested:\n- '001'\n-\n",
+    "nested:\n- '09'\n-\n",
+    "nested:\n- '019'\n-\n",
+    "nested:\n- '0.0'\n-\n",
+    "nested:\n- '1.e+3'\n-\n",
+    "nested:\n- \".e+3\"\n-\n",
+    "nested:\n- '1,0.0'\n-\n",
+    "nested:\n- '1_0.0'\n-\n",
+    "nested:\n- 1.0E3\n-\n",
+    "nested:\n- '1.0e+3'\n-\n",
+    "nested:\n- 1.0e3\n-\n",
+    "nested:\n- \"+.inf\"\n-\n",
+    "nested:\n- \".NAN\"\n-\n",
+    "nested:\n- \"\\\"unclosed\"\n-\n",
+    "nested:\n- |+\n  first\n\n\n-\n...\n",
+    "nested:\n- |2+\n\n\n\n-\n...\n",
+    "nested:\n- |+\n  first\n  second\n\n-\n...\n",
+    "nested:\n- \"first\\rsecond\"\n-\n",
+    "nested:\n- \"first\\r\"\n-\n",
+    "nested:\n- 'first   second'\n-\n",
+    "nested:\n- \"first\\Nsecond\"\n-\n",
+    "nested:\n- 'a   b'\n-\n",
+    "nested:\n- \"\\x7F\"\n-\n",
+    "nested:\n- \"\\x9F\"\n-\n",
+    "nested:\n- \"\\uFFFE\"\n-\n",
+    "nested:\n- \"\\uFFFF\"\n-\n",
+    "nested:\n- '2024-1-1 24:00:00'\n-\n",
+    "nested:\n- 2024-1-1 24:01:00\n-\n",
+    "nested:\n- '2024-1-1 23:59:60'\n-\n",
+    "nested:\n- '2024-02-31 10:00:00'\n-\n",
+    "nested:\n- 2024-01-01 10:00:00+25:00\n-\n",
+    "nested:\n- '2024-01-01 10:00:00+23:59'\n-\n",
+    "nested:\n- '2024-01-01 10:00:00+01:99'\n-\n",
+    "nested:\n- '2024-01-01 10:00:00-00:30'\n-\n",
+    "nested:\n- '2024-01-01 10:00:00+1200'\n-\n",
+    "nested:\n- 0000-00-00\n-\n",
+    "nested:\n- '0000-02-29'\n-\n",
+    "nested:\n- 1900-02-29\n-\n",
+    "nested:\n- '2000-02-29'\n-\n",
+    "nested:\n- ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ\n-\n",
+    "nested:\n- aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n  b\n-\n",
+    "nested:\n- |-\n  line\n    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n-\n",
+    "value: []\n",
+    "value: {}\n",
+    "value:\n-\n- true\n- false\n- 1.0e+20\n- \"\\U0001F600\"\n",
+    "value:\n  caption: |-\n    multi\n    line\n  number: 1.0e-07\n  quoted: a\"b\n",
+    "value:\n- \"\\0\\a\\v\\e\\x7F\"\n- \"\\L\"\n- \"\\P\"\n- \"\\U0001F469‍\\U0001F4BB\"\n- ́mark\n",
+    "value:\n  nested:\n  - '2024-01-01 10:00:00+01:99'\n",
+    "value:\n  nested:\n  - '2024-01-01 10:00:00-00:30'\n",
+    "value:\n  nested:\n  - '2024-01-01 10:00:00+1200'\n",
+    "value:\n  nested:\n  - 0000-00-00\n",
+    "value:\n  nested:\n  - '0000-02-29'\n",
+    "value:\n  nested:\n  - 1900-02-29\n",
+    "value:\n  nested:\n  - '2000-02-29'\n",
+    "value:\n  nested:\n  - ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ\n",
+    "value:\n  nested:\n  - aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n    b\n",
+    "value:\n  nested:\n  - |-\n    line\n      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "value: 5.0e-324\n",
+    "value: 2.2250738585072014e-308\n",
+    "value: 1.7976931348623157e+308\n",
+    "value: 9.999999999999999e-05\n",
+    "value: 0.0001\n",
+    "value: 0.00015\n",
+    "value: 999999999999999.0\n",
+    "value: 1.234567890123456e+15\n",
+    "value: -3832926594478627.5\n",
+    "value: 4.846847309895004e-97\n",
+    "value: -8.478728189694727e-67\n",
+    "value: -5.520515490500894e+282\n",
+    "value: -5.26065314172179e-111\n",
+    "value: -6.8207346356376275e+28\n",
+    "value: 2.7254445442459208e-80\n",
+    "value: -4.163231899663451e-203\n",
+    "value: -3.893233897473582e-172\n",
+    "value: 6.828174335317754e-290\n",
+    "value: -5.543391693818282e-88\n",
+    "value: 8.696361902389781e-172\n",
+    "value: 7.843431526572942e-171\n",
+    "value: 7.372184695952228e+183\n",
+    "value: 1.9513470406366656e-246\n",
+    "value: -2.4862720166892946e-91\n",
+    "value: 4.6417719225223146e-263\n",
+    "value: -7.004051933344323e+260\n",
+    "value: 5.475321663104547e-301\n",
+    "value: 5.538147946511763e-49\n",
+    "value: 3.0254062954343477e+208\n",
+    "value: -6.916128981796027e+25\n",
+    "value: -4.274803848511385e+243\n",
+    "value: -4.1363431248150315e-93\n",
+    "value: -8.988270028650076e-156\n",
+    "value: -7.801277518356475e+273\n",
+    "value: -7.258938566850258e+146\n",
+    "value: -8.545213555291514e+268\n",
+    "value: -6.062693301749293e+87\n",
+    "value: -7.391600513559275e-23\n",
+    "value: 2.2985779057691857e+164\n",
+    "value: -2.2816522973576296e-189\n",
+    "value: -2.195447404636826e-232\n",
+    "value: 7.164127133691473e-230\n",
+    "value: -3.4441418310389976e+68\n",
+    "value: 3.1890117793909965e-21\n",
+    "value: 1.5355698620093587e-182\n",
+    "value: 5.406630350068974e+250\n",
+    "value: 7.882611213161457e+130\n",
+    "value: 7.136290789666802e-167\n",
+    "value: -5.527885235203111e+165\n",
+    "value: 4.529199530296005e-242\n",
+    "value: -7.348050778124108e-174\n",
+    "value: -7.073826352799272e-263\n",
+    "value: 5.556680365907481e+46\n",
+    "value: 7.596528854083988e-104\n",
+    "value: -5.659650397710508e-265\n",
+    "value: 4.174478540475338e+108\n",
+    "value: -4.27265062190859e+22\n",
+    "value: -3.924013559694527e+236\n",
+    "value: -8.25342889457024e+143\n",
+    "value: -7.1067240534164675e-149\n",
+    "value: 3.4844531191063393e+217\n",
+    "value: -2.5903891796259167e+81\n",
+    "value: -6.214303917118877e-190\n",
+    "value: -7.229437980718217e-229\n",
+    "value: 7.384254553923988e-251\n",
+    "value: 6.848287302552177e+88\n",
+    "value: -6.1874862789772334e+187\n",
+    "value: -6.519950888251948e-17\n",
+    "value: -6.2050685886672985e+183\n",
+    "value: -1.8346113803394112e-159\n",
+    "value: -2.929853937664699e-186\n",
+    "value: 3.5058869261195337e+108\n",
+    "value: 8.982772930246564e+147\n",
+    "value: -1.9946772556392255e+216\n",
+    "value: 8.146624459550658e+157\n",
+    "value: -1.991980205907739e+266\n",
+    "value: 1.9758491724580872e-38\n",
+    "value: 1.0153105032745627e-112\n",
+    "value: 1.0186114896273288e-108\n",
+    "value: -7766.355289902984\n",
+    "value: 4.6159494272339786e-294\n",
+    "value: 8.466272661015215e+255\n",
+    "value: -7.94404375626933e+252\n",
+    "value: 3.9279433937705156e+213\n",
+    "value: -2.5146599139452006e-108\n",
+    "value: -1.4236994625424417e+87\n",
+    "value: 7.322954910711922e-120\n",
+    "value: 5.646615425771413e+87\n",
+    "value: 2.0673271260369024e-184\n",
+    "value: 5.164950759225482e-279\n",
+    "value: -5.709639110480051e+188\n",
+    "value: 2.400094218802753e+245\n",
+    "value: -3.6866135904767407e+161\n",
+    "value: 7.967398194221112e+75\n",
+    "value: 330090.2878860766\n",
+    "value: 5.43486598256843e-203\n",
+    "value: -5.802294191527182e+292\n",
+    "value: 3.1210017164504206e-18\n",
+    "value: -4.488223175491974e+162\n",
+    "value: -6128.630999977183\n",
+    "value: -7.178256456359617e+302\n",
+    "value: -545591004630132.2\n",
+    "value: -6.077577569480333e-284\n",
+    "value: -1.795267887384468e-136\n",
+    "value: 7.268433505437784e+228\n",
+    "value: 8.34782142871578e+53\n",
+    "value: 8.371754305105338e+93\n",
+    "value: -1.3942467135820352e-19\n",
+    "value: -1.1575829800409299e+286\n",
+    "value: -5.690175249499406e-155\n",
+    "value: 4.351643693262373e-135\n",
+    "value: 3.5774118856133886e-15\n",
+    "value: -4.6716699466055545e-256\n",
+    "value: -5.045556089215746e-98\n",
+    "value: -5.880518643503704e-297\n",
+    "value: 6.3891615748038454e-167\n",
+    "value: -2.3433984543635946e+262\n",
+    "value: 1641901818253.0625\n",
+    "value: 8.361239256553991e-217\n",
+    "value: -4.921283651093989e-104\n",
+    "value: 3.738144074885538e-97\n",
+    "value: 2.030916149856665e-199\n",
+    "value: -4.286786781574362e+233\n",
+    "value: 3.440911244210179e+95\n",
+    "value: -6.124025588857442e+282\n",
+    "value: 4.286812906866931e-254\n",
+    "value: -3.4373557881179297e-186\n",
+    "value: 7.305668184646269e+167\n",
+    "value: 3.113847290583859e+113\n",
+    "value: -6.346395996464603e+101\n",
+    "value: 3.887455357709115e+41\n",
+    "value: -4.330567046870368e+105\n",
+    "value: -1.7390662928002952e-114\n",
+    "value: 2.6603597856491063e+156\n",
+    "value: -2.3948901273622346e-278\n",
+    "value: 4.579640643916697e+273\n",
+    "value: 8.049067669341578e+35\n",
+    "value: 8.294203626065027e+38\n",
+    "value: 3.4277404130908304e-104\n",
+    "value: -2.6429640980338807e-133\n",
+    "value: 7.509135864117085e+108\n",
+    "value: -2.757608415212717e+151\n",
+    "value: -7.833862881173968e+53\n",
+    "value: -9.911425447496995e+211\n",
+    "value: -8.112962739035741e-143\n",
+    "value: -4.919777931710614e-226\n",
+    "value: -8.995881518592743e-105\n",
+    "value: 8.685564800834086e+99\n",
+    "value: -8.550054001715737e-65\n",
+    "value: -2.650527352620425e-293\n",
+    "value: -4.266536198563564e+17\n",
+    "value: -7.2937958230180655e-258\n",
+    "value: -6.803758684546037e+15\n",
+    "value: 7.143142394206779e-227\n",
+    "value: -1.511952094243636e-231\n",
+    "value: 5.634475728560287e+61\n",
+    "value: 1.2886449668413994e-252\n",
+    "value: 2.146387764332527e+35\n",
+    "value: -5.1925871561460134e-210\n",
+    "value: -5.639054362571761e-96\n",
+    "value: -1.7307526796994208e-23\n",
+    "value: 2.661519480770483e-165\n",
+    "value: 1.545030256042425e+150\n",
+    "value: -8.760177359339991e-88\n",
+    "value: -2.99591989386044e-183\n",
+    "value: 4.2308229417639414e-222\n",
+    "value: -2.637787295686949e+248\n",
+    "value: 8.255547227101413e+278\n",
+    "value: 5.926581401275066e+16\n",
+    "value: 1.8134513590760194e-26\n",
+    "value: -2.9024817532117454e+20\n",
+    "value: -9.379162586797811e-05\n",
+    "value: -3.0839384276324955e+273\n",
+    "value: -4.504772006896395e+251\n",
+    "value: -8.675368705728492e-31\n",
+    "value: 5.564972102962847e-15\n",
+    "value: -3.5115755746183906e-94\n",
+    "value: -2.1432142810323588e+142\n",
+    "value: 3.834378092029134e-54\n",
+    "value: -3.3342787384165464e+45\n",
+    "value: -7.345800296572847e-281\n",
+    "value: -7.684913054600339e-83\n",
+    "value: 4.3499750329780263e+294\n",
+    "value: 8.151290587439271e-30\n",
+    "value: 7.634550667204802e+128\n",
+    "value: -7.706173161029e+151\n",
+    "value: -2.0149182631311958e+264\n",
+    "value: -6.162792075449606e+70\n",
+    "value: -5.102848948043685e-206\n",
+    "value: -8.906713784787554e+291\n",
+    "value: 5.7212708763250895e+180\n",
+    "value: -1.7638117010744036e-130\n",
+    "value: 1.1739405225797181e+88\n",
+    "value: 1.0533141791652785e+273\n",
+    "value: 1.0433212692614652e-174\n",
+    "value: 3.454055053097578e-38\n",
+    "value: -7.169187390914564e+35\n",
+    "value: 5.4485254473509974e-191\n",
+    "value: 2.7733489682164676e+216\n",
+    "value: -7.280900641543363e-260\n",
+    "value: 2.7165339511216544e-233\n",
+    "value: -8.586378804433757e-281\n",
+    "value: -3.7100122943660174e+33\n",
+    "value: -1.2278800463679806e+210\n",
+    "value: -8.298103327744535e+272\n",
+    "value: -7.378578137692599e-288\n",
+    "value: 8998261235856.162\n",
+    "value: -3.2241582593576384e-284\n",
+    "value: -7.156859170735983e+198\n",
+    "value: 1.992496391410798e+187\n",
+    "value: -2.5851220790672494e+131\n",
+    "value: -2.180805836474182e+206\n",
+    "value: -3.636937826458756e+49\n",
+    "value: -3.2474925911445486e-252\n",
+    "value: -3.252820230988497e-186\n",
+    "value: -1.63790771195169e-211\n",
+    "value: -3.670864915211654e-26\n",
+    "value: 5.940937536332953e-16\n",
+    "value: -4.296962317145391e-15\n",
+    "value: 6.191340285930857e-57\n",
+    "value: -4.119983868509369e-276\n",
+    "value: 8.375005857972561e-215\n",
+    "value: 3.0612630105588924e+211\n",
+    "value: 1.411210702204162e+98\n",
+    "value: 1.7546568756285054e-147\n",
+    "value: -8.713311106971585e-249\n",
+    "value: -4.436155385288351e-246\n",
+    "value: -5.937507390630328e-298\n",
+    "value: 7.897981796277471e+122\n",
+    "value: -8.945587560018503e-40\n",
+    "value: 8.195964697886299e-24\n",
+    "value: -7.672882742804584e-93\n",
+    "value: -8.51564750824952e-51\n",
+    "value: -5.800782382003885e-249\n",
+    "value: 7.884173721745963e+167\n",
+    "value: 6.740676510311997e-257\n",
+    "value: -5.151643672713945e-194\n",
+    "value: 5.925666623901259e-153\n",
+    "value: 4.700766862271152e+300\n",
+    "value: 3.493960842616337e+250\n",
+    "value: 2.5778275387061845e+228\n",
+    "value: -8.728868466260118e-91\n",
+    "value: 1.671401229609005e-76\n",
+    "value: 3.623388662164702e+179\n",
+    "value: 4.76782027079104e-280\n",
+    "value: 1.3033564938292415e+41\n",
+    "value: -6.704687416129529e-162\n",
+    "value: -2.66365909378683e+94\n",
+    "value: -3.9581778395683196e+211\n",
+    "value: 5.077834654885546e-304\n",
+    "value: -5.668715107516756e-260\n",
+    "value: -1.0883225905851024e-118\n",
+    "value: 1.4863002421731223e+98\n",
+    "value: -5.334910772993773e-56\n",
+    "value: -6.015243962999512e+111\n",
+    "value: 4.540635374003333e+281\n",
+    "value: -7.056687688323892e+201\n",
+    "value: -4.4648610532585663e+303\n",
+    "value: 7.218292543238497e+229\n",
+    "value: 7.49358894733465e-305\n",
+    "value: 6.622008795646965e-303\n",
+    "value: -2.0115282532398418e-199\n",
+    "value: -4.8719130441710605e+172\n",
+    "value: 5.6714244663897516e-291\n",
+    "value: -2.8804874121122613e+44\n",
+    "value: -772470759055.5321\n",
+    "value: 1.5276566477381e-190\n",
+    "value: -2.0858198248385762e-192\n",
+    "value: -179090639.79931554\n",
+    "value: -3.890392169757006e+249\n",
+    "value: 3.441572223273551e+107\n",
+    "value: -3.473305104841094e-234\n",
+    "value: 2.897894694051267e-172\n",
+    "value: 8.844043043095998e+92\n",
+    "value: 8.144108105882679e-121\n",
+    "value: 7.374298385819799e+104\n",
+    "value: 9.752715294272126e+95\n",
+    "value: 2.8514794645354583e-100\n",
+    "value: 6.488928817750033e+166\n",
+    "value: -1.264937977894978e-262\n",
+    "value: 6.260207690942484e-295\n",
+    "value: -1.006098137966463e+138\n",
+    "value: 8.528654432484494e+112\n",
+    "value: 5.38052433965511e+167\n",
+    "value: -4.103724595318304e+215\n",
+    "value: 4.0602093281404432e-289\n",
+    "value: -2.0972987747760622e+224\n",
+    "value: -6.665087642292086e+180\n",
+    "value: -4.387966777326353e-294\n",
+    "value: -8.37958045306424e-121\n",
+    "value: 5.968476048698292e+253\n",
+    "value: -8.151296408408871e-96\n",
+    "value: 2.4152529711693518e+266\n",
+    "value: -5.135233383842175e-194\n",
+    "value: -4.537575329581201e+287\n",
+    "value: -8.326244541546667e+260\n",
+    "value: -2.4745764943072805e+300\n",
+    "value: 2.6983971073689013e+138\n",
+    "value: 4.541340404787483e+291\n",
+    "value: -4.5395720604329215e+48\n",
+    "value: -4.0946816575935525e+219\n",
+    "value: 2.383866707993233e+150\n",
+    "value: 34751.52846468365\n",
+    "value: -6.358874186253409e+89\n",
+    "value: 2.8615486806921045e-55\n",
+    "value: -6.5545925490194845e-165\n",
+    "value: -3.270876380832458e-204\n",
+    "value: 6.97953397690789e-296\n",
+    "value: -3.177456907305882e+213\n"
+  ],
+  "scalar_text": [
+    "0b_1",
+    "0b1_",
+    "0x_FF",
+    "0xFF_",
+    "0_1",
+    "00_",
+    "1,",
+    "1,,0",
+    "0x__",
+    "0b_",
+    "0,,1",
+    "001",
+    "09",
+    "019",
+    "0.0",
+    "1.e+3",
+    ".e+3",
+    "1,0.0",
+    "1_0.0",
+    "1.0E3",
+    "1.0e+3",
+    "1.0e3",
+    "+.inf",
+    ".NAN",
+    "\"unclosed",
+    "first\n\n\n",
+    "\n\n\n",
+    "first\nsecond\n\n",
+    "first\rsecond",
+    "first\r",
+    "first second",
+    "firstsecond",
+    "a b",
+    "",
+    "",
+    "￾",
+    "￿",
+    "2024-1-1 24:00:00",
+    "2024-1-1 24:01:00",
+    "2024-1-1 23:59:60",
+    "2024-02-31 10:00:00",
+    "2024-01-01 10:00:00+25:00",
+    "2024-01-01 10:00:00+23:59",
+    "2024-01-01 10:00:00+01:99",
+    "2024-01-01 10:00:00-00:30",
+    "2024-01-01 10:00:00+1200",
+    "0000-00-00",
+    "0000-02-29",
+    "1900-02-29",
+    "2000-02-29",
+    "ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b",
+    "line\n  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    "[]",
+    "{}",
+    "[nil, true, false, 1.0e+20, \"😀\"]",
+    "{\"caption\" => \"multi\\nline\", \"number\" => 1.0e-07, \"quoted\" => \"a\\\"b\"}",
+    "[\"\\u0000\\a\\v\\e\\u007F\", \"\\u2028\", \"\\u2029\", \"👩‍💻\", \"́mark\"]",
+    "{\"nested\" => [\"2024-01-01 10:00:00+01:99\"]}",
+    "{\"nested\" => [\"2024-01-01 10:00:00-00:30\"]}",
+    "{\"nested\" => [\"2024-01-01 10:00:00+1200\"]}",
+    "{\"nested\" => [\"0000-00-00\"]}",
+    "{\"nested\" => [\"0000-02-29\"]}",
+    "{\"nested\" => [\"1900-02-29\"]}",
+    "{\"nested\" => [\"2000-02-29\"]}",
+    "{\"nested\" => [\"ああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ\"]}",
+    "{\"nested\" => [\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa b\"]}",
+    "{\"nested\" => [\"line\\n  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]}",
+    "5.0e-324",
+    "2.2250738585072014e-308",
+    "1.7976931348623157e+308",
+    "9.999999999999999e-05",
+    "0.0001",
+    "0.00015",
+    "999999999999999.0",
+    "1.234567890123456e+15",
+    "-3832926594478627.5",
+    "4.846847309895004e-97",
+    "-8.478728189694727e-67",
+    "-5.520515490500894e+282",
+    "-5.26065314172179e-111",
+    "-6.8207346356376275e+28",
+    "2.7254445442459208e-80",
+    "-4.163231899663451e-203",
+    "-3.893233897473582e-172",
+    "6.828174335317754e-290",
+    "-5.543391693818282e-88",
+    "8.696361902389781e-172",
+    "7.843431526572942e-171",
+    "7.372184695952228e+183",
+    "1.9513470406366656e-246",
+    "-2.4862720166892946e-91",
+    "4.6417719225223146e-263",
+    "-7.004051933344323e+260",
+    "5.475321663104547e-301",
+    "5.538147946511763e-49",
+    "3.0254062954343477e+208",
+    "-6.916128981796027e+25",
+    "-4.274803848511385e+243",
+    "-4.1363431248150315e-93",
+    "-8.988270028650076e-156",
+    "-7.801277518356475e+273",
+    "-7.258938566850258e+146",
+    "-8.545213555291514e+268",
+    "-6.062693301749293e+87",
+    "-7.391600513559275e-23",
+    "2.2985779057691857e+164",
+    "-2.2816522973576296e-189",
+    "-2.195447404636826e-232",
+    "7.164127133691473e-230",
+    "-3.4441418310389976e+68",
+    "3.1890117793909965e-21",
+    "1.5355698620093587e-182",
+    "5.406630350068974e+250",
+    "7.882611213161457e+130",
+    "7.136290789666802e-167",
+    "-5.527885235203111e+165",
+    "4.529199530296005e-242",
+    "-7.348050778124108e-174",
+    "-7.073826352799272e-263",
+    "5.556680365907481e+46",
+    "7.596528854083988e-104",
+    "-5.659650397710508e-265",
+    "4.174478540475338e+108",
+    "-4.27265062190859e+22",
+    "-3.924013559694527e+236",
+    "-8.25342889457024e+143",
+    "-7.1067240534164675e-149",
+    "3.4844531191063393e+217",
+    "-2.5903891796259167e+81",
+    "-6.214303917118877e-190",
+    "-7.229437980718217e-229",
+    "7.384254553923988e-251",
+    "6.848287302552177e+88",
+    "-6.1874862789772334e+187",
+    "-6.519950888251948e-17",
+    "-6.2050685886672985e+183",
+    "-1.8346113803394112e-159",
+    "-2.929853937664699e-186",
+    "3.5058869261195337e+108",
+    "8.982772930246564e+147",
+    "-1.9946772556392255e+216",
+    "8.146624459550658e+157",
+    "-1.991980205907739e+266",
+    "1.9758491724580872e-38",
+    "1.0153105032745627e-112",
+    "1.0186114896273288e-108",
+    "-7766.355289902984",
+    "4.6159494272339786e-294",
+    "8.466272661015215e+255",
+    "-7.94404375626933e+252",
+    "3.9279433937705156e+213",
+    "-2.5146599139452006e-108",
+    "-1.4236994625424417e+87",
+    "7.322954910711922e-120",
+    "5.646615425771413e+87",
+    "2.0673271260369024e-184",
+    "5.164950759225482e-279",
+    "-5.709639110480051e+188",
+    "2.400094218802753e+245",
+    "-3.6866135904767407e+161",
+    "7.967398194221112e+75",
+    "330090.2878860766",
+    "5.43486598256843e-203",
+    "-5.802294191527182e+292",
+    "3.1210017164504206e-18",
+    "-4.488223175491974e+162",
+    "-6128.630999977183",
+    "-7.178256456359617e+302",
+    "-545591004630132.2",
+    "-6.077577569480333e-284",
+    "-1.795267887384468e-136",
+    "7.268433505437784e+228",
+    "8.34782142871578e+53",
+    "8.371754305105338e+93",
+    "-1.3942467135820352e-19",
+    "-1.1575829800409299e+286",
+    "-5.690175249499406e-155",
+    "4.351643693262373e-135",
+    "3.5774118856133886e-15",
+    "-4.6716699466055545e-256",
+    "-5.045556089215746e-98",
+    "-5.880518643503704e-297",
+    "6.3891615748038454e-167",
+    "-2.3433984543635946e+262",
+    "1641901818253.0625",
+    "8.361239256553991e-217",
+    "-4.921283651093989e-104",
+    "3.738144074885538e-97",
+    "2.030916149856665e-199",
+    "-4.286786781574362e+233",
+    "3.440911244210179e+95",
+    "-6.124025588857442e+282",
+    "4.286812906866931e-254",
+    "-3.4373557881179297e-186",
+    "7.305668184646269e+167",
+    "3.113847290583859e+113",
+    "-6.346395996464603e+101",
+    "3.887455357709115e+41",
+    "-4.330567046870368e+105",
+    "-1.7390662928002952e-114",
+    "2.6603597856491063e+156",
+    "-2.3948901273622346e-278",
+    "4.579640643916697e+273",
+    "8.049067669341578e+35",
+    "8.294203626065027e+38",
+    "3.4277404130908304e-104",
+    "-2.6429640980338807e-133",
+    "7.509135864117085e+108",
+    "-2.757608415212717e+151",
+    "-7.833862881173968e+53",
+    "-9.911425447496995e+211",
+    "-8.112962739035741e-143",
+    "-4.919777931710614e-226",
+    "-8.995881518592743e-105",
+    "8.685564800834086e+99",
+    "-8.550054001715737e-65",
+    "-2.650527352620425e-293",
+    "-4.266536198563564e+17",
+    "-7.2937958230180655e-258",
+    "-6.803758684546037e+15",
+    "7.143142394206779e-227",
+    "-1.511952094243636e-231",
+    "5.634475728560287e+61",
+    "1.2886449668413994e-252",
+    "2.146387764332527e+35",
+    "-5.1925871561460134e-210",
+    "-5.639054362571761e-96",
+    "-1.7307526796994208e-23",
+    "2.661519480770483e-165",
+    "1.545030256042425e+150",
+    "-8.760177359339991e-88",
+    "-2.99591989386044e-183",
+    "4.2308229417639414e-222",
+    "-2.637787295686949e+248",
+    "8.255547227101413e+278",
+    "5.926581401275066e+16",
+    "1.8134513590760194e-26",
+    "-2.9024817532117454e+20",
+    "-9.379162586797811e-05",
+    "-3.0839384276324955e+273",
+    "-4.504772006896395e+251",
+    "-8.675368705728492e-31",
+    "5.564972102962847e-15",
+    "-3.5115755746183906e-94",
+    "-2.1432142810323588e+142",
+    "3.834378092029134e-54",
+    "-3.3342787384165464e+45",
+    "-7.345800296572847e-281",
+    "-7.684913054600339e-83",
+    "4.3499750329780263e+294",
+    "8.151290587439271e-30",
+    "7.634550667204802e+128",
+    "-7.706173161029e+151",
+    "-2.0149182631311958e+264",
+    "-6.162792075449606e+70",
+    "-5.102848948043685e-206",
+    "-8.906713784787554e+291",
+    "5.7212708763250895e+180",
+    "-1.7638117010744036e-130",
+    "1.1739405225797181e+88",
+    "1.0533141791652785e+273",
+    "1.0433212692614652e-174",
+    "3.454055053097578e-38",
+    "-7.169187390914564e+35",
+    "5.4485254473509974e-191",
+    "2.7733489682164676e+216",
+    "-7.280900641543363e-260",
+    "2.7165339511216544e-233",
+    "-8.586378804433757e-281",
+    "-3.7100122943660174e+33",
+    "-1.2278800463679806e+210",
+    "-8.298103327744535e+272",
+    "-7.378578137692599e-288",
+    "8998261235856.162",
+    "-3.2241582593576384e-284",
+    "-7.156859170735983e+198",
+    "1.992496391410798e+187",
+    "-2.5851220790672494e+131",
+    "-2.180805836474182e+206",
+    "-3.636937826458756e+49",
+    "-3.2474925911445486e-252",
+    "-3.252820230988497e-186",
+    "-1.63790771195169e-211",
+    "-3.670864915211654e-26",
+    "5.940937536332953e-16",
+    "-4.296962317145391e-15",
+    "6.191340285930857e-57",
+    "-4.119983868509369e-276",
+    "8.375005857972561e-215",
+    "3.0612630105588924e+211",
+    "1.411210702204162e+98",
+    "1.7546568756285054e-147",
+    "-8.713311106971585e-249",
+    "-4.436155385288351e-246",
+    "-5.937507390630328e-298",
+    "7.897981796277471e+122",
+    "-8.945587560018503e-40",
+    "8.195964697886299e-24",
+    "-7.672882742804584e-93",
+    "-8.51564750824952e-51",
+    "-5.800782382003885e-249",
+    "7.884173721745963e+167",
+    "6.740676510311997e-257",
+    "-5.151643672713945e-194",
+    "5.925666623901259e-153",
+    "4.700766862271152e+300",
+    "3.493960842616337e+250",
+    "2.5778275387061845e+228",
+    "-8.728868466260118e-91",
+    "1.671401229609005e-76",
+    "3.623388662164702e+179",
+    "4.76782027079104e-280",
+    "1.3033564938292415e+41",
+    "-6.704687416129529e-162",
+    "-2.66365909378683e+94",
+    "-3.9581778395683196e+211",
+    "5.077834654885546e-304",
+    "-5.668715107516756e-260",
+    "-1.0883225905851024e-118",
+    "1.4863002421731223e+98",
+    "-5.334910772993773e-56",
+    "-6.015243962999512e+111",
+    "4.540635374003333e+281",
+    "-7.056687688323892e+201",
+    "-4.4648610532585663e+303",
+    "7.218292543238497e+229",
+    "7.49358894733465e-305",
+    "6.622008795646965e-303",
+    "-2.0115282532398418e-199",
+    "-4.8719130441710605e+172",
+    "5.6714244663897516e-291",
+    "-2.8804874121122613e+44",
+    "-772470759055.5321",
+    "1.5276566477381e-190",
+    "-2.0858198248385762e-192",
+    "-179090639.79931554",
+    "-3.890392169757006e+249",
+    "3.441572223273551e+107",
+    "-3.473305104841094e-234",
+    "2.897894694051267e-172",
+    "8.844043043095998e+92",
+    "8.144108105882679e-121",
+    "7.374298385819799e+104",
+    "9.752715294272126e+95",
+    "2.8514794645354583e-100",
+    "6.488928817750033e+166",
+    "-1.264937977894978e-262",
+    "6.260207690942484e-295",
+    "-1.006098137966463e+138",
+    "8.528654432484494e+112",
+    "5.38052433965511e+167",
+    "-4.103724595318304e+215",
+    "4.0602093281404432e-289",
+    "-2.0972987747760622e+224",
+    "-6.665087642292086e+180",
+    "-4.387966777326353e-294",
+    "-8.37958045306424e-121",
+    "5.968476048698292e+253",
+    "-8.151296408408871e-96",
+    "2.4152529711693518e+266",
+    "-5.135233383842175e-194",
+    "-4.537575329581201e+287",
+    "-8.326244541546667e+260",
+    "-2.4745764943072805e+300",
+    "2.6983971073689013e+138",
+    "4.541340404787483e+291",
+    "-4.5395720604329215e+48",
+    "-4.0946816575935525e+219",
+    "2.383866707993233e+150",
+    "34751.52846468365",
+    "-6.358874186253409e+89",
+    "2.8615486806921045e-55",
+    "-6.5545925490194845e-165",
+    "-3.270876380832458e-204",
+    "6.97953397690789e-296",
+    "-3.177456907305882e+213"
+  ]
+}

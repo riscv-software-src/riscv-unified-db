@@ -1,0 +1,31 @@
+---
+title: Schema Reference
+sidebar_position: 1
+---
+
+
+# Schema Reference
+
+UDB uses JSON Schema to define and validate the structure of YAML files in `spec/`. Each schema is versioned independently — the version shown on each card is that schema's current version.
+
+
+## About Schema Versions
+
+Schemas are versioned independently of the UDB repository. Each schema file declares its version in the `$id` field. When a schema format changes, a new version is created to maintain backward compatibility with existing data files.
+
+
+## Schemas
+
+<div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem', marginBottom: '2rem'}}>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.1/config_schema">Config Schema</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.1</span>
+</div>
+
+<div style={{padding: '1rem', border: '1px solid var(--ifm-color-emphasis-300)', borderRadius: '8px'}}>
+  <strong><a href="./v0.2/schema_defs">Schema Defs</a></strong><br />
+  <span className="badge badge--secondary" style={{marginTop: '0.4rem', display: 'inline-block'}}>v0.2</span>
+</div>
+
+</div>

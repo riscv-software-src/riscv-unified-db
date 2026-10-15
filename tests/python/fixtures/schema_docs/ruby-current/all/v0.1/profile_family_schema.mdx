@@ -1,0 +1,47 @@
+---
+title: Profile Family Schema (v0.1)
+sidebar_label: Profile Family Schema
+custom_edit_url: null
+# This file is auto-generated from profile_family_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+# Profile Family Schema
+
+<span class="badge badge--secondary">v0.1</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`profile_family_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/profile_family_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$schema` | `any` | ✓ |  |
+| `kind` | `any` | ✓ |  |
+| `name` | `string` | ✓ | Name (database key) of this Profile Family |
+| `long_name` | `string` | ✓ | One line description of family |
+| `processor_kind` | `Generic Unprivileged` \| `Microcontroller` \| `Apps Processor` |  | What kind of processor is this? |
+| `marketing_name` | `string` |  | The publicly displayed profile family name |
+| `introduction` | `string` |  | Asciidoc text containing the introduction prose for the family |
+| `description` | `string` \| Array&lt;[`conditional_text`](#conditional-text)&gt; |  | Asciidoc text containing longer description prose for the family |
+| `naming_scheme` | `string` |  | Commentary on how profile releases in the family are named |
+| `company` | A company |  |  |
+| `doc_license` | License that applies to the textual documentation for this extension |  |  |
+
+:::note Tooling field
+`$source` is an optional field set automatically by UDB tooling to record the file path this object was loaded from. You do not need to set it manually.
+:::
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.1` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |

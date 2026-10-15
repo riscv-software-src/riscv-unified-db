@@ -114,6 +114,15 @@ def build_parser() -> argparse.ArgumentParser:
     profiles_parser.add_argument(
         "--check", action="store_true", help="report generated-file drift without rewriting files"
     )
+    docs_parser = generators.add_parser("schema-docs", help="generate versioned schema MDX")
+    docs_parser.add_argument("--schemas", dest="docs_schemas", type=Path)
+    docs_parser.add_argument("--out", required=True, type=Path)
+    docs_parser.add_argument("--schema", help="one schema filename, including .json")
+    docs_parser.add_argument("--output-file", help="single page relative to --out")
+    docs_parser.add_argument("--check", action="store_true")
+    docs_parser.add_argument("--no-index", action="store_true")
+    docs_parser.add_argument("--replace-current", action="store_true")
+    docs_parser.add_argument("--diagnostics", action="store_true")
     return parser
 
 
@@ -130,6 +139,28 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "schemas" and (args.resolved or args.overlay or args.validate):
         parser.error("the schemas command does not accept resolution options")
     try:
+        if args.command == "generate" and args.generator == "schema-docs":
+            from .schema_docs.__main__ import main as schema_docs_main
+
+            if args.path or args.schemas or args.resolved or args.overlay or args.validate:
+                parser.error("schema-docs uses --schemas after the subcommand, not ISA options")
+            docs_args = ["--out", str(args.out)]
+            for option, value in (
+                ("--schemas", args.docs_schemas),
+                ("--schema", args.schema),
+                ("--output-file", args.output_file),
+            ):
+                if value is not None:
+                    docs_args.extend((option, str(value)))
+            for option, enabled in (
+                ("--check", args.check),
+                ("--replace-current", args.replace_current),
+                ("--no-index", args.no_index),
+                ("--diagnostics", args.diagnostics),
+            ):
+                if enabled:
+                    docs_args.append(option)
+            return schema_docs_main(docs_args)
         if args.command == "schemas":
             schema_root = args.schemas
             if schema_root is None:
