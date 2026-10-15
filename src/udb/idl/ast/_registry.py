@@ -53,8 +53,6 @@ from ._declarations import (
     BitfieldFieldDefinition,
     BuiltinEnumDefinition,
     EnumDefinition,
-    FunctionBody,
-    FunctionDef,
     Global,
     GlobalWithInitialization,
     MultiVariableDeclaration,
@@ -62,6 +60,7 @@ from ._declarations import (
     VariableDeclaration,
     VariableDeclarationWithInitialization,
 )
+from ._functions import FunctionBody, FunctionDef
 from ._leaves import (
     BuiltinTypeName,
     BuiltinVariable,

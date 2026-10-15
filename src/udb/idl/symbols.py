@@ -78,8 +78,8 @@ Deviations from Ruby (semantics)
    ``Concurrent::Semaphore`` per clone and a ``Thread::Mutex`` on
    ``release``; ``deep_freeze`` is what originally seeds that pool. Per
    ``doc/stage4-idl.md``, none of that is ported: ``global_clone()`` always
-   returns a brand-new, fully independent ``SymbolTable`` (still O(1) since
-   it shares the *global* scope dict rather than copying it — see point 2).
+   returns a brand-new, independent ``SymbolTable`` with copied global
+   bindings and mutable values (see point 3).
    ``release()`` is kept only as a documented no-op for call-site API
    parity (a caller that used to write ``symtab.release`` after finishing
    with a clone can still call it; it does nothing because there is no pool
@@ -87,34 +87,17 @@ Deviations from Ruby (semantics)
    ``in_use?``/``deep_freeze`` are not ported at all — there is no
    equivalent state to query.
 
-2. **``global_clone`` vs. ``deep_clone`` memo sharing, ported faithfully.**
-   Ruby's ``global_clone`` (and the pool-seeding code in ``deep_freeze``)
-   builds each pool member with ``@memo.dup`` — a *new*
-   ``MemoizedState`` struct instance holding the same current
-   ``possible_xlens``/``params_hash`` values, so a clone that later
-   re-memoizes ``possible_xlens`` does not affect the original (or other
-   clones). Ruby's ``deep_clone``, by contrast, uses ``dup`` (Ruby's
-   shallow ``Object#dup``) on the whole table, which shares the *same*
-   ``@memo`` object between the original and the deep clone. Both
-   behaviors are reproduced exactly here: ``global_clone()`` copies the
-   ``_Memo`` object (``dataclasses.replace``-equivalent); ``deep_clone()``
-   shares the same ``_Memo`` instance. This is a real (if minor)
-   inconsistency in the Ruby source, not a bug we've confirmed causes
-   incorrect results — ``possible_xlens``/``params_hash`` are idempotent
-   once computed from immutable inputs, so sharing vs. copying the memo
-   cache is only observable if the callback itself is impure. Documented
-   here rather than "fixed" so this port's behavior matches Ruby's.
+2. **Independent memoization.** Both cloning methods copy their memo
+   state and cached parameter mappings. Immutable architecture metadata
+   and callback hooks remain shared; warming or mutating a table's caches
+   does not change another table.
 
-3. **``global_clone``/``deep_clone`` share the global scope dict, not a
-   copy.** Ruby's ``global_clone`` sets ``@scopes = [@scopes[0]]`` (the
-   *same* dict object, not ``@scopes[0].dup``); ``deep_clone`` at
-   ``levels == 1`` does the same via plain ``dup``. This is intentional in
-   Ruby (the global scope is conceptually frozen/read-only after
-   ``SymbolTable#initialize`` returns) and is reproduced as-is: adding a
-   *global*-scope binding through a clone after cloning would be visible in
-   every other clone/the original, exactly as in Ruby. Callers must not add
-   global-scope bindings through a clone; only push a new (non-global)
-   scope and add there.
+3. **Independent mutable scopes.** The Stage 4 contract deliberately does
+   not reproduce Ruby's shared global dict or shallow binding aliases.
+   Clones copy every scope, mutable ``Var`` and nested value container,
+   including globals. Immutable types and source objects remain shared.
+   ``FunctionType`` signatures retain their AST but bind to the cloned
+   global context, so function evaluation sees that table's globals.
 
 4. **``Var`` stays mutable.** Unlike ``Type``, ``Var`` is not made
    immutable: IDL's compile-time evaluator needs ``var.value = new_value``
@@ -181,9 +164,8 @@ Deviations from Ruby (semantics)
 Ruby oddities noted but not treated as bugs
 --------------------------------------------
 
-- See deviation 2 (memo-sharing asymmetry between ``global_clone`` and
-  ``deep_clone``) and deviation 5 (``Var`` structural hash collision
-  hazard in ``snapshot_values``) above.
+- See deviation 5 (``Var`` structural hash collision hazard in
+  ``snapshot_values``) above.
 """
 
 from __future__ import annotations
@@ -195,10 +177,12 @@ from dataclasses import dataclass, field
 from typing import Protocol, runtime_checkable
 
 from .errors import IdlError, IdlInternalError
+from .source import IdlSource
 from .types import (
     BOOL_TYPE,
     CsrLike,
     EnumerationType,
+    FunctionType,
     Qualifier,
     RegFileElementType,
     Type,
@@ -499,7 +483,40 @@ class _Memo:
 
     def copy(self) -> _Memo:
         """A new ``_Memo`` with the same current values (Ruby's ``@memo.dup``)."""
-        return _Memo(self.possible_xlens, self.params_hash)
+        return _Memo(
+            self.possible_xlens, None if self.params_hash is None else dict(self.params_hash)
+        )
+
+
+def _clone_binding(value: object, memo: dict[int, object]) -> object:
+    """Copy mutable bindings/containers while retaining immutable semantic objects."""
+    if id(value) in memo:
+        return memo[id(value)]
+    if isinstance(value, (Type, IdlSource)):
+        return value
+    if isinstance(value, Var):
+        result = copy.copy(value)
+        memo[id(value)] = result
+        result.value = _clone_binding(value.value, memo)
+        return result
+    if isinstance(value, list):
+        result = []
+        memo[id(value)] = result
+        result.extend(_clone_binding(element, memo) for element in value)
+        return result
+    if isinstance(value, dict):
+        result = {}
+        memo[id(value)] = result
+        result.update(
+            (_clone_binding(key, memo), _clone_binding(element, memo))
+            for key, element in value.items()
+        )
+        return result
+    if isinstance(value, tuple):
+        result = tuple(_clone_binding(element, memo) for element in value)
+        memo[id(value)] = result
+        return result
+    return copy.deepcopy(value, memo)
 
 
 class SymbolTable:
@@ -547,11 +564,13 @@ class SymbolTable:
             scope0[f"{rf.name}Reg"] = elem_type
 
         for builtin_var in env.builtin_global_vars:
-            self.add_unique(builtin_var.name, builtin_var)
+            self.add_unique(builtin_var.name, _clone_binding(builtin_var, {}))
         for enum_def in env.builtin_enums:
             self.add_unique(
                 enum_def.name,
-                EnumerationType(enum_def.name, enum_def.element_names, enum_def.element_values),
+                EnumerationType(
+                    enum_def.name, enum_def.element_names, enum_def.element_values, builtin=True
+                ),
             )
 
         self._builtin_funcs = env.builtin_funcs
@@ -721,6 +740,10 @@ class SymbolTable:
         """Add (or overwrite) a symbol at the innermost scope. Mirrors ``SymbolTable#add``."""
         self._scopes[-1][name] = value
 
+    def defined_in_current_scope(self, name: str) -> bool:
+        """Whether a declaration would replace a binding in its own scope."""
+        return name in self._scopes[-1]
+
     def add_unique(self, name: str, value: object) -> None:
         """Like :meth:`add`, but raises if ``name`` is already defined at any scope.
 
@@ -780,58 +803,45 @@ class SymbolTable:
     # -- cloning --------------------------------------------------------------
 
     def global_clone(self) -> SymbolTable:
-        """Return an independent, mutable table sharing only the global scope.
+        """Return an independent table containing only copied global bindings."""
+        return self._clone_scopes(self._scopes[:1], self._callstack[:1])
 
-        Mirrors ``SymbolTable#global_clone``, minus the clone pool (see
-        module docstring deviations 1-3): always allocates a fresh
-        ``SymbolTable`` rather than borrowing one from a pool.
-        """
+    def _clone_scopes(
+        self, scopes: Sequence[dict[str, object]], callstack: Sequence[object | None]
+    ) -> SymbolTable:
         clone = object.__new__(SymbolTable)
-        clone._scopes = [self._scopes[0]]
-        clone._callstack = [self._callstack[0]]
+        clone._scopes = [{}]
+        clone._callstack = list(callstack)
         clone._mxlen = self._mxlen
         clone._name = self._name
         clone._memo = self._memo.copy()
         clone._env = self._env
         clone._builtin_funcs = self._builtin_funcs
         clone._csrs = self._csrs
-        clone._csr_hash = self._csr_hash
+        clone._csr_hash = dict(self._csr_hash)
+        memo: dict[int, object] = {}
+        for key, value in scopes[0].items():
+            clone._scopes[0][key] = (
+                FunctionType(value.name, value.func_def_ast, clone)
+                if isinstance(value, FunctionType)
+                else _clone_binding(value, memo)
+            )
+        clone._scopes.extend(
+            {key: _clone_binding(value, memo) for key, value in scope.items()}
+            for scope in scopes[1:]
+        )
         return clone
 
     def release(self) -> None:
         """No-op. Mirrors ``SymbolTable#release``; see module docstring deviation 1."""
 
-    def deep_clone(self, *, clone_values: bool = False) -> SymbolTable:
-        """Return a deep clone of this table's scope stack.
+    def deep_clone(self, *, clone_values: bool = True) -> SymbolTable:
+        """Return independent scopes, bindings and nested values.
 
-        Mirrors ``SymbolTable#deep_clone`` (Ruby's ``freeze_global:`` kwarg
-        is always ``true`` in every call site and raises if passed
-        ``false``, so it is not exposed here). See module docstring
-        deviation 2 for why this shares (rather than copies) ``_memo``.
+        ``clone_values`` is retained for API compatibility. Mutable values
+        are always isolated, including when a legacy caller passes ``False``.
         """
-        clone = object.__new__(SymbolTable)
-        clone._mxlen = self._mxlen
-        clone._name = self._name
-        clone._memo = self._memo  # shared, matching Ruby's shallow `dup`
-        clone._env = self._env
-        clone._builtin_funcs = self._builtin_funcs
-        clone._csrs = self._csrs
-        clone._csr_hash = self._csr_hash
-
-        if self.levels == 1:
-            clone._scopes = list(self._scopes)
-            clone._callstack = list(self._callstack)
-            return clone
-
-        clone._callstack = list(self._callstack)
-        clone_scopes: list[dict[str, object]] = [self._scopes[0]]
-        for scope in self._scopes[1:]:
-            new_scope: dict[str, object] = {}
-            for key, value in scope.items():
-                new_scope[key] = copy.copy(value) if clone_values else value
-            clone_scopes.append(new_scope)
-        clone._scopes = clone_scopes
-        return clone
+        return self._clone_scopes(self._scopes, self._callstack)
 
     def __repr__(self) -> str:
         return f"SymbolTable[{self._name}]"

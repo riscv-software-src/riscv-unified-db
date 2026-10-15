@@ -17,6 +17,12 @@ from ..types import (
     Type,
 )
 
+#: Sentinel used as a ``return_value``/``return_values`` element for a ``void``-returning
+#: function, matching Ruby's ``:void`` symbol. The oracle encodes Ruby symbols with
+#: ``Symbol#to_s`` (``:void`` -> ``"void"``), and Python's own ``_encode`` passes strings
+#: through unchanged, so this plain string round-trips identically to Ruby's output.
+VOID_RETURN = "void"
+
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Node:
@@ -172,10 +178,8 @@ class Node:
         warnings.warn(message, stacklevel=2)
 
     # -- semantic (type/value) defaults --------------------------------------
-    # Every concrete expression node overrides ``type_check``/``type``/``value``;
-    # these defaults only fire for nodes that are explicitly out of scope for
-    # this slice (statements, declarations, function calls, CSR/register-file
-    # access, ...), matching the task's "raise IdlInternalError" guidance.
+    # Unsupported semantic operations fail explicitly rather than returning
+    # a value that a caller could mistake for a successful computation.
 
     def type_check(self, symtab: SymbolTable, *, strict: bool = False) -> None:
         self.internal_error(f"type_check: not yet supported: {type(self).__name__}")
@@ -185,6 +189,90 @@ class Node:
 
     def value(self, symtab: SymbolTable) -> Any:
         self.internal_error(f"value: not yet supported: {type(self).__name__}")
+
+    def const_eval(self, symtab: SymbolTable) -> bool:
+        """Whether this node's value is guaranteed knowable at compile time given const args.
+
+        Mirrors Ruby's ``AstNode#const_eval?``, which is abstract on every
+        concrete node (``ast.rb`` ~line 217).
+        """
+        self.internal_error(f"const_eval: not yet supported: {type(self).__name__}")
+
+    def execute(self, symtab: SymbolTable) -> Any:
+        """Execute this node for its side effects (assignment, mutation, ...).
+
+        Mirrors Ruby's ``Executable#execute``.
+        """
+        self.internal_error(f"execute: not yet supported: {type(self).__name__}")
+
+    def nullify_assignments(self, symtab: SymbolTable) -> None:
+        """Invalidate written bindings when a conditional action cannot be resolved."""
+        self.internal_error(f"nullify_assignments: not supported: {type(self).__name__}")
+
+    def add_symbol(self, symtab: SymbolTable) -> None:
+        """Register this declaration's symbol(s) into *symtab*. Mirrors ``Declaration#add_symbol``."""
+        self.internal_error(f"add_symbol: not yet supported: {type(self).__name__}")
+
+    def return_type(self, symtab: SymbolTable) -> Type:
+        """The type of value this node (a statement/body) may return. Mirrors ``Returns#return_type``."""
+        self.internal_error(f"return_type: not yet supported: {type(self).__name__}")
+
+    def return_value(self, symtab: SymbolTable) -> Any:
+        """The single known return value reachable from this node, or ``None`` if none is definite.
+
+        Mirrors ``Returns#return_value``.
+        """
+        self.internal_error(f"return_value: not yet supported: {type(self).__name__}")
+
+    def return_values(self, symtab: SymbolTable) -> list[Any]:
+        """Every possible return value reachable from this node. Mirrors ``Returns#return_values``."""
+        self.internal_error(f"return_values: not yet supported: {type(self).__name__}")
+
+    @property
+    def is_declaration(self) -> bool:
+        """Whether this node is a ``Declaration`` (has ``add_symbol``). Mirrors ``AstNode#declaration?``."""
+        return False
+
+    @property
+    def is_executable(self) -> bool:
+        """Whether this node is ``Executable`` (has ``execute``). Mirrors ``AstNode#executable?``."""
+        return False
+
+    @property
+    def is_returning(self) -> bool:
+        """Whether this node is a ``Returns`` (has ``return_type``/``return_value``/``return_values``).
+
+        Ruby checks this with ``s.is_a?(Returns)`` (e.g. in
+        ``FunctionBodyAst#return_type``); there is no ``AstNode#returns?``
+        predicate in Ruby, so this is a Python-only addition serving the
+        same purpose.
+        """
+        return False
+
+    def expected_return_type(self, symtab: SymbolTable) -> Type:
+        """The return type expected by the enclosing function. Mirrors ``Returns#expected_return_type``.
+
+        Walks up to the nearest enclosing ``FunctionDef`` and asks for its
+        return type; if there is none (e.g. an isolated ``function_body``
+        test case), falls back to ``symtab.get("__expected_return_type")``.
+        """
+        from ._functions import (
+            FunctionDef,  # avoid import cycle: _declarations imports _statements
+        )
+
+        func_def = self.find_ancestor(FunctionDef)
+        if func_def is None:
+            rtype = symtab.get("__expected_return_type")
+            if rtype is None:
+                self.internal_error("Forgot to set __expected_return_type in the symbol table")
+            return rtype
+        local = symtab.deep_clone()
+        try:
+            while local.levels > 2:
+                local.pop()
+            return func_def.return_type(local)
+        finally:
+            local.release()
 
     def values(self, symtab: SymbolTable) -> list[Any]:
         """The complete list of possible compile-time values. Mirrors ``Rvalue#values``.
@@ -197,6 +285,25 @@ class Node:
     @staticmethod
     def truncate(value: int, width: int, signed: bool) -> int:
         """Mask *value* to *width* bits, sign-extending if *signed*. Mirrors ``Rvalue#truncate``."""
+        if width <= 0:
+            return 0
+        if isinstance(value, int):
+            if value >= 0 and (
+                value.bit_length() < width or (not signed and value.bit_length() == width)
+            ):
+                return int(value)
+            if signed and value < 0 and (~value).bit_length() < width:
+                return value
+        else:
+            from ._leaves import UnknownLiteral
+
+            if (
+                isinstance(value, UnknownLiteral)
+                and value.known_value >= 0
+                and value.unknown_mask >= 0
+                and (value.bit_length() < width or (not signed and value.bit_length() == width))
+            ):
+                return value if value.unknown_mask else value.known_value
         masked = value & ((1 << width) - 1) if width > 0 else 0
         if signed and width > 0 and (masked >> (width - 1)) & 1:
             return masked - (1 << width)
@@ -253,6 +360,49 @@ def _values_disjoint(a: Iterable[Any], b: Iterable[Any]) -> bool:
     """
     b_list = list(b)
     return not any(any(x == y for y in b_list) for x in a)
+
+
+def extract_base_var_name(node: Node) -> str | None:
+    """The name of the root variable a (possibly nested) lvalue ultimately writes to.
+
+    Mirrors ``AstNode.extract_base_var_name`` (``ast.rb`` ~line 400):
+    recurses through array-element/array-range accesses down to the base
+    ``Id``. Dispatches on ``node.kind`` (rather than ``isinstance``) to avoid
+    an import cycle with ``_leaves``/``_aggregates``.
+    """
+    if node.kind == "id":
+        return node.name  # type: ignore[attr-defined]
+    if node.kind in ("array_access", "array_range_access"):
+        return extract_base_var_name(node.var)  # type: ignore[attr-defined]
+    return None
+
+
+def write_back_nested(target: Node, new_value: Any, symtab: SymbolTable) -> None:
+    """Write *new_value* back through a (possibly nested) lvalue *target*.
+
+    Mirrors ``AstNode.write_back_nested`` (``ast.rb`` ~line 430): the base
+    case assigns directly to the named ``Var``; array-element/array-range
+    accesses read their parent container/integer, splice in the new value,
+    and recurse one level up.
+    """
+    if target.kind == "id":
+        var = symtab.get(target.name)  # type: ignore[attr-defined]
+        var.value = new_value
+        return
+    if target.kind == "array_access":
+        ary_value = target.var.value(symtab)  # type: ignore[attr-defined]
+        ary_value[target.index.value(symtab)] = new_value  # type: ignore[attr-defined]
+        write_back_nested(target.var, ary_value, symtab)  # type: ignore[attr-defined]
+        return
+    if target.kind == "array_range_access":
+        int_value = int(target.var.value(symtab))  # type: ignore[attr-defined]
+        msb_value = target.msb.value(symtab)  # type: ignore[attr-defined]
+        lsb_value = target.lsb.value(symtab)  # type: ignore[attr-defined]
+        mask = ((1 << (msb_value - lsb_value + 1)) - 1) << lsb_value
+        updated = (int_value & ~mask) | ((new_value << lsb_value) & mask)
+        write_back_nested(target.var, updated, symtab)  # type: ignore[attr-defined]
+        return
+    raise IdlInternalError(f"Unexpected lvalue node kind {target.kind!r}")
 
 
 #: Reserved words that cannot be used as identifiers/type names. Mirrors Ruby's

@@ -229,8 +229,6 @@ from ._declarations import (
     BitfieldFieldDefinition,
     BuiltinEnumDefinition,
     EnumDefinition,
-    FunctionBody,
-    FunctionDef,
     Global,
     GlobalWithInitialization,
     MultiVariableDeclaration,
@@ -244,6 +242,7 @@ from ._declarations import (
 from ._declarations import (
     _wrap_array_decl_type as _wrap_array_decl_type,
 )
+from ._functions import FunctionBody, FunctionDef
 from ._leaves import (
     _BUILTIN_TYPE_NAMES as _BUILTIN_TYPE_NAMES,
 )

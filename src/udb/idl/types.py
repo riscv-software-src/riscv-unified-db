@@ -306,20 +306,39 @@ class WidthExpression(Protocol):
 
 @runtime_checkable
 class CsrFieldLike(Protocol):
-    """Structural counterpart of Ruby's ``Idl::CsrField`` interface module."""
+    """Structural counterpart of Ruby's ``Idl::CsrField`` interface module.
+
+    Pre-existing defect fix (slice 15): this protocol previously declared
+    ``defined_in_all_bases``/``defined_in_base32``/``defined_in_base64``/
+    ``base64_only``/``base32_only``/``exists``/``reset_value`` as *methods*
+    and named the field-type accessor ``field_type``. The slice 15 test
+    adapter's mock CSR field (and the actual AST call sites, mirroring
+    Ruby's ``CsrField`` which exposes ``defined_in_all_bases?`` etc. as
+    predicate methods but ``reset_value``/``exists?`` are plain attribute-
+    like reads in context) uses properties for the boolean predicates and
+    ``reset_value``, and names the type accessor ``type`` (matching Ruby's
+    ``CsrField#type(effective_xlen)``, called as ``field_def(symtab).type(xlen)``
+    in ``ast.rb``). Updated to match.
+    """
 
     @property
     def name(self) -> str: ...
+    @property
     def defined_in_all_bases(self) -> bool: ...
+    @property
     def defined_in_base32(self) -> bool: ...
+    @property
     def defined_in_base64(self) -> bool: ...
-    def defined_in_base(self, xlen: int) -> bool: ...
+    @property
     def base64_only(self) -> bool: ...
+    @property
     def base32_only(self) -> bool: ...
     def location(self, base: int | None = None) -> range: ...
     def width(self, base: int | None) -> int: ...
-    def field_type(self, base: int | None) -> str | None: ...
+    def type(self, base: int | None) -> str | None: ...
+    @property
     def exists(self) -> bool: ...
+    @property
     def reset_value(self) -> object: ...
 
 
@@ -337,6 +356,8 @@ class CsrLike(Protocol):
     def fields(self) -> Sequence[CsrFieldLike]: ...
     @property
     def value(self) -> int | None: ...
+    @property
+    def address(self) -> int: ...
 
 
 @runtime_checkable
@@ -384,15 +405,24 @@ class FunctionBodyLike(Protocol):
 
 @runtime_checkable
 class FunctionDefinitionLike(Protocol):
-    """Structural counterpart of ``Idl::FunctionDefAst`` (only what ``FunctionType`` needs)."""
+    """Structural counterpart of ``Idl::FunctionDefAst`` (only what ``FunctionType`` needs).
+
+    ``builtin``/``generated``/``external`` are properties here (not methods,
+    unlike Ruby's ``FunctionDefAst#builtin?`` predicate methods), matching
+    ``FunctionDef``'s existing properties in ``ast/_functions.py`` and
+    the semantic test adapter, which reads them without calling them.
+    """
 
     @property
     def argument_nodes(self) -> Sequence[object]: ...
+    @property
     def builtin(self) -> bool: ...
+    @property
     def generated(self) -> bool: ...
+    @property
     def external(self) -> bool: ...
     def num_args(self) -> int: ...
-    def arguments(self, symtab: SymbolTableLike) -> Sequence[tuple[Type, str]]: ...
+    def semantic_arguments(self, symtab: SymbolTableLike) -> Sequence[tuple[Type, str]]: ...
     def return_type(self, symtab: SymbolTableLike) -> Type: ...
     @property
     def body(self) -> FunctionBodyLike: ...
@@ -1186,15 +1216,15 @@ class FunctionType(Type):
 
     @property
     def is_builtin(self) -> bool:
-        return self.func_def_ast.builtin()
+        return self.func_def_ast.builtin
 
     @property
     def is_generated(self) -> bool:
-        return self.func_def_ast.generated()
+        return self.func_def_ast.generated
 
     @property
     def is_external(self) -> bool:
-        return self.func_def_ast.external()
+        return self.func_def_ast.external
 
     @property
     def num_args(self) -> int:
@@ -1217,10 +1247,10 @@ class FunctionType(Type):
         from .symbols import Var  # local import: symbols.py imports types.py
 
         values: list[object] = []
-        arguments = self.func_def_ast.arguments(symtab)
-        for index, (atype, aname) in enumerate(arguments):
+        for index in range(self.num_args):
             if index >= len(argument_nodes):
                 func_call_ast.type_error(f"Missing argument {index}")
+            atype, aname = self.func_def_ast.semantic_arguments(symtab)[index]
             try:
                 value = argument_nodes[index].value(call_site_symtab)
                 symtab.add(aname, Var(aname, atype, value))
@@ -1242,7 +1272,7 @@ class FunctionType(Type):
         from .errors import IdlValueUnknown
 
         values: list[object] = []
-        arguments = self.func_def_ast.arguments(symtab)
+        arguments = self.func_def_ast.semantic_arguments(symtab)
         for index in range(len(arguments)):
             if index >= len(argument_nodes):
                 func_call_ast.type_error(f"Missing argument {index}")
@@ -1253,11 +1283,15 @@ class FunctionType(Type):
         return values
 
     def return_type(
-        self, argument_nodes: Sequence[RvalueLike], func_call_ast: FunctionCallLike
+        self,
+        argument_nodes: Sequence[RvalueLike],
+        func_call_ast: FunctionCallLike,
+        call_site_symtab: SymbolTableLike,
     ) -> Type:
         symtab = self._symtab.global_clone()
         symtab.push(func_call_ast)
         try:
+            self.apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
             rtype = self.func_def_ast.return_type(symtab)
         finally:
             symtab.pop()
@@ -1289,14 +1323,23 @@ class FunctionType(Type):
     ) -> Type | None:
         if index >= self.func_def_ast.num_args():
             return None
+        from .errors import IdlValueUnknown
+        from .symbols import Var
+
         symtab = self._symtab.global_clone()
         symtab.push(func_call_ast)
         try:
-            arguments = self.func_def_ast.arguments(symtab)
+            for preceding in range(index):
+                atype, name = self.func_def_ast.semantic_arguments(symtab)[preceding]
+                try:
+                    value = argument_nodes[preceding].value(call_site_symtab)
+                except IdlValueUnknown:
+                    value = None
+                symtab.add(name, Var(name, atype, value))
+            return self.func_def_ast.semantic_arguments(symtab)[index][0]
         finally:
             symtab.pop()
             symtab.release()
-        return arguments[index][0]
 
     def argument_name(self, index: int, func_call_ast: FunctionCallLike) -> str | None:
         if index >= self.func_def_ast.num_args():
@@ -1304,7 +1347,7 @@ class FunctionType(Type):
         symtab = self._symtab.global_clone()
         symtab.push(func_call_ast)
         try:
-            arguments = self.func_def_ast.arguments(symtab)
+            arguments = self.func_def_ast.semantic_arguments(symtab)
         finally:
             symtab.pop()
             symtab.release()
