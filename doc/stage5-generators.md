@@ -112,14 +112,19 @@ retention scope above before treating any proposed API, output or gate as work.
 
 ### Retained surfaces identified by independent contract review
 
-The custom ISA includes a separate Ruby/ERB authoring generator,
-`spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb`, that emits the indexed
-`qc.mclic{ip,ie,lvl,mwpstartaddr,mwpendaddr}*.yaml` CSR families. It is not a
-`.layout` file and is not covered by standard layout generation. Its Python
-authoring replacement must preserve the complete generated path set and exact
-CSR bytes, with an installed generator and custom-source drift gate.
+The custom ISA previously included the separate Ruby/ERB authoring generator
+`spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb`, which emitted the indexed
+`qc.mclic{ip,ie,ilvl}*.yaml` and `qc.mwp{start,end}addr*.yaml` CSR families.
+Accepted replacement entry 32 now uses the generic Python `.layout`
+mechanism, not a standalone QC command; the original Ruby script is removed.
+The [QC layout contract](stage5-qc-layouts.md) preserves all 56 original
+native/tracked outputs; only the normal layout source-warning header is added.
+Generic `generate-layouts` selection preserves the 532 standard outputs and
+supports explicit custom source trees/output roots. Actual wheel/sdist resource
+equality and installed API/CLI acceptance passed. CI checks both collections
+and runs the frozen native-oracle helper against offline wheel/sdist installs.
 The **135-file count below is only YAML configured prose**, not all embedded
-ERB: this Ruby source additionally contains ERB heredocs.
+ERB: the removed Ruby source additionally contained ERB heredocs.
 
 `bin/udb` and `bin/idlc` are retained CLI consumers, not aliases of the already
 ported Python inspection commands. Their Thor implementations are

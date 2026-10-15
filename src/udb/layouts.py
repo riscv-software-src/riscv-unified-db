@@ -22,6 +22,7 @@ from typing import Any
 
 from .authoring import AuthoringPlan, GeneratedFile
 from .errors import LayoutError
+from .layout_collections import LayoutCollection, LayoutJob, _relative_path, get_layout_collection
 from .resources import package_data_root
 
 _OPENING_TAG = re.compile(r"{{|{%|{#")
@@ -31,15 +32,6 @@ _MAX_EXPRESSION_CHARACTERS = 4096
 _MAX_EXPRESSION_NODES = 256
 _MAX_RENDER_STEPS = 100_000
 _MAX_OUTPUT_CHARACTERS = 16 * 1024 * 1024
-
-
-@dataclass(frozen=True)
-class LayoutJob:
-    """One tracked output and the layout inputs that own it."""
-
-    source: PurePosixPath
-    target: PurePosixPath
-    values: Mapping[str, object]
 
 
 @dataclass(frozen=True)
@@ -543,10 +535,25 @@ def _with_source_warning(rendered: str, source: PurePosixPath) -> str:
     return f"{first_line}\n\n# WARNING: This file is auto-generated from {source}\n\n{remainder}"
 
 
-def iter_layout_jobs(root: Path) -> tuple[LayoutJob, ...]:
-    """Return the deterministic set of all tracked standard-data layout jobs."""
+def iter_layout_jobs(
+    root: Path, *, collections: Sequence[LayoutCollection] | None = None
+) -> tuple[LayoutJob, ...]:
+    """Return deterministic jobs; omitted collections retain the standard recipe set."""
 
     del root
+    if collections is not None:
+        collections = tuple(collections)
+        if not collections or any(not isinstance(item, LayoutCollection) for item in collections):
+            raise LayoutError("layout job selection requires at least one LayoutCollection")
+        return tuple(
+            LayoutJob(
+                collection.source_root / job.source,
+                collection.output_root / job.target,
+                job.values,
+            )
+            for collection in collections
+            for job in collection.jobs
+        )
     jobs: list[LayoutJob] = []
 
     def add(source: str, target: str, **values: object) -> None:
@@ -651,31 +658,49 @@ def iter_layout_jobs(root: Path) -> tuple[LayoutJob, ...]:
     return tuple(jobs)
 
 
-def render_job(job: LayoutJob, root: Path, *, repository_sources: bool | None = None) -> str:
+def render_job(
+    job: LayoutJob,
+    root: Path,
+    *,
+    repository_sources: bool | None = None,
+    resource: PurePosixPath | None = None,
+) -> str:
     """Render a job and add its stable source ownership header."""
 
     source = Path(job.source.as_posix())
-    template = _layout_text(root, job.source, repository_sources=repository_sources)
+    template = _layout_text(
+        root, job.source, repository_sources=repository_sources, resource=resource
+    )
     rendered = _render_template(template, source, job.values)
     return _with_source_warning(rendered, job.source)
 
 
 def _layout_text(
-    root: Path, source: PurePosixPath, *, repository_sources: bool | None = None
+    root: Path,
+    source: PurePosixPath,
+    *,
+    repository_sources: bool | None = None,
+    resource: PurePosixPath | None = None,
 ) -> str:
     repository_source = root.joinpath(*source.parts)
     if repository_sources is True or (repository_sources is None and repository_source.is_file()):
         if not repository_source.is_file():
             raise LayoutError(f"layout source does not exist: {repository_source}")
+        if not repository_source.resolve().is_relative_to(root.resolve()):
+            raise LayoutError(f"layout source escapes source root: {repository_source}")
         return _read_layout_text(repository_source, repository_source)
-    relative = source.relative_to(PurePosixPath("spec/std/isa"))
+    if resource is None:
+        if not source.is_relative_to(PurePosixPath("spec/std/isa")):
+            raise LayoutError(f"{source}: no bundled layout resource mapping")
+        resource = PurePosixPath("layouts") / source.relative_to("spec/std/isa")
+    resource = _relative_path(resource)
     try:
-        resource = package_data_root().joinpath("layouts", *relative.parts)
+        bundled = package_data_root().joinpath(*resource.parts)
     except metadata.PackageNotFoundError as error:
         raise LayoutError("the installed udb distribution could not be located") from error
-    if not resource.is_file():
-        raise LayoutError(f"layout source does not exist: {repository_source}")
-    return _read_layout_text(resource, Path(source.as_posix()))
+    if not bundled.is_file():
+        raise LayoutError(f"{source}: bundled layout source does not exist: {resource}")
+    return _read_layout_text(bundled, Path(source.as_posix()))
 
 
 def _read_layout_text(resource: Any, source: Path) -> str:
@@ -687,44 +712,94 @@ def _read_layout_text(resource: Any, source: Path) -> str:
         raise LayoutError(f"{source}: cannot read layout source: {error}") from error
 
 
-def layout_plan(root: Path) -> AuthoringPlan:
-    """Build the ownership and dependency plan for all layout outputs."""
+def layout_plan(
+    root: Path,
+    *,
+    collections: Sequence[LayoutCollection] | None = None,
+    source_root: Path | None = None,
+) -> AuthoringPlan:
+    """Plan selected layouts, optionally reading an explicit separate source tree."""
 
-    jobs = iter_layout_jobs(root)
-    sources = tuple(sorted({job.source for job in jobs}))
-    present_sources = tuple(source for source in sources if root.joinpath(*source.parts).is_file())
-    if present_sources and len(present_sources) != len(sources):
-        missing = next(source for source in sources if source not in present_sources)
-        raise LayoutError(f"repository layout source does not exist: {root / missing}")
-    repository_sources = bool(present_sources)
-    parsed: dict[PurePosixPath, tuple[object, ...]] = {}
+    selected = (
+        tuple(collections) if collections is not None else (get_layout_collection("standard"),)
+    )
+    if not selected or any(not isinstance(item, LayoutCollection) for item in selected):
+        raise LayoutError("layout planning requires at least one LayoutCollection")
+    inputs = root if source_root is None else source_root
+    outputs: list[GeneratedFile] = []
+    input_paths: set[Path] = set()
+    for collection in selected:
+        sources = tuple(sorted({collection.source_root / job.source for job in collection.jobs}))
+        present = tuple(source for source in sources if inputs.joinpath(*source.parts).exists())
+        repository_sources = source_root is not None or bool(present)
+        if repository_sources and len(present) != len(sources):
+            missing = next(source for source in sources if source not in present)
+            raise LayoutError(f"repository layout source does not exist: {inputs / missing}")
+        if not repository_sources and collection.resource_root is None:
+            raise LayoutError(f"{collection.name}: no sources or bundled layout resources")
+        parsed: dict[PurePosixPath, tuple[object, ...]] = {}
+        for job in collection.jobs:
+            relative = collection.source_root / job.source
+            source = Path(relative.as_posix())
+            if relative not in parsed:
+                resource = (
+                    None
+                    if collection.resource_root is None
+                    else collection.resource_root / job.source
+                )
+                template = _layout_text(
+                    inputs, relative, repository_sources=repository_sources, resource=resource
+                )
+                if repository_sources:
+                    input_paths.add(inputs / relative)
+                parsed[relative] = _parse(template, source)
+            rendered = _render_nodes(parsed[relative], _recipe_values(source, job.values), source)
+            outputs.append(
+                GeneratedFile(
+                    path=collection.output_root / job.target,
+                    content=_with_source_warning(rendered, relative).encode("utf-8"),
+                    owner=f"layout:{relative}",
+                    dependencies=(relative, *collection.dependencies),
+                )
+            )
+    try:
+        resolved_inputs = {source.resolve(): source for source in input_paths}
+        input_inodes = {
+            (status.st_dev, status.st_ino): source
+            for source in input_paths
+            for status in (source.stat(),)
+        }
+        for output in outputs:
+            target = root / output.path
+            source = resolved_inputs.get(target.resolve(strict=False))
+            if source is None and target.exists():
+                status = target.stat()
+                source = input_inodes.get((status.st_dev, status.st_ino))
+            if source is not None:
+                raise LayoutError(f"{output.path}: generated output aliases layout source {source}")
+    except OSError as error:
+        raise LayoutError(f"cannot inspect layout source/output paths: {error}") from error
+    return AuthoringPlan(tuple(outputs))
 
-    def generated_file(job: LayoutJob) -> GeneratedFile:
-        source = Path(job.source.as_posix())
-        try:
-            nodes = parsed[job.source]
-        except KeyError:
-            template = _layout_text(root, job.source, repository_sources=repository_sources)
-            nodes = parsed[job.source] = _parse(template, source)
-        rendered = _render_nodes(nodes, _recipe_values(source, job.values), source)
-        return GeneratedFile(
-            path=job.target,
-            content=_with_source_warning(rendered, job.source).encode("utf-8"),
-            owner=f"layout:{job.source}",
-            dependencies=(job.source, PurePosixPath("src/udb/layouts.py")),
-        )
 
-    return AuthoringPlan(tuple(generated_file(job) for job in jobs))
-
-
-def generate_layouts(root: Path, *, check: bool = False) -> tuple[PurePosixPath, ...]:
+def generate_layouts(
+    root: Path,
+    *,
+    check: bool = False,
+    collections: Sequence[LayoutCollection] | None = None,
+    source_root: Path | None = None,
+) -> tuple[PurePosixPath, ...]:
     """Generate every layout output, or return drift without writing in check mode."""
 
     resolved_root = root.resolve()
-    return layout_plan(resolved_root).apply(resolved_root, check=check)
+    return layout_plan(resolved_root, collections=collections, source_root=source_root).apply(
+        resolved_root, check=check
+    )
 
 
-def layout_sources(root: Path) -> tuple[PurePosixPath, ...]:
+def layout_sources(
+    root: Path, *, collections: Sequence[LayoutCollection] | None = None
+) -> tuple[PurePosixPath, ...]:
     """Return all layout source dependencies used by the generation plan."""
 
-    return tuple(sorted({job.source for job in iter_layout_jobs(root)}))
+    return tuple(sorted({job.source for job in iter_layout_jobs(root, collections=collections)}))

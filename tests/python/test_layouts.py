@@ -3,12 +3,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
 
 import pytest
 
 from udb import cli, layouts
 from udb.errors import LayoutError
+from udb.layout_collections import LayoutCollection
 from udb.layouts import (
     LayoutJob,
     generate_layouts,
@@ -191,7 +193,14 @@ def test_cli_check_reports_drift_without_rewriting(
     drift = (PurePosixPath("spec/std/isa/out.yaml"),)
     calls: list[tuple[Path, bool]] = []
 
-    def fake_generate(root: Path, *, check: bool = False) -> tuple[PurePosixPath, ...]:
+    def fake_generate(
+        root: Path,
+        *,
+        check: bool = False,
+        collections: Sequence[LayoutCollection] | None = None,
+        source_root: Path | None = None,
+    ) -> tuple[PurePosixPath, ...]:
+        assert collections is None and source_root is None
         calls.append((root, check))
         return drift
 

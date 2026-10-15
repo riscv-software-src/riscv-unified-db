@@ -13,6 +13,7 @@ from pathlib import Path
 
 from .database import Database, ResolvedDatabase
 from .errors import UdbError
+from .layout_collections import get_layout_collection, layout_collection_names
 from .layouts import generate_layouts
 from .schema import SchemaError, SchemaStore
 from .serialization import write_resolved_schemas
@@ -110,7 +111,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--root",
         type=Path,
         default=Path.cwd(),
-        help="repository root containing spec/std/isa (default: current directory)",
+        help="output root, also used for source lookup unless --source-root is supplied",
+    )
+    layouts_parser.add_argument(
+        "--collection",
+        action="append",
+        choices=layout_collection_names(),
+        help="layout collection to generate (repeatable; default: standard)",
+    )
+    layouts_parser.add_argument(
+        "--source-root",
+        type=Path,
+        help="explicit source tree, without bundled-resource fallback",
     )
     layouts_parser.add_argument(
         "--check", action="store_true", help="report generated-file drift without rewriting files"
@@ -215,7 +227,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                 parser.error("the generate-layouts command does not accept resolution options")
             if args.path or args.schemas:
                 parser.error("the generate-layouts command does not accept database paths")
-            drift = generate_layouts(args.root, check=args.check)
+            collections = (
+                tuple(get_layout_collection(name) for name in args.collection)
+                if args.collection is not None
+                else None
+            )
+            drift = generate_layouts(
+                args.root,
+                check=args.check,
+                collections=collections,
+                source_root=args.source_root,
+            )
             if args.check and drift:
                 for path in drift:
                     print(path)

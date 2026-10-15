@@ -76,6 +76,17 @@ include = [
     "/spec/std/isa/**/*.isa",
     "/spec/std/isa/**/*.layout",
     "/spec/std/isa/**/*.yaml",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicipN.layout",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicieN.layout",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicilvlN.layout",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mwpstartaddrN.layout",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mwpendaddrN.layout",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicip[0-7].yaml",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicie[0-7].yaml",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicilvl[0-2][0-9].yaml",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mclicilvl3[01].yaml",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mwpstartaddr[0-3].yaml",
+    "/spec/custom/isa/qc_iu/csr/Xqci/qc.mwpendaddr[0-3].yaml",
 ]
 
 [tool.ruff]

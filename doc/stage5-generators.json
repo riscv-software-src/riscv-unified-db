@@ -43,26 +43,28 @@
   "families": [
     {
       "id": "qc-mclic-csr-authoring",
-      "status": "pending: first-party Ruby/ERB embedded in custom ISA source",
+      "status": "accepted: generic Python layouts; original QC Ruby authoring removed",
       "legacy_commands": ["ruby spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb"],
       "legacy_sources": ["spec/custom/isa/qc_iu/csr/Xqci/gen_mcliciX.rb"],
       "legacy_templates": ["ERB heredocs inside gen_mcliciX.rb"],
       "input_matrix": [
-        "all configured counter/index ranges in the source generator"
+        "pending/enable indices 0-7; level indices 00-31; watchpoint start/end indices 0-3"
       ],
       "output_paths": [
-        "spec/custom/isa/qc_iu/csr/Xqci/qc.mclic{ip,ie,lvl,mwpstartaddr,mwpendaddr}*.yaml"
+        "spec/custom/isa/qc_iu/csr/Xqci/qc.mclic{ip,ie,ilvl}*.yaml",
+        "spec/custom/isa/qc_iu/csr/Xqci/qc.mwp{start,end}addr*.yaml"
       ],
       "consumers": ["qc_iu overlay resolution, documentation and simulator"],
-      "prospective_owner": "udb.author.qc_mclic",
-      "python_cli": "udb author qc-mclic --output DIR",
+      "prospective_owner": "udb.layouts + udb.layout_collections",
+      "python_cli": "udb generate-layouts --collection qc_iu --root DIR [--source-root DIR] [--check]",
       "fixtures": [
-        "all tracked qc.mclic*.yaml outputs owned by gen_mcliciX.rb"
+        "tests/data/qc_layouts/oracle.json: all 56 genuine native/tracked files",
+        "doc/stage5-qc-layouts.md: source and installed authoring contract"
       ],
-      "comparison_policy": "exact generated-file set and byte equality; no omitted indices",
+      "comparison_policy": "exact 56-file set, native/tracked bytes and CSR semantics; only stable layout source warning added; original 532 standard outputs unchanged",
       "gates": {
-        "installed_wheel_sdist_offline": "pending",
-        "repository_ci": "pending: complete custom CSR authoring drift"
+        "installed_wheel_sdist_offline": "passed: exact 61 QC resources, wheel rebuilt from sdist, 56 native outputs and 588 combined; real installed API/CLI",
+        "repository_ci": "wired: standard and QC nonwriting drift; offline wheel/sdist QC helper; local focused acceptance passed"
       }
     },
     {

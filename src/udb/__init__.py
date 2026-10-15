@@ -80,6 +80,7 @@ from .errors import (
     UdbError,
     UnknownKindError,
 )
+from .layout_collections import LayoutCollection, get_layout_collection, layout_collection_names
 from .layouts import (
     LayoutJob,
     generate_layouts,
@@ -164,6 +165,7 @@ __all__ = [
     "Instruction",
     "InstructionEncoding",
     "InstructionOverlap",
+    "LayoutCollection",
     "LayoutError",
     "LayoutJob",
     "NoneOf",
@@ -208,8 +210,10 @@ __all__ = [
     "exactly_one",
     "finite_check",
     "generate_layouts",
+    "get_layout_collection",
     "is_satisfiable",
     "iter_layout_jobs",
+    "layout_collection_names",
     "layout_plan",
     "layout_sources",
     "merge_patch",
