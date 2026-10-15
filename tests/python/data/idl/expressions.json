@@ -1,0 +1,7130 @@
+{
+  "cases": [
+    {
+      "id": "expressions:0",
+      "text": "0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:0:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:1",
+      "text": "0xf",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xf",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:1:=",
+      "text": "4'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "4'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:2",
+      "text": "0xF",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xF",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:2:=",
+      "text": "4'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "4'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:3",
+      "text": "077",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "077",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:3:=",
+      "text": "7'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<7>",
+        "kind": "bits",
+        "width": 7,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "7'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:4",
+      "text": "0b1010",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "10",
+        "value_known": true,
+        "to_idl": "0b1010",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:4:=",
+      "text": "4'd10",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "10",
+        "value_known": true,
+        "to_idl": "4'd10",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:5",
+      "text": "0xfs",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xfs",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:5:=",
+      "text": "5'sd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "5'sd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:6",
+      "text": "0xF",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xF",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:6:=",
+      "text": "4'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "4'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:7",
+      "text": "$width(0)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "$width(0)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:7:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:8",
+      "text": "$width(1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "$width(1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:8:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:9",
+      "text": "$width(2'd1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": [],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "$width(2'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:9:=",
+      "text": "2'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "2'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:10",
+      "text": "4'd1 + 4'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(4'd1 + 4'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:10:=",
+      "text": "4'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:11",
+      "text": "4'd1 + -2'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(4'd1 + -2'd1)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  -2'd1 is truncated due to insufficient bit width (from -1 to 3).\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:11:=",
+      "text": "4'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:12",
+      "text": "2'd1 + 4'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(2'd1 + 4'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:12:=",
+      "text": "4'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:13",
+      "text": "4'sd1 + 4'sd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const signed known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(4'sd1 + 4'sd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:13:=",
+      "text": "4'sd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'sd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:14",
+      "text": "4'sd1 + -2'sd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const signed known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(4'sd1 + -2'sd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:14:=",
+      "text": "4'sd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "4'sd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:15",
+      "text": "2'sd1 + 4'sd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const signed known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(2'sd1 + 4'sd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:15:=",
+      "text": "4'sd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'sd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:16",
+      "text": "$width(1 + 1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "$width((1 + 1))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:16:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:17",
+      "text": "$width(1 + 1 + 1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "$width(((1 + 1) + 1))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:17:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:18",
+      "text": "1 + 1 + 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "((1 + 1) + 1)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '1 + 1' is truncated from 2 to 0 because the result is only 1 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:18:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:19",
+      "text": "1 + 1 + 2'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "((1 + 1) + 2'd1)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '1 + 1' is truncated from 2 to 0 because the result is only 1 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:19:=",
+      "text": "2'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "2'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:20",
+      "text": "2'd1 + 1 + 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "((2'd1 + 1) + 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:20:=",
+      "text": "2'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "2'd3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:21",
+      "text": "8'd4 - 8'd3 - 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "((8'd4 - 8'd3) - 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:21:=",
+      "text": "8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "8'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:22",
+      "text": "8'd4 - (8'd3 - 8'd1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "(8'd4 - ((8'd3 - 8'd1)))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:22:=",
+      "text": "8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "8'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:23",
+      "text": "8'5 - 8'd3 + 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "((8'5 - 8'd3) + 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:23:=",
+      "text": "8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "8'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:24",
+      "text": "8'5 + 8'd3 - 8'd8",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "((8'5 + 8'd3) - 8'd8)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:24:=",
+      "text": "8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "8'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:25",
+      "text": "8'5 - (8'd3 + 8'd2)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(8'5 - ((8'd3 + 8'd2)))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:25:=",
+      "text": "8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "8'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:26",
+      "text": "8'd5 + 8'd3 * 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "11",
+        "value_known": true,
+        "to_idl": "(8'd5 + (8'd3 * 8'd2))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:26:=",
+      "text": "8'd11",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "11",
+        "value_known": true,
+        "to_idl": "8'd11",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:27",
+      "text": "(8'd5 + 8'd3) * 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "16",
+        "value_known": true,
+        "to_idl": "(((8'd5 + 8'd3)) * 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:27:=",
+      "text": "8'd16",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "16",
+        "value_known": true,
+        "to_idl": "8'd16",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:28",
+      "text": "8'd5 - 8'd3 * 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd5 - (8'd3 * 8'd2))",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '8'd5 - 8'd3 * 8'd2' is truncated from -1 to 255 because the result is only 8 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:28:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:29",
+      "text": "(8'd5 - 8'd3) * 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(((8'd5 - 8'd3)) * 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:29:=",
+      "text": "8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "8'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:30",
+      "text": "true ? 1'd0 : 1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "true ? 1'd0 : 1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:30:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:31",
+      "text": "false ? 1'd0 : 1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "false ? 1'd0 : 1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:31:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:32",
+      "text": "true ? (false ? 1'd0 : 1'd1) : 2'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "true ? (false ? 1'd0 : 1'd1) : 2'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:32:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:33",
+      "text": "true ? false ? 1'd0 : 1'd1 : 2'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "true ? false ? 1'd0 : 1'd1 : 2'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:33:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:34",
+      "text": "4'd1 `+ 4'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(4'd1 `+ 4'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:34:=",
+      "text": "4'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:35",
+      "text": "4'd1 `+ -2'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(4'd1 `+ -2'd1)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  -2'd1 is truncated due to insufficient bit width (from -1 to 3).\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:35:=",
+      "text": "4'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:36",
+      "text": "2'd1 `+ 4'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(2'd1 `+ 4'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:36:=",
+      "text": "4'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:37",
+      "text": "4'sd1 `+ 4'sd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(4'sd1 `+ 4'sd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:37:=",
+      "text": "4'sd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'sd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:38",
+      "text": "4'sd1 `+ -2'sd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(4'sd1 `+ -2'sd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:38:=",
+      "text": "4'sd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "4'sd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:39",
+      "text": "2'sd1 `+ 4'sd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(2'sd1 `+ 4'sd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:39:=",
+      "text": "4'sd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "4'sd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:40",
+      "text": "$width(1 `+ 1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": [],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "$width((1 `+ 1))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:40:=",
+      "text": "2'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "2'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:41",
+      "text": "$width(1 `+ 1 `+ 1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": [],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "$width(((1 `+ 1) `+ 1))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:41:=",
+      "text": "2'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "2'd3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:42",
+      "text": "1 `+ 1 `+ 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<3>",
+        "kind": "bits",
+        "width": 3,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "((1 `+ 1) `+ 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:42:=",
+      "text": "3'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<3>",
+        "kind": "bits",
+        "width": 3,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "3'd3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:43",
+      "text": "1 `+ 1 `+ 2'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<3>",
+        "kind": "bits",
+        "width": 3,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "((1 `+ 1) `+ 2'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:43:=",
+      "text": "4'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "4'd3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:44",
+      "text": "2'd1 `+ 1 `+ 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "((2'd1 `+ 1) `+ 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:44:=",
+      "text": "4'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "4'd3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:45",
+      "text": "8'd1 << 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "(8'd1 << 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:45:=",
+      "text": "8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "8'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:46",
+      "text": "1 << 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(1 << 1)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '1 << 1' is truncated from 2 to 0 because the result is only 1 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:46:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:47",
+      "text": "1 `<< 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "(1 `<< 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:47:=",
+      "text": "2'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "2'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:48",
+      "text": "8'd2 >> 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "(8'd2 >> 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:48:=",
+      "text": "8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "8'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:49",
+      "text": "8'd255 >> 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "127",
+        "value_known": true,
+        "to_idl": "(8'd255 >> 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:49:=",
+      "text": "8'd127",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "127",
+        "value_known": true,
+        "to_idl": "8'd127",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:50",
+      "text": "8'd255 >>> 8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd0)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:50:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:51",
+      "text": "8'd255 >>> 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:51:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:52",
+      "text": "8'd255 >>> 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:52:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:53",
+      "text": "8'd255 >>> 8'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:53:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:54",
+      "text": "8'd255 >>> 8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd4)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:54:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:55",
+      "text": "8'd255 >>> 8'd5",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd5)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:55:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:56",
+      "text": "8'd255 >>> 8'd6",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd6)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:56:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:57",
+      "text": "8'd255 >>> 8'd7",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd7)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:57:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:58",
+      "text": "8'd255 >>> 8'd8",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd8)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:58:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:59",
+      "text": "8'd255 >>> 8'd9",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'd255 >>> 8'd9)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:59:=",
+      "text": "8'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:60",
+      "text": "8'd127 >>> 8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "127",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd0)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:60:=",
+      "text": "8'd127",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "127",
+        "value_known": true,
+        "to_idl": "8'd127",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:61",
+      "text": "8'd127 >>> 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:61:=",
+      "text": "8'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "8'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:62",
+      "text": "8'd127 >>> 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "31",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:62:=",
+      "text": "8'd31",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "31",
+        "value_known": true,
+        "to_idl": "8'd31",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:63",
+      "text": "8'd127 >>> 8'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:63:=",
+      "text": "8'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "8'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:64",
+      "text": "8'd127 >>> 8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "7",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd4)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:64:=",
+      "text": "8'd7",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "7",
+        "value_known": true,
+        "to_idl": "8'd7",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:65",
+      "text": "8'd127 >>> 8'd5",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd5)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:65:=",
+      "text": "8'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "8'd3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:66",
+      "text": "8'd127 >>> 8'd6",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd6)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:66:=",
+      "text": "8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "8'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:67",
+      "text": "8'd127 >>> 8'd7",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd7)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:67:=",
+      "text": "8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "8'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:68",
+      "text": "8'd127 >>> 8'd8",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd8)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:68:=",
+      "text": "8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "8'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:69",
+      "text": "8'd127 >>> 8'd9",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(8'd127 >>> 8'd9)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:69:=",
+      "text": "8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "8'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:70",
+      "text": "9'd511 >>> 8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd0)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:70:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:71",
+      "text": "9'd511 >>> 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:71:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:72",
+      "text": "9'd511 >>> 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:72:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:73",
+      "text": "9'd511 >>> 8'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:73:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:74",
+      "text": "9'd511 >>> 8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd4)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:74:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:75",
+      "text": "9'd511 >>> 8'd5",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd5)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:75:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:76",
+      "text": "9'd511 >>> 8'd6",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd6)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:76:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:77",
+      "text": "9'd511 >>> 8'd7",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd7)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:77:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:78",
+      "text": "9'd511 >>> 8'd8",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd8)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:78:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:79",
+      "text": "9'd511 >>> 8'd9",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "(9'd511 >>> 8'd9)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:79:=",
+      "text": "9'd511",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "511",
+        "value_known": true,
+        "to_idl": "9'd511",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:80",
+      "text": "9'd255 >>> 8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd0)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:80:=",
+      "text": "9'd255",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "9'd255",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:81",
+      "text": "9'd255 >>> 8'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "127",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:81:=",
+      "text": "9'd127",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "127",
+        "value_known": true,
+        "to_idl": "9'd127",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:82",
+      "text": "9'd255 >>> 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:82:=",
+      "text": "9'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "9'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:83",
+      "text": "9'd255 >>> 8'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "31",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:83:=",
+      "text": "9'd31",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "31",
+        "value_known": true,
+        "to_idl": "9'd31",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:84",
+      "text": "9'd255 >>> 8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd4)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:84:=",
+      "text": "9'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "9'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:85",
+      "text": "9'd255 >>> 8'd5",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "7",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd5)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:85:=",
+      "text": "9'd7",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "7",
+        "value_known": true,
+        "to_idl": "9'd7",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:86",
+      "text": "9'd255 >>> 8'd6",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd6)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:86:=",
+      "text": "9'd3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "9'd3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:87",
+      "text": "9'd255 >>> 8'd7",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd7)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:87:=",
+      "text": "9'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "9'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:88",
+      "text": "9'd255 >>> 8'd8",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd8)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:88:=",
+      "text": "9'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "9'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:89",
+      "text": "9'd255 >>> 8'd9",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(9'd255 >>> 8'd9)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:89:=",
+      "text": "9'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "9'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:90",
+      "text": "8'd2 * 8'd9",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "18",
+        "value_known": true,
+        "to_idl": "(8'd2 * 8'd9)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:90:=",
+      "text": "8'd18",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "18",
+        "value_known": true,
+        "to_idl": "8'd18",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:91",
+      "text": "8'd255 * 8'd9",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "247",
+        "value_known": true,
+        "to_idl": "(8'd255 * 8'd9)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '8'd255 * 8'd9' is truncated from 2295 to 247 because the result is only 8 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:91:=",
+      "text": "8'd247",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "247",
+        "value_known": true,
+        "to_idl": "8'd247",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:92",
+      "text": "8'd255 `* 8'd9",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<16>",
+        "kind": "bits",
+        "width": 16,
+        "qualifiers": ["const", "known"],
+        "value": "2295",
+        "value_known": true,
+        "to_idl": "(8'd255 `* 8'd9)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:92:=",
+      "text": "16'd2295",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<16>",
+        "kind": "bits",
+        "width": 16,
+        "qualifiers": ["const", "known"],
+        "value": "2295",
+        "value_known": true,
+        "to_idl": "16'd2295",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:93",
+      "text": "8'd128 / 8'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "64",
+        "value_known": true,
+        "to_idl": "(8'd128 / 8'd2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:93:=",
+      "text": "8'd64",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "64",
+        "value_known": true,
+        "to_idl": "8'd64",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:94",
+      "text": "8'd2 * 8'd128",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(8'd2 * 8'd128)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '8'd2 * 8'd128' is truncated from 256 to 0 because the result is only 8 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "expressions:94:=",
+      "text": "8'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "8'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:95",
+      "text": "8'd2 + 8'd4 * 8'd8",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "34",
+        "value_known": true,
+        "to_idl": "(8'd2 + (8'd4 * 8'd8))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:95:=",
+      "text": "8'd34",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "34",
+        "value_known": true,
+        "to_idl": "8'd34",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:96",
+      "text": "(8'd2 + 8'd4) * 8'd8",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "48",
+        "value_known": true,
+        "to_idl": "(((8'd2 + 8'd4)) * 8'd8)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:96:=",
+      "text": "8'd48",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "48",
+        "value_known": true,
+        "to_idl": "8'd48",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:97",
+      "text": "8'hxf & 8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "(8'hxf & 8'd4)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:97:=",
+      "text": "8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "4",
+        "value_known": true,
+        "to_idl": "8'd4",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:98",
+      "text": "8'hxf & 8'h84",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bx0000100",
+        "value_known": true,
+        "to_idl": "(8'hxf & 8'h84)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:98:=",
+      "text": "8'bx0000100",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bx0000100",
+        "value_known": true,
+        "to_idl": "8'bx0000100",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:99",
+      "text": "8'hxf & 8'hfx",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bxxxxxxxx",
+        "value_known": true,
+        "to_idl": "(8'hxf & 8'hfx)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:99:=",
+      "text": "8'hxx",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bxxxxxxxx",
+        "value_known": true,
+        "to_idl": "8'hxx",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:100",
+      "text": "8'hxf & 8'bx010x000",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bx0x0x000",
+        "value_known": true,
+        "to_idl": "(8'hxf & 8'bx010x000)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:100:=",
+      "text": "8'bx0x0x000",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bx0x0x000",
+        "value_known": true,
+        "to_idl": "8'bx0x0x000",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:101",
+      "text": "8'hxf | 8'd4",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bxxxx1111",
+        "value_known": true,
+        "to_idl": "(8'hxf | 8'd4)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:101:=",
+      "text": "8'hxf",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bxxxx1111",
+        "value_known": true,
+        "to_idl": "8'hxf",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:102",
+      "text": "8'hxf | 8'h84",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'b1xxx1111",
+        "value_known": true,
+        "to_idl": "(8'hxf | 8'h84)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:102:=",
+      "text": "8'b1xxx1111",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'b1xxx1111",
+        "value_known": true,
+        "to_idl": "8'b1xxx1111",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:103",
+      "text": "8'hxf | 8'hfx",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(8'hxf | 8'hfx)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:103:=",
+      "text": "8'hff",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "8'hff",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:104",
+      "text": "8'hxf | 8'bx010x000",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bxx1x1111",
+        "value_known": true,
+        "to_idl": "(8'hxf | 8'bx010x000)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:104:=",
+      "text": "8'bxx1x1111",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bxx1x1111",
+        "value_known": true,
+        "to_idl": "8'bxx1x1111",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:105",
+      "text": "true && true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(true && true)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:105:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:106",
+      "text": "true && false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "(true && false)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:106:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:107",
+      "text": "false && true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "(false && true)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:107:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:108",
+      "text": "false && false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "(false && false)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:108:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:109",
+      "text": "true || true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(true || true)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:109:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:110",
+      "text": "true || false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(true || false)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:110:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:111",
+      "text": "false || true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(false || true)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:111:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:112",
+      "text": "false || false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "(false || false)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:112:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:113",
+      "text": "2'd1 == 2'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(2'd1 == 2'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:113:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:114",
+      "text": "2'd1 == 3'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(2'd1 == 3'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:114:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:115",
+      "text": "2 + 1 == 3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "((2 + 1) == 3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:115:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:116",
+      "text": "2 + 1 == 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "((2 + 1) == 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:116:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:117",
+      "text": "2'd1 != 2'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "(2'd1 != 2'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:117:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:118",
+      "text": "2'd1 != 3'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "(2'd1 != 3'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:118:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:119",
+      "text": "2 + 1 != 3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": false,
+        "value_known": true,
+        "to_idl": "((2 + 1) != 3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:119:=",
+      "text": "false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "false",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:120",
+      "text": "2 + 1 != 1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "((2 + 1) != 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:120:=",
+      "text": "true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:121",
+      "text": "$bits(1'b0)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "$bits(1'b0)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "expressions:121:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:0",
+      "text": "'0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "'0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:0:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:1",
+      "text": "'1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "'1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:1:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:2",
+      "text": "'63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:2:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:3",
+      "text": "'d0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "'d0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:3:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:4",
+      "text": "'d1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "'d1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:4:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:5",
+      "text": "'d63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'d63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:5:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:6",
+      "text": "'d6_3",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'d6_3",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:6:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:7",
+      "text": "'h0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "'h0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:7:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:8",
+      "text": "'h1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "'h1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:8:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:9",
+      "text": "'h3f",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'h3f",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:9:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:10",
+      "text": "'h3_f",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'h3_f",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:10:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:11",
+      "text": "'o0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "'o0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:11:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:12",
+      "text": "'o1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "'o1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:12:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:13",
+      "text": "'o77",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'o77",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:13:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:14",
+      "text": "'o7_7",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'o7_7",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:14:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:15",
+      "text": "'b0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "'b0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:15:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:16",
+      "text": "'b1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "'b1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:16:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:17",
+      "text": "'b111111",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'b111111",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:17:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:18",
+      "text": "'b1_11_11_1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "'b1_11_11_1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:18:=",
+      "text": "6'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "6'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:19",
+      "text": "64'0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:19:=",
+      "text": "64'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:20",
+      "text": "65'1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<65>",
+        "kind": "bits",
+        "width": 65,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "65'1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:20:=",
+      "text": "64'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "64'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:21",
+      "text": "63'63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:21:=",
+      "text": "63'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:22",
+      "text": "64'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:22:=",
+      "text": "64'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:23",
+      "text": "65'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<65>",
+        "kind": "bits",
+        "width": 65,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "65'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:23:=",
+      "text": "64'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "64'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:24",
+      "text": "63'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:24:=",
+      "text": "63'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:25",
+      "text": "64'h0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'h0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:25:=",
+      "text": "64'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:26",
+      "text": "65'h1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<65>",
+        "kind": "bits",
+        "width": 65,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "65'h1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:26:=",
+      "text": "64'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "64'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:27",
+      "text": "63'h3f",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'h3f",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:27:=",
+      "text": "63'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:28",
+      "text": "64'o0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'o0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:28:=",
+      "text": "64'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:29",
+      "text": "65'o1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<65>",
+        "kind": "bits",
+        "width": 65,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "65'o1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:29:=",
+      "text": "64'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "64'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:30",
+      "text": "63'o77",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'o77",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:30:=",
+      "text": "63'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:31",
+      "text": "64'b0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'b0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:31:=",
+      "text": "64'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:32",
+      "text": "65'b1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<65>",
+        "kind": "bits",
+        "width": 65,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "65'b1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:32:=",
+      "text": "64'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "64'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:33",
+      "text": "63'b111111",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'b111111",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:33:=",
+      "text": "63'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:34",
+      "text": "63'b111_11_1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'b111_11_1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:34:=",
+      "text": "63'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<63>",
+        "kind": "bits",
+        "width": 63,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:35",
+      "text": "MXLEN'0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "MXLEN'0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:35:=",
+      "text": "MXLEN'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "MXLEN'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:36",
+      "text": "MXLEN'0",
+      "params": {
+        "MXLEN": 64
+      },
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "MXLEN'0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:36:=",
+      "text": "64'd0",
+      "params": {
+        "MXLEN": 64
+      },
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "64'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:37",
+      "text": "MXLEN'0",
+      "params": {
+        "MXLEN": 32
+      },
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "MXLEN'0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:37:=",
+      "text": "32'd0",
+      "params": {
+        "MXLEN": 32
+      },
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<32>",
+        "kind": "bits",
+        "width": 32,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "32'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:38",
+      "text": "0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:38:=",
+      "text": "1'd0",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "1'd0",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:39",
+      "text": "0xf",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xf",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:39:=",
+      "text": "4'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "4'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:40",
+      "text": "0xF",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xF",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:40:=",
+      "text": "4'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "4'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:41",
+      "text": "077",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "077",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:41:=",
+      "text": "7'd63",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<7>",
+        "kind": "bits",
+        "width": 7,
+        "qualifiers": ["const", "known"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "7'd63",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:42",
+      "text": "0b1010",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "10",
+        "value_known": true,
+        "to_idl": "0b1010",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:42:=",
+      "text": "4'd10",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "10",
+        "value_known": true,
+        "to_idl": "4'd10",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:43",
+      "text": "0xfs",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xfs",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:43:=",
+      "text": "5'sd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "5'sd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:44",
+      "text": "0xF",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "0xF",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:44:=",
+      "text": "4'd15",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "4'd15",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:45",
+      "text": "$width(0)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "$width(0)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:45:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:46",
+      "text": "$width(1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "$width(1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:46:=",
+      "text": "1'd1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "1'd1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:47",
+      "text": "$width(2'd1)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": [],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "$width(2'd1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:47:=",
+      "text": "2'd2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "2'd2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:48",
+      "text": "\"A literal string\"",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const string",
+        "kind": "string",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": "A literal string",
+        "value_known": true,
+        "to_idl": "\"A literal string\"",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "literals:48:=",
+      "text": "\"A literal string\"",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const string",
+        "kind": "string",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": "A literal string",
+        "value_known": true,
+        "to_idl": "\"A literal string\"",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "bad:1",
+      "text": "true + 1",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> true + 1 << **HERE**\n\nA type error occurred\n  Addition/subtraction is only defined for integral types. Maybe you forgot a $bits cast?\n"
+      }
+    },
+    {
+      "id": "bad:2",
+      "text": "$bogus(1)",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> $bogus(1) << **HERE**\n\nA type error occurred\n  $bogus is not a builtin function\n"
+      }
+    },
+    {
+      "id": "u:1",
+      "text": "X + 1",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> X << **HERE** + 1\n\nA type error occurred\n  Symbol 'X' not found\n"
+      }
+    },
+    {
+      "id": "adv:lit_zero_width_verilog",
+      "text": "0'd0",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> 0'd0 << **HERE**\n\nA type error occurred\n  integer width must be positive (is 0)\n"
+      }
+    },
+    {
+      "id": "adv:lit_max_hex",
+      "text": "0xffffffffffffffff",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": ["const", "known"],
+        "value": "18446744073709551615",
+        "value_known": true,
+        "to_idl": "0xffffffffffffffff",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_signed_cpp",
+      "text": "0xffs",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "0xffs",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_signed_decimal",
+      "text": "63s",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "63",
+        "value_known": true,
+        "to_idl": "63s",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_signed_decimal_neg",
+      "text": "-1s",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "-1",
+        "value_known": true,
+        "to_idl": "-1s",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_unknown_bits_b",
+      "text": "4'b10x1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const"],
+        "value": "4'b10x1",
+        "value_known": true,
+        "to_idl": "4'b10x1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_unknown_bits_h",
+      "text": "8'hxf",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const"],
+        "value": "8'bxxxx1111",
+        "value_known": true,
+        "to_idl": "8'hxf",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_unknown_bits_o",
+      "text": "6'o1x",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const"],
+        "value": "4'b1xxx",
+        "value_known": true,
+        "to_idl": "6'o1x",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_unknown_bits_upper_x",
+      "text": "4'bX011",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "4'bx011",
+        "value_known": true,
+        "to_idl": "4'bX011",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_mxlen_no_symtab_mxlen",
+      "text": "MXLEN'5",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<unknown>",
+        "kind": "bits",
+        "width": "unknown",
+        "qualifiers": ["const", "known"],
+        "value": "5",
+        "value_known": true,
+        "to_idl": "MXLEN'5",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_underscore_hex",
+      "text": "0xFF_FF",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<16>",
+        "kind": "bits",
+        "width": 16,
+        "qualifiers": ["const", "known"],
+        "value": "65535",
+        "value_known": true,
+        "to_idl": "0xFF_FF",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_octal_cpp",
+      "text": "017",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "017",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_binary_cpp",
+      "text": "0b1010",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "10",
+        "value_known": true,
+        "to_idl": "0b1010",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:lit_verilog_signed_overflow",
+      "text": "8'sd200",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known", "signed"],
+        "value": null,
+        "value_known": false,
+        "to_idl": "8'sd200",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:unary_neg_bits",
+      "text": "-(4'd5)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "11",
+        "value_known": true,
+        "to_idl": "-(4'd5)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  -(4'd5) is truncated due to insufficient bit width (from -5 to 11).\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "adv:unary_not_bool",
+      "text": "!true",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "!true",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:unary_bitwise_not",
+      "text": "~(4'hf)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "~(4'hf)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:unary_neg_signed",
+      "text": "-(4'shf)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "signed const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known", "signed"],
+        "value": null,
+        "value_known": false,
+        "to_idl": "-(4'shf)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:add_widening",
+      "text": "8'hff + 8'h01",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(8'hff + 8'h01)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '8'hff + 8'h01' is truncated from 256 to 0 because the result is only 8 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "adv:add_widen_op",
+      "text": "8'hff `+ 8'h01",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<9>",
+        "kind": "bits",
+        "width": 9,
+        "qualifiers": ["const", "known"],
+        "value": "256",
+        "value_known": true,
+        "to_idl": "(8'hff `+ 8'h01)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:sub_widen_op",
+      "text": "4'h0 `- 4'h1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<5>",
+        "kind": "bits",
+        "width": 5,
+        "qualifiers": ["const", "known"],
+        "value": "-1",
+        "value_known": true,
+        "to_idl": "(4'h0 `- 4'h1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:mul_widen_op",
+      "text": "8'hff `* 8'h02",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<16>",
+        "kind": "bits",
+        "width": 16,
+        "qualifiers": ["const", "known"],
+        "value": "510",
+        "value_known": true,
+        "to_idl": "(8'hff `* 8'h02)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:shl_widen_op",
+      "text": "4'hf `<< 2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<6>",
+        "kind": "bits",
+        "width": 6,
+        "qualifiers": ["const", "known"],
+        "value": "60",
+        "value_known": true,
+        "to_idl": "(4'hf `<< 2)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:mul_overflow_trunc",
+      "text": "8'hff * 8'h02",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "254",
+        "value_known": true,
+        "to_idl": "(8'hff * 8'h02)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '8'hff * 8'h02' is truncated from 510 to 254 because the result is only 8 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "adv:shift_left_large",
+      "text": "1 << 100",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(1 << 100)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of '1 << 100' is truncated from 1267650600228229401496703205376 to 0 because the result is only 1 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "adv:shift_right_large",
+      "text": "0xff >> 100",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(0xff >> 100)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:shift_by_large_unknown",
+      "text": "a << b",
+      "params": {
+        "a": 4,
+        "b": 100
+      },
+      "expect": {
+        "ok": true,
+        "type": "Bits<3>",
+        "kind": "bits",
+        "width": 3,
+        "qualifiers": [],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(a << b)",
+        "warnings": "In file [EXPRESSION]\nOn line 1\n  A value was truncated\n  The value of 'a << b' is truncated from 5070602400912917605986812821504 to 0 because the result is only 3 bits.\n  Perhaps you want to use a widening operator (`+, `-, `*, `<<)?\n"
+      }
+    },
+    {
+      "id": "adv:div_by_zero_known",
+      "text": "4 / 0",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "other",
+        "message": "ZeroDivisionError: divided by 0"
+      }
+    },
+    {
+      "id": "adv:mod_by_zero_known",
+      "text": "4 % 0",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "other",
+        "message": "ZeroDivisionError: divided by 0"
+      }
+    },
+    {
+      "id": "adv:div_unknown",
+      "text": "a / b",
+      "params": {
+        "a": 10,
+        "b": 3
+      },
+      "expect": {
+        "ok": true,
+        "type": "Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": [],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "(a / b)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:signed_lt_negative",
+      "text": "(-1s) < 1",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> (-1s) < 1 << **HERE**\n\nA type error occurred\n  (-1s) (type = signed const known Bits<1>) and 1 (type = const known Bits<1>) are not comparable\n"
+      }
+    },
+    {
+      "id": "adv:unsigned_lt_wraps",
+      "text": "0xffffffffffffffffs < 0",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> 0xffffffffffffffffs < 0 << **HERE**\n\nA type error occurred\n  0xffffffffffffffffs (type = signed const known Bits<65>) and 0 (type = const known Bits<1>) are not comparable\n"
+      }
+    },
+    {
+      "id": "adv:eq_diff_width",
+      "text": "8'hff == 0xff",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(8'hff == 0xff)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:neq_bool",
+      "text": "true != false",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(true != false)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:ge_le",
+      "text": "(4 >= 4) && (4 <= 4)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": true,
+        "value_known": true,
+        "to_idl": "(((4 >= 4)) && ((4 <= 4)))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:logical_and_shortcircuit_false",
+      "text": "false && (1 / 0 == 0)",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "other",
+        "message": "ZeroDivisionError: divided by 0"
+      }
+    },
+    {
+      "id": "adv:logical_or_shortcircuit_true",
+      "text": "true || (1 / 0 == 0)",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "other",
+        "message": "ZeroDivisionError: divided by 0"
+      }
+    },
+    {
+      "id": "adv:bitwise_and",
+      "text": "0xf0 & 0x0f",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "(0xf0 & 0x0f)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:bitwise_or",
+      "text": "0xf0 | 0x0f",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "255",
+        "value_known": true,
+        "to_idl": "(0xf0 | 0x0f)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:bitwise_xor",
+      "text": "0xff ^ 0x0f",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "240",
+        "value_known": true,
+        "to_idl": "(0xff ^ 0x0f)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:ternary_known_cond",
+      "text": "true ? 1 : 2",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "true ? 1 : 2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:ternary_unknown_cond",
+      "text": "a ? 1 : 2",
+      "params": {
+        "a": true
+      },
+      "expect": {
+        "ok": true,
+        "type": "known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "a ? 1 : 2",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:ternary_width_promote",
+      "text": "true ? 8'h1 : 16'h1",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<16>",
+        "kind": "bits",
+        "width": 16,
+        "qualifiers": ["known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "true ? 8'h1 : 16'h1",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:concat_two",
+      "text": "{4'hf, 4'h0}",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known"],
+        "value": "240",
+        "value_known": true,
+        "to_idl": "{4'hf,4'h0}",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:concat_three",
+      "text": "{1'b1, 2'b01, 1'b0}",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const", "known"],
+        "value": "10",
+        "value_known": true,
+        "to_idl": "{1'b1,2'b01,1'b0}",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:replication_basic",
+      "text": "{4{1'b1}}",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "{4{1'b1}}",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:replication_zero",
+      "text": "{0{1'b1}}",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> {0{1'b1}} << **HERE**\n\nA type error occurred\n  replication amount must be positive (0)\n"
+      }
+    },
+    {
+      "id": "adv:array_literal_basic",
+      "text": "[1'd1, 1'd0, 1'd1]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "array of const known Bits<1>",
+        "kind": "array",
+        "width": null,
+        "qualifiers": [],
+        "value": ["1", "0", "1"],
+        "value_known": true,
+        "to_idl": "[1'd1,1'd0,1'd1]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:array_literal_single",
+      "text": "[42]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "array of const known Bits<6>",
+        "kind": "array",
+        "width": null,
+        "qualifiers": [],
+        "value": ["42"],
+        "value_known": true,
+        "to_idl": "[42]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:array_literal_mismatch",
+      "text": "[1, 2, 3]",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> [1, 2, 3] << **HERE**\n\nA type error occurred\n  Array elements must be identical\n"
+      }
+    },
+    {
+      "id": "adv:element_access_lsb",
+      "text": "(8'hff)[0]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "(8'hff)[0]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:element_access_msb",
+      "text": "(8'hff)[7]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": [],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "(8'hff)[7]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:element_access_oob",
+      "text": "(8'hff)[8]",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> (8'hff)[8] << **HERE**\n\nA type error occurred\n  Bits element index (8) out of range (max 7) in access '(8'hff)[8]'\n"
+      }
+    },
+    {
+      "id": "adv:range_access_basic",
+      "text": "(8'hff)[7:4]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "(8'hff)[7:4]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:range_access_single",
+      "text": "(8'hff)[3:3]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "(8'hff)[3:3]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:range_access_reversed",
+      "text": "(8'hff)[3:7]",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> (8'hff)[3:7] << **HERE**\n\nA type error occurred\n  zero/negative range (3:7)\n"
+      }
+    },
+    {
+      "id": "adv:array_element_access",
+      "text": "([1'd1, 1'd0, 1'd1])[1]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "([1'd1,1'd0,1'd1])[1]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:array_element_oob",
+      "text": "([1'd1, 1'd0, 1'd1])[5]",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> ([1'd1, 1'd0, 1'd1])[5] << **HERE**\n\nA type error occurred\n  Array index out of range\n"
+      }
+    },
+    {
+      "id": "adv:bits_cast_bool",
+      "text": "$bits(true)",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> $bits(true) << **HERE**\n\nA type error occurred\n  Boolean Cannot be cast to bits\n"
+      }
+    },
+    {
+      "id": "adv:bits_cast_bool_false",
+      "text": "$bits(false)",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> $bits(false) << **HERE**\n\nA type error occurred\n  Boolean Cannot be cast to bits\n"
+      }
+    },
+    {
+      "id": "adv:signed_cast",
+      "text": "$signed(8'hff)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known signed Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "-1",
+        "value_known": true,
+        "to_idl": "$signed(8'hff)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:signed_cast_zero",
+      "text": "$signed(8'h00)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known signed Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["const", "known", "signed"],
+        "value": "0",
+        "value_known": true,
+        "to_idl": "$signed(8'h00)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:width_reveal",
+      "text": "$width(8'hff)",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": [],
+        "value": "8",
+        "value_known": true,
+        "to_idl": "$width(8'hff)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:width_reveal_param",
+      "text": "$width(a)",
+      "params": {
+        "a": 5
+      },
+      "expect": {
+        "ok": true,
+        "type": "Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": [],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "$width(a)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:string_basic",
+      "text": "\"hello\"",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const string",
+        "kind": "string",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": "hello",
+        "value_known": true,
+        "to_idl": "\"hello\"",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:string_empty",
+      "text": "\"\"",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const string",
+        "kind": "string",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": "",
+        "value_known": true,
+        "to_idl": "\"\"",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:paren_nested",
+      "text": "((((1))))",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<1>",
+        "kind": "bits",
+        "width": 1,
+        "qualifiers": ["const", "known"],
+        "value": "1",
+        "value_known": true,
+        "to_idl": "((((1))))",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:id_bool_param",
+      "text": "flag",
+      "params": {
+        "flag": true
+      },
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "flag",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:id_string_param",
+      "text": "s",
+      "params": {
+        "s": "abc"
+      },
+      "expect": {
+        "ok": true,
+        "type": "string",
+        "kind": "string",
+        "width": null,
+        "qualifiers": [],
+        "value": "abc",
+        "value_known": true,
+        "to_idl": "s",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:id_bits_param_add",
+      "text": "n + 1",
+      "params": {
+        "n": 5
+      },
+      "expect": {
+        "ok": true,
+        "type": "Bits<3>",
+        "kind": "bits",
+        "width": 3,
+        "qualifiers": [],
+        "value": "6",
+        "value_known": true,
+        "to_idl": "(n + 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:id_not_found",
+      "text": "totally_unknown_symbol_xyz",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> totally_unknown_symbol_xyz << **HERE**\n\nA type error occurred\n  no symbol named 'totally_unknown_symbol_xyz'\n"
+      }
+    },
+    {
+      "id": "adv:err_bool_plus_int",
+      "text": "true + 1",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> true + 1 << **HERE**\n\nA type error occurred\n  Addition/subtraction is only defined for integral types. Maybe you forgot a $bits cast?\n"
+      }
+    },
+    {
+      "id": "adv:err_string_minus_int",
+      "text": "\"x\" - 1",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> \"x\" - 1 << **HERE**\n\nA type error occurred\n  Addition/subtraction is only defined for integral types. Maybe you forgot a $bits cast?\n"
+      }
+    },
+    {
+      "id": "adv:err_bad_builtin",
+      "text": "$notreal(1)",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> $notreal(1) << **HERE**\n\nA type error occurred\n  $notreal is not a builtin function\n"
+      }
+    },
+    {
+      "id": "adv:err_range_backwards_bad",
+      "text": "(4'hf)[10:0]",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "known Bits<11>",
+        "kind": "bits",
+        "width": 11,
+        "qualifiers": ["known"],
+        "value": "15",
+        "value_known": true,
+        "to_idl": "(4'hf)[10:0]",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:err_concat_bool",
+      "text": "{true, 1'b0}",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> {true, 1'b0} << **HERE**\n\nA type error occurred\n  Concatenation only supports Bits<> types\n"
+      }
+    },
+    {
+      "id": "adv:err_ternary_mismatched",
+      "text": "(true ? 1 : \"x\")",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: (**HERE** >> true ? 1 : \"x\" << **HERE**)\n\nA type error occurred\n  True and false options must be same type (have const known Bits<1> and const string)\n"
+      }
+    },
+    {
+      "id": "adv:concat_const_var",
+      "text": "{a, 1'b1}",
+      "params": {
+        "a": 5
+      },
+      "expect": {
+        "ok": true,
+        "type": "const Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": ["const"],
+        "value": "11",
+        "value_known": true,
+        "to_idl": "{a,1'b1}",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:concat_all_literal_const",
+      "text": "{1'b1, 1'b0}",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "{1'b1,1'b0}",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:enum_ref",
+      "text": "PrivilegeMode::M",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "enum PrivilegeMode",
+        "kind": "enum_ref",
+        "width": null,
+        "qualifiers": [],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "PrivilegeMode::M",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:enum_ref_bad_member",
+      "text": "PrivilegeMode::NotAMode",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> PrivilegeMode::NotAMode << **HERE**\n\nA type error occurred\n  PrivilegeMode has no member 'NotAMode'\n"
+      }
+    },
+    {
+      "id": "adv:enum_size",
+      "text": "$enum_size(PrivilegeMode)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "$enum_size(PrivilegeMode)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:enum_element_size",
+      "text": "$enum_element_size(PrivilegeMode)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "const known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["const", "known"],
+        "value": "2",
+        "value_known": true,
+        "to_idl": "$enum_element_size(PrivilegeMode)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:enum_to_a",
+      "text": "$enum_to_a(PrivilegeMode)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "const array of const known Bits<2>",
+        "kind": "array",
+        "width": null,
+        "qualifiers": ["const"],
+        "value": ["3", "1", "0"],
+        "value_known": true,
+        "to_idl": "$enum_to_a(PrivilegeMode)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:enum_cast_valid",
+      "text": "$enum(PrivilegeMode, 3'd3)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "enum PrivilegeMode",
+        "kind": "enum_ref",
+        "width": null,
+        "qualifiers": [],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "$enum(PrivilegeMode, 3'd3)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:enum_cast_bad_value",
+      "text": "$enum(PrivilegeMode, 3'd2)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> $enum(PrivilegeMode, 3'd2) << **HERE**\n\nA type error occurred\n  2 is not a value in enum PrivilegeMode\n"
+      }
+    },
+    {
+      "id": "adv:enum_cast_not_bits",
+      "text": "$enum(PrivilegeMode, true)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> $enum(PrivilegeMode, true) << **HERE**\n\nA type error occurred\n  Can only cast from Bits<N> to enum\n"
+      }
+    },
+    {
+      "id": "adv:array_includes_enum",
+      "text": "$array_includes?($enum_to_a(PrivilegeMode), 1)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": true,
+        "value_known": true,
+        "to_idl": "$array_size($enum_to_a(PrivilegeMode), 1)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:array_includes_missing",
+      "text": "$array_includes?($enum_to_a(PrivilegeMode), 7)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "Boolean",
+        "kind": "boolean",
+        "width": null,
+        "qualifiers": [],
+        "value": false,
+        "value_known": true,
+        "to_idl": "$array_size($enum_to_a(PrivilegeMode), 7)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:bits_cast_enum_ref",
+      "text": "$bits(PrivilegeMode::M)",
+      "params": {},
+      "enums": [
+        {
+          "name": "PrivilegeMode",
+          "elements": {
+            "M": 3,
+            "S": 1,
+            "U": 0
+          }
+        }
+      ],
+      "expect": {
+        "ok": true,
+        "type": "known Bits<2>",
+        "kind": "bits",
+        "width": 2,
+        "qualifiers": ["known"],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "$bits(PrivilegeMode::M)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:bitfield_field_lo",
+      "text": "a.lo",
+      "params": {
+        "a": {
+          "bitfield": {
+            "name": "Foo",
+            "width": 8,
+            "fields": {
+              "lo": [0, 3],
+              "hi": [4, 7]
+            }
+          },
+          "value": 181
+        }
+      },
+      "expect": {
+        "ok": true,
+        "type": "Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": [],
+        "value": "5",
+        "value_known": true,
+        "to_idl": "a.lo",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:bitfield_field_hi",
+      "text": "a.hi",
+      "params": {
+        "a": {
+          "bitfield": {
+            "name": "Foo",
+            "width": 8,
+            "fields": {
+              "lo": [0, 3],
+              "hi": [4, 7]
+            }
+          },
+          "value": 181
+        }
+      },
+      "expect": {
+        "ok": true,
+        "type": "Bits<4>",
+        "kind": "bits",
+        "width": 4,
+        "qualifiers": [],
+        "value": "11",
+        "value_known": true,
+        "to_idl": "a.hi",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:bitfield_field_bad",
+      "text": "a.nope",
+      "params": {
+        "a": {
+          "bitfield": {
+            "name": "Foo",
+            "width": 8,
+            "fields": {
+              "lo": [0, 3],
+              "hi": [4, 7]
+            }
+          },
+          "value": 181
+        }
+      },
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> a.nope << **HERE**\n\nA type error occurred\n  nope is not a member of bitfield Foo\n"
+      }
+    },
+    {
+      "id": "adv:bits_cast_bitfield",
+      "text": "$bits(a)",
+      "params": {
+        "a": {
+          "bitfield": {
+            "name": "Foo",
+            "width": 8,
+            "fields": {
+              "lo": [0, 3],
+              "hi": [4, 7]
+            }
+          },
+          "value": 181
+        }
+      },
+      "expect": {
+        "ok": true,
+        "type": "known Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": ["known"],
+        "value": "181",
+        "value_known": true,
+        "to_idl": "$bits(a)",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:struct_field_ok",
+      "text": "s.x",
+      "params": {
+        "s": {
+          "struct": {
+            "name": "Point",
+            "members": {
+              "x": 8,
+              "y": 8
+            }
+          },
+          "value": {
+            "x": 3,
+            "y": 4
+          }
+        }
+      },
+      "expect": {
+        "ok": true,
+        "type": "Bits<8>",
+        "kind": "bits",
+        "width": 8,
+        "qualifiers": [],
+        "value": "3",
+        "value_known": true,
+        "to_idl": "s.x",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:struct_field_bad",
+      "text": "s.z",
+      "params": {
+        "s": {
+          "struct": {
+            "name": "Point",
+            "members": {
+              "x": 8,
+              "y": 8
+            }
+          },
+          "value": {
+            "x": 3,
+            "y": 4
+          }
+        }
+      },
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> s.z << **HERE**\n\nA type error occurred\n  z is not a member of struct Point\n"
+      }
+    },
+    {
+      "id": "adv:builtin_pc",
+      "text": "$pc",
+      "params": {},
+      "expect": {
+        "ok": true,
+        "type": "Bits<64>",
+        "kind": "bits",
+        "width": 64,
+        "qualifiers": [],
+        "value": null,
+        "value_known": false,
+        "to_idl": "$pc",
+        "warnings": ""
+      }
+    },
+    {
+      "id": "adv:builtin_bad",
+      "text": "$bogus_builtin_var",
+      "params": {},
+      "expect": {
+        "ok": false,
+        "error": "type",
+        "message": "In file [EXPRESSION]\nOn line 1\nIn the code:\n\n  0: **HERE** >> $bogus_builtin_var << **HERE**\n\nA type error occurred\n  Not a builtin variable\n"
+      }
+    }
+  ]
+}

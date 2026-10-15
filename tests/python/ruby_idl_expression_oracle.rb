@@ -38,16 +38,46 @@ def bind(symtab, name, value)
     when Integer then Idl::Type.new(:bits, width: value.zero? ? 1 : value.bit_length)
     when String then Idl::Type.new(:string)
     when true, false then Idl::Type.new(:boolean)
+    when Hash
+      if value.key?("bitfield")
+        spec = value.fetch("bitfield")
+        Idl::BitfieldType.new(
+          spec.fetch("name"),
+          spec.fetch("width"),
+          spec.fetch("fields").keys,
+          spec.fetch("fields").values.map { |r| Range.new(r.fetch(0), r.fetch(1)) }
+        )
+      elsif value.key?("struct")
+        spec = value.fetch("struct")
+        member_names = spec.fetch("members").keys
+        member_types = spec.fetch("members").values.map { |w| Idl::Type.new(:bits, width: w) }
+        Idl::StructType.new(spec.fetch("name"), member_types, member_names)
+      else
+        raise ArgumentError, "unsupported parameter #{name}: #{value.inspect}"
+      end
     else raise ArgumentError, "unsupported parameter #{name}: #{value.inspect}"
     end
-  symtab.add!(name, Idl::Var.new(name, type, value))
+  bound_value = value.is_a?(Hash) ? value.fetch("value") : value
+  symtab.add!(name, Idl::Var.new(name, type, bound_value))
+end
+
+# Builds a builtin enum definition from {"name": str, "elements": {element_name: value}}
+# so cases can exercise $enum_size/$enum_element_size/$enum_to_a/$enum without an
+# `enum ... ;` declaration (declarations are out of scope for this oracle).
+def enum_def(spec)
+  Idl::SymbolTable::EnumDef.new(
+    name: spec.fetch("name"),
+    element_names: spec.fetch("elements").keys,
+    element_values: spec.fetch("elements").values
+  )
 end
 
 input = JSON.parse($stdin.read)
 compiler = Idl::Compiler.new
 
 results = input.fetch("cases").map do |c|
-  symtab = Idl::SymbolTable.new
+  builtin_enums = c.fetch("enums", []).map { |spec| enum_def(spec) }
+  symtab = Idl::SymbolTable.new(builtin_enums:)
   params = c.fetch("params", {})
   symtab.push(nil) unless params.empty?
   params.each { |name, value| bind(symtab, name, value) }
