@@ -18,6 +18,6 @@ versions:
       - url: https://github.com/riscv/riscv-isa-manual.git
         branch: zvbdot
 description: |
-  `Zvfbdota32f` is an unprivileged member of the `Zvbdota` family of batched
+  `Zvfbdota32f` is a member of the `Zvbdota` family of batched
   dot-product extensions. It provides FP32 batched dot-product capability for
   vector floating-point computation.
