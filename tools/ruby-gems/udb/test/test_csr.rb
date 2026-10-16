@@ -50,6 +50,28 @@ class TestCsr < Minitest::Test
     csr
   end
 
+  def make_alias_field(alias_data, candidates)
+    arch = Udb::ConfiguredArchitecture.allocate
+    target_fields = {}
+    target_csrs = {}
+
+    candidates.each do |csr_name, field_name|
+      target_field = CsrField.allocate
+      target_field.define_singleton_method(:exists_in_cfg?) { |_| true }
+
+      target_csr = Csr.allocate
+      target_csr.define_singleton_method(:field) { |name| name == field_name ? target_field : nil }
+      target_csrs[csr_name] = target_csr
+      target_fields[[csr_name, field_name]] = target_field
+    end
+    arch.define_singleton_method(:csr) { |name| target_csrs[name] }
+
+    field = CsrField.allocate
+    field.instance_variable_set(:@data, { "alias" => alias_data })
+    field.instance_variable_set(:@cfg_arch, arch)
+    [field, target_fields]
+  end
+
   # S-mode alone makes the effective XLEN variable, so the CSR IS dynamic.
   # (Regression pin: the buggy `A || B && C` precedence returns false here.)
   def test_xlen_dynamic_when_only_sxlen_mutable
@@ -57,6 +79,25 @@ class TestCsr < Minitest::Test
     csr = make_csr(arch, length: "XLEN", priv_mode: "S")
     assert csr.dynamic_length?,
       "XLEN CSR must be dynamic when S-mode is possible and SXLEN is mutable, even without H"
+  end
+
+  def test_alias_accepts_a_singleton_array
+    field, targets = make_alias_field(["target.COUNT[63:32]"], [["target", "COUNT"]])
+
+    alias_field = field.alias
+    assert_equal targets[["target", "COUNT"]], alias_field.field
+    assert_equal(63..32, alias_field.range)
+  end
+
+  def test_alias_uses_the_first_target_present_in_the_configuration
+    field, targets = make_alias_field(
+      ["missing.COUNT", "target.COUNT"],
+      [["target", "COUNT"]]
+    )
+
+    alias_field = field.alias
+    assert_equal targets[["target", "COUNT"]], alias_field.field
+    assert_nil alias_field.range
   end
 
   # VS-mode alone makes the effective XLEN variable, so the CSR IS dynamic.
