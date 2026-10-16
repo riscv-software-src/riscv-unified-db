@@ -67,10 +67,6 @@ definedBy:
     - extension:
         name: Sm
     - xlen: 32
-    - param:
-        name: HPM_COUNTER_EN
-        index: <%= hpm_num %>
-        equal: true
 fields:
   COUNT:
     location: 31-0

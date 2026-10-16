@@ -18,13 +18,8 @@ description: |
   Programmable hardware performance counter event selector
   <%% if ext?(:Sscofpmf) %> and overflow/filtering control<%% end %>
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
-    - param:
-        name: HPM_COUNTER_EN
-        index: <%= hpm_num %>
-        equal: true
+  extension:
+    name: Sm
 fields:
   OF:
     location: 63
