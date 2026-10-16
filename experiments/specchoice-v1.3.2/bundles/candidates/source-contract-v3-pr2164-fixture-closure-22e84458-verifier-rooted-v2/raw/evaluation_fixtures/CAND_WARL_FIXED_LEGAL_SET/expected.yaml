@@ -1,0 +1,8 @@
+id: CAND_WARL_FIXED_LEGAL_SET
+kind: warl_word_but_isa_fixed
+expect_extract: true
+expect_params: 0
+skill_risk: >
+  A WARL field whose legal set is fixed by the ISA yields no parameter, but
+  dropping it during extraction hides it from review rather than recording
+  the decision. It should be surfaced and then classified out.

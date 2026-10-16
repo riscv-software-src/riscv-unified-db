@@ -1,0 +1,5 @@
+Source class: pure normative constraint without implementation choice.
+
+In the initial set of CMO extensions, the size of a cache block shall be
+uniform throughout the system. This shall hold for all harts that participate
+in the same coherence domain for those extensions.

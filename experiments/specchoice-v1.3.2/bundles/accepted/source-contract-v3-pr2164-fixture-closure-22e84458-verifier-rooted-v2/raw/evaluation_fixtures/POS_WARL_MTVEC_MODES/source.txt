@@ -1,0 +1,52 @@
+==== Machine Trap-Vector Base-Address (`mtvec`) Register
+
+[#norm:mtvec_sz_warl_acc]#The `mtvec` register is an MXLEN-bit *WARL* read/write register that holds
+trap vector configuration, consisting of a vector base address (BASE)
+and a vector mode (MODE).#
+
+[[norm:mtvec_enc]]
+.Encoding of mtvec MODE field.
+
+[#norm:mtvec_mandatory]#The `mtvec` register must always be implemented#, but
+[#norm:mtvec_rdonly]#can contain a read-only value.#
+If `mtvec` is writable, the set of values the register
+may hold can vary by implementation.
+[#norm:mtvec_base_align_4B]#The value in the BASE field must
+always be aligned on a 4-byte boundary#, and
+[#norm:mtvec_base_align_func_mode]#the MODE setting may impose
+additional alignment constraints on the value in the BASE field.#
+Note that the CSR contains only bits XLEN-1 through 2 of the address BASE.
+When used as an address, the lower two bits are filled with zeroes to obtain
+an XLEN-bit address that is always aligned on a 4-byte boundary.
+
+[NOTE]
+====
+We allow for considerable flexibility in implementation of the trap
+vector base address. On the one hand, we do not wish to burden low-end
+implementations with a large number of state bits, but on the other
+hand, we wish to allow flexibility for larger systems.
+====
+
+[[norm:mtvec_mode_enc]]
+.Encoding of mtvec MODE field.
+[%autowidth,float="center",align="center",cols=">,^,<",options="header"]
+|===
+|Value |Name |Description
+|0 +
+1 +
+{ge}2
+|Direct +
+Vectored +
+---
+|All traps set `pc` to BASE. +
+Asynchronous interrupts set `pc` to BASE+4{times}cause. +
+_Reserved_
+|===
+
+The encoding of the MODE field is shown in <<norm:mtvec_mode_enc>>.
+[#norm:mtvec_mode_direct_op]#When MODE=Direct, all traps into
+machine mode cause the `pc` to be set to the address in the BASE field.#
+[#norm:mtvec_mode_vectored_op]#When MODE=Vectored, all synchronous exceptions into machine mode cause
+the `pc` to be set to the address in the BASE field, whereas interrupts
+cause the `pc` to be set to the address in the BASE field plus four
+times the interrupt cause number.#

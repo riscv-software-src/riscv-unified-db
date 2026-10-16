@@ -1,0 +1,1 @@
+[{"code":"CANDIDATE_NOT_SURFACED","expected":true,"field":"adjudication.surfaced","finding_id":"CAND_WARL_FIXED_LEGAL_SET:1","fixture_id":"CAND_WARL_FIXED_LEGAL_SET","observed":false,"occurrence":0,"severity":"blocker","source_sha256":null}]

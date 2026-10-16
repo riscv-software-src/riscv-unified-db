@@ -1,0 +1,9 @@
+id: CAND_WARL_FIXED_LEGAL_SET
+kind: warl_word_but_isa_fixed
+expect_extract: true
+expect_params: 0
+final_disposition: classify_out
+classify_out_reason: isa_fixed_singleton_legal_set
+skill_risk: >
+  A WARL field whose legal set is fixed by the ISA yields no parameter, but
+  remains surfaced for review before it is classified out.

@@ -1,0 +1,16 @@
+$schema: param_schema.json#
+kind: parameter
+name: NUM_PMP_ENTRIES
+long_name: Number of implemented PMP entries
+description: |
+  Number of implemented PMP entries. The architecture permits exactly 0, 16,
+  or 64 entries.
+definedBy:
+  extension:
+    name: Sm
+schema:
+  type: integer
+  enum:
+    - 0
+    - 16
+    - 64

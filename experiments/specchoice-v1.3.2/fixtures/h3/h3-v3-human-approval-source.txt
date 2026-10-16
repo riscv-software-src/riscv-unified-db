@@ -1,0 +1,120 @@
+aggregate_disposition: approved_red
+
+acknowledgments:
+  - category: phase3_red_authority
+    disposition: approved
+    rationale: >-
+      The v3 packet remains bound to the approved Phase 3 authority and its
+      H2 decision, packet, readiness, eligibility report, and successor chain.
+      Phase 3 deterministically requires the Red branch. This acknowledgment
+      accepts that upstream conclusion exactly as bound and does not reinterpret
+      or override it as Green or Yellow.
+
+  - category: offline_treatment_bundle
+    disposition: approved
+    rationale: >-
+      The v3 freeze inventory contains the completed H3 authority implementation,
+      lifecycle tests, and static-check corrections together with the isolated
+      DelegationFrame contracts, synthetic target, complete synthetic pair
+      corpus, contract responses, rendered A/B/C prompts, prompt manifest, and
+      associated configuration. These artifacts are accepted only as
+      deterministic, local, test-only engineering evidence. They are not
+      model-generated observations, strict-core cases, or count-eligible
+      experimental data.
+
+  - category: test_only_retrieval_contract
+    disposition: approved
+    rationale: >-
+      The lexical retrieval contract operates only over the isolated synthetic
+      target and test-only pair corpus. It validates complete pair structure,
+      source-bound evidence, deterministic TF-IDF and cosine ranking, exact
+      top-two selection, and binding to the prompt manifest. Its report is
+      non-authoritative for production data, contributes no experimental
+      observation, and does not authorize production retrieval.
+
+  - category: red_counts
+    disposition: approved
+    rationale: >-
+      N_strict=0 and repeat_count=0 correctly state the only effective execution
+      counts authorized by this Red contract. No strict case, auxiliary case,
+      model cell, repeat, prompt-to-provider operation, or model-generated
+      result is authorized. No nonzero planned value is retained in a form that
+      could be mistaken for execution permission.
+
+  - category: no_model_reachability
+    disposition: approved
+    rationale: >-
+      The v3 no-model reachability evidence records a singleton offline CLI,
+      absence of forbidden provider and network import roots, absence of unsafe
+      credential or configuration paths, absence of H4 artifacts, and runtime
+      checks demonstrating no network reachability for both successful parsing
+      and unknown-command failure. The approved surface contains no provider
+      SDK, HTTP client, credentials loader, model command, or model-call entry
+      point.
+
+  - category: h4_not_applicable
+    disposition: approved
+    rationale: >-
+      H4 is correctly marked h4_required=false with reason not_applicable_red.
+      Because this branch authorizes no provider configuration, credentials,
+      model snapshot, external call, or model execution, creating an H4
+      approval artifact would incorrectly imply that a provider or model
+      authorization decision exists.
+
+  - category: change_control
+    disposition: approved
+    rationale: >-
+      The v3 successor correctly preserves the immutable v1 decision and the
+      v2 decision, packet, readiness, and authority as historical predecessors
+      that are not current branch authority. It records that v2 could not serve
+      as complete Phase 4 closure because its frozen tests rejected the
+      legitimate authority-present lifecycle state and Ruff reported F401.
+      The v3 changes are limited to lifecycle-test and static-check corrections;
+      they do not alter Red semantics, execution counts, or permission
+      boundaries. This approval does not repair, overwrite, or retroactively
+      reinterpret either predecessor. Any change to the v3 packet, readiness,
+      freeze inventory, no-model audit, Phase 3 bindings, or other bound
+      evidence requires the applicable versioned successor process and a new
+      human decision.
+
+aggregate_rationale: >-
+  I approve the H3 v3 successor Red branch bound to packet SHA-256
+  dbd1d2983094797adc54c2d4632f3ec3b75faaac47e55185912e3a2917d8170f,
+  readiness SHA-256
+  0b0fba05532cd044e7a69bc802070db10c8b12e34740d98b42671e3815cecfe0,
+  freeze-inventory SHA-256
+  5a6fd56b12fff1c969b95fa35415d1305762a74d1a8e3752ccd22603171100e1,
+  and no-model-reachability SHA-256
+  da178d3effe612bb9ff56e4cebd4b547aa304b08a2fc62c4dabcaac98d11fdee.
+  The successor correctly binds v1 decision self-SHA-256
+  dc332ac6ce08d9f2f48421734060bd6b6c25d0dca72c8fad15addea16ae17590
+  and v2 authority self-SHA-256
+  b2023ca0aa0fcf02d2d7de36e9e59d442fe034df9846cebdf71523e17db99ac2
+  solely as historical predecessors that are not current authority. The v3
+  evidence consistently authorizes only a local Red feasibility branch with
+  N_strict=0 and repeat_count=0. It authorizes no Green/Yellow branch, model
+  execution, provider access, credentials use, external calls, production
+  retrieval, H4 process, external publication, upstream submission, or
+  replacement of the frozen Phase 3 eligibility result.
+
+reviewer_id: Zhiyuan Deng
+
+attestation: >-
+  I personally reviewed the H3 v3 successor packet and readiness identities,
+  the Phase 3 Red authority bindings, the historical predecessor bindings for
+  v1 and v2, the corrected authority lifecycle implementation and tests, the
+  Ruff F401 correction, the offline treatment bundle, the isolated test-only
+  retrieval contract, the effective Red counts, the no-model reachability
+  evidence, the H4 not-applicable conclusion, and the recovery and
+  change-control rules. I confirm that this decision approves only the local
+  Red feasibility branch represented by the bound v3 evidence. I did not
+  authorize model execution, provider or credential access, network or
+  external calls, production retrieval, external publication, upstream
+  writes, H4 approval, or a Green/Yellow execution branch. I understand that
+  machine readiness is not branch authority, that v1 and v2 remain historical
+  and non-current, and that any change to a bound artifact requires a
+  versioned successor and a new human decision.
+
+signature: Zhiyuan Deng
+
+timestamp_utc: 2026-08-04T15:42:27Z

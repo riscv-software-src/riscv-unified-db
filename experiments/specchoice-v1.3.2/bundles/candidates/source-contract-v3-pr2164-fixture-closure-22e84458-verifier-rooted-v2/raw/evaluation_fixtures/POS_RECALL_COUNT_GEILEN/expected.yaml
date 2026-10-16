@@ -1,0 +1,10 @@
+id: POS_RECALL_COUNT_GEILEN
+class: NORM_DIRECT
+gold_name: NUM_EXTERNAL_GUEST_INTERRUPTS
+expect_extract: true
+expect_status: existing
+expect_udb_file: spec/std/isa/param/NUM_EXTERNAL_GUEST_INTERRUPTS.yaml
+must_have_excerpt: true
+skill_signal: count parameter reached through conditional writability
+warl_true_parameter: false
+recall_case: true

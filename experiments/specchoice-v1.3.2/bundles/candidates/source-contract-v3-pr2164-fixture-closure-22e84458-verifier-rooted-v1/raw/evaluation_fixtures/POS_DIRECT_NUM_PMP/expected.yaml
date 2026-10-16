@@ -1,0 +1,8 @@
+id: POS_DIRECT_NUM_PMP
+class: NORM_DIRECT
+gold_name: NUM_PMP_ENTRIES
+expect_extract: true
+expect_status: existing
+expect_udb_file: spec/std/isa/param/NUM_PMP_ENTRIES.yaml
+must_have_excerpt: true
+skill_signal: implementation-defined

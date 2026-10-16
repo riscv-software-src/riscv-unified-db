@@ -1,0 +1,125 @@
+# Phase 1 Integrity Receipt
+
+- Authoritative SHA-256: `b80d7c6cde958b764cab5a45b98b6fd663bf6b33c9d48e0c84e65617cbf52646`
+- Generator version: `2`
+- Outcome: `pass`
+- Reviewer package complete: `true`
+- Phase-start baseline SHA-256: `b338372c74c605aa8b294ee30bcc39410422a6a5673e15061f86f28188debecb`
+- Environment decision SHA-256: `9f0342c4d2848200e5f894c834f69e828aeb70a7fb813e541258f43d7fc3d246`
+- Source identity: `local_accepted_generation`
+
+## Boundary classifications
+
+- Local accepted generation: `source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1`
+- Core SHA-256: `f1f2e3e5ef35daed805948f884960973f8adadde0015d168bcd5eb229aba0185`
+- Logical root SHA-256: `bd3d88b022680068f4cd57b7926e8d97b69766077cae0d52402a717d70bf4851`
+- Snapshot manifest SHA-256: `90bb8adf1782de8d327e1a78a49ae4b0cd40a62ef81fbcbfb3334f41cc205d49`
+- External publication authorized: `false`
+- `.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `.github/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `.planning/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `.planning/STATE.md` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `.planning/phases/01-isolated-evidence-boundary-and-source-integrity/01-06-PLAN.md` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `.planning/phases/01-isolated-evidence-boundary-and-source-integrity/01-06-SUMMARY.md` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `.planning/phases/01-isolated-evidence-boundary-and-source-integrity/01-07-PLAN.md` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `backends/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `doc/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `experiments/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/content-manifest-core.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/fixture-registry-pr2164-v1.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/CAND_WARL_FIXED_LEGAL_SET/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/CAND_WARL_FIXED_LEGAL_SET/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_EXT_GATED_PBMTE/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_EXT_GATED_PBMTE/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_FIXED_ENCODING/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_FIXED_ENCODING/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SHALL_NO_DELEGATION/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SHALL_NO_DELEGATION/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SOFTWARE_ADVICE/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SOFTWARE_ADVICE/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_CSR_RW_MTVEC_ACCESS/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_CSR_RW_MTVEC_ACCESS/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_CSR_RW_MTVEC_ACCESS/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_CACHE_BLOCK/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_CACHE_BLOCK/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_CACHE_BLOCK/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_NUM_PMP/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_NUM_PMP/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_NUM_PMP/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_RECALL_COUNT_GEILEN/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_RECALL_COUNT_GEILEN/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_RECALL_COUNT_GEILEN/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_ASID_WIDTH/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_ASID_WIDTH/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_ASID_WIDTH/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_MTVEC_MODES/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_MTVEC_MODES/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_MTVEC_MODES/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/snapshot-manifest.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/__init__.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/canonical.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/filesystem.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/verify.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/accepted/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verify_bundle.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/content-manifest-core.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/fixture-registry-pr2164-v1.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/CAND_WARL_FIXED_LEGAL_SET/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/CAND_WARL_FIXED_LEGAL_SET/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_EXT_GATED_PBMTE/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_EXT_GATED_PBMTE/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_FIXED_ENCODING/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_FIXED_ENCODING/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SHALL_NO_DELEGATION/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SHALL_NO_DELEGATION/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SOFTWARE_ADVICE/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/NEG_SOFTWARE_ADVICE/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_CSR_RW_MTVEC_ACCESS/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_CSR_RW_MTVEC_ACCESS/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_CSR_RW_MTVEC_ACCESS/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_CACHE_BLOCK/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_CACHE_BLOCK/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_CACHE_BLOCK/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_NUM_PMP/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_NUM_PMP/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_DIRECT_NUM_PMP/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_RECALL_COUNT_GEILEN/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_RECALL_COUNT_GEILEN/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_RECALL_COUNT_GEILEN/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_ASID_WIDTH/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_ASID_WIDTH/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_ASID_WIDTH/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_MTVEC_MODES/expected.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_MTVEC_MODES/gold.yaml` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/raw/evaluation_fixtures/POS_WARL_MTVEC_MODES/source.txt` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/snapshot-manifest.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/__init__.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/canonical.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/filesystem.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verifier/specchoice_evidence/verify.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/bundles/candidates/source-contract-v3-pr2164-fixture-closure-22e84458-verifier-rooted-v1/verify_bundle.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/config/boundary_allowlist-v7-fixture-closure.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/config/fixture-registry-pr2164-v1.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/config/source_snapshots.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/phase2/source-authority.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/receipts/boundary-restart-v7-fixture-closure.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/receipts/fixture-closure-audit-v1.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/receipts/local-acceptance-v8.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/receipts/source-contract-decision-v3-pr2164-fixture-closure.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/receipts/source-contract-proposal-v3-pr2164-fixture-closure.json` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/src/specchoice_evidence/baseline.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/src/specchoice_evidence/bundle.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/src/specchoice_evidence/cli.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/src/specchoice_evidence/source_contract.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/src/specchoice_evidence/verify.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/tests/test_fixture_closure.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `experiments/specchoice-v1.3.2/tests/test_receipts.py` — `allowed_phase_change`, blocking=false, attributed_to_phase=true
+- `ext/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `sorbet/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `spec/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `spec/std/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `tests/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+- `tools/.DS_Store` — `new_out_of_boundary`, blocking=false, attributed_to_phase=false
+
+## Diagnostics
+
+- `LOCAL_MVP_ONLY_EXTERNAL_PUBLICATION_PROHIBITED`

@@ -1,0 +1,9 @@
+id: POS_WARL_MTVEC_MODES
+class: NORM_CSR_WARL
+gold_name: MTVEC_MODES
+expect_extract: true
+expect_status: existing
+expect_udb_file: spec/std/isa/param/MTVEC_MODES.yaml
+must_have_excerpt: true
+skill_signal: WARL legal MODE set
+warl_true_parameter: true

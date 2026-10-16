@@ -1,0 +1,1 @@
+[{"code":"CANDIDATE_ACCEPTED_AS_PARAMETER","expected":"classify_out","field":"adjudication.parameter_status","finding_id":"CAND_WARL_FIXED_LEGAL_SET:1","fixture_id":"CAND_WARL_FIXED_LEGAL_SET","observed":"accept","occurrence":0,"severity":"blocker","source_sha256":null}]
