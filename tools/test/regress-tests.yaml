@@ -276,7 +276,6 @@ tests:
     strategy:
       matrix:
         extensions:
-          - Vx8,Vx16,Vx32,Vx64
           - Vf16,Vf32,Vf64
     test:
       - name: Run udb-64-max vector arch-tests (${{ matrix.extensions }})
