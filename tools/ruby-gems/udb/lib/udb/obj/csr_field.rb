@@ -298,7 +298,12 @@ module Udb
 
       if @data.key?("alias")
         alias_data = data["alias"]
-        return unless alias_data.is_a?(String)
+        if alias_data.is_a?(Array)
+          raise "Can't parse alias: multiple targets are not supported" unless alias_data.size == 1
+
+          alias_data = alias_data.first
+        end
+        raise "Can't parse alias" unless alias_data.is_a?(String)
 
         match = /^([a-z][a-z0-9]+)\.([A-Z0-9]+)(\[([0-9]+)(:([0-9]+))?\])?$/.match(alias_data)
         raise "Can't parse alias" if match.nil?
