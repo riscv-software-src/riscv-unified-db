@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent10h
 long_name: Machine Hardware Performance Counter 10 Control, High half
 address: 0x72A
+indirect_address: 0x4A
+indirect_slot: 5
 writable: true
 priv_mode: M
 length: 32

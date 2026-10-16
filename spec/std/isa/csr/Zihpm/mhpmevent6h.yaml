@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent6h
 long_name: Machine Hardware Performance Counter 6 Control, High half
 address: 0x726
+indirect_address: 0x46
+indirect_slot: 5
 writable: true
 priv_mode: M
 length: 32

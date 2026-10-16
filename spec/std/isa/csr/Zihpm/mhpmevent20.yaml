@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent20
 long_name: Machine Hardware Performance Counter 20 Control
 address: 0x334
+indirect_address: 0x54
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64

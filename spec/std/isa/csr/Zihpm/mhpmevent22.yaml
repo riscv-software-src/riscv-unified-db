@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent22
 long_name: Machine Hardware Performance Counter 22 Control
 address: 0x336
+indirect_address: 0x56
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64

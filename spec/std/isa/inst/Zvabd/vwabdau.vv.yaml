@@ -18,7 +18,7 @@ definedBy:
     name: Zvabd
 assembly: vd, vs2, vs1, vm
 encoding:
-  match: 010110-----------010-----1010111
+  match: 111110-----------000-----1010111
   variables:
     - name: vm
       location: 25

@@ -1,0 +1,840 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# WARNING: This file is auto-generated from spec/std/isa/csr/Smcdeleg/scountinhibit.layout
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: scountinhibit
+long_name: Supervisor Counter Inhibit
+address: 0x120
+writable: true
+priv_mode: S
+length: 32
+description: |
+  `scountinhibit` is a masked alias of `mcountinhibit`. For counters delegated to S-mode,
+  the associated `mcountinhibit` bits can be accessed via `scountinhibit`. For counters
+  not delegated to S-mode, the associated bits in `scountinhibit` are read-only zero.
+
+  A counter _i_ is delegated to S-mode when `mcounteren`[_i_]=1 and `menvcfg.CDE`=1.
+
+  When `menvcfg.CDE`=0, attempts to access `scountinhibit` raise an `Illegal Instruction`
+  exception. When Supervisor Counter Delegation is enabled, attempts to access
+  `scountinhibit` from VS-mode or VU-mode raise a `Virtual Instruction` exception.
+definedBy:
+  allOf:
+    - extension:
+        name: Ssccfg
+    - param:
+        name: MCOUNTINHIBIT_IMPLEMENTED
+        equal: true
+sw_read(): |
+  if (CSR[menvcfg].CDE == 1'b0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if (virtual_mode?()) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+  return $bits(CSR[mcountinhibit]) & $bits(CSR[mcounteren]);
+fields:
+  CY:
+    location: 0
+    alias: mcountinhibit.CY
+    description: |
+      Alias of `mcountinhibit.CY` when `mcycle` is delegated to S-mode (`mcounteren.CY`=1);
+      otherwise read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[0] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].CY == 1'b1) {
+        CSR[mcountinhibit].CY = csr_value.CY;
+        return csr_value.CY;
+      }
+      return 1'b0;
+  IR:
+    location: 2
+    alias: mcountinhibit.IR
+    description: |
+      Alias of `mcountinhibit.IR` when `minstret` is delegated to S-mode (`mcounteren.IR`=1);
+      otherwise read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[2] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].IR == 1'b1) {
+        CSR[mcountinhibit].IR = csr_value.IR;
+        return csr_value.IR;
+      }
+      return 1'b0;
+  HPM3:
+    location: 3
+    alias: mcountinhibit.HPM3
+    description: |
+      [when="COUNTINHIBIT_EN[3] == true"]
+      Alias of `mcountinhibit.HPM3` when `mhpmcounter3` is delegated to S-mode
+      (`mcounteren.HPM3`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[3] == false"]
+      Since `mcountinhibit.HPM3` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[3] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[3] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM3 == 1'b1) {
+        CSR[mcountinhibit].HPM3 = csr_value.HPM3;
+        return csr_value.HPM3;
+      }
+      return 1'b0;
+  HPM4:
+    location: 4
+    alias: mcountinhibit.HPM4
+    description: |
+      [when="COUNTINHIBIT_EN[4] == true"]
+      Alias of `mcountinhibit.HPM4` when `mhpmcounter4` is delegated to S-mode
+      (`mcounteren.HPM4`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[4] == false"]
+      Since `mcountinhibit.HPM4` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[4] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[4] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM4 == 1'b1) {
+        CSR[mcountinhibit].HPM4 = csr_value.HPM4;
+        return csr_value.HPM4;
+      }
+      return 1'b0;
+  HPM5:
+    location: 5
+    alias: mcountinhibit.HPM5
+    description: |
+      [when="COUNTINHIBIT_EN[5] == true"]
+      Alias of `mcountinhibit.HPM5` when `mhpmcounter5` is delegated to S-mode
+      (`mcounteren.HPM5`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[5] == false"]
+      Since `mcountinhibit.HPM5` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[5] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[5] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM5 == 1'b1) {
+        CSR[mcountinhibit].HPM5 = csr_value.HPM5;
+        return csr_value.HPM5;
+      }
+      return 1'b0;
+  HPM6:
+    location: 6
+    alias: mcountinhibit.HPM6
+    description: |
+      [when="COUNTINHIBIT_EN[6] == true"]
+      Alias of `mcountinhibit.HPM6` when `mhpmcounter6` is delegated to S-mode
+      (`mcounteren.HPM6`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[6] == false"]
+      Since `mcountinhibit.HPM6` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[6] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[6] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM6 == 1'b1) {
+        CSR[mcountinhibit].HPM6 = csr_value.HPM6;
+        return csr_value.HPM6;
+      }
+      return 1'b0;
+  HPM7:
+    location: 7
+    alias: mcountinhibit.HPM7
+    description: |
+      [when="COUNTINHIBIT_EN[7] == true"]
+      Alias of `mcountinhibit.HPM7` when `mhpmcounter7` is delegated to S-mode
+      (`mcounteren.HPM7`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[7] == false"]
+      Since `mcountinhibit.HPM7` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[7] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[7] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM7 == 1'b1) {
+        CSR[mcountinhibit].HPM7 = csr_value.HPM7;
+        return csr_value.HPM7;
+      }
+      return 1'b0;
+  HPM8:
+    location: 8
+    alias: mcountinhibit.HPM8
+    description: |
+      [when="COUNTINHIBIT_EN[8] == true"]
+      Alias of `mcountinhibit.HPM8` when `mhpmcounter8` is delegated to S-mode
+      (`mcounteren.HPM8`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[8] == false"]
+      Since `mcountinhibit.HPM8` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[8] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[8] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM8 == 1'b1) {
+        CSR[mcountinhibit].HPM8 = csr_value.HPM8;
+        return csr_value.HPM8;
+      }
+      return 1'b0;
+  HPM9:
+    location: 9
+    alias: mcountinhibit.HPM9
+    description: |
+      [when="COUNTINHIBIT_EN[9] == true"]
+      Alias of `mcountinhibit.HPM9` when `mhpmcounter9` is delegated to S-mode
+      (`mcounteren.HPM9`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[9] == false"]
+      Since `mcountinhibit.HPM9` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[9] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[9] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM9 == 1'b1) {
+        CSR[mcountinhibit].HPM9 = csr_value.HPM9;
+        return csr_value.HPM9;
+      }
+      return 1'b0;
+  HPM10:
+    location: 10
+    alias: mcountinhibit.HPM10
+    description: |
+      [when="COUNTINHIBIT_EN[10] == true"]
+      Alias of `mcountinhibit.HPM10` when `mhpmcounter10` is delegated to S-mode
+      (`mcounteren.HPM10`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[10] == false"]
+      Since `mcountinhibit.HPM10` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[10] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[10] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM10 == 1'b1) {
+        CSR[mcountinhibit].HPM10 = csr_value.HPM10;
+        return csr_value.HPM10;
+      }
+      return 1'b0;
+  HPM11:
+    location: 11
+    alias: mcountinhibit.HPM11
+    description: |
+      [when="COUNTINHIBIT_EN[11] == true"]
+      Alias of `mcountinhibit.HPM11` when `mhpmcounter11` is delegated to S-mode
+      (`mcounteren.HPM11`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[11] == false"]
+      Since `mcountinhibit.HPM11` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[11] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[11] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM11 == 1'b1) {
+        CSR[mcountinhibit].HPM11 = csr_value.HPM11;
+        return csr_value.HPM11;
+      }
+      return 1'b0;
+  HPM12:
+    location: 12
+    alias: mcountinhibit.HPM12
+    description: |
+      [when="COUNTINHIBIT_EN[12] == true"]
+      Alias of `mcountinhibit.HPM12` when `mhpmcounter12` is delegated to S-mode
+      (`mcounteren.HPM12`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[12] == false"]
+      Since `mcountinhibit.HPM12` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[12] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[12] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM12 == 1'b1) {
+        CSR[mcountinhibit].HPM12 = csr_value.HPM12;
+        return csr_value.HPM12;
+      }
+      return 1'b0;
+  HPM13:
+    location: 13
+    alias: mcountinhibit.HPM13
+    description: |
+      [when="COUNTINHIBIT_EN[13] == true"]
+      Alias of `mcountinhibit.HPM13` when `mhpmcounter13` is delegated to S-mode
+      (`mcounteren.HPM13`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[13] == false"]
+      Since `mcountinhibit.HPM13` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[13] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[13] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM13 == 1'b1) {
+        CSR[mcountinhibit].HPM13 = csr_value.HPM13;
+        return csr_value.HPM13;
+      }
+      return 1'b0;
+  HPM14:
+    location: 14
+    alias: mcountinhibit.HPM14
+    description: |
+      [when="COUNTINHIBIT_EN[14] == true"]
+      Alias of `mcountinhibit.HPM14` when `mhpmcounter14` is delegated to S-mode
+      (`mcounteren.HPM14`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[14] == false"]
+      Since `mcountinhibit.HPM14` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[14] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[14] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM14 == 1'b1) {
+        CSR[mcountinhibit].HPM14 = csr_value.HPM14;
+        return csr_value.HPM14;
+      }
+      return 1'b0;
+  HPM15:
+    location: 15
+    alias: mcountinhibit.HPM15
+    description: |
+      [when="COUNTINHIBIT_EN[15] == true"]
+      Alias of `mcountinhibit.HPM15` when `mhpmcounter15` is delegated to S-mode
+      (`mcounteren.HPM15`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[15] == false"]
+      Since `mcountinhibit.HPM15` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[15] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[15] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM15 == 1'b1) {
+        CSR[mcountinhibit].HPM15 = csr_value.HPM15;
+        return csr_value.HPM15;
+      }
+      return 1'b0;
+  HPM16:
+    location: 16
+    alias: mcountinhibit.HPM16
+    description: |
+      [when="COUNTINHIBIT_EN[16] == true"]
+      Alias of `mcountinhibit.HPM16` when `mhpmcounter16` is delegated to S-mode
+      (`mcounteren.HPM16`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[16] == false"]
+      Since `mcountinhibit.HPM16` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[16] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[16] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM16 == 1'b1) {
+        CSR[mcountinhibit].HPM16 = csr_value.HPM16;
+        return csr_value.HPM16;
+      }
+      return 1'b0;
+  HPM17:
+    location: 17
+    alias: mcountinhibit.HPM17
+    description: |
+      [when="COUNTINHIBIT_EN[17] == true"]
+      Alias of `mcountinhibit.HPM17` when `mhpmcounter17` is delegated to S-mode
+      (`mcounteren.HPM17`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[17] == false"]
+      Since `mcountinhibit.HPM17` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[17] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[17] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM17 == 1'b1) {
+        CSR[mcountinhibit].HPM17 = csr_value.HPM17;
+        return csr_value.HPM17;
+      }
+      return 1'b0;
+  HPM18:
+    location: 18
+    alias: mcountinhibit.HPM18
+    description: |
+      [when="COUNTINHIBIT_EN[18] == true"]
+      Alias of `mcountinhibit.HPM18` when `mhpmcounter18` is delegated to S-mode
+      (`mcounteren.HPM18`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[18] == false"]
+      Since `mcountinhibit.HPM18` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[18] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[18] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM18 == 1'b1) {
+        CSR[mcountinhibit].HPM18 = csr_value.HPM18;
+        return csr_value.HPM18;
+      }
+      return 1'b0;
+  HPM19:
+    location: 19
+    alias: mcountinhibit.HPM19
+    description: |
+      [when="COUNTINHIBIT_EN[19] == true"]
+      Alias of `mcountinhibit.HPM19` when `mhpmcounter19` is delegated to S-mode
+      (`mcounteren.HPM19`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[19] == false"]
+      Since `mcountinhibit.HPM19` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[19] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[19] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM19 == 1'b1) {
+        CSR[mcountinhibit].HPM19 = csr_value.HPM19;
+        return csr_value.HPM19;
+      }
+      return 1'b0;
+  HPM20:
+    location: 20
+    alias: mcountinhibit.HPM20
+    description: |
+      [when="COUNTINHIBIT_EN[20] == true"]
+      Alias of `mcountinhibit.HPM20` when `mhpmcounter20` is delegated to S-mode
+      (`mcounteren.HPM20`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[20] == false"]
+      Since `mcountinhibit.HPM20` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[20] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[20] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM20 == 1'b1) {
+        CSR[mcountinhibit].HPM20 = csr_value.HPM20;
+        return csr_value.HPM20;
+      }
+      return 1'b0;
+  HPM21:
+    location: 21
+    alias: mcountinhibit.HPM21
+    description: |
+      [when="COUNTINHIBIT_EN[21] == true"]
+      Alias of `mcountinhibit.HPM21` when `mhpmcounter21` is delegated to S-mode
+      (`mcounteren.HPM21`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[21] == false"]
+      Since `mcountinhibit.HPM21` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[21] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[21] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM21 == 1'b1) {
+        CSR[mcountinhibit].HPM21 = csr_value.HPM21;
+        return csr_value.HPM21;
+      }
+      return 1'b0;
+  HPM22:
+    location: 22
+    alias: mcountinhibit.HPM22
+    description: |
+      [when="COUNTINHIBIT_EN[22] == true"]
+      Alias of `mcountinhibit.HPM22` when `mhpmcounter22` is delegated to S-mode
+      (`mcounteren.HPM22`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[22] == false"]
+      Since `mcountinhibit.HPM22` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[22] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[22] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM22 == 1'b1) {
+        CSR[mcountinhibit].HPM22 = csr_value.HPM22;
+        return csr_value.HPM22;
+      }
+      return 1'b0;
+  HPM23:
+    location: 23
+    alias: mcountinhibit.HPM23
+    description: |
+      [when="COUNTINHIBIT_EN[23] == true"]
+      Alias of `mcountinhibit.HPM23` when `mhpmcounter23` is delegated to S-mode
+      (`mcounteren.HPM23`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[23] == false"]
+      Since `mcountinhibit.HPM23` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[23] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[23] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM23 == 1'b1) {
+        CSR[mcountinhibit].HPM23 = csr_value.HPM23;
+        return csr_value.HPM23;
+      }
+      return 1'b0;
+  HPM24:
+    location: 24
+    alias: mcountinhibit.HPM24
+    description: |
+      [when="COUNTINHIBIT_EN[24] == true"]
+      Alias of `mcountinhibit.HPM24` when `mhpmcounter24` is delegated to S-mode
+      (`mcounteren.HPM24`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[24] == false"]
+      Since `mcountinhibit.HPM24` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[24] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[24] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM24 == 1'b1) {
+        CSR[mcountinhibit].HPM24 = csr_value.HPM24;
+        return csr_value.HPM24;
+      }
+      return 1'b0;
+  HPM25:
+    location: 25
+    alias: mcountinhibit.HPM25
+    description: |
+      [when="COUNTINHIBIT_EN[25] == true"]
+      Alias of `mcountinhibit.HPM25` when `mhpmcounter25` is delegated to S-mode
+      (`mcounteren.HPM25`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[25] == false"]
+      Since `mcountinhibit.HPM25` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[25] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[25] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM25 == 1'b1) {
+        CSR[mcountinhibit].HPM25 = csr_value.HPM25;
+        return csr_value.HPM25;
+      }
+      return 1'b0;
+  HPM26:
+    location: 26
+    alias: mcountinhibit.HPM26
+    description: |
+      [when="COUNTINHIBIT_EN[26] == true"]
+      Alias of `mcountinhibit.HPM26` when `mhpmcounter26` is delegated to S-mode
+      (`mcounteren.HPM26`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[26] == false"]
+      Since `mcountinhibit.HPM26` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[26] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[26] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM26 == 1'b1) {
+        CSR[mcountinhibit].HPM26 = csr_value.HPM26;
+        return csr_value.HPM26;
+      }
+      return 1'b0;
+  HPM27:
+    location: 27
+    alias: mcountinhibit.HPM27
+    description: |
+      [when="COUNTINHIBIT_EN[27] == true"]
+      Alias of `mcountinhibit.HPM27` when `mhpmcounter27` is delegated to S-mode
+      (`mcounteren.HPM27`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[27] == false"]
+      Since `mcountinhibit.HPM27` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[27] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[27] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM27 == 1'b1) {
+        CSR[mcountinhibit].HPM27 = csr_value.HPM27;
+        return csr_value.HPM27;
+      }
+      return 1'b0;
+  HPM28:
+    location: 28
+    alias: mcountinhibit.HPM28
+    description: |
+      [when="COUNTINHIBIT_EN[28] == true"]
+      Alias of `mcountinhibit.HPM28` when `mhpmcounter28` is delegated to S-mode
+      (`mcounteren.HPM28`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[28] == false"]
+      Since `mcountinhibit.HPM28` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[28] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[28] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM28 == 1'b1) {
+        CSR[mcountinhibit].HPM28 = csr_value.HPM28;
+        return csr_value.HPM28;
+      }
+      return 1'b0;
+  HPM29:
+    location: 29
+    alias: mcountinhibit.HPM29
+    description: |
+      [when="COUNTINHIBIT_EN[29] == true"]
+      Alias of `mcountinhibit.HPM29` when `mhpmcounter29` is delegated to S-mode
+      (`mcounteren.HPM29`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[29] == false"]
+      Since `mcountinhibit.HPM29` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[29] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[29] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM29 == 1'b1) {
+        CSR[mcountinhibit].HPM29 = csr_value.HPM29;
+        return csr_value.HPM29;
+      }
+      return 1'b0;
+  HPM30:
+    location: 30
+    alias: mcountinhibit.HPM30
+    description: |
+      [when="COUNTINHIBIT_EN[30] == true"]
+      Alias of `mcountinhibit.HPM30` when `mhpmcounter30` is delegated to S-mode
+      (`mcounteren.HPM30`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[30] == false"]
+      Since `mcountinhibit.HPM30` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[30] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[30] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM30 == 1'b1) {
+        CSR[mcountinhibit].HPM30 = csr_value.HPM30;
+        return csr_value.HPM30;
+      }
+      return 1'b0;
+  HPM31:
+    location: 31
+    alias: mcountinhibit.HPM31
+    description: |
+      [when="COUNTINHIBIT_EN[31] == true"]
+      Alias of `mcountinhibit.HPM31` when `mhpmcounter31` is delegated to S-mode
+      (`mcounteren.HPM31`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[31] == false"]
+      Since `mcountinhibit.HPM31` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[31] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[31] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM31 == 1'b1) {
+        CSR[mcountinhibit].HPM31 = csr_value.HPM31;
+        return csr_value.HPM31;
+      }
+      return 1'b0;

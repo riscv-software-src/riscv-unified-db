@@ -13,6 +13,8 @@ definedBy:
     - extension:
         name: Sm
 address: 0xB80
+indirect_address: 0x40
+indirect_slot: 4
 writable: true
 description: |
   High-half alias of `mcycle`.
