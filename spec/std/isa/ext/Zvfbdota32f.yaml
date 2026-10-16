@@ -12,7 +12,7 @@ requirements:
     name: Zve32f
     version: "= 1.0.0"
 versions:
-  - version: "1.0.0"
+  - version: "0.7.0"
     state: development
     repositories:
       - url: https://github.com/riscv/riscv-isa-manual.git
