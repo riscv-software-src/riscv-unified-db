@@ -18,20 +18,24 @@ Bits<32> SP_POS_ZERO      = 32'b0_00000000_00000000000000000000000;
 Bits<32> SP_NEG_ZERO      = 32'b1_00000000_00000000000000000000000;
 Bits<32> SP_CANONICAL_NAN = 32'b0_11111111_10000000000000000000000;
 
+Bits<16> HP_POS_INF       = 16'b0_11111_0000000000;
+Bits<16> HP_NEG_INF       = 16'b1_11111_0000000000;
+Bits<16> HP_POS_ZERO      = 16'b0_00000_0000000000;
+Bits<16> HP_NEG_ZERO      = 16'b1_00000_0000000000;
 Bits<16> HP_CANONICAL_NAN = 16'b0_11111_1000000000;
 
 function is_hp_neg_inf? {
   returns Boolean
   arguments Bits<16> hp_value
   description { Returns true if +hp_value+ is negative infinity. }
-  body { return hp_value == 16'hFC00; }
+  body { return hp_value == HP_NEG_INF; }
 }
 
 function is_hp_pos_inf? {
   returns Boolean
   arguments Bits<16> hp_value
   description { Returns true if +hp_value+ is positive infinity. }
-  body { return hp_value == 16'h7C00; }
+  body { return hp_value == HP_POS_INF; }
 }
 
 function is_hp_neg_norm? {
@@ -70,14 +74,14 @@ function is_hp_neg_zero? {
   returns Boolean
   arguments Bits<16> hp_value
   description { Returns true if +hp_value+ is negative zero. }
-  body { return hp_value == 16'h8000; }
+  body { return hp_value == HP_NEG_ZERO; }
 }
 
 function is_hp_pos_zero? {
   returns Boolean
   arguments Bits<16> hp_value
   description { Returns true if +hp_value+ is positive zero. }
-  body { return hp_value == 0; }
+  body { return hp_value == HP_POS_ZERO; }
 }
 
 function is_hp_nan? {
@@ -99,7 +103,7 @@ function is_hp_signaling_nan? {
 function hp_equal? {
   returns Boolean
   arguments Bits<16> a, Bits<16> b
-  description { Compares two non-NaN half-precision values for equality. }
+  description { Compares two non-NaN half-precision values for equality, treating +0 and -0 as equal. }
   body { return (a == b) || ((a[14:0] | b[14:0]) == 0); }
 }
 
@@ -243,7 +247,7 @@ function f32_operand {
     incorrectly NaN-boxed value to the canonical NaN when D is implemented.
   }
   body {
-    if (implemented?(ExtensionName::D) && f_value[63:32] != 32'hffffffff) {
+    if (implemented?(ExtensionName::D) && f_value[63:32] != UI64_NAN[63:32]) {
       return SP_CANONICAL_NAN;
     }
 
@@ -1388,9 +1392,9 @@ function packToF16UI {
   arguments
     Bits<1> sign,
     Bits<5> exp,
-    Bits<16> sig
+    Bits<10> sig
   description {
-    Pack components into a 16-bit value
+    Pack binary16 sign, exponent, and 10-bit fraction components into a 16-bit value.
   }
   body {
     return (sign `<< 15) + (exp `<< 10) + sig;
@@ -1862,12 +1866,10 @@ function returnNonSignalingNaN {
     U32 a
   description {
     Returns a non-signalling NaN version of the floating-point number
-    Does not modify the input
   }
   body {
-    U32 a_copy = a;
-    a_copy[22] = 1'b1;
-    return a_copy;
+    a[22] = 1'b1;
+    return a;
   }
 }
 
@@ -1877,13 +1879,11 @@ function returnMag {
     U32 a
   description {
     Returns magnitude of the given number
-    Does not modify the input
   }
   body {
-    U32 a_copy = a;
     # make sign bit zero
-    a_copy[31] = 1'b0;
-    return a_copy;
+    a[31] = 1'b0;
+    return a;
   }
 }
 
