@@ -4,7 +4,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vfbdota.vv
-long_name: FP32 batched vector dot product
+long_name: Vector FP32 Batched Dot Product Accumulate
 description: |
   Performs a batched
   dot-product operation on FP32 vectors, accumulating into FP32. The
