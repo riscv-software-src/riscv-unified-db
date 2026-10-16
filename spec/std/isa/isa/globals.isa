@@ -3069,10 +3069,16 @@ function amo {
       raise (ExceptionCode::StoreAmoAddressMisaligned, mode(), virtual_address);
     }
 
-    if (N == 32) {
+    if (N == 8) {
+      return atomic_read_modify_write_8(physical_address, value, op);
+    } else if (N == 16) {
+      return atomic_read_modify_write_16(physical_address, value, op);
+    } else if (N == 32) {
       return atomic_read_modify_write_32(physical_address, value, op);
-    } else {
+    } else if (N == 64) {
       return atomic_read_modify_write_64(physical_address, value, op);
+    } else {
+      unreachable();
     }
 
   }

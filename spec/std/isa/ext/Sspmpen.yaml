@@ -1,0 +1,30 @@
+# Copyright (c) Shanghai Jiao Tong University
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sspmpen
+type: privileged
+long_name: SPMP Enable Register
+description: |
+  The Sspmpen extension adds the spmpen CSR, which provides per-entry enable bits
+  for SPMP regions.
+
+  Each bit spmpen[i] controls whether SPMP entry i is active. An entry is active
+  only when both spmpen[i] is set and spmpcfg[i].A != 0 (address matching mode
+  is not OFF).
+
+  When spmpcfg[i].L (lock bit) is set, spmpen[i] becomes read-only.
+
+  The spmpen CSR is a WARL register. Bits beyond the number of implemented SPMP
+  entries are read-only zero.
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2026-08
+    url: "https://github.com/riscv/riscv-spmp/tree/v1.0"
+requirements:
+  extension:
+    name: Sspmp

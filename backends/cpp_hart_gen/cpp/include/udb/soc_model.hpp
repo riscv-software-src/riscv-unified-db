@@ -100,6 +100,16 @@ namespace udb {
                                static_cast<uint32_t>(0))
     } -> std::same_as<uint8_t>;
     {
+      s.atomic_read_modify_write_8(static_cast<uint64_t>(0),
+                                   static_cast<uint8_t>(0),
+                                   AmoOperation::ValueType{})
+    } -> std::same_as<uint64_t>;
+    {
+      s.atomic_read_modify_write_16(static_cast<uint64_t>(0),
+                                    static_cast<uint16_t>(0),
+                                    AmoOperation::ValueType{})
+    } -> std::same_as<uint64_t>;
+    {
       s.atomic_read_modify_write_32(static_cast<uint64_t>(0),
                                     static_cast<uint32_t>(0),
                                     AmoOperation::ValueType{})

@@ -61,6 +61,8 @@ struct NullSocModel {
   uint8_t atomic_check_then_write_64(uint64_t, uint64_t, uint64_t) { return 0; }
   uint8_t atomically_set_pte_a(uint64_t, uint64_t, uint32_t) { return 0; }
   uint8_t atomically_set_pte_a_d(uint64_t, uint64_t, uint32_t) { return 0; }
+  uint64_t atomic_read_modify_write_8(uint64_t, uint8_t, AmoOperation::ValueType) { return 0; }
+  uint64_t atomic_read_modify_write_16(uint64_t, uint16_t, AmoOperation::ValueType) { return 0; }
   uint64_t atomic_read_modify_write_32(uint64_t, uint32_t, AmoOperation::ValueType) { return 0; }
   uint64_t atomic_read_modify_write_64(uint64_t, uint64_t, AmoOperation::ValueType) { return 0; }
   uint8_t pma_applies_Q_(PmaAttribute::ValueType, uint64_t, uint32_t) { return 1; }

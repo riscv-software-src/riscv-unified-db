@@ -15,7 +15,7 @@ definedBy:
     - xlen: 64
     - extension:
         name: H
-assembly: xs1, xs2
+assembly: xs2, (xs1)
 encoding:
   match: 0110111----------100000001110011
   variables:

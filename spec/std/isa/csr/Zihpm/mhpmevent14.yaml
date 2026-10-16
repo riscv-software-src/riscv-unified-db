@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent14
 long_name: Machine Hardware Performance Counter 14 Control
 address: 0x32E
+indirect_address: 0x4E
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64

@@ -13,7 +13,7 @@ description: |
 definedBy:
   extension:
     name: H
-assembly: xs1, xs2
+assembly: xs2, (xs1)
 encoding:
   match: 0110001----------100000001110011
   variables:

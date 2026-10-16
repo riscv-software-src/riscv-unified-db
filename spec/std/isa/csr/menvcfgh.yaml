@@ -57,3 +57,15 @@ fields:
       return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RW : CsrFieldType::RO;
     reset_value(): |
       return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
+  CDE:
+    location: 28
+    alias: menvcfg.CDE
+    description: |
+      *Counter Delegation Enable*
+
+      Alias of `menvcfg.CDE`
+    definedBy:
+      extension:
+        name: Smcdeleg
+    type: RW
+    reset_value: UNDEFINED_LEGAL
