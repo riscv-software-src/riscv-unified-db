@@ -1,6 +1,5 @@
 #pragma once
 
-#include <array>
 #include <cstddef>
 #include <map>
 #include <memory>
@@ -65,6 +64,7 @@ namespace udb {
     virtual void reset(uint64_t reset_pc) {
       m_exit_requested = 0;
       m_fault_only_first_trap_suppressed = false;
+      m_fault_only_first_read_values.clear();
       m_fault_only_first_read_count = 0;
       m_num_inst_exec = 0;
     }
@@ -304,7 +304,10 @@ namespace udb {
       throw FaultOnlyFirstTrap();
     }
 
-    void begin_fault_only_first_reads() { m_fault_only_first_read_count = 0; }
+    void begin_fault_only_first_reads() {
+      m_fault_only_first_read_values.clear();
+      m_fault_only_first_read_count = 0;
+    }
 
     template <typename LenType, typename AddrType, typename EncodingType>
     bool fault_only_first_read_Q_(const LenType& len,
@@ -466,9 +469,8 @@ namespace udb {
 
    protected:
     void append_fault_only_first_read_value(PossiblyUnknownBits<64> value) {
-      udb_assert(m_fault_only_first_read_count < m_fault_only_first_read_values.size(),
-                 "too many fault-only-first reads in one vector segment");
-      m_fault_only_first_read_values[m_fault_only_first_read_count++] = value;
+      m_fault_only_first_read_values.push_back(value);
+      ++m_fault_only_first_read_count;
     }
 
     const unsigned m_hart_id;
@@ -480,7 +482,7 @@ namespace udb {
 
     bool m_exit_requested;
     bool m_fault_only_first_trap_suppressed;
-    std::array<PossiblyUnknownBits<64>, 8> m_fault_only_first_read_values;
+    std::vector<PossiblyUnknownBits<64>> m_fault_only_first_read_values;
     std::size_t m_fault_only_first_read_count;
 
     // the number of instruction *executed*
