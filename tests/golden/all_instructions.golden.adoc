@@ -42542,7 +42542,7 @@ Encoding::
 ....
 
 Description::
-The xref:exts:Zvfbdota32f.adoc#udb:doc:ext:Zvfbdota32f[Zvfbdota32f] extension adds xref:insts:vfbdota_vv.adoc#udb:doc:inst:vfbdota_vv[vfbdota.vv], which performs a batched
+Performs a batched
 dot-product operation on FP32 vectors, accumulating into FP32. The
 instruction is reserved unless `SEW=32` and `LMUL=1`. The `vs1`, `vs2`, and
 `vd` operands all have `EEW=SEW`.
