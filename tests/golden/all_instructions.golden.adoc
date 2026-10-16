@@ -42520,7 +42520,7 @@ Included in::
 == vfbdota.vv
 
 Synopsis::
-FP32 batched vector dot product
+Vector FP32 Batched Dot Product Accumulate
 
 Base::
 
