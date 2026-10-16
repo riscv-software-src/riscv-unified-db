@@ -298,38 +298,32 @@ module Udb
 
       if @data.key?("alias")
         alias_data = data["alias"]
-        if alias_data.is_a?(Array)
-          raise "Can't parse alias: multiple targets are not supported" unless alias_data.size == 1
+        alias_candidates = alias_data.is_a?(Array) ? alias_data : [alias_data]
+        raise "Can't parse alias" unless alias_candidates.all?(String)
 
-          alias_data = alias_data.first
+        alias_candidates.each do |alias_candidate|
+          match = /^([a-z][a-z0-9]+)\.([A-Z0-9]+)(\[([0-9]+)(:([0-9]+))?\])?$/.match(alias_candidate)
+          raise "Can't parse alias" if match.nil?
+
+          target_csr = cfg_arch.csr(T.must(match[1]))
+          next if target_csr.nil?
+
+          csr_field = target_csr.field(T.must(match[2]))
+          next if csr_field.nil? || !csr_field.exists_in_cfg?(cfg_arch)
+
+          range_start = match[4]
+          range_end = match[6]
+          range =
+            if match[3].nil?
+              nil
+            elsif range_end.nil?
+              (range_start.to_i..range_start.to_i)
+            else
+              (range_start.to_i..range_end.to_i)
+            end
+          @alias = Alias.new(csr_field, range)
+          return @alias
         end
-        raise "Can't parse alias" unless alias_data.is_a?(String)
-
-        match = /^([a-z][a-z0-9]+)\.([A-Z0-9]+)(\[([0-9]+)(:([0-9]+))?\])?$/.match(alias_data)
-        raise "Can't parse alias" if match.nil?
-
-        csr_name = T.must(match[1])
-        csr_field = T.must(match[2])
-        range_text = match[3]
-        range_start = match[4]
-        range_end = match[6]
-
-        target_csr = cfg_arch.csr(csr_name)
-        return if target_csr.nil?
-
-        csr_field = target_csr.field(csr_field)
-        return if csr_field.nil?
-        return unless csr_field.exists_in_cfg?(cfg_arch)
-
-        range =
-          if range_text.nil?
-            nil
-          elsif range_end.nil?
-            (range_start.to_i..range_start.to_i)
-          else
-            (range_start.to_i..range_end.to_i)
-          end
-        @alias = Alias.new(csr_field, range)
       end
       @alias
     end

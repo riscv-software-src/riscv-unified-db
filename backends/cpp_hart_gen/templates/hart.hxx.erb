@@ -217,6 +217,7 @@ namespace udb {
 
       <%- if cfg_arch.global_ast.structs.any? { |struct| struct.name == "EntropySourceSample" } -%>
       <%= name_of(:struct, cfg_arch, "EntropySourceSample") %> poll_entropy_source() {
+        static_assert(EntropySocModel<SocType>, "Entropy-enabled harts require SocType::poll_entropy_source()");
         const UdbEntropySourceSample source = this->m_soc.poll_entropy_source();
         <%= name_of(:struct, cfg_arch, "EntropySourceSample") %> sample;
         sample.opst = Bits<2>{source.opst};

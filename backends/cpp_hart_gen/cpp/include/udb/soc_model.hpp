@@ -136,8 +136,6 @@ namespace udb {
                        static_cast<uint32_t>(0))
     } -> std::same_as<uint8_t>;
 
-    { s.poll_entropy_source() } -> std::same_as<UdbEntropySourceSample>;
-
     // qc_iu builtins
     {
       s.delay(static_cast<uint64_t>(0))
@@ -165,5 +163,10 @@ namespace udb {
     { s.read_seed() } -> std::same_as<uint32_t>;
 
     { s.write_seed() };
+  };
+
+  template <typename SocType>
+  concept EntropySocModel = requires(SocType s) {
+    { s.poll_entropy_source() } -> std::same_as<UdbEntropySourceSample>;
   };
 }  // namespace udb
