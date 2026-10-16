@@ -26,10 +26,8 @@ definedBy:
     - extension:
         name: Sm
     - xlen: 32
-    - param:
-        name: HPM_COUNTER_EN
-        index: 14
-        equal: true
+    - extension:
+        name: Sscofpmf
 fields:
   OF:
     location: 31
