@@ -1,0 +1,15 @@
+$schema: param_schema.json#
+kind: parameter
+name: GEILEN
+long_name: Guest external interrupt limit
+description: |
+  Number of implemented guest-external-interrupt slots and direct targets.
+  GEILEN may be zero; when it is zero, VGEIN may be read-only zero and no
+  guest external interrupt source is selected.
+definedBy:
+  extension:
+    name: H
+schema:
+  type: integer
+  minimum: 0
+  maximum: 63

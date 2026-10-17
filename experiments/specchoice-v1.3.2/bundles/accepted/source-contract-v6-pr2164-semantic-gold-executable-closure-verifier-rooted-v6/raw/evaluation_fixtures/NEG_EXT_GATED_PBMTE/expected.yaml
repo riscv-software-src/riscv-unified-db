@@ -1,0 +1,8 @@
+id: NEG_EXT_GATED_PBMTE
+kind: extension_gated_runtime_enable
+expect_extract: true
+expect_params: 0
+fixture_class: candidate
+final_disposition: classify_out
+classify_out_reason: surfaced_classified_out
+recall_case: true

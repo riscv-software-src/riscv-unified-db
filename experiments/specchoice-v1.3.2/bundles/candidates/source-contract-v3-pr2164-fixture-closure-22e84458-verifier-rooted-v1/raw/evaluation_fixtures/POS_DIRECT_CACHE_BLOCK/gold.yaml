@@ -1,0 +1,26 @@
+# Challenge curated result (grounded in snippets/cmo_cache_block.txt)
+# Not an unsolicited upstream merge.
+# yaml-language-server: $schema=../../schema/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: CACHE_BLOCK_SIZE
+long_name: Cache block size
+description: |
+  Observable size of a cache block in bytes. The size of a cache block is
+  implementation-specific. In the initial set of CMO extensions, the size of a
+  cache block shall be uniform throughout the system. Cache blocks represent a
+  contiguous, naturally aligned power-of-two (NAPOT) range of memory locations.
+
+  Modeling note: maximum is omitted intentionally — the challenge snippet does
+  not state an upper bound (contrast some UDB encodings that use 2**64-1 as a
+  stand-in for "unbounded").
+definedBy:
+  extension:
+    anyOf:
+      - name: Zicbom
+      - name: Zicbop
+      - name: Zicboz
+schema:
+  type: integer
+  minimum: 1

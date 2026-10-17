@@ -1,0 +1,13 @@
+==== Machine Trap-Vector Base-Address (`mtvec`) Register
+
+[#norm:mtvec_sz_warl_acc]#The `mtvec` register is an MXLEN-bit *WARL* read/write register that holds
+trap vector configuration, consisting of a vector base address (BASE)
+and a vector mode (MODE).#
+
+[[norm:mtvec_enc]]
+.Encoding of mtvec MODE field.
+
+[#norm:mtvec_mandatory]#The `mtvec` register must always be implemented#, but
+[#norm:mtvec_rdonly]#can contain a read-only value.#
+If `mtvec` is writable, the set of values the register
+may hold can vary by implementation.

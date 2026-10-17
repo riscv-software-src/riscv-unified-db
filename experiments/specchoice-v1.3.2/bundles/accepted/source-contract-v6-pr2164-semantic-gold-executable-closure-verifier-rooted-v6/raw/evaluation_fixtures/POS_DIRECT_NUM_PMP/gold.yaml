@@ -1,0 +1,7 @@
+$schema: param_schema.json#
+kind: parameter
+name: NUM_PMP_ENTRIES
+description: Number of implemented PMP entries; the finite legal set is 0, 16, or 64.
+schema:
+  type: integer
+  enum: [0, 16, 64]

@@ -1,0 +1,8 @@
+$schema: param_schema.json#
+kind: parameter
+name: ASIDLEN
+description: Number of implemented ASID bits.
+schema:
+  type: integer
+  minimum: 0
+  maximum: 16

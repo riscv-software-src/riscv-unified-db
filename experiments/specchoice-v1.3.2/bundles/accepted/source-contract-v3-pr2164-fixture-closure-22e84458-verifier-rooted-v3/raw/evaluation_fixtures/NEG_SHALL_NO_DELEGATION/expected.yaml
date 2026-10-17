@@ -1,0 +1,5 @@
+id: NEG_SHALL_NO_DELEGATION
+kind: shall_no_choice
+expect_extract: false
+expect_params: 0
+skill_risk: pure shall without implementation choice

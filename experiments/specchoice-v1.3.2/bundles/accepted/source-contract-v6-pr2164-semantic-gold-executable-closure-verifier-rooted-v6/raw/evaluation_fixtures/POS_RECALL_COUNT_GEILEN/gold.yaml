@@ -1,0 +1,8 @@
+$schema: param_schema.json#
+kind: parameter
+name: GEILEN
+description: GEILEN may be any integer from 0 through 63.
+schema:
+  type: integer
+  minimum: 0
+  maximum: 63

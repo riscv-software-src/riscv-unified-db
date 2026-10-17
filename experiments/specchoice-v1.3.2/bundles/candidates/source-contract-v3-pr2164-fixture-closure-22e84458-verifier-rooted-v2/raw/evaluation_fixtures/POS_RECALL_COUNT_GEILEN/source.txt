@@ -1,0 +1,12 @@
+Source class: conditional-writability phrasing carrying none of the tokens a
+keyword rule looks for, whose condition is the value of an implementation-chosen
+count.
+
+Excerpt from riscv-isa-manual src/hypervisor.adoc (hstatus VGEIN field):
+
+The VGEIN field of `hstatus` selects a guest external interrupt source for
+VS-level external interrupts. VGEIN must be able to hold values from 0 to the
+maximum guest external interrupt number (known as GEILEN), inclusive.
+When VGEIN=0, no guest external interrupt source is selected for VS-level
+external interrupts. GEILEN may be zero, in which case VGEIN may be read-only
+zero.
