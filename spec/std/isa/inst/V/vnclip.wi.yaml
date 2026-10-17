@@ -44,7 +44,7 @@ operation(): |
 
   Bits<2> vxrm_mode = CSR[vcsr].VXRM;
   U32 elems_per_reg = VLEN >> state.log2_sew;
-  XReg one = 1;
+  Bits<64> one = 1;
   U32 src_elems_per_reg = VLEN >> (state.log2_sew + 1);
   U32 shamt = imm[((state.log2_sew > 4) ? 4 : state.log2_sew):0];
 
@@ -59,13 +59,13 @@ operation(): |
       U32 src_start = (i % src_elems_per_reg) * src_sew;
       U32 src_end = src_start + src_sew - 1;
 
-      XReg a = $signed(V[vs2 + src_reg_off][src_end:src_start]);
+      Bits<64> a = $signed(V[vs2 + src_reg_off][src_end:src_start]);
 
-      XReg round_bit = 0;
+      Bits<64> round_bit = 0;
       if (shamt > 0) {
-        XReg guard = (a >> (shamt - 1)) & 1;
-        XReg sticky = a & ((one << (shamt - 1)) - 1);
-        XReg res_lsb = (a >> shamt) & 1;
+        Bits<64> guard = (a >> (shamt - 1)) & 1;
+        Bits<64> sticky = a & ((one << (shamt - 1)) - 1);
+        Bits<64> res_lsb = (a >> shamt) & 1;
         if (vxrm_mode == 2'b00) {
           round_bit = guard;
         } else if (vxrm_mode == 2'b01) {
@@ -77,13 +77,13 @@ operation(): |
         }
       }
 
-      XReg sign_bit_a = a[63:63];
-      XReg logical_shifted_a = a >> shamt;
-      XReg fill_a = (shamt == 0) ? 0 : ~((one << (64 - shamt)) - 1);
-      XReg shifted_raw = (sign_bit_a == 1) ? (logical_shifted_a | fill_a) : logical_shifted_a;
-      XReg shifted_sext = $signed(shifted_raw[src_sew-1:0]);
-      XReg result_full = shifted_sext + round_bit;
-      XReg sext_trunc = $signed(result_full[state.sew-1:0]);
+      Bits<64> sign_bit_a = a[63:63];
+      Bits<64> logical_shifted_a = a >> shamt;
+      Bits<64> fill_a = (shamt == 0) ? 0 : ~((one << (64 - shamt)) - 1);
+      Bits<64> shifted_raw = (sign_bit_a == 1) ? (logical_shifted_a | fill_a) : logical_shifted_a;
+      Bits<64> shifted_sext = $signed(shifted_raw[src_sew-1:0]);
+      Bits<64> result_full = shifted_sext + round_bit;
+      Bits<64> sext_trunc = $signed(result_full[state.sew-1:0]);
       if (result_full != sext_trunc) {
         if (result_full[63:63] == 1'b0) {
           V[vd + reg_off][end_bit:start_bit] = ((one << state.sew) - 1) >> 1;

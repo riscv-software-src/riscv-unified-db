@@ -58,12 +58,12 @@ operation(): |
 
       U32 shamt = X[xs1][state.log2_sew:0];
 
-      XReg src = $signed(V[vs2 + src_reg_off][src_end:src_start]);
-      XReg one = 1;
-      XReg sign_bit = src[63:63];
-      XReg logical_shifted = src >> shamt;
-      XReg fill_ones = (shamt == 0) ? 0 : ~((one << (64 - shamt)) - 1);
-      XReg shifted = (sign_bit == 1) ? (logical_shifted | fill_ones) : logical_shifted;
+      Bits<64> src = $signed(V[vs2 + src_reg_off][src_end:src_start]);
+      Bits<64> one = 1;
+      Bits<64> sign_bit = src[63:63];
+      Bits<64> logical_shifted = src >> shamt;
+      Bits<64> fill_ones = (shamt == 0) ? 0 : ~((one << (64 - shamt)) - 1);
+      Bits<64> shifted = (sign_bit == 1) ? (logical_shifted | fill_ones) : logical_shifted;
       V[vd + reg_off][end_bit:start_bit] = shifted[state.sew-1:0];
     }
   }
