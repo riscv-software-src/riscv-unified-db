@@ -53,8 +53,8 @@ operation(): |
       XReg a = $signed(V[vs2 + reg_off][end_bit:start_bit]);
       XReg b = $signed(V[vs1 + reg_off][end_bit:start_bit]);
       XReg sum = a + b;
-      XReg a_sign = a[63:63];
-      XReg overflow_bit = (state.sew == 64 && a[63:63] == b[63:63] && sum[63:63] != a[63:63]) ? a_sign : sum[63:63];
+      XReg a_sign = a[state.sew-1:state.sew-1];
+      XReg overflow_bit = (state.sew == 64 && a[state.sew-1:state.sew-1] == b[state.sew-1:state.sew-1] && sum[state.sew-1:state.sew-1] != a[state.sew-1:state.sew-1]) ? a_sign : sum[state.sew-1:state.sew-1];
 
       # Roundoff with d=1: v[0] is guard bit, v[1] is LSB of result
       XReg v0 = sum & 1;

@@ -55,9 +55,9 @@ operation(): |
       XReg b = $signed(sext_xs1[state.sew-1:0]);
       XReg sum = a + b;
       Boolean overflow = (state.sew == 64)
-        ? (a[63:63] == b[63:63] && sum[63:63] != a[63:63])
+        ? (a[state.sew-1:state.sew-1] == b[state.sew-1:state.sew-1] && sum[state.sew-1:state.sew-1] != a[state.sew-1:state.sew-1])
         : ($signed(sum[state.sew-1:0]) != $signed(sum));
-      XReg neg_dir = (state.sew == 64) ? a[63:63] : sum[63:63];
+      XReg neg_dir = (state.sew == 64) ? a[state.sew-1:state.sew-1] : sum[state.sew-1:state.sew-1];
       if (overflow) {
         if (neg_dir == 1'b0) {
           V[vd + reg_off][end_bit:start_bit] = ((one << state.sew) - 1) >> 1;
