@@ -40481,7 +40481,7 @@ Read from virtual memory.
 
 [cols="1,4"]
 |===
-h| Return Type h| `XReg`
+h| Return Type h| `Bits<64>`
 h| Arguments
 a|
 
@@ -40506,7 +40506,7 @@ h! `Bits<INSTR_ENC_SIZE>`
 ----
 Boolean aligned = xref:#udb-function-is_naturally_aligned[is_naturally_aligned]pass:[(]LEN, virtual_address);
 XReg physical_address;
-XReg result;
+Bits<64> result;
 if pass:[(]aligned) {
   result = xref:#udb-function-read_memory_aligned[read_memory_aligned]pass:[(]LEN, virtual_address, encoding, 1'b0, 1'b0);
   if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
@@ -40524,7 +40524,12 @@ if pass:[(]MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 0) {
   physical_address = (CSR[xref:#udb-csr-misa[misa]].xref:#udb-csrfield-misa-S[S] == 1) ? xref:#udb-function-translate[translate]pass:[(]virtual_address, MemoryOperation::Read, xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]), encoding).paddr : virtual_address;
   if pass:[(]xref:#udb-function-misaligned_is_atomic?[misaligned_is_atomic?]pass:[(]LEN, physical_address)) {
     xref:#udb-function-access_check[access_check]pass:[(]physical_address, LEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, xref:#udb-function-effective_ldst_mode[effective_ldst_mode]pass:[(]));
-    result = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, physical_address);
+    if pass:[(]xref:#udb-function-xlen[xlen]pass:[(]) == 32 && LEN == 64) {
+      result[31:0] = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]32, physical_address);
+      result[63:32] = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]32, physical_address pass:[+] 4);
+    } else {
+      result = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, physical_address);
+    }
     if pass:[(]LEN > 8 && xref:#udb-function-endianness[endianness]pass:[(]) == Endian::Big) {
       U32 tmp;
       for pass:[(]U32 i = 0; i < LEN / 2; i = i pass:[+] 8) {
@@ -40576,7 +40581,7 @@ If +aq+ is 1, then the load also acts as a memory model acquire (applied after t
 
 [cols="1,4"]
 |===
-h| Return Type h| `XReg`
+h| Return Type h| `Bits<64>`
 h| Arguments
 a|
 
@@ -40615,7 +40620,13 @@ xref:#udb-function-access_check[access_check]pass:[(]result.paddr, LEN, virtual_
 if pass:[(]rl == 1'b1) {
   xref:#udb-function-memory_model_release[memory_model_release]pass:[(]);
 }
-XReg value = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, result.paddr);
+Bits<64> value;
+if pass:[(]xref:#udb-function-xlen[xlen]pass:[(]) == 32 && LEN == 64) {
+  value[31:0] = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]32, result.paddr);
+  value[63:32] = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]32, result.paddr pass:[+] 4);
+} else {
+  value = xref:#udb-function-read_physical_memory[read_physical_memory]pass:[(]LEN, result.paddr);
+}
 if pass:[(]aq == 1'b1) {
   xref:#udb-function-memory_model_acquire[memory_model_acquire]pass:[(]);
 }
