@@ -59,7 +59,7 @@ operation(): |
       } else if (state.sew == 32) {
         V[vd + reg_off][end_bit:start_bit] = (divu_a[31:0] / divu_b[31:0])[31:0];
       } else {
-        V[vd + reg_off][end_bit:start_bit] = (divu_a / divu_b)[63:0];
+        V[vd + reg_off][end_bit:start_bit] = divu_a / divu_b;
       }
     }
   }

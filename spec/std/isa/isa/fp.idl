@@ -1380,7 +1380,7 @@ function packToF32UI {
   arguments
     Bits<1> sign,
     Bits<8> exp,
-    Bits<23> sig
+    Bits<24> sig
   description {
     Pack components into a 32-bit value
   }
@@ -2663,7 +2663,7 @@ function packToF64UI {
   arguments
     Bits<1> sign,
     Bits<16> exp,
-    Bits<52> sig
+    Bits<53> sig
   description {
     Pack components into a 64-bit double-precision value
   }
