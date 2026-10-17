@@ -417,10 +417,10 @@ module Udb
         elsif schema_hsh.fetch("$ref").split("/").last == "uint64"
           assertions << ((term.unsigned_ge(0)) & (term.unsigned_le(2**64 - 1)))
         elsif schema_hsh.fetch("$ref").split("/").last == "32bit_unsigned_pow2"
-          assertions << ((term == 0) | (0 == (term & (term - 1))))
+          assertions << ((term & (term - 1)) == 0)
           assertions << ((term.unsigned_gt(0)) & (term.unsigned_le(2**32 - 1)))
         elsif schema_hsh.fetch("$ref").split("/").last == "64bit_unsigned_pow2"
-          assertions << ((term == 0) | (0 == (term & (term - 1))))
+          assertions << ((term & (term - 1)) == 0)
           assertions << ((term.unsigned_gt(0)) & (term.unsigned_le(2**64 - 1)))
         else
           raise "Unhandled schema $ref: #{schema_hsh.fetch("$ref")}"
