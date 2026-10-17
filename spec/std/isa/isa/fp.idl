@@ -135,6 +135,8 @@ Bits<64> UI64_POS_OVERFLOW = 64'hFFFF_FFFF_FFFF_FFFF; # maximum unsigned 64-bit 
 Bits<64> UI64_NAN          = 64'hFFFF_FFFF_FFFF_FFFF; # NaN to unsigned 64-bit integer
 Bits<64> I64_NAN           = 64'h7FFF_FFFF_FFFF_FFFF; # NaN to signed 64-bit integer
 
+Bits<16> BF16_CANONICAL_NAN = 16'h7FC0;
+
 enum RoundingMode {
   RNE 0b000 # Round to Nearest, ties to Even
   RTZ 0b001 # Round toward Zero
@@ -311,10 +313,10 @@ function bf16_operand {
   }
   body {
     if (implemented?(ExtensionName::D) && f_value[63:16] != 48'hFFFFFFFFFFFF) {
-      return 16'h7FC0;
+      return BF16_CANONICAL_NAN;
     }
     if (!implemented?(ExtensionName::D) && f_value[31:16] != 16'hFFFF) {
-      return 16'h7FC0;
+      return BF16_CANONICAL_NAN;
     }
     return f_value[15:0];
   }
@@ -355,7 +357,7 @@ function f32_to_bf16 {
     if (exp == 8'hFF) {
       if (frac != 0) {
         if (is_sp_signaling_nan?(a)) { set_fp_flag(FpFlag::NV); }
-        return 16'h7FC0;
+        return BF16_CANONICAL_NAN;
       }
       return a[31:16];
     }
@@ -1378,7 +1380,7 @@ function packToF32UI {
   arguments
     Bits<1> sign,
     Bits<8> exp,
-    Bits<32> sig
+    Bits<23> sig
   description {
     Pack components into a 32-bit value
   }
@@ -2661,7 +2663,7 @@ function packToF64UI {
   arguments
     Bits<1> sign,
     Bits<16> exp,
-    Bits<64> sig
+    Bits<52> sig
   description {
     Pack components into a 64-bit double-precision value
   }
