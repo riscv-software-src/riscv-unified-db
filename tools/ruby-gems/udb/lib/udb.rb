@@ -8,6 +8,7 @@ module Udb; end
 
 require_relative "udb/doc_link"
 require_relative "udb/condition"
+require_relative "udb/operand_name_check"
 require_relative "udb/schema"
 require_relative "udb/version"
 

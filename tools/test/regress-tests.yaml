@@ -112,6 +112,14 @@ tests:
       - name: Checking for conflicts in instruction encodings
         run: ./do test:inst_encodings
 
+  regress-test-inst-operand-names:
+    ci_stage: pr
+    tags:
+      - smoke
+    test:
+      - name: Checking instruction descriptions for unknown operand names
+        run: ./do test:inst_operand_names
+
   regress-gen-isa-manual:
     ci_stage: pr
     gh_pre:
@@ -177,6 +185,7 @@ tests:
           - mmr_schema
           - schema_versioning
           - instruction
+          - operand_name_check
           - z3
           - z3_extensions
           - z3_finite_array

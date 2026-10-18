@@ -30,6 +30,7 @@ require "yard"
 require "minitest/test_task"
 
 require "udb/architecture"
+require "udb/operand_name_check"
 require "udb/portfolio_design"
 
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
@@ -207,6 +208,28 @@ namespace :test do
     end
 
     Udb.logger.info "Encoding test PASSED"
+  end
+
+  desc "Check that instruction descriptions only name operands that exist in the encoding"
+  task :inst_operand_names do
+    Udb.logger.info "Checking instruction descriptions for unknown operand names.."
+
+    failed = T.let(false, T::Boolean)
+
+    cfg_arch = $resolver.cfg_arch_for("_")
+    cfg_arch.instructions.each do |inst|
+      Udb::OperandNameCheck.problems(inst).each do |problem|
+        warn problem
+        failed = true
+      end
+    end
+
+    if failed
+      Udb.logger.error "Operand name test failed"
+      exit 1
+    end
+
+    Udb.logger.info "Operand name test PASSED"
   end
 
   desc "Check that CSR definitions in the DB are consistent and do not conflict"
