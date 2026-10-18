@@ -3069,18 +3069,32 @@ function amo {
       raise (ExceptionCode::StoreAmoAddressMisaligned, mode(), virtual_address);
     }
 
+    # An AMO with rl set orders every memory operation that precedes it in
+    # program order before the read-modify-write becomes visible, and an AMO
+    # with aq set orders the read-modify-write before every memory operation
+    # that follows it. Same placement as write_memory_aligned().
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    XReg original_value = 0;
     if (N == 8) {
-      return atomic_read_modify_write_8(physical_address, value, op);
+      original_value = atomic_read_modify_write_8(physical_address, value, op);
     } else if (N == 16) {
-      return atomic_read_modify_write_16(physical_address, value, op);
+      original_value = atomic_read_modify_write_16(physical_address, value, op);
     } else if (N == 32) {
-      return atomic_read_modify_write_32(physical_address, value, op);
+      original_value = atomic_read_modify_write_32(physical_address, value, op);
     } else if (N == 64) {
-      return atomic_read_modify_write_64(physical_address, value, op);
+      original_value = atomic_read_modify_write_64(physical_address, value, op);
     } else {
       unreachable();
     }
 
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+
+    return original_value;
   }
 }
 
