@@ -60,6 +60,15 @@ read_git_pinned_tool_version() {
   printf -v "${commit_var}" "%s" "${commit}"
 }
 
+# Use the platform-appropriate SHA-256 utility.
+sha256sum() {
+  if type -P sha256sum &>/dev/null; then
+    command sha256sum "$@"
+  else
+    shasum -a 256 "$@"
+  fi
+}
+
 #
 # Update espresso binary
 # Args: $1 - native_only ("yes" to build only for native platform, "no" for both x64 and arm64)
@@ -112,7 +121,17 @@ do_update_espresso() {
 
   local orig_dir="${PWD}"
   local work_dir
-  work_dir=$(mktemp -d --tmpdir="$PWD" build-espresso.XXXXXX)
+  work_dir=$(mktemp -d "$PWD/build-espresso.XXXXXX")
+
+  local current_os
+  case "$(uname -s)" in
+    Linux)  current_os="Linux" ;;
+    Darwin) current_os="Mac" ;;
+    *)
+      echo "ERROR: Unsupported OS: $(uname -s)" >&2
+      exit 1
+      ;;
+  esac
 
   if [ "${native_only}" = "yes" ]; then
     # Detect native architecture
@@ -129,74 +148,89 @@ do_update_espresso() {
         exit 1
         ;;
     esac
-    echo "==> Building espresso for native platform (${native_arch})..."
-    "${UDB_ROOT}"/tools/scripts/build_espresso_with_docker.sh "${work_dir}/espresso-build" "${native_arch}" || exit 1
+    echo "==> Building espresso for native platform (${current_os}-${native_arch})..."
+    if [ "${current_os}" = "Mac" ]; then
+      "${UDB_ROOT}"/tools/scripts/build_espresso_mac.sh "${work_dir}/espresso-build" "${native_arch}" || exit 1
+    else
+      "${UDB_ROOT}"/tools/scripts/build_espresso_with_docker.sh "${work_dir}/espresso-build" "${native_arch}" || exit 1
+    fi
 
     # Move the binary to the asset name expected by the gem
-    mv "${work_dir}/espresso-build/espresso" "${work_dir}/espresso-${native_arch}"
-
+    mv "${work_dir}/espresso-build/espresso" "${work_dir}/espresso-${current_os}-${native_arch}"
     # Generate checksum
     echo "==> Generating checksum..."
-    (cd "${work_dir}" && sha256sum "espresso-${native_arch}" | awk '{print "sha256:" $1}' > "espresso-${native_arch}.checksum")
-    echo "  ${native_arch}: $(cat "${work_dir}/espresso-${native_arch}.checksum")"
-  else
-    # Build for both architectures
-    echo "==> Building espresso for x64..."
-    "${UDB_ROOT}"/tools/scripts/build_espresso_with_docker.sh "${work_dir}/espresso-x64-out" x64 || exit 1
+    (cd "${work_dir}" && sha256sum "espresso-${current_os}-${native_arch}" | awk '{print "sha256:" $1}' > "espresso-${current_os}-${native_arch}.checksum")
+    echo "  ${current_os}-${native_arch}: $(cat "${work_dir}/espresso-${current_os}-${native_arch}.checksum")"
 
-    echo "==> Building espresso for arm64..."
-    "${UDB_ROOT}"/tools/scripts/build_espresso_with_docker.sh "${work_dir}/espresso-arm64-out" arm64 || exit 1
-
-    # Rename the binaries to the asset names expected by the gem
-    mv "${work_dir}/espresso-x64-out/espresso" "${work_dir}/espresso-x64"
-    mv "${work_dir}/espresso-arm64-out/espresso" "${work_dir}/espresso-arm64"
-
-    # Generate checksums
-    echo "==> Generating checksums..."
-    (cd "${work_dir}" && sha256sum espresso-x64 | awk '{print "sha256:" $1}' > espresso-x64.checksum)
-    (cd "${work_dir}" && sha256sum espresso-arm64 | awk '{print "sha256:" $1}' > espresso-arm64.checksum)
-    echo "  x64:   $(cat "${work_dir}/espresso-x64.checksum")"
-    echo "  arm64: $(cat "${work_dir}/espresso-arm64.checksum")"
-  fi
-
-  # Create the GitHub Release and upload assets (or upload to existing release if native_only)
-  local release_tag="${espresso_version}"
-  if [ "${native_only}" = "yes" ]; then
-    # Detect native architecture
-    local native_arch
-    case "$(uname -m)" in
-      x86_64)
-        native_arch="x64"
-        ;;
-      aarch64)
-        native_arch="arm64"
-        ;;
-    esac
-    echo "==> Uploading ${native_arch} assets to GitHub Release ${release_tag}..."
-    # Try to upload; if release doesn't exist, create it first (for parallel CI builds)
-    if ! gh release upload "${release_tag}" \
+    echo "==> Uploading ${current_os}-${native_arch} assets to GitHub Release ${espresso_version}..."
+    if ! gh release upload "${espresso_version}" \
       --repo riscv/riscv-unified-db \
       --clobber \
-      "${work_dir}/espresso-${native_arch}" \
-      "${work_dir}/espresso-${native_arch}.checksum" 2>/dev/null; then
+      "${work_dir}/espresso-${current_os}-${native_arch}" \
+      "${work_dir}/espresso-${current_os}-${native_arch}.checksum" 2>/dev/null; then
       echo "==> Release doesn't exist yet, creating it..."
-      gh release create "${release_tag}" \
+      gh release create "${espresso_version}" \
         --repo riscv/riscv-unified-db \
         --title "Espresso binaries ${espresso_version}" \
-        --notes "Pre-built espresso binaries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8). Commit: ${espresso_commit}" \
-        "${work_dir}/espresso-${native_arch}" \
-        "${work_dir}/espresso-${native_arch}.checksum"
+        --notes "Pre-built espresso binaries for the udb gem (Linux and macOS, x64 and arm64). Commit: ${espresso_commit}" \
+        "${work_dir}/espresso-${current_os}-${native_arch}" \
+        "${work_dir}/espresso-${current_os}-${native_arch}.checksum"
     fi
   else
-    echo "==> Creating GitHub Release ${release_tag}..."
-    gh release create "${release_tag}" \
+    echo "==> Building espresso for Linux-x64..."
+    "${UDB_ROOT}"/tools/scripts/build_espresso_with_docker.sh "${work_dir}/espresso-Linux-x64-out" x64 || exit 1
+
+    echo "==> Building espresso for Linux-arm64..."
+    "${UDB_ROOT}"/tools/scripts/build_espresso_with_docker.sh "${work_dir}/espresso-Linux-arm64-out" arm64 || exit 1
+
+    mv "${work_dir}/espresso-Linux-x64-out/espresso"   "${work_dir}/espresso-Linux-x64"
+    mv "${work_dir}/espresso-Linux-arm64-out/espresso" "${work_dir}/espresso-Linux-arm64"
+
+    if [ "${current_os}" = "Mac" ]; then
+      echo "==> Building espresso for Mac-x64..."
+      "${UDB_ROOT}"/tools/scripts/build_espresso_mac.sh "${work_dir}/espresso-Mac-x64-out" x64 || exit 1
+
+      echo "==> Building espresso for Mac-arm64..."
+      "${UDB_ROOT}"/tools/scripts/build_espresso_mac.sh "${work_dir}/espresso-Mac-arm64-out" arm64 || exit 1
+
+      mv "${work_dir}/espresso-Mac-x64-out/espresso"   "${work_dir}/espresso-Mac-x64"
+      mv "${work_dir}/espresso-Mac-arm64-out/espresso" "${work_dir}/espresso-Mac-arm64"
+    else
+      echo "==> WARNING: Skipping Mac build — run this on a macOS runner to produce Mac assets."
+    fi
+
+    echo "==> Generating checksums..."
+    (cd "${work_dir}" && sha256sum espresso-Linux-x64   | awk '{print "sha256:" $1}' > espresso-Linux-x64.checksum)
+    (cd "${work_dir}" && sha256sum espresso-Linux-arm64 | awk '{print "sha256:" $1}' > espresso-Linux-arm64.checksum)
+    echo "  Linux-x64:   $(cat "${work_dir}/espresso-Linux-x64.checksum")"
+    echo "  Linux-arm64: $(cat "${work_dir}/espresso-Linux-arm64.checksum")"
+
+    local release_assets=(
+      "${work_dir}/espresso-Linux-x64"
+      "${work_dir}/espresso-Linux-arm64"
+      "${work_dir}/espresso-Linux-x64.checksum"
+      "${work_dir}/espresso-Linux-arm64.checksum"
+    )
+
+    if [ "${current_os}" = "Mac" ]; then
+      (cd "${work_dir}" && sha256sum espresso-Mac-x64   | awk '{print "sha256:" $1}' > espresso-Mac-x64.checksum)
+      (cd "${work_dir}" && sha256sum espresso-Mac-arm64 | awk '{print "sha256:" $1}' > espresso-Mac-arm64.checksum)
+      echo "  Mac-x64:   $(cat "${work_dir}/espresso-Mac-x64.checksum")"
+      echo "  Mac-arm64: $(cat "${work_dir}/espresso-Mac-arm64.checksum")"
+      release_assets+=(
+        "${work_dir}/espresso-Mac-x64"
+        "${work_dir}/espresso-Mac-arm64"
+        "${work_dir}/espresso-Mac-x64.checksum"
+        "${work_dir}/espresso-Mac-arm64.checksum"
+      )
+    fi
+
+    echo "==> Creating GitHub Release ${espresso_version}..."
+    gh release create "${espresso_version}" \
       --repo riscv/riscv-unified-db \
       --title "Espresso binaries ${espresso_version}" \
-      --notes "Pre-built espresso binaries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8). Commit: ${espresso_commit}" \
-      "${work_dir}/espresso-x64" \
-      "${work_dir}/espresso-arm64" \
-      "${work_dir}/espresso-x64.checksum" \
-      "${work_dir}/espresso-arm64.checksum"
+      --notes "Pre-built espresso binaries for the udb gem (Linux and macOS, x64 and arm64). Commit: ${espresso_commit}" \
+      "${release_assets[@]}"
   fi
 
   cd "${orig_dir}" || exit 1
@@ -258,7 +292,17 @@ do_update_must() {
 
   local orig_dir="${PWD}"
   local work_dir
-  work_dir=$(mktemp -d --tmpdir="$PWD" build-must.XXXXXX)
+  work_dir=$(mktemp -d "$PWD/build-must.XXXXXX")
+
+  local current_os
+  case "$(uname -s)" in
+    Linux)  current_os="Linux" ;;
+    Darwin) current_os="Mac" ;;
+    *)
+      echo "ERROR: Unsupported OS: $(uname -s)" >&2
+      exit 1
+      ;;
+  esac
 
   if [ "${native_only}" = "yes" ]; then
     # Detect native architecture
@@ -275,74 +319,89 @@ do_update_must() {
         exit 1
         ;;
     esac
-    echo "==> Building must for native platform (${native_arch})..."
-    "${UDB_ROOT}"/tools/scripts/build_must_with_docker.sh "${work_dir}/must-build" "${native_arch}" || exit 1
+    echo "==> Building must for native platform (${current_os}-${native_arch})..."
+    if [ "${current_os}" = "Mac" ]; then
+      "${UDB_ROOT}"/tools/scripts/build_must_mac.sh "${work_dir}/must-build" "${native_arch}" || exit 1
+    else
+      "${UDB_ROOT}"/tools/scripts/build_must_with_docker.sh "${work_dir}/must-build" "${native_arch}" || exit 1
+    fi
 
     # Move the binary to the asset name expected by the gem
-    mv "${work_dir}/must-build/must" "${work_dir}/must-${native_arch}"
-
+    mv "${work_dir}/must-build/must" "${work_dir}/must-${current_os}-${native_arch}"
     # Generate checksum
     echo "==> Generating checksum..."
-    (cd "${work_dir}" && sha256sum "must-${native_arch}" | awk '{print "sha256:" $1}' > "must-${native_arch}.checksum")
-    echo "  ${native_arch}: $(cat "${work_dir}/must-${native_arch}.checksum")"
-  else
-    # Build for both architectures
-    echo "==> Building must for x64..."
-    "${UDB_ROOT}"/tools/scripts/build_must_with_docker.sh "${work_dir}/must-x64-out" x64 || exit 1
+    (cd "${work_dir}" && sha256sum "must-${current_os}-${native_arch}" | awk '{print "sha256:" $1}' > "must-${current_os}-${native_arch}.checksum")
+    echo "  ${current_os}-${native_arch}: $(cat "${work_dir}/must-${current_os}-${native_arch}.checksum")"
 
-    echo "==> Building must for arm64..."
-    "${UDB_ROOT}"/tools/scripts/build_must_with_docker.sh "${work_dir}/must-arm64-out" arm64 || exit 1
-
-    # Rename the binaries to the asset names expected by the gem
-    mv "${work_dir}/must-x64-out/must" "${work_dir}/must-x64"
-    mv "${work_dir}/must-arm64-out/must" "${work_dir}/must-arm64"
-
-    # Generate checksums
-    echo "==> Generating checksums..."
-    (cd "${work_dir}" && sha256sum must-x64 | awk '{print "sha256:" $1}' > must-x64.checksum)
-    (cd "${work_dir}" && sha256sum must-arm64 | awk '{print "sha256:" $1}' > must-arm64.checksum)
-    echo "  x64:   $(cat "${work_dir}/must-x64.checksum")"
-    echo "  arm64: $(cat "${work_dir}/must-arm64.checksum")"
-  fi
-
-  # Create the GitHub Release and upload assets
-  local release_tag="${must_version}"
-  if [ "${native_only}" = "yes" ]; then
-    # Detect native architecture
-    local native_arch
-    case "$(uname -m)" in
-      x86_64)
-        native_arch="x64"
-        ;;
-      aarch64)
-        native_arch="arm64"
-        ;;
-    esac
-    echo "==> Uploading ${native_arch} assets to GitHub Release ${release_tag}..."
-    # Try to upload; if release doesn't exist, create it first (for parallel CI builds)
-    if ! gh release upload "${release_tag}" \
+    echo "==> Uploading ${current_os}-${native_arch} assets to GitHub Release ${must_version}..."
+    if ! gh release upload "${must_version}" \
       --repo riscv/riscv-unified-db \
       --clobber \
-      "${work_dir}/must-${native_arch}" \
-      "${work_dir}/must-${native_arch}.checksum" 2>/dev/null; then
+      "${work_dir}/must-${current_os}-${native_arch}" \
+      "${work_dir}/must-${current_os}-${native_arch}.checksum" 2>/dev/null; then
       echo "==> Release doesn't exist yet, creating it..."
-      gh release create "${release_tag}" \
+      gh release create "${must_version}" \
         --repo riscv/riscv-unified-db \
         --title "Must binaries ${must_version}" \
-        --notes "Pre-built must (mustool) binaries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8). Commit: ${must_commit}" \
-        "${work_dir}/must-${native_arch}" \
-        "${work_dir}/must-${native_arch}.checksum"
+        --notes "Pre-built must binaries for the udb gem (Linux and macOS, x64 and arm64). Commit: ${must_commit}" \
+        "${work_dir}/must-${current_os}-${native_arch}" \
+        "${work_dir}/must-${current_os}-${native_arch}.checksum"
     fi
   else
-    echo "==> Creating GitHub Release ${release_tag}..."
-    gh release create "${release_tag}" \
+    echo "==> Building must for Linux-x64..."
+    "${UDB_ROOT}"/tools/scripts/build_must_with_docker.sh "${work_dir}/must-Linux-x64-out" x64 || exit 1
+
+    echo "==> Building must for Linux-arm64..."
+    "${UDB_ROOT}"/tools/scripts/build_must_with_docker.sh "${work_dir}/must-Linux-arm64-out" arm64 || exit 1
+
+    mv "${work_dir}/must-Linux-x64-out/must"   "${work_dir}/must-Linux-x64"
+    mv "${work_dir}/must-Linux-arm64-out/must" "${work_dir}/must-Linux-arm64"
+
+    if [ "${current_os}" = "Mac" ]; then
+      echo "==> Building must for Mac-x64..."
+      "${UDB_ROOT}"/tools/scripts/build_must_mac.sh "${work_dir}/must-Mac-x64-out" x64 || exit 1
+
+      echo "==> Building must for Mac-arm64..."
+      "${UDB_ROOT}"/tools/scripts/build_must_mac.sh "${work_dir}/must-Mac-arm64-out" arm64 || exit 1
+
+      mv "${work_dir}/must-Mac-x64-out/must"   "${work_dir}/must-Mac-x64"
+      mv "${work_dir}/must-Mac-arm64-out/must" "${work_dir}/must-Mac-arm64"
+    else
+      echo "==> WARNING: Skipping Mac build — run this on a macOS runner to produce Mac assets."
+    fi
+
+    echo "==> Generating checksums..."
+    (cd "${work_dir}" && sha256sum must-Linux-x64   | awk '{print "sha256:" $1}' > must-Linux-x64.checksum)
+    (cd "${work_dir}" && sha256sum must-Linux-arm64 | awk '{print "sha256:" $1}' > must-Linux-arm64.checksum)
+    echo "  Linux-x64:   $(cat "${work_dir}/must-Linux-x64.checksum")"
+    echo "  Linux-arm64: $(cat "${work_dir}/must-Linux-arm64.checksum")"
+
+    local release_assets=(
+      "${work_dir}/must-Linux-x64"
+      "${work_dir}/must-Linux-arm64"
+      "${work_dir}/must-Linux-x64.checksum"
+      "${work_dir}/must-Linux-arm64.checksum"
+    )
+
+    if [ "${current_os}" = "Mac" ]; then
+      (cd "${work_dir}" && sha256sum must-Mac-x64   | awk '{print "sha256:" $1}' > must-Mac-x64.checksum)
+      (cd "${work_dir}" && sha256sum must-Mac-arm64 | awk '{print "sha256:" $1}' > must-Mac-arm64.checksum)
+      echo "  Mac-x64:   $(cat "${work_dir}/must-Mac-x64.checksum")"
+      echo "  Mac-arm64: $(cat "${work_dir}/must-Mac-arm64.checksum")"
+      release_assets+=(
+        "${work_dir}/must-Mac-x64"
+        "${work_dir}/must-Mac-arm64"
+        "${work_dir}/must-Mac-x64.checksum"
+        "${work_dir}/must-Mac-arm64.checksum"
+      )
+    fi
+
+    echo "==> Creating GitHub Release ${must_version}..."
+    gh release create "${must_version}" \
       --repo riscv/riscv-unified-db \
       --title "Must binaries ${must_version}" \
-      --notes "Pre-built must (mustool) binaries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8). Commit: ${must_commit}" \
-      "${work_dir}/must-x64" \
-      "${work_dir}/must-arm64" \
-      "${work_dir}/must-x64.checksum" \
-      "${work_dir}/must-arm64.checksum"
+      --notes "Pre-built must binaries for the udb gem (Linux and macOS, x64 and arm64). Commit: ${must_commit}" \
+      "${release_assets[@]}"
   fi
 
   cd "${orig_dir}" || exit 1
@@ -404,7 +463,17 @@ do_update_eqntott() {
 
   local orig_dir="${PWD}"
   local work_dir
-  work_dir=$(mktemp -d --tmpdir="$PWD" build-eqntott.XXXXXX)
+  work_dir=$(mktemp -d "$PWD/build-eqntott.XXXXXX")
+
+  local current_os
+  case "$(uname -s)" in
+    Linux)  current_os="Linux" ;;
+    Darwin) current_os="Mac" ;;
+    *)
+      echo "ERROR: Unsupported OS: $(uname -s)" >&2
+      exit 1
+      ;;
+  esac
 
   if [ "${native_only}" = "yes" ]; then
     # Detect native architecture
@@ -421,74 +490,90 @@ do_update_eqntott() {
         exit 1
         ;;
     esac
-    echo "==> Building eqntott for native platform (${native_arch})..."
-    "${UDB_ROOT}"/tools/scripts/build_eqntott_with_docker.sh "${work_dir}/eqntott-build" "${native_arch}" || exit 1
+    echo "==> Building eqntott for native platform (${current_os}-${native_arch})..."
+    if [ "${current_os}" = "Mac" ]; then
+      "${UDB_ROOT}"/tools/scripts/build_eqntott_mac.sh "${work_dir}/eqntott-build" "${native_arch}" || exit 1
+    else
+      "${UDB_ROOT}"/tools/scripts/build_eqntott_with_docker.sh "${work_dir}/eqntott-build" "${native_arch}" || exit 1
+    fi
 
     # Move the binary to the asset name expected by the gem
-    mv "${work_dir}/eqntott-build/eqntott" "${work_dir}/eqntott-${native_arch}"
-
+    mv "${work_dir}/eqntott-build/eqntott" "${work_dir}/eqntott-${current_os}-${native_arch}"
     # Generate checksum
     echo "==> Generating checksum..."
-    (cd "${work_dir}" && sha256sum "eqntott-${native_arch}" | awk '{print "sha256:" $1}' > "eqntott-${native_arch}.checksum")
-    echo "  ${native_arch}: $(cat "${work_dir}/eqntott-${native_arch}.checksum")"
-  else
-    # Build for both architectures
-    echo "==> Building eqntott for x64..."
-    "${UDB_ROOT}"/tools/scripts/build_eqntott_with_docker.sh "${work_dir}/eqntott-x64-out" x64 || exit 1
+    (cd "${work_dir}" && sha256sum "eqntott-${current_os}-${native_arch}" | awk '{print "sha256:" $1}' > "eqntott-${current_os}-${native_arch}.checksum")
+    echo "  ${current_os}-${native_arch}: $(cat "${work_dir}/eqntott-${current_os}-${native_arch}.checksum")"
 
-    echo "==> Building eqntott for arm64..."
-    "${UDB_ROOT}"/tools/scripts/build_eqntott_with_docker.sh "${work_dir}/eqntott-arm64-out" arm64 || exit 1
-
-    # Rename the binaries to the asset names expected by the gem
-    mv "${work_dir}/eqntott-x64-out/eqntott" "${work_dir}/eqntott-x64"
-    mv "${work_dir}/eqntott-arm64-out/eqntott" "${work_dir}/eqntott-arm64"
-
-    # Generate checksums
-    echo "==> Generating checksums..."
-    (cd "${work_dir}" && sha256sum eqntott-x64 | awk '{print "sha256:" $1}' > eqntott-x64.checksum)
-    (cd "${work_dir}" && sha256sum eqntott-arm64 | awk '{print "sha256:" $1}' > eqntott-arm64.checksum)
-    echo "  x64:   $(cat "${work_dir}/eqntott-x64.checksum")"
-    echo "  arm64: $(cat "${work_dir}/eqntott-arm64.checksum")"
-  fi
-
-  # Create the GitHub Release and upload assets
-  local release_tag="${eqntott_version}"
-  if [ "${native_only}" = "yes" ]; then
-    # Detect native architecture
-    local native_arch
-    case "$(uname -m)" in
-      x86_64)
-        native_arch="x64"
-        ;;
-      aarch64)
-        native_arch="arm64"
-        ;;
-    esac
-    echo "==> Uploading ${native_arch} assets to GitHub Release ${release_tag}..."
+    echo "==> Uploading ${current_os}-${native_arch} assets to GitHub Release ${eqntott_version}..."
     # Try to upload; if release doesn't exist, create it first (for parallel CI builds)
-    if ! gh release upload "${release_tag}" \
+    if ! gh release upload "${eqntott_version}" \
       --repo riscv/riscv-unified-db \
       --clobber \
-      "${work_dir}/eqntott-${native_arch}" \
-      "${work_dir}/eqntott-${native_arch}.checksum" 2>/dev/null; then
+      "${work_dir}/eqntott-${current_os}-${native_arch}" \
+      "${work_dir}/eqntott-${current_os}-${native_arch}.checksum" 2>/dev/null; then
       echo "==> Release doesn't exist yet, creating it..."
-      gh release create "${release_tag}" \
+      gh release create "${eqntott_version}" \
         --repo riscv/riscv-unified-db \
         --title "eqntott binaries ${eqntott_version}" \
-        --notes "Pre-built eqntott binaries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8). Commit: ${eqntott_commit}" \
-        "${work_dir}/eqntott-${native_arch}" \
-        "${work_dir}/eqntott-${native_arch}.checksum"
+        --notes "Pre-built eqntott binaries for the udb gem (Linux and macOS, x64 and arm64). Commit: ${eqntott_commit}" \
+        "${work_dir}/eqntott-${current_os}-${native_arch}" \
+        "${work_dir}/eqntott-${current_os}-${native_arch}.checksum"
     fi
   else
-    echo "==> Creating GitHub Release ${release_tag}..."
-    gh release create "${release_tag}" \
+    echo "==> Building eqntott for Linux-x64..."
+    "${UDB_ROOT}"/tools/scripts/build_eqntott_with_docker.sh "${work_dir}/eqntott-Linux-x64-out" x64 || exit 1
+
+    echo "==> Building eqntott for Linux-arm64..."
+    "${UDB_ROOT}"/tools/scripts/build_eqntott_with_docker.sh "${work_dir}/eqntott-Linux-arm64-out" arm64 || exit 1
+
+    mv "${work_dir}/eqntott-Linux-x64-out/eqntott"   "${work_dir}/eqntott-Linux-x64"
+    mv "${work_dir}/eqntott-Linux-arm64-out/eqntott" "${work_dir}/eqntott-Linux-arm64"
+
+    if [ "${current_os}" = "Mac" ]; then
+      echo "==> Building eqntott for Mac-x64..."
+      "${UDB_ROOT}"/tools/scripts/build_eqntott_mac.sh "${work_dir}/eqntott-Mac-x64-out" x64 || exit 1
+
+      echo "==> Building eqntott for Mac-arm64..."
+      "${UDB_ROOT}"/tools/scripts/build_eqntott_mac.sh "${work_dir}/eqntott-Mac-arm64-out" arm64 || exit 1
+
+      mv "${work_dir}/eqntott-Mac-x64-out/eqntott"   "${work_dir}/eqntott-Mac-x64"
+      mv "${work_dir}/eqntott-Mac-arm64-out/eqntott" "${work_dir}/eqntott-Mac-arm64"
+    else
+      echo "==> WARNING: Skipping Mac build, run this on a macOS runner to produce Mac assets."
+    fi
+
+    echo "==> Generating checksums..."
+    (cd "${work_dir}" && sha256sum eqntott-Linux-x64   | awk '{print "sha256:" $1}' > eqntott-Linux-x64.checksum)
+    (cd "${work_dir}" && sha256sum eqntott-Linux-arm64 | awk '{print "sha256:" $1}' > eqntott-Linux-arm64.checksum)
+    echo "  Linux-x64:   $(cat "${work_dir}/eqntott-Linux-x64.checksum")"
+    echo "  Linux-arm64: $(cat "${work_dir}/eqntott-Linux-arm64.checksum")"
+
+    local release_assets=(
+      "${work_dir}/eqntott-Linux-x64"
+      "${work_dir}/eqntott-Linux-arm64"
+      "${work_dir}/eqntott-Linux-x64.checksum"
+      "${work_dir}/eqntott-Linux-arm64.checksum"
+    )
+
+    if [ "${current_os}" = "Mac" ]; then
+      (cd "${work_dir}" && sha256sum eqntott-Mac-x64   | awk '{print "sha256:" $1}' > eqntott-Mac-x64.checksum)
+      (cd "${work_dir}" && sha256sum eqntott-Mac-arm64 | awk '{print "sha256:" $1}' > eqntott-Mac-arm64.checksum)
+      echo "  Mac-x64:   $(cat "${work_dir}/eqntott-Mac-x64.checksum")"
+      echo "  Mac-arm64: $(cat "${work_dir}/eqntott-Mac-arm64.checksum")"
+      release_assets+=(
+        "${work_dir}/eqntott-Mac-x64"
+        "${work_dir}/eqntott-Mac-arm64"
+        "${work_dir}/eqntott-Mac-x64.checksum"
+        "${work_dir}/eqntott-Mac-arm64.checksum"
+      )
+    fi
+
+    echo "==> Creating GitHub Release ${eqntott_version}..."
+    gh release create "${eqntott_version}" \
       --repo riscv/riscv-unified-db \
       --title "eqntott binaries ${eqntott_version}" \
-      --notes "Pre-built eqntott binaries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8). Commit: ${eqntott_commit}" \
-      "${work_dir}/eqntott-x64" \
-      "${work_dir}/eqntott-arm64" \
-      "${work_dir}/eqntott-x64.checksum" \
-      "${work_dir}/eqntott-arm64.checksum"
+      --notes "Pre-built eqntott binaries for the udb gem (Linux and macOS, x64 and arm64). Commit: ${eqntott_commit}" \
+      "${release_assets[@]}"
   fi
 
   cd "${orig_dir}" || exit 1
@@ -558,7 +643,21 @@ do_update_z3() {
 
   local orig_dir="${PWD}"
   local work_dir
-  work_dir=$(mktemp -d --tmpdir="$PWD" build-z3.XXXXXX)
+  work_dir=$(mktemp -d "$PWD/build-z3.XXXXXX")
+
+  local current_os
+  case "$(uname -s)" in
+    Linux)  current_os="Linux" ;;
+    Darwin) current_os="Mac" ;;
+    *)
+      echo "ERROR: Unsupported OS: $(uname -s)" >&2
+      exit 1
+      ;;
+  esac
+
+  # Z3 uses .so on Linux and .dylib on macOS
+  local lib_ext
+  [ "${current_os}" = "Mac" ] && lib_ext="dylib" || lib_ext="so"
 
   if [ "${native_only}" = "yes" ]; then
     # Detect native architecture
@@ -575,8 +674,12 @@ do_update_z3() {
         exit 1
         ;;
     esac
-    echo "==> Building Z3 for native platform (${native_arch})..."
-    "${UDB_ROOT}"/tools/scripts/build_z3_with_docker.sh "${work_dir}/z3-${native_arch}" Release "${native_arch}" || exit 1
+    echo "==> Building Z3 for native platform (${current_os}-${native_arch})..."
+    if [ "${current_os}" = "Mac" ]; then
+      "${UDB_ROOT}"/tools/scripts/build_z3_mac.sh "${work_dir}/z3-${native_arch}" Release "${native_arch}" || exit 1
+    else
+      "${UDB_ROOT}"/tools/scripts/build_z3_with_docker.sh "${work_dir}/z3-${native_arch}" Release "${native_arch}" || exit 1
+    fi
 
     local built_version
     built_version=$(cat "${work_dir}/z3-${native_arch}/VERSION")
@@ -585,88 +688,88 @@ do_update_z3() {
       exit 1
     fi
 
-    # Rename the .so file to the asset name expected by extconf.rb / setup_z3
-    cp "${work_dir}/z3-${native_arch}/lib/libz3.so" "${work_dir}/libz3-${native_arch}.so"
-  else
-    # Build for both architectures
-    echo "==> Building Z3 for x64..."
-    "${UDB_ROOT}"/tools/scripts/build_z3_with_docker.sh "${work_dir}/z3-x64" Release x64 || exit 1
+    cp "${work_dir}/z3-${native_arch}/lib/libz3.${lib_ext}" "${work_dir}/libz3-${current_os}-${native_arch}.${lib_ext}"
 
-    echo "==> Building Z3 for arm64..."
-    "${UDB_ROOT}"/tools/scripts/build_z3_with_docker.sh "${work_dir}/z3-arm64" Release arm64 || exit 1
+    echo "==> Generating checksum..."
+    (cd "${work_dir}" && sha256sum "libz3-${current_os}-${native_arch}.${lib_ext}" | awk '{print "sha256:" $1}' > "libz3-${current_os}-${native_arch}.checksum")
+    echo "  ${current_os}-${native_arch}: $(cat "${work_dir}/libz3-${current_os}-${native_arch}.checksum")"
+
+    echo "==> Uploading ${current_os}-${native_arch} assets to GitHub Release ${z3_version}..."
+    if ! gh release upload "${z3_version}" \
+      --repo riscv/riscv-unified-db \
+      --clobber \
+      "${work_dir}/libz3-${current_os}-${native_arch}.${lib_ext}" \
+      "${work_dir}/libz3-${current_os}-${native_arch}.checksum" 2>/dev/null; then
+      echo "==> Release doesn't exist yet, creating it..."
+      gh release create "${z3_version}" \
+        --repo riscv/riscv-unified-db \
+        --title "Z3 binaries ${z3_version}" \
+        --notes "Pre-built Z3 shared libraries for the udb gem (Linux and macOS, x64 and arm64)." \
+        "${work_dir}/libz3-${current_os}-${native_arch}.${lib_ext}" \
+        "${work_dir}/libz3-${current_os}-${native_arch}.checksum"
+    fi
+  else
+    echo "==> Building Z3 for Linux-x64..."
+    "${UDB_ROOT}"/tools/scripts/build_z3_with_docker.sh "${work_dir}/z3-Linux-x64" Release x64 || exit 1
+
+    echo "==> Building Z3 for Linux-arm64..."
+    "${UDB_ROOT}"/tools/scripts/build_z3_with_docker.sh "${work_dir}/z3-Linux-arm64" Release arm64 || exit 1
 
     local built_version
-    built_version=$(cat "${work_dir}/z3-x64/VERSION")
+    built_version=$(cat "${work_dir}/z3-Linux-x64/VERSION")
     if [ "${built_version}" != "${z3_version}" ]; then
       echo "ERROR: Built Z3 version ${built_version} does not match ${z3_version}" >&2
       exit 1
     fi
 
-    # Rename the .so files to the asset names expected by extconf.rb / setup_z3
-    cp "${work_dir}/z3-x64/lib/libz3.so"   "${work_dir}/libz3-x64.so"
-    cp "${work_dir}/z3-arm64/lib/libz3.so" "${work_dir}/libz3-arm64.so"
-  fi
+    cp "${work_dir}/z3-Linux-x64/lib/libz3.so"   "${work_dir}/libz3-Linux-x64.so"
+    cp "${work_dir}/z3-Linux-arm64/lib/libz3.so" "${work_dir}/libz3-Linux-arm64.so"
 
-  # Generate checksum files
-  echo "==> Generating checksums..."
-  if [ "${native_only}" = "yes" ]; then
-    # Detect native architecture
-    local native_arch
-    case "$(uname -m)" in
-      x86_64)
-        native_arch="x64"
-        ;;
-      aarch64)
-        native_arch="arm64"
-        ;;
-    esac
-    (cd "${work_dir}" && sha256sum "libz3-${native_arch}.so" | awk '{print "sha256:" $1}' > "libz3-${native_arch}.checksum")
-    echo "  ${native_arch}: $(cat "${work_dir}/libz3-${native_arch}.checksum")"
-  else
-    (cd "${work_dir}" && sha256sum libz3-x64.so | awk '{print "sha256:" $1}' > libz3-x64.checksum)
-    (cd "${work_dir}" && sha256sum libz3-arm64.so | awk '{print "sha256:" $1}' > libz3-arm64.checksum)
-    echo "  x64:   $(cat "${work_dir}/libz3-x64.checksum")"
-    echo "  arm64: $(cat "${work_dir}/libz3-arm64.checksum")"
-  fi
+    if [ "${current_os}" = "Mac" ]; then
+      echo "==> Building Z3 for Mac-x64..."
+      "${UDB_ROOT}"/tools/scripts/build_z3_mac.sh "${work_dir}/z3-Mac-x64" Release x64 || exit 1
 
-  # Create the GitHub Release and upload assets (or upload to existing release if native_only)
-  local release_tag="${z3_version}"
-  if [ "${native_only}" = "yes" ]; then
-    # Detect native architecture
-    local native_arch
-    case "$(uname -m)" in
-      x86_64)
-        native_arch="x64"
-        ;;
-      aarch64)
-        native_arch="arm64"
-        ;;
-    esac
-    echo "==> Uploading ${native_arch} assets to GitHub Release ${release_tag}..."
-    # Try to upload; if release doesn't exist, create it first (for parallel CI builds)
-    if ! gh release upload "${release_tag}" \
-      --repo riscv/riscv-unified-db \
-      --clobber \
-      "${work_dir}/libz3-${native_arch}.so" \
-      "${work_dir}/libz3-${native_arch}.checksum" 2>/dev/null; then
-      echo "==> Release doesn't exist yet, creating it..."
-      gh release create "${release_tag}" \
-        --repo riscv/riscv-unified-db \
-        --title "Z3 binaries ${z3_version}" \
-        --notes "Pre-built Z3 shared libraries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8)." \
-        "${work_dir}/libz3-${native_arch}.so" \
-        "${work_dir}/libz3-${native_arch}.checksum"
+      echo "==> Building Z3 for Mac-arm64..."
+      "${UDB_ROOT}"/tools/scripts/build_z3_mac.sh "${work_dir}/z3-Mac-arm64" Release arm64 || exit 1
+
+      cp "${work_dir}/z3-Mac-x64/lib/libz3.dylib"   "${work_dir}/libz3-Mac-x64.dylib"
+      cp "${work_dir}/z3-Mac-arm64/lib/libz3.dylib" "${work_dir}/libz3-Mac-arm64.dylib"
+    else
+      echo "==> WARNING: Skipping Mac build, run this on a macOS runner to produce Mac assets."
     fi
-  else
-    echo "==> Creating GitHub Release ${release_tag}..."
-    gh release create "${release_tag}" \
+
+    echo "==> Generating checksums..."
+    (cd "${work_dir}" && sha256sum libz3-Linux-x64.so   | awk '{print "sha256:" $1}' > libz3-Linux-x64.checksum)
+    (cd "${work_dir}" && sha256sum libz3-Linux-arm64.so | awk '{print "sha256:" $1}' > libz3-Linux-arm64.checksum)
+    echo "  Linux-x64:   $(cat "${work_dir}/libz3-Linux-x64.checksum")"
+    echo "  Linux-arm64: $(cat "${work_dir}/libz3-Linux-arm64.checksum")"
+
+    local release_assets=(
+      "${work_dir}/libz3-Linux-x64.so"
+      "${work_dir}/libz3-Linux-arm64.so"
+      "${work_dir}/libz3-Linux-x64.checksum"
+      "${work_dir}/libz3-Linux-arm64.checksum"
+    )
+
+    if [ "${current_os}" = "Mac" ]; then
+      (cd "${work_dir}" && sha256sum libz3-Mac-x64.dylib   | awk '{print "sha256:" $1}' > libz3-Mac-x64.checksum)
+      (cd "${work_dir}" && sha256sum libz3-Mac-arm64.dylib | awk '{print "sha256:" $1}' > libz3-Mac-arm64.checksum)
+      echo "  Mac-x64:   $(cat "${work_dir}/libz3-Mac-x64.checksum")"
+      echo "  Mac-arm64: $(cat "${work_dir}/libz3-Mac-arm64.checksum")"
+      release_assets+=(
+        "${work_dir}/libz3-Mac-x64.dylib"
+        "${work_dir}/libz3-Mac-arm64.dylib"
+        "${work_dir}/libz3-Mac-x64.checksum"
+        "${work_dir}/libz3-Mac-arm64.checksum"
+      )
+    fi
+
+    echo "==> Creating GitHub Release ${z3_version}..."
+    gh release create "${z3_version}" \
       --repo riscv/riscv-unified-db \
       --title "Z3 binaries ${z3_version}" \
-      --notes "Pre-built Z3 shared libraries for the udb gem (Linux x64 and arm64, built on AlmaLinux 8)." \
-      "${work_dir}/libz3-x64.so" \
-      "${work_dir}/libz3-arm64.so" \
-      "${work_dir}/libz3-x64.checksum" \
-      "${work_dir}/libz3-arm64.checksum"
+      --notes "Pre-built Z3 shared libraries for the udb gem (Linux and macOS, x64 and arm64)." \
+      "${release_assets[@]}"
   fi
 
   cd "${orig_dir}" || exit 1
