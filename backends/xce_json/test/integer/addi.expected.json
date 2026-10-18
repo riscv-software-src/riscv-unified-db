@@ -1,0 +1,12 @@
+{
+  "asm": "addi $xd, $xs1, $imm",
+  "encoding": [
+    { "offset": 0, "size": 7, "type": "bits", "value": "0x13" },
+    { "offset": 7, "size": 5, "type": "r", "value": "xd", "constraint": "=" },
+    { "offset": 12, "size": 3, "type": "bits", "value": "0x0" },
+    { "offset": 15, "size": 5, "type": "r", "value": "xs1" },
+    { "offset": 20, "size": 12, "type": "imm", "value": "imm" }
+  ],
+  "size": 32,
+  "type": "integer"
+}

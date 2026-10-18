@@ -1,0 +1,13 @@
+{
+  "asm": "add $xd, $xs1, $xs2",
+  "encoding": [
+    { "offset": 0, "size": 7, "type": "bits", "value": "0x33" },
+    { "offset": 7, "size": 5, "type": "r", "value": "xd", "constraint": "=" },
+    { "offset": 12, "size": 3, "type": "bits", "value": "0x0" },
+    { "offset": 15, "size": 5, "type": "r", "value": "xs1" },
+    { "offset": 20, "size": 5, "type": "r", "value": "xs2" },
+    { "offset": 25, "size": 7, "type": "bits", "value": "0x0" }
+  ],
+  "size": 32,
+  "type": "integer"
+}

@@ -1,0 +1,98 @@
+= XCE JSON Exporter
+
+The XCE JSON backend is a standalone exporter that converts structural UDB
+instruction data into the JSON format consumed by XuanTie Custom Extension
+(XCE) tools. It is exposed through its own Rake task and is not integrated into
+UDB's main generator framework.
+
+== Usage
+
+[source,bash]
+----
+./do gen:xce_json CONFIG=rv64 \
+  EXTENSIONS=I INSTRUCTIONS=add,addi
+----
+
+The task accepts these environment variables:
+
+`CONFIG`:: Required UDB configuration name.
+`OUTPUT_DIR`:: Optional output directory; defaults to `gen/xce_json`.
+`EXTENSIONS`:: Optional comma-separated extension filter.
+`INSTRUCTIONS`:: Optional comma-separated instruction mnemonic filter.
+
+When supplied, `EXTENSIONS` and `INSTRUCTIONS` must each contain at least one
+non-whitespace value. An empty selector is rejected instead of being treated as
+an unfiltered export.
+
+`CONFIG` constrains the export to instructions that are possible in that UDB
+configuration. The configuration must determine MXLEN as 32 or 64; that MXLEN
+selects the instruction encoding and becomes the module `arch`.
+
+To override the default output directory:
+
+[source,bash]
+----
+./do gen:xce_json CONFIG=rv64 OUTPUT_DIR=/tmp/xce-json
+----
+
+The exporter writes one `<extension>.json` file per selected extension. Each
+file represents one XCE module directly; there is no enclosing `module` field.
+
+[source,json]
+----
+{
+  "name": "I",
+  "arch": "rv64",
+  "type": "integer",
+  "instructions": [
+    {
+      "asm": "add $xd, $xs1, $xs2",
+      "encoding": [
+        { "offset": 0, "size": 7, "type": "bits", "value": "0x33" },
+        { "offset": 7, "size": 5, "type": "r", "value": "xd", "constraint": "=" }
+      ],
+      "size": 32,
+      "type": "integer"
+    }
+  ]
+}
+----
+
+The exact instruction fields depend on the UDB definition. The exporter emits
+structural information such as assembly syntax, encoding, instruction size,
+architecture, type, and representable operand constraints. It does not emit
+XCE execution semantics, and regenerating a module replaces that module's
+existing output file.
+
+== Unsupported instructions
+
+Some UDB constructs cannot currently be represented by XCE JSON, including
+split encoding fields and register accesses whose operands cannot be determined
+statically. Instructions whose unexpanded `definedBy` condition contains
+multiple distinct extension names are also unsupported because this format
+cannot express an unambiguous owning module. During an unfiltered or
+extension-filtered export, these instructions are skipped and reported with
+their reason. When an unsupported instruction is selected explicitly with
+`INSTRUCTIONS`, the task fails instead of silently omitting it. If every
+selected instruction is skipped, all skip reasons are printed before the task
+reports that no instructions were generated.
+
+An unfiltered invocation scans every instruction in the selected configuration:
+
+[source,bash]
+----
+./do gen:xce_json CONFIG=rv64
+----
+
+Each JSON file is replaced atomically. An export that writes multiple module
+files is not transactional: if a later file cannot be written, files replaced
+earlier in the same export remain updated. The task reports the affected path
+and exits with an error.
+
+== Current IDL dependency
+
+The operand analysis currently loads `cpp_hart_gen/lib/gen_cpp` because the
+existing IDL pass used to determine register accesses calls helpers provided by
+that backend. The XCE exporter does not generate C++. Removing this coupling
+requires a separate target-neutral UDB/IDL interface change and is outside this
+backend's current scope.
