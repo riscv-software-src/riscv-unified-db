@@ -1382,10 +1382,10 @@ function packToF32UI {
     Bits<8> exp,
     Bits<32> sig
   description {
-    Pack components into a 32-bit value
+    Pack binary32 sign, exponent, and fraction components into a 32-bit value.
   }
   body {
-    return (sign `<< 31) + (exp `<< 23) + sig;
+    return (sign `<< 31) | (exp `<< 23) | (sig & 32'h007F_FFFF);
   }
 }
 
@@ -2665,10 +2665,10 @@ function packToF64UI {
     Bits<16> exp,
     Bits<64> sig
   description {
-    Pack components into a 64-bit double-precision value
+    Pack binary64 sign, exponent, and fraction components into a 64-bit value.
   }
   body {
-    return (sign `<< 63) + (exp `<< 52) + sig;
+    return (sign `<< 63) | (exp `<< 52) | (sig & 64'h000F_FFFF_FFFF_FFFF);
   }
 }
 
