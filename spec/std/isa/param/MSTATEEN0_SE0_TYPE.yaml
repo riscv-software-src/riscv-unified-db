@@ -5,7 +5,7 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: MSTATEEN_SE0_TYPE
+name: MSTATEEN0_SE0_TYPE
 description: |
   Behavior of the `mstateen0.SE0` bit (bit 63), which controls access to
   `hstateen0`, `hstateen0h`, and `sstateen0`:
@@ -31,7 +31,7 @@ requirements:
           name: H
       then:
         param:
-          name: MSTATEEN_SE0_TYPE
+          name: MSTATEEN0_SE0_TYPE
           notEqual: read-only-0
     # Bit 63 of mstateen0 can be read-only zero only if sstateen0 is all read-only zeros
     - if:
@@ -39,7 +39,7 @@ requirements:
           - extension:
               name: Ssstateen
           - param:
-              name: MSTATEEN_SE0_TYPE
+              name: MSTATEEN0_SE0_TYPE
               equal: read-only-0
       then:
         allOf:

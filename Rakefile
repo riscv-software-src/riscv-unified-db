@@ -333,17 +333,6 @@ end
   end
 end
 
-(1..3).each do |stateen_num|
-  file "#{$resolver.std_path}/param/MSTATEEN#{stateen_num}_SE0_TYPE.yaml" => [
-    "#{$resolver.std_path}/param/MSTATEENN_SE0_TYPE.layout",
-    __FILE__
-  ] do |t|
-    erb = ERB.new(File.read($resolver.std_path / "param/MSTATEENN_SE0_TYPE.layout"), trim_mode: "-")
-    erb.filename = "#{$resolver.std_path}/param/MSTATEENN_SE0_TYPE.layout"
-    File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
-  end
-end
-
 (0..63).each do |pmpaddr_num|
   file "#{$resolver.std_path}/csr/I/pmpaddr#{pmpaddr_num}.yaml" => [
     "#{$resolver.std_path}/csr/I/pmpaddrN.layout",
@@ -588,10 +577,6 @@ namespace :gen do
       gen_arch_file("#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}.yaml")
       gen_arch_file("#{$resolver.std_path}/csr/Zihpm/hpmcounter#{hpm_num}h.yaml")
       gen_arch_file("#{$resolver.std_path}/param/HPM_COUNTER#{hpm_num}_WIDTH.yaml")
-    end
-
-    (1..3).each do |stateen_num|
-      gen_arch_file("#{$resolver.std_path}/param/MSTATEEN#{stateen_num}_SE0_TYPE.yaml")
     end
 
     gen_arch_file("#{$resolver.std_path}/csr/I/mcounteren.yaml")
