@@ -31,8 +31,11 @@ access:
 data_independent_timing: false
 operation(): |
   VectorState state = vector_state();
+  check_masked_vector_register_overlap(1'b0, vd, $encoding);
+  check_vector_register_group(vd, $encoding);
+  check_vector_register_group(vs2, $encoding);
 
-  XReg sext_imm = $signed(imm);
+  Bits<ELEN> sext_imm = $signed(imm);
 
   U32 elems_per_reg = VLEN >> state.log2_sew;
   for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {

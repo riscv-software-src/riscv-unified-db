@@ -66,6 +66,23 @@ function check_masked_vector_register_overlap {
   }
 }
 
+function check_vector_register_group {
+  arguments
+    Bits<5> reg,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Check that a vector register group is aligned and fits in the vector
+    register file for the current LMUL.
+  }
+  body {
+    VectorState state = vector_state();
+    U32 group_regs = state.lmul_type == VectorLmulType::Multiply ? (1 << state.log2_lmul) : 1;
+    if (reg % group_regs != 0 || reg + group_regs > 32'd32) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
+
 function check_v_fp_sew {
   arguments
     Bits<INSTR_ENC_SIZE> encoding

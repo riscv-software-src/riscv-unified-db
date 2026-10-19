@@ -32,15 +32,10 @@ access:
 data_independent_timing: false
 operation(): |
   VectorState state = vector_state();
-  VectorLmulType lmul_type = state.lmul_type;
-
-  XReg vlen = VLEN;
-  XReg vlmax;
-  if (lmul_type == VectorLmulType::Multiply) {
-    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
-  } else {
-    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
-  }
+  check_masked_vector_register_overlap(vm, vd, $encoding);
+  check_vector_register_group(vd, $encoding);
+  check_vector_register_group(vs2, $encoding);
+  check_vector_register_group(vs1, $encoding);
 
   Bits<2> vxrm_mode = CSR[vcsr].VXRM;
   U32 elems_per_reg = VLEN >> state.log2_sew;
@@ -50,16 +45,14 @@ operation(): |
       U32 start_bit = (i % elems_per_reg) * state.sew;
       U32 end_bit = start_bit + state.sew - 1;
 
-      XReg a = $signed(V[vs2 + reg_off][end_bit:start_bit]);
-      XReg b = $signed(V[vs1 + reg_off][end_bit:start_bit]);
-      XReg sum = a + b;
-      XReg a_sign = a[state.sew-1:state.sew-1];
-      XReg overflow_bit = (state.sew == 64 && a[state.sew-1:state.sew-1] == b[state.sew-1:state.sew-1] && sum[state.sew-1:state.sew-1] != a[state.sew-1:state.sew-1]) ? a_sign : sum[state.sew-1:state.sew-1];
+      Bits<ELEN `+ 1> a = $signed(V[vs2 + reg_off][end_bit:start_bit]);
+      Bits<ELEN `+ 1> b = $signed(V[vs1 + reg_off][end_bit:start_bit]);
+      Bits<ELEN `+ 1> sum = a + b;
 
       # Roundoff with d=1: v[0] is guard bit, v[1] is LSB of result
-      XReg v0 = sum & 1;
-      XReg v1 = (sum >> 1) & 1;
-      XReg round_bit;
+      Bits<ELEN `+ 1> v0 = sum & 1;
+      Bits<ELEN `+ 1> v1 = (sum >> 1) & 1;
+      Bits<ELEN `+ 1> round_bit;
       if (vxrm_mode == 2'b00) {
         round_bit = v0;
       } else if (vxrm_mode == 2'b01) {
@@ -70,7 +63,7 @@ operation(): |
         round_bit = (1 - v1) & v0;
       }
 
-      XReg result = ((sum >> 1) | (overflow_bit << 63)) + round_bit;
+      Bits<ELEN `+ 1> result = (sum >> 1) + round_bit;
       V[vd + reg_off][end_bit:start_bit] = result[state.sew-1:0];
     }
   }
