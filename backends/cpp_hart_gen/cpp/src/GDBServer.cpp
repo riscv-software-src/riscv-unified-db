@@ -441,6 +441,7 @@ int GDBServer::HandlePacket(GDBPacket& packet)
       else if(strCmd == "Rcmd")
       {
         //TODO: Implement
+        result = SendResponse("");
       }
       else
       {
