@@ -15,15 +15,15 @@ definedBy:
   extension:
     name: Sdtrig
 requirements:
-  allOf:
-    - extension:
-        name: H
-    - if:
-        param:
-          name: HCONTEXT_AVAILABLE
-          equal: true
-      then:
-        param:
+  if:
+    param:
+      name: HCONTEXT_AVAILABLE
+      equal: true
+  then:
+    allOf:
+      - extension:
+          name: H
+      - param:
           name: MCONTEXT_AVAILABLE
           equal: true
           reason: HCONTEXT cannot exist without MCONTEXT
