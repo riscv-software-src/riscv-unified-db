@@ -18,8 +18,7 @@ versions:
 requirements:
   allOf:
     - extension:
-        name: Sm
-        version: ">= 1.12"
+        name: U
     - if:
         extension:
           name: S
