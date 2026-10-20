@@ -11,10 +11,11 @@ marketing_name: RVB23.1
 family:
   $ref: profile_family/RVB.yaml#
 release: "23.1"
-state: development
+state: ratified # current status ["ratified", "development"]
+ratification_date: "2026-10-19"
 # Semantic versions within the release
 versions:
-  - version: "0.7.1"
+  - version: "1.0.0"
 
 introduction: |
   The RVB23.1 profile release expands upon the RVB23 family of RISC-V
