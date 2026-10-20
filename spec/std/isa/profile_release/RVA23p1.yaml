@@ -11,7 +11,7 @@ marketing_name: RVA23.1
 family:
   $ref: profile_family/RVA.yaml#
 release: "23.1"
-state: ratified # current status ["ratified", "development"]
+state: ratified
 ratification_date: "2026-10-19"
 # Semantic versions within the release
 versions:
