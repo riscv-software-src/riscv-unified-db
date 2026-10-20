@@ -12,18 +12,18 @@ long_name: HCONTEXT Availability
 schema:
   type: boolean
 definedBy:
-  extension:
-    name: Sdtrig
+  allOf:
+    - extension:
+        name: Sdtrig
+    - extension:
+        name: H
 requirements:
   if:
     param:
       name: HCONTEXT_AVAILABLE
       equal: true
   then:
-    allOf:
-      - extension:
-          name: H
-      - param:
-          name: MCONTEXT_AVAILABLE
-          equal: true
-          reason: HCONTEXT cannot exist without MCONTEXT
+    param:
+      name: MCONTEXT_AVAILABLE
+      equal: true
+      reason: HCONTEXT cannot exist without MCONTEXT
