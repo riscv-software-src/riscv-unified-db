@@ -15,5 +15,15 @@ definedBy:
   extension:
     name: Sdtrig
 requirements:
-  idl(): HCONTEXT_AVAILABLE -> MCONTEXT_AVAILABLE;
-  reason: HCONTEXT cannot exist without MCONTEXT
+  allOf:
+    - extension:
+        name: H
+    - if:
+        param:
+          name: HCONTEXT_AVAILABLE
+          equal: true
+      then:
+        param:
+          name: MCONTEXT_AVAILABLE
+          equal: true
+          reason: HCONTEXT cannot exist without MCONTEXT
