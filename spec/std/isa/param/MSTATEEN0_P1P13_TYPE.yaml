@@ -5,7 +5,7 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: MSTATEEN_P1P13_TYPE
+name: MSTATEEN0_P1P13_TYPE
 description: |
   Behavior of the `mstateen0.P1P13` bit, which controls access to `hedelegh`:
 
@@ -13,8 +13,9 @@ description: |
     * 'read-only-0': read-only, fixed to 0
     * 'read-only-1': read-only, fixed to 1
 
-  `hedelegh` exists only when XLEN is 32 and the hypervisor extension is implemented.
-  Otherwise, `mstateen0.P1P13` is read-only zero and this parameter does not exist.
+  `hedelegh` exists only when the hypervisor extension is implemented and HS-mode
+  can run with XLEN=32 (SXLEN includes 32). Otherwise, `mstateen0.P1P13` is read-only
+  zero and this parameter does not exist.
 long_name: Behavior of mstateen0.P1P13
 schema:
   type: string
@@ -24,7 +25,9 @@ schema:
     - read-only-1
 definedBy:
   allOf:
-    - xlen: 32
+    - param:
+        name: SXLEN
+        includes: 32
     - extension:
         allOf:
           - name: H

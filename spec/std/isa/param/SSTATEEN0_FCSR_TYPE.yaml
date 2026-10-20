@@ -5,7 +5,7 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: SSTATEEN_FCSR_TYPE
+name: SSTATEEN0_FCSR_TYPE
 description: |
   Behavior of the `sstateen0.FCSR` bit:
 
@@ -21,35 +21,35 @@ schema:
     - read-only-1
 requirements:
   allOf:
-    # A read-only zero bit in mstateen0 appears as read-only zero in sstateen0
+    # sstateen0.FCSR is read-only zero when mstateen0.FCSR is read-only zero
     - if:
         param:
-          name: MSTATEEN_FCSR_TYPE
+          name: MSTATEEN0_FCSR_TYPE
           equal: read-only-0
       then:
         param:
-          name: SSTATEEN_FCSR_TYPE
+          name: SSTATEEN0_FCSR_TYPE
           equal: read-only-0
-    # A bit in sstateen0 cannot be read-only one unless it is read-only one in mstateen0
+    # sstateen0.FCSR cannot be read-only one unless mstateen0.FCSR is read-only one
     - if:
         param:
-          name: SSTATEEN_FCSR_TYPE
+          name: SSTATEEN0_FCSR_TYPE
           equal: read-only-1
       then:
         param:
-          name: MSTATEEN_FCSR_TYPE
+          name: MSTATEEN0_FCSR_TYPE
           equal: read-only-1
-    # ...and, if hstateen0 exists, in hstateen0
+    # when H is implemented, sstateen0.FCSR cannot be read-only one unless hstateen0.FCSR is read-only one
     - if:
         allOf:
           - extension:
               name: H
           - param:
-              name: SSTATEEN_FCSR_TYPE
+              name: SSTATEEN0_FCSR_TYPE
               equal: read-only-1
       then:
         param:
-          name: HSTATEEN_FCSR_TYPE
+          name: HSTATEEN0_FCSR_TYPE
           equal: read-only-1
 definedBy:
   extension:

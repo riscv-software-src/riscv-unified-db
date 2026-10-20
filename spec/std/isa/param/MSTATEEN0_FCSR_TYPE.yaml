@@ -5,14 +5,18 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: MSTATEEN_SRMCFG_TYPE
+name: MSTATEEN0_FCSR_TYPE
 description: |
-  Behavior of the `mstateen0.SRMCFG` bit, which controls access to `srmcfg`:
+  Behavior of the `mstateen0.FCSR` bit, which controls access to `fcsr` when
+  floating-point instructions operate on `x` registers (Zfinx and related extensions):
 
     * 'rw': read-write
     * 'read-only-0': read-only, fixed to 0
     * 'read-only-1': read-only, fixed to 1
-long_name: Behavior of mstateen0.SRMCFG
+
+  Whenever `misa.F` = 1, `mstateen0.FCSR` is read-only zero, so this parameter
+  exists only when Zfinx is implemented.
+long_name: Behavior of mstateen0.FCSR
 schema:
   type: string
   enum:
@@ -22,5 +26,5 @@ schema:
 definedBy:
   extension:
     allOf:
-      - name: Ssqosid
+      - name: Zfinx
       - name: Smstateen

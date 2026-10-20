@@ -5,7 +5,7 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: MSTATEEN_C_TYPE
+name: MSTATEEN0_C_TYPE
 description: |
   Behavior of the `mstateen0.C` bit, which controls access to any and all custom state:
 

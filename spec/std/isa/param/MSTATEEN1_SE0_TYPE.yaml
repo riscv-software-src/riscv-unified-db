@@ -6,17 +6,17 @@
 $schema: param_schema.json#
 kind: parameter
 name: MSTATEEN1_SE0_TYPE
-long_name: Behavior of mstateen1.SE0 (bit 63)
+long_name: Behavior of mstateen1.SE0
 description: |
-  Behavior of the `mstateen1.SE0` bit (bit 63), which controls access to
+  Behavior of the `mstateen1.SE0`, which controls access to
   `hstateen1`, `hstateen1h`, and `sstateen1`:
 
     * 'rw': read-write
     * 'read-only-0': read-only, fixed to 0
     * 'read-only-1': read-only, fixed to 1
 
-  Bit 63 of each `mstateen` CSR may be read-only zero only if the hypervisor extension is not
-  implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
+  `mstateen1.SE0` may be read-only zero only if the hypervisor extension is not
+  implemented and `sstateen1` is all read-only zeros.
   No bits of `sstateen1` are currently defined, so only the hypervisor
   condition applies.
 schema:
@@ -29,7 +29,7 @@ definedBy:
   extension:
     name: Smstateen
 requirements:
-  # Bit 63 of an mstateen CSR cannot be read-only zero when H is implemented
+  # mstateen1.SE0 cannot be read-only zero when H is implemented
   if:
     extension:
       name: H

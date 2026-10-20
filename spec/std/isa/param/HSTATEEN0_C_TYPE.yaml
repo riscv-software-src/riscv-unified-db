@@ -5,14 +5,14 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: HSTATEEN_FCSR_TYPE
+name: HSTATEEN0_C_TYPE
 description: |
-  Behavior of the `hstateen0.FCSR` bit:
+  Behavior of the `hstateen0.C` bit:
 
     * 'rw': read-write
     * 'read-only-0': read-only, fixed to 0
     * 'read-only-1': read-only, fixed to 1
-long_name: Behavior of hstateen0.FCSR
+long_name: Behavior of hstateen0.C
 schema:
   type: string
   enum:
@@ -21,28 +21,27 @@ schema:
     - read-only-1
 requirements:
   allOf:
-    # A read-only zero bit in mstateen0 appears as read-only zero in hstateen0
+    # hstateen0.C is read-only zero when mstateen0.C is read-only zero
     - if:
         param:
-          name: MSTATEEN_FCSR_TYPE
+          name: MSTATEEN0_C_TYPE
           equal: read-only-0
       then:
         param:
-          name: HSTATEEN_FCSR_TYPE
+          name: HSTATEEN0_C_TYPE
           equal: read-only-0
-    # A bit in hstateen0 cannot be read-only one unless it is read-only one in mstateen0
+    # hstateen0.C cannot be read-only one unless mstateen0.C is read-only one
     - if:
         param:
-          name: HSTATEEN_FCSR_TYPE
+          name: HSTATEEN0_C_TYPE
           equal: read-only-1
       then:
         param:
-          name: MSTATEEN_FCSR_TYPE
+          name: MSTATEEN0_C_TYPE
           equal: read-only-1
 definedBy:
   extension:
     allOf:
-      - name: Zfinx
       - name: H
       - name: Smstateen
       - name: Ssstateen

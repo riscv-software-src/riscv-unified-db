@@ -7,16 +7,16 @@ $schema: param_schema.json#
 kind: parameter
 name: MSTATEEN0_SE0_TYPE
 description: |
-  Behavior of the `mstateen0.SE0` bit (bit 63), which controls access to
+  Behavior of the `mstateen0.SE0`, which controls access to
   `hstateen0`, `hstateen0h`, and `sstateen0`:
 
     * 'rw': read-write
     * 'read-only-0': read-only, fixed to 0
     * 'read-only-1': read-only, fixed to 1
 
-  Bit 63 of each `mstateen` CSR may be read-only zero only if the hypervisor extension is not
-  implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
-long_name: Behavior of mstateen0.SE0 (bit 63)
+  `mstateen0.SE0` may be read-only zero only if the hypervisor extension is not
+  implemented and `sstateen0` is all read-only zeros.
+long_name: Behavior of mstateen0.SE0
 schema:
   type: string
   enum:
@@ -25,7 +25,7 @@ schema:
     - read-only-1
 requirements:
   allOf:
-    # Bit 63 of an mstateen CSR cannot be read-only zero when H is implemented
+    # mstateen0.SE0 cannot be read-only zero when H is implemented
     - if:
         extension:
           name: H
@@ -33,7 +33,7 @@ requirements:
         param:
           name: MSTATEEN0_SE0_TYPE
           notEqual: read-only-0
-    # Bit 63 of mstateen0 can be read-only zero only if sstateen0 is all read-only zeros
+    # mstateen0.SE0 can be read-only zero only if sstateen0 is all read-only zeros
     - if:
         allOf:
           - extension:
@@ -44,14 +44,14 @@ requirements:
       then:
         allOf:
           - param:
-              name: SSTATEEN_C_TYPE
+              name: SSTATEEN0_C_TYPE
               equal: read-only-0
           - if:
               extension:
                 name: Zfinx
             then:
               param:
-                name: SSTATEEN_FCSR_TYPE
+                name: SSTATEEN0_FCSR_TYPE
                 equal: read-only-0
           - if:
               extension:
