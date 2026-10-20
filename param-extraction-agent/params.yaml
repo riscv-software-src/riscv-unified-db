@@ -1,0 +1,37 @@
+chapter: 3.1.6
+source_document: spec_chapter.txt
+parameters:
+- name: XLEN
+  long_name: Width of the hart's XLEN
+  description: Either 32 (RV32) or 64 (RV64).
+  kind: enum
+  possible_values:
+  - 32
+  - 64
+  chapter_source: 3.1.6
+  confidence: high
+- name: MISA_EXTENSIONS
+  long_name: Set of supported ISA extensions
+  description: WARL field; each implementation defines its own subset of supported
+    extensions.
+  kind: warl
+  chapter_source: 3.1.6
+  confidence: high
+- name: RV32E_SUPPORT
+  long_name: Support for the RV32E base ISA
+  description: Boolean indicating whether the hart supports the RV32E base ISA.
+  kind: boolean
+  possible_values:
+  - true
+  - false
+  chapter_source: 3.1.6
+  confidence: high
+- name: RV64E_SUPPORT
+  long_name: Support for the RV64E base ISA
+  description: Boolean indicating whether the hart supports the RV64E base ISA.
+  kind: boolean
+  possible_values:
+  - true
+  - false
+  chapter_source: 3.1.6
+  confidence: high
