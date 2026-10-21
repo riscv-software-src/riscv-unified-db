@@ -607,7 +607,10 @@ fields:
       extension:
         name: S
     reset_value(): |
-      return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
+      if (CSR[misa].S == 1'b1) {
+        return UNDEFINED_LEGAL;
+      }
+      return 0;
   MIE:
     location: 3
     long_name: M-mode Interrupt Enable
@@ -644,4 +647,7 @@ fields:
       extension:
         name: S
     reset_value(): |
-      return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
+      if (CSR[misa].S == 1'b1) {
+        return UNDEFINED_LEGAL;
+      }
+      return 0;
