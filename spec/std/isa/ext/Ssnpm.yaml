@@ -15,3 +15,11 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-10
+requirements:
+  allOf:
+    - extension:
+        name: S
+        version: ">= 1.12"
+    - param:
+        name: UXLEN
+        includes: 64

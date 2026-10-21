@@ -14,3 +14,11 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2024-10
+requirements:
+  allOf:
+    - param:
+        name: MXLEN
+        equal: 64
+    - extension:
+        name: Sm
+        version: ">= 1.12"
