@@ -12,18 +12,5 @@ long_name: mcontext CSR is implemented
 schema:
   type: boolean
 definedBy:
-  allOf:
-    - extension:
-        name: Sdtrig
-    - extension:
-        name: H
-requirements:
-  if:
-    param:
-      name: HCONTEXT_AVAILABLE
-      equal: true
-  then:
-    param:
-      name: MCONTEXT_AVAILABLE
-      equal: true
-      reason: HCONTEXT cannot exist without MCONTEXT
+  extension:
+    name: Sdtrig
