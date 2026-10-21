@@ -55,8 +55,7 @@ fields:
     location: 6
     description: |
       Enables Virtual Supervisor Timer Interrupts.
-    type(): |
-      return VSTI_INTR_IMPL ? CsrFieldType::RW : CsrFieldType::RO;
+    type: RW
     definedBy:
       extension:
         name: H

@@ -303,8 +303,7 @@ fields:
       * `hip.VSTIP`
       * `vsip.STIP` when `hideleg.VSTI` is set
       * `hvip.VSTIP` <% if ext?(:Sstc) %>when `menvcfg.STCE` is clear<% end %> (though `hvip.VSTIP` is writable)
-    type(): |
-      return VSTI_INTR_IMPL ? CsrFieldType::ROH : CsrFieldType::RO;
+    type: RO-H
     reset_value: 0
     definedBy:
       extension:
