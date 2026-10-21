@@ -54,10 +54,13 @@ description: |
   only if the hypervisor extension is not implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
 
 definedBy:
-  extension:
-    anyOf:
-      - name: Smstateen
-      - name: Ssstateen
+  allOf:
+    - extension:
+        name: S
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen
 fields:
   JVT:
     long_name: jvt access control
