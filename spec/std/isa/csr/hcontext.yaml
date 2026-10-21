@@ -39,8 +39,8 @@ fields:
         unimplemented_csr($encoding);
       }
 
-      # check if HCONTEXT is available
-      if (!HCONTEXT_AVAILABLE) {
+      # check if HCONTEXT is implemented
+      if (!HCONTEXT_IMPLEMENTED) {
         unimplemented_csr($encoding);
       }
 
@@ -55,8 +55,8 @@ sw_read(): |
     unimplemented_csr($encoding);
   }
 
-  # check if HCONTEXT is available
-  if (!HCONTEXT_AVAILABLE) {
+  # check if HCONTEXT is implemented
+  if (!HCONTEXT_IMPLEMENTED) {
     unimplemented_csr($encoding);
   }
 

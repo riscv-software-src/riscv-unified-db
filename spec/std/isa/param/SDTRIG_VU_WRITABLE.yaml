@@ -1,0 +1,19 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_VU_WRITABLE
+description: |
+  If true, the VU bit in every trigger type that has one (mcontrol, mcontrol6, icount, itrigger, etrigger) can be set to 1, so triggers can match in VU-mode.
+  If false, the VU bit is read-only 0. Since the VU bit resets to 0, 0 is always supported.
+long_name: Trigger VU bit is writable
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Sdtrig
+      - name: H

@@ -1,0 +1,19 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_S_WRITABLE
+description: |
+  If true, the S bit in every trigger type that has one (mcontrol, mcontrol6, icount, itrigger, etrigger) can be set to 1, so triggers can match in S/HS-mode.
+  If false, the S bit is read-only 0. Since the S bit resets to 0, 0 is always supported.
+long_name: Trigger S bit is writable
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: Sdtrig
+      - name: S

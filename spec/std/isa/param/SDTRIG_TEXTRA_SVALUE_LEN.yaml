@@ -1,0 +1,26 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_TEXTRA_SVALUE_LEN
+description: |
+  The number of implemented textra.svalue bits. Bits above these are read-only zero.
+long_name: Number of implemented textra.svalue bits
+schema:
+  type: integer
+  minimum: 0
+  maximum: 32
+requirements:
+  idl(): |
+    MXLEN == 32 -> SDTRIG_TEXTRA_SVALUE_LEN <= 16;
+  reason: textra32.svalue is 16 bits wide.
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: TDATA3_IMPLEMENTED
+        equal: true

@@ -18,10 +18,14 @@ description: |
   with a hypervisor that does not swap `scontext`.
 
 definedBy:
-  extension:
-    allOf:
-      - name: Sdtrig
-      - name: S
+  allOf:
+    - extension:
+        name: Sdtrig
+    - extension:
+        name: S
+    - param:
+        name: SCONTEXT_IMPLEMENTED
+        equal: true
 fields:
   DATA:
     location: 31-0

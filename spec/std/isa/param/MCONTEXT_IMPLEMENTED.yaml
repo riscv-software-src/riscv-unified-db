@@ -5,10 +5,10 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: HCONTEXT_AVAILABLE
+name: MCONTEXT_IMPLEMENTED
 description: |
-  Specifies if HCONTEXT is available
-long_name: HCONTEXT Availability
+  Specifies if the mcontext CSR is implemented
+long_name: mcontext CSR is implemented
 schema:
   type: boolean
 definedBy:
