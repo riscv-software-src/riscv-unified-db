@@ -11,7 +11,7 @@ definedBy:
   extension:
     name: Q
 description: |
-  `fcvt.d.q` converts a double-precision floating-point number to a quad-precision floating-point number.
+  `fcvt.q.d` converts a double-precision floating-point number to a quad-precision floating-point number.
 assembly: fd, fs1, rm
 encoding:
   match: 010001100001-------------1010011

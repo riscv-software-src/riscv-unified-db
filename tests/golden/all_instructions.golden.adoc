@@ -12057,8 +12057,8 @@ Encoding::
 ....
 
 Description::
-C.BEQZ performs conditional control transfers. The offset is sign-extended and added to the pc to form the branch target address. It can therefore target a ±256 B range. C.BEQZ takes the branch if the value in register xs1' is NOT zero.
-It expands to xref:insts:beq.adoc#udb:doc:inst:beq[beq] `xs1, x0, offset`.
+C.BNEZ performs conditional control transfers. The offset is sign-extended and added to the pc to form the branch target address. It can therefore target a ±256 B range. C.BNEZ takes the branch if the value in register xs1' is NOT zero.
+It expands to xref:insts:bne.adoc#udb:doc:inst:bne[bne] `xs1, x0, offset`.
 
 
 Decode Variables::
@@ -19126,7 +19126,7 @@ Encoding::
 ....
 
 Description::
-xref:insts:fcvt_d_q.adoc#udb:doc:inst:fcvt_d_q[fcvt.d.q] converts a double-precision floating-point number to a quad-precision floating-point number.
+xref:insts:fcvt_q_d.adoc#udb:doc:inst:fcvt_q_d[fcvt.q.d] converts a double-precision floating-point number to a quad-precision floating-point number.
 
 
 Decode Variables::
