@@ -1,0 +1,45 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_BREAKPOINT_REENTRANCY
+description: |
+  How the hart prevents triggers with action=0 (breakpoint exception) from re-firing
+  inside their own handler (Debug spec 1.0, Sdtrig "Native Triggers").
+
+  * No_reentrancy_support: no specific support for reentrancy.
+  * Use_interrupt_enables: triggers with action=0 do not match or fire in M-mode while
+    mstatus.MIE is 0 (and likewise S/VS-mode with sstatus.SIE / vsstatus.SIE when delegated).
+  * Use_tcontrol: tcontrol.mte and tcontrol.mpte are implemented, and medeleg[3] is hard-wired to 0.
+long_name: Breakpoint reentrancy mechanism
+schema:
+  type: string
+  enum:
+    - No_reentrancy_support
+    - Use_interrupt_enables
+    - Use_tcontrol
+requirements:
+  if:
+    param:
+      name: SDTRIG_BREAKPOINT_REENTRANCY
+      equal: Use_tcontrol
+  then:
+    allOf:
+      - param:
+          name: TCONTROL_IMPLEMENTED
+          equal: true
+          reason: The Use_tcontrol mechanism requires the tcontrol CSR.
+      - if:
+          extension:
+            name: S
+        then:
+          param:
+            name: MEDELEG_DELEGATABLE
+            index: 3
+            equal: false
+definedBy:
+  extension:
+    name: Sdtrig

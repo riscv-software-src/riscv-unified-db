@@ -13,8 +13,12 @@ description: |
   This optional register is only accessible in M-mode and Debug Mode and provides
   various control bits related to triggers.
 definedBy:
-  extension:
-    name: Sdtrig
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: TCONTROL_IMPLEMENTED
+        equal: true
 fields:
   MPTE:
     location: 7

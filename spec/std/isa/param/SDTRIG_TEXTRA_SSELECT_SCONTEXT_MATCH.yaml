@@ -1,0 +1,26 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH
+description: |
+  If true, textra.sselect value 1 is supported, matching on scontext.
+  Unsupported sselect values are legalized to 0 (ignore).
+long_name: textra.sselect supports scontext matching
+schema:
+  type: boolean
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - extension:
+        name: S
+    - param:
+        name: SCONTEXT_IMPLEMENTED
+        equal: true
+    - param:
+        name: TDATA3_IMPLEMENTED
+        equal: true

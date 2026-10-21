@@ -5,10 +5,10 @@
 
 $schema: param_schema.json#
 kind: parameter
-name: HCONTEXT_AVAILABLE
+name: HCONTEXT_IMPLEMENTED
 description: |
-  Specifies if HCONTEXT is available
-long_name: HCONTEXT Availability
+  Specifies if the hcontext CSR is implemented
+long_name: hcontext CSR is implemented
 schema:
   type: boolean
 definedBy:
@@ -20,10 +20,10 @@ definedBy:
 requirements:
   if:
     param:
-      name: HCONTEXT_AVAILABLE
+      name: HCONTEXT_IMPLEMENTED
       equal: true
   then:
     param:
-      name: MCONTEXT_AVAILABLE
+      name: MCONTEXT_IMPLEMENTED
       equal: true
       reason: HCONTEXT cannot exist without MCONTEXT

@@ -1,0 +1,22 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_MCONTROL6_SELECT_WRITABLE
+description: |
+  If true, mcontrol6.SELECT can be set to 1, so mcontrol6 triggers can match on data (select=1) as well as address.
+  If false, mcontrol6.SELECT is read-only 0. Since mcontrol6.SELECT resets to 0, 0 is always supported.
+long_name: mcontrol6.SELECT is writable
+schema:
+  type: boolean
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS
+        includes: true
+        reason: Only relevant if at least one trigger supports mcontrol6.

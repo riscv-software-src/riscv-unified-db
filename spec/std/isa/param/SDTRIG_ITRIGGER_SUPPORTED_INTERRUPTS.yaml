@@ -1,0 +1,37 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_ITRIGGER_SUPPORTED_INTERRUPTS
+description: |
+  The set of interrupt codes (mcause Exception Code) that itrigger can be enabled for, i.e. the bits of
+  itrigger.tdata2 that are writable as 1.
+
+  Debug spec 1.0, itrigger: "Hardware may only support a subset of interrupts for this trigger."
+long_name: List of interrupts supported by itrigger
+schema:
+  type: array
+  items:
+    type: integer
+    minimum: 0
+    maximum: 63
+  maxItems: 64
+  minItems: 1
+  uniqueItems: true
+requirements:
+  idl(): |
+    for (U32 i = 32; i < 64; i++) {
+      (MXLEN == 32) -> !$array_includes?(SDTRIG_ITRIGGER_SUPPORTED_INTERRUPTS, i);
+    }
+  reason: itrigger.tdata2 is XLEN bits wide, so codes above 31 cannot be selected when XLEN is 32.
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS
+        includes: true
+        reason: Only relevant if at least one trigger supports itrigger.

@@ -1,0 +1,23 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_ICOUNT_SELF_WRITE_SETS_PENDING
+description: |
+  If true, a write to tdata1 that configures an icount trigger with count=1 also sets
+  icount.pending when the writing instruction itself matches the trigger.
+  If false, the writing instruction does not make the trigger pending.
+long_name: icount self-write sets pending
+schema:
+  type: boolean
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: SDTRIG_ICOUNT_SUPPORTED_TRIGGERS
+        includes: true
+        reason: Only relevant if at least one trigger supports icount.

@@ -1,14 +1,14 @@
-# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# Copyright (C) 2026 Harvey Mudd College
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # yaml-language-server: $schema=../../../schemas/param_schema.json
 
 $schema: param_schema.json#
 kind: parameter
-name: MCONTEXT_AVAILABLE
+name: TCONTROL_IMPLEMENTED
 description: |
-  Specifies if MCONTEXT is available
-long_name: TODO
+  Specifies if the tcontrol CSR is implemented
+long_name: tcontrol CSR is implemented
 schema:
   type: boolean
 definedBy:
