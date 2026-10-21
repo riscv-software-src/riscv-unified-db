@@ -43,11 +43,13 @@ description: |
   in the matching `mstateen` CSR.
 
 definedBy:
-  extension:
-    allOf:
-      - name: H
-      - name: Smstateen
-      - name: Ssstateen
+  allOf:
+    - extension:
+        name: H
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen
 fields:
   SE0:
     long_name: sstateen1 access control

@@ -55,7 +55,7 @@ description: |
 
 definedBy:
   extension:
-    allOf:
+    anyOf:
       - name: Smstateen
       - name: Ssstateen
 

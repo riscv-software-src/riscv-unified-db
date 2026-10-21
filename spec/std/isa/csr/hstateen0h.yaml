@@ -25,8 +25,9 @@ definedBy:
   allOf:
     - xlen: 32
     - extension:
-        allOf:
-          - name: H
+        name: H
+    - extension:
+        anyOf:
           - name: Smstateen
           - name: Ssstateen
 fields:

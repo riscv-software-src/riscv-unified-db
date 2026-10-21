@@ -29,3 +29,6 @@ versions:
     state: ratified
     ratification_date: 2024-03
     # TODO: add param_constraints
+requirements:
+  extension:
+    name: S
