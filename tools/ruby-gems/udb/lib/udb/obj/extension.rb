@@ -1345,8 +1345,18 @@ module Udb
             if range.satisfying_versions.size == uniq_ext_vers.size && uniq_ext_vers.all? { |ext_ver| range.satisfied_by?(ext_ver) }
               range
             else
-              # TODO: this is a complicated one
-              raise "TODO: complicated extension requirement creation"
+              reqs = [">= #{min_ver.version_str}", "<= #{max_ver.version_str}"]
+              ext.versions.each do |v|
+                if v > min_ver && v < max_ver && !uniq_ext_vers.include?(v)
+                  reqs << "!= #{v.version_str}"
+                end
+              end
+              complex_req = uniq_ext_vers.fetch(0).arch.extension_requirement(ext.name, reqs)
+              if complex_req.satisfying_versions.size == uniq_ext_vers.size && uniq_ext_vers.all? { |ext_ver| complex_req.satisfied_by?(ext_ver) }
+                complex_req
+              else
+                raise "Failed to create complex extension requirement for #{ext.name}"
+              end
             end
           end
         end
