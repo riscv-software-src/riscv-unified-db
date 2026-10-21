@@ -9,6 +9,7 @@
 //   Integer params:       `define UDB_NAME value     and `define UDB_NAME_<value>
 //   Enum (string) params: `define UDB_NAME_VALUE     (value sanitized to uppercase identifier)
 //   Boolean arrays:       `define UDB_NAME_<index>   (one per true element)
+//                         `define UDB_NAME_MASK      (bit <index> set when element <index> is true)
 //   Integer arrays:       `define UDB_NAME_<value>   (one per unique element, sorted)
 //   String arrays:        `define UDB_NAME_<VALUE>   (one per unique element, sanitized)
 
@@ -38,9 +39,12 @@
 // Configuration parameters
 `define UDB_ARCH_ID_VALUE 32'h1
 `define UDB_ARCH_ID_VALUE_1
+`define UDB_COUNTINHIBIT_EN_MASK 32'h0
+`define UDB_HPM_COUNTER_EN_MASK 32'h0
 `define UDB_IMP_ID_VALUE 32'h0
 `define UDB_IMP_ID_VALUE_0
 `define UDB_MARCHID_IMPLEMENTED
+`define UDB_MCOUNTENABLE_EN_MASK 32'h0
 `define UDB_MCOUNTINHIBIT_IMPLEMENTED
 `define UDB_MIMPID_IMPLEMENTED
 `define UDB_MISALIGNED_LDST

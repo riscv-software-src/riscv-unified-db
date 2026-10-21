@@ -94,6 +94,7 @@ module UdbGen
         "  Integer params:       #{define_directive} UDB_NAME value     and #{define_directive} UDB_NAME_<value>",
         "  Enum (string) params: #{define_directive} UDB_NAME_VALUE     (value sanitized to uppercase identifier)",
         "  Boolean arrays:       #{define_directive} UDB_NAME_<index>   (one per true element)",
+        "                        #{define_directive} UDB_NAME_MASK      (bit <index> set when element <index> is true)",
         "  Integer arrays:       #{define_directive} UDB_NAME_<value>   (one per unique element, sorted)",
         "  String arrays:        #{define_directive} UDB_NAME_<VALUE>   (one per unique element, sanitized)"
       ]
@@ -194,6 +195,8 @@ module UdbGen
         value.each_with_index do |v, i|
           lines << "#{define_directive} #{name}_#{i}" if v
         end
+        mask = value.each_with_index.sum { |v, i| v ? (1 << i) : 0 }
+        lines << "#{define_directive} #{name}_MASK #{format_integer(mask)}"
       elsif value.all? { |v| v.is_a?(Integer) }
         value.uniq.sort.each do |v|
           lines << "#{define_directive} #{name}_#{v}"
