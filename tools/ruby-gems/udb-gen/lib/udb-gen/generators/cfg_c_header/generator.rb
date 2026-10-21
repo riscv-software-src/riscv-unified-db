@@ -82,6 +82,9 @@ module UdbGen
       value.bit_length > 63 ? "#{value}ULL" : value.to_s
     end
 
+    sig { override.params(value: Integer).returns(String) }
+    def format_mask(value) = "0x#{value.to_s(16).upcase}"
+
     sig { override.params(argv: T::Array[String]).returns(T.noreturn) }
     def run(argv)
       run_generator(argv)

@@ -71,6 +71,10 @@ module UdbGen
     sig { abstract.params(value: Integer).returns(String) }
     def format_integer(value); end
 
+    # Format a bit mask as a language-appropriate literal
+    sig { overridable.params(value: Integer).returns(String) }
+    def format_mask(value) = format_integer(value)
+
     sig { returns(String) }
     def generate_header
       unless cfg_arch.fully_configured?
@@ -198,7 +202,7 @@ module UdbGen
           lines << "#{define_directive} #{name}_#{i}" if v
         end
         mask = value.each_with_index.sum { |v, i| v ? (1 << i) : 0 }
-        lines << "#{define_directive} #{name}_MASK #{format_integer(mask)}"
+        lines << "#{define_directive} #{name}_MASK #{format_mask(mask)}"
       elsif value.all? { |v| v.is_a?(Integer) }
         value.uniq.sort.each do |v|
           lines << "#{define_directive} #{name}_#{v}"

@@ -67,7 +67,7 @@ class TestCfgHeaders < Minitest::Test
     UdbGen::GenCfgCHeaderOptions.new.send(:emit_array_param, c_lines, "UDB_X", values)
     assert_includes c_lines, "#define UDB_X_1"
     assert_includes c_lines, "#define UDB_X_31"
-    assert_includes c_lines, "#define UDB_X_MASK 2147483650"
+    assert_includes c_lines, "#define UDB_X_MASK 0x80000002"
 
     svh_lines = []
     UdbGen::GenCfgSvhHeaderOptions.new.send(:emit_array_param, svh_lines, "UDB_X", values)
@@ -80,7 +80,7 @@ class TestCfgHeaders < Minitest::Test
 
     c_lines = []
     UdbGen::GenCfgCHeaderOptions.new.send(:emit_array_param, c_lines, "UDB_X", values)
-    assert_includes c_lines, "#define UDB_X_MASK 9223372036854775808ULL"
+    assert_includes c_lines, "#define UDB_X_MASK 0x8000000000000000"
 
     svh_lines = []
     UdbGen::GenCfgSvhHeaderOptions.new.send(:emit_array_param, svh_lines, "UDB_X", values)
