@@ -77,7 +77,10 @@ module UdbGen
     def file_type_name = "C header"
 
     sig { override.params(value: Integer).returns(String) }
-    def format_integer(value) = value.to_s
+    def format_integer(value)
+      # Values above the signed 64-bit range need an unsigned suffix
+      value.bit_length > 63 ? "#{value}ULL" : value.to_s
+    end
 
     sig { override.params(argv: T::Array[String]).returns(T.noreturn) }
     def run(argv)

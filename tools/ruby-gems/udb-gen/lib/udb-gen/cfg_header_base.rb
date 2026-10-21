@@ -191,6 +191,8 @@ module UdbGen
 
     sig { params(lines: T::Array[String], name: String, value: T::Array[T.untyped]).void }
     def emit_array_param(lines, name, value)
+      return if value.empty?
+
       if value.all? { |v| v == true || v == false }
         value.each_with_index do |v, i|
           lines << "#{define_directive} #{name}_#{i}" if v
