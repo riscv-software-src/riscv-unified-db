@@ -43,16 +43,22 @@ fields:
       }
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (( mode() != PrivilegeMode::M && implemented?(ExtensionName::Smstateen)
+      if (( implemented?(ExtensionName::Smstateen) && mode() != PrivilegeMode::M
             && CSR[mstateen0].JVT == 1'b0 )
           ||
-          ( mode() == PrivilegeMode::U && implemented?(ExtensionName::Ssstateen)
+          ( implemented?(ExtensionName::S)
+            && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
+            && mode() == PrivilegeMode::U
             && CSR[sstateen0].JVT == 1'b0 )
           ||
-          ( mode() == PrivilegeMode::VS && implemented?(ExtensionName::Ssstateen)
+          ( implemented?(ExtensionName::H)
+            && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
+            && mode() == PrivilegeMode::VS
             && CSR[hstateen0].JVT == 1'b0 )
           ||
-          ( mode() == PrivilegeMode::VU && implemented?(ExtensionName::Ssstateen)
+          ( implemented?(ExtensionName::H)
+            && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
+            && mode() == PrivilegeMode::VU
             && (CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0) )) {
 
         unimplemented_csr($encoding);
