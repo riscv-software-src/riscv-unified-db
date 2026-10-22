@@ -1,0 +1,31 @@
+# Copyright (c) NVIDIA Corporation
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smcfiss
+long_name: M-mode Shadow Stack
+description: |
+  The Smcfiss extension enables Zicfiss shadow stacks in M-mode.
+
+  A PMP entry with E=1 and XWR=010 marks an M-mode shadow-stack region, and
+  mseccfg.MSSE turns the protection on. While MSSE is set, the shadow-stack
+  instructions operate on the region, ordinary stores to it raise a store or
+  AMO access fault, and ordinary loads are permitted.
+
+  Where Smepmp is implemented, writes to MSSE are ignored until reset once any
+  PMP entry is locked and rule-locking bypass is off.
+type: privileged
+versions:
+  - version: "0.1.0"
+    state: development
+    url: "https://github.com/ved-rivos/riscv-isa-manual/blob/smpmpss/src/smcfiss.adoc"
+requirements:
+  extension:
+    allOf:
+      - name: Zicfiss
+        version: "~> 1.0"
+      - name: Smpmpind
+        version: "~> 0.1"

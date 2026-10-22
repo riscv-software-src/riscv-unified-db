@@ -1,0 +1,27 @@
+# Copyright (c) NVIDIA Corporation
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sspmpss
+long_name: S/U Shadow Stack on MMU-less systems via SPMP
+description: |
+  The Sspmpss extension provides Zicfiss shadow stacks for S-mode and U-mode
+  software on harts that use SPMP rather than page-based translation. An SPMP
+  region with XWR=010 and SHARED=0 is a shadow-stack region.
+
+  Sspmpss applies only while satp.MODE is Bare and menvcfg.SSE is set.
+type: privileged
+versions:
+  - version: "0.1.0"
+    state: development
+    url: "https://github.com/ved-rivos/riscv-isa-manual/blob/smpmpss/src/smcfiss.adoc"
+requirements:
+  extension:
+    allOf:
+      - name: Zicfiss
+        version: "~> 1.0"
+      - name: S
+        version: "~> 1.13"

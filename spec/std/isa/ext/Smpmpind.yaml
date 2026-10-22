@@ -1,0 +1,30 @@
+# Copyright (c) NVIDIA Corporation
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smpmpind
+long_name: Indirect access to PMP CSRs
+description: |
+  The Smpmpind extension makes the PMP configuration and address registers
+  reachable through the indirect CSR mechanism that Smcsrind provides, in
+  addition to the direct pmpcfg and pmpaddr CSRs.
+
+  The indirect pmpcfg register is MXLEN wide, wider than the eight-bit field a
+  direct access sees, so it can carry configuration that the direct CSRs do not
+  encode. Smpmpind uses this to add an enable bit, pmpcfg.E, at bit MXLEN-1. The
+  low eight bits of the indirect register alias that entry's eight-bit field in
+  the direct configuration CSR.
+
+  When E is set, every XWR encoding for that entry is reserved unless another
+  extension defines it, and accessing a region with a reserved encoding raises
+  an access fault. Smcfiss and Smucfiss each define one such encoding.
+type: privileged
+versions:
+  - version: "0.1.0"
+    state: development
+    url: "https://github.com/ved-rivos/riscv-isa-manual/blob/smpmpss/src/smcfiss.adoc"
+requirements:
+  extension: { name: Smcsrind, version: "~> 1.0" }
