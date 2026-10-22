@@ -9,6 +9,12 @@
 #endif
 
 namespace udb {
+  struct UdbEntropySourceSample {
+    uint8_t opst;
+    uint8_t custom;
+    uint16_t entropy;
+  };
+
   template <typename SocType>
   concept SocModel = requires(SocType s) {
     { s.read_hpm_counter(static_cast<uint64_t>(0)) } -> std::same_as<uint64_t>;
@@ -53,6 +59,11 @@ namespace udb {
     {
       s.read_physical_memory_64(static_cast<uint64_t>(0))
     } -> std::same_as<uint64_t>;
+    {
+      s.physical_memory_accessible_Q_(static_cast<uint64_t>(0),
+                                      static_cast<uint64_t>(0),
+                                      MemoryOperation::ValueType{})
+    } -> std::same_as<uint8_t>;
     {
       s.write_physical_memory_8(static_cast<uint64_t>(0),
                                 static_cast<uint64_t>(0))
@@ -152,5 +163,10 @@ namespace udb {
     { s.read_seed() } -> std::same_as<uint32_t>;
 
     { s.write_seed() };
+  };
+
+  template <typename SocType>
+  concept EntropySocModel = requires(SocType s) {
+    { s.poll_entropy_source() } -> std::same_as<UdbEntropySourceSample>;
   };
 }  // namespace udb

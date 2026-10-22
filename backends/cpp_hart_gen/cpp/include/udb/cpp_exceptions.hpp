@@ -54,6 +54,14 @@ namespace udb {
     const char* what() const noexcept override { return "Instruction Abort"; }
   };
 
+  // Thrown only while a later fault-only-first vector load is probing a normal
+  // virtual-memory read. The probe catches this before architectural trap
+  // state is changed and converts it into a vl trim.
+  class FaultOnlyFirstTrap : public std::exception {
+   public:
+    const char* what() const noexcept override { return "Fault-only-first vector load trap"; }
+  };
+
   class WfiException : public std::exception {
    public:
     const char* what() const noexcept override { return "WFI instruction"; }

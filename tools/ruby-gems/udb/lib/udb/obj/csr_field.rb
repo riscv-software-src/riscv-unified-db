@@ -24,7 +24,7 @@ module Udb
     # @!attribute field
     #  @return [CsrField] The field being aliased
     # @!attribute range
-    #  @return [Range] Range of the aliased field that is being pointed to
+    #  @return [Range,nil] Explicit range of the aliased field, or nil for the entire field
     Alias = Struct.new(:field, :range)
 
     # @return [Integer] The base XLEN required for this CsrField to exist. One of [32, 64]
@@ -297,24 +297,33 @@ module Udb
       return @alias unless @alias.nil?
 
       if @data.key?("alias")
-        raise "Can't parse alias" unless data["alias"] =~ /^[a-z][a-z0-9]+\.[A-Z0-9]+(\[([0-9]+)(:[0-9]+)?\])?$/
+        alias_data = data["alias"]
+        alias_candidates = alias_data.is_a?(Array) ? alias_data : [alias_data]
+        raise "Can't parse alias" unless alias_candidates.all?(String)
 
-        csr_name = T.must(Regexp.last_match(1))
-        csr_field = Regexp.last_match(2)
-        range = Regexp.last_match(3)
-        range_start = Regexp.last_match(4)
-        range_end = Regexp.last_match(5)
+        alias_candidates.each do |alias_candidate|
+          match = /^([a-z][a-z0-9]+)\.([A-Z0-9]+)(\[([0-9]+)(:([0-9]+))?\])?$/.match(alias_candidate)
+          raise "Can't parse alias" if match.nil?
 
-        csr_field = T.must(cfg_arch.csr(csr_name)).field(csr_field)
-        range =
-          if range.nil?
-            csr_field.location
-          elsif range_end.nil?
-            (range_start.to_i..range_start.to_i)
-          else
-            (range_start.to_i..range_end[1..].to_i)
-          end
-        @alias = Alias.new(csr_field, range)
+          target_csr = cfg_arch.csr(T.must(match[1]))
+          next if target_csr.nil?
+
+          csr_field = target_csr.field(T.must(match[2]))
+          next if csr_field.nil? || !csr_field.exists_in_cfg?(cfg_arch)
+
+          range_start = match[4]
+          range_end = match[6]
+          range =
+            if match[3].nil?
+              nil
+            elsif range_end.nil?
+              (range_start.to_i..range_start.to_i)
+            else
+              (range_start.to_i..range_end.to_i)
+            end
+          @alias = Alias.new(csr_field, range)
+          return @alias
+        end
       end
       @alias
     end

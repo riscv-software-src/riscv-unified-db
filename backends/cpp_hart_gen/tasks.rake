@@ -12,6 +12,20 @@ require "idlc/passes/find_src_registers"
 
 CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
 CPP_HART_GEN_DST = $resolver.gen_path / "cpp_hart_gen"
+UDB_RUBY_INPUTS = FileList[$root / "tools" / "ruby-gems" / "udb" / "lib" / "**" / "*.rb"]
+
+def resolved_spec_inputs(config_name)
+  resolved_spec_path = $resolver.resolved_spec_path(config_name)
+  source_spec_path = $root / "spec"
+  FileList[source_spec_path / "**" / "*.yaml"] +
+    FileList[source_spec_path / "**" / "*.isa"] +
+    FileList[source_spec_path / "**" / "*.idl"] +
+    FileList[$root / "cfgs" / "**" / "*.yaml"] +
+    FileList[resolved_spec_path / "**" / "*.yaml"] +
+    FileList[resolved_spec_path / "isa" / "**" / "*.isa"] +
+    FileList[resolved_spec_path / "isa" / "**" / "*.idl"] +
+    UDB_RUBY_INPUTS
+end
 
 OPTION_STR = <<~DESC_OPTIONS.freeze
   Options:
@@ -43,38 +57,54 @@ DESC
 
 # copy the includes to dst
 rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.hpp$} => proc { |tname|
-  [(CPP_HART_GEN_SRC / "cpp" / "include" / "udb" / File.basename(tname)).to_s]
+  [
+    (CPP_HART_GEN_SRC / "cpp" / "include" / "udb" / File.basename(tname)).to_s,
+    __FILE__,
+  ]
 } do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "include" / "udb" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
-  FileUtils.ln_s src_path, t.name
+  FileUtils.rm_f(t.name) if File.symlink?(t.name)
+  FileUtils.cp src_path, t.name
 end
 
 # copy the includes to dst
 rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.h$} => proc { |tname|
-  [(CPP_HART_GEN_SRC / "c" / "include" / "udb" / File.basename(tname)).to_s]
+  [
+    (CPP_HART_GEN_SRC / "c" / "include" / "udb" / File.basename(tname)).to_s,
+    __FILE__,
+  ]
 } do |t|
   src_path = CPP_HART_GEN_SRC / "c" / "include" / "udb" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
-  FileUtils.ln_s src_path, t.name
+  FileUtils.rm_f(t.name) if File.symlink?(t.name)
+  FileUtils.cp src_path, t.name
 end
 
 # copy the srcs to dst
 rule %r{#{CPP_HART_GEN_DST}/.*/src/.*\.cpp$} => proc { |tname|
-  [(CPP_HART_GEN_SRC / "cpp" / "src" / File.basename(tname)).to_s]
+  [
+    (CPP_HART_GEN_SRC / "cpp" / "src" / File.basename(tname)).to_s,
+    __FILE__,
+  ]
 } do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "src" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
-  FileUtils.ln_s src_path, t.name
+  FileUtils.rm_f(t.name) if File.symlink?(t.name)
+  FileUtils.cp src_path, t.name
 end
 
 # copy the tests to dst
 rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.cpp$} => proc { |tname|
-  [(CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(tname)).to_s]
+  [
+    (CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(tname)).to_s,
+    __FILE__,
+  ]
 } do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
-  FileUtils.ln_s src_path, t.name
+  FileUtils.rm_f(t.name) if File.symlink?(t.name)
+  FileUtils.cp src_path, t.name
 end
 
 # rule for generating when the thing being generated is not config-specific
@@ -85,7 +115,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.h(xx)?\.unformatted$} => pr
     "#{CPP_HART_GEN_SRC}/templates/#{fname}.erb",
     __FILE__
   ] + Dir.glob(CPP_HART_GEN_SRC / "lib" / "**" / "*") \
-  + FileList[$resolver.resolved_spec_path(configs_build_name[0][0]) / "**" / "*.yaml"]
+  + resolved_spec_inputs(configs_build_name[0][0])
 } do |t|
   configs, = configs_build_name
   config_name = configs[0]
@@ -139,7 +169,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
   ] \
-  + FileList[$resolver.resolved_spec_path(config_name) / "**" / "*.yaml"]
+  + resolved_spec_inputs(config_name)
 } do |t|
   parts = t.name.split("/")
   filename = parts[-1].sub(/\.unformatted$/, "")
@@ -172,7 +202,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
-  ]
+  ] + resolved_spec_inputs(config_name)
 } do |t|
   parts = t.name.split("/")
   filename = parts[-1].sub(/\.unformatted$/, "")
@@ -197,16 +227,18 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/CMakeLists\.txt} => [
 end
 
 rule %r{#{CPP_HART_GEN_DST}/[^/]+/build/Makefile} => [
-  "#{CPP_HART_GEN_SRC}/CMakeLists.txt"
+  "#{CPP_HART_GEN_SRC}/CMakeLists.txt",
+  __FILE__
 ] do |t|
   build_name = t.name.split("/")[-3]
+  configs, = configs_build_name
   cmd = [
     "cmake",
     "-S#{CPP_HART_GEN_DST}/#{build_name}",
     "-B#{CPP_HART_GEN_DST}/#{build_name}/build",
     "-DCMAKE_CXX_COMPILER=#{$root}/bin/g++",
     "-DCOVERAGE_COMMAND=#{$root}/bin/gcov",
-    "-DCONFIG_LIST=\"#{ENV['CONFIG'].gsub(',', ';')}\"",
+    "-DCONFIG_LIST=\"#{configs.join(';')}\"",
     "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
     "-DCMAKE_BUILD_TYPE=#{cmake_build_type}",
     "-DUDB_ROOT=#{$root}"
@@ -245,14 +277,23 @@ def configs_build_name
     configs = Dir.glob("#{$root}/cfgs/*").map { |path| File.basename(path, ".yaml") }
   end
 
-  configs.each do |config|
-    unless File.file?("#{$root}/cfgs/#{config}.yaml") || File.file?(config)
+  config_paths = configs.map do |config|
+    native_config_path = "#{$root}/cfgs/#{config}.yaml"
+    act_config_path = "#{$root}/ext/riscv-arch-test/config/udb/#{config}/#{config}.yaml"
+
+    if File.file?(native_config_path)
+      config
+    elsif File.file?(config)
+      config
+    elsif File.file?(act_config_path)
+      act_config_path
+    else
       raise ArgumentError, "No config named '#{config}'"
     end
   end
 
-  config_names = configs.map do |config|
-    $resolver.cfg_arch_for(config).name
+  config_names = config_paths.map do |config_path|
+    $resolver.cfg_arch_for(config_path).name
   end
 
   build_name =

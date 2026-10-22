@@ -1,6 +1,6 @@
 #pragma once
 
-#include <array>
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <set>
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "udb/bits.hpp"
+#include "udb/cpp_exceptions.hpp"
 #include "udb/csr.hpp"
 #include "udb/db_data.hxx"
 #include "udb/enum.hxx"
@@ -56,10 +57,15 @@ namespace udb {
           m_soc(soc),
           m_cfg(cfg),
           m_exit_requested(false),
+          m_fault_only_first_trap_suppressed(false),
+          m_fault_only_first_read_count(0),
           m_num_inst_exec(0) {}
 
     virtual void reset(uint64_t reset_pc) {
       m_exit_requested = 0;
+      m_fault_only_first_trap_suppressed = false;
+      m_fault_only_first_read_values.clear();
+      m_fault_only_first_read_count = 0;
       m_num_inst_exec = 0;
     }
 
@@ -264,6 +270,60 @@ namespace udb {
 
     void write_seed() { m_soc.write_seed(); }
 
+    bool physical_memory_accessible_Q_(PossiblyUnknownBits<64> start_paddr,
+                                       PossiblyUnknownBits<64> len,
+                                       const MemoryOperation& op) {
+      return m_soc.physical_memory_accessible_Q_(start_paddr.get(), len.get(), op);
+    }
+    class FaultOnlyFirstTrapScope {
+     public:
+      explicit FaultOnlyFirstTrapScope(HartBase& hart) : m_hart(hart) {
+        udb_assert(!m_hart.m_fault_only_first_trap_suppressed,
+                   "fault-only-first trap suppression is already active");
+        m_hart.m_fault_only_first_trap_suppressed = true;
+      }
+      FaultOnlyFirstTrapScope(const FaultOnlyFirstTrapScope&) = delete;
+      FaultOnlyFirstTrapScope& operator=(const FaultOnlyFirstTrapScope&) = delete;
+      ~FaultOnlyFirstTrapScope() { m_hart.m_fault_only_first_trap_suppressed = false; }
+
+     private:
+      HartBase& m_hart;
+    };
+
+    FaultOnlyFirstTrapScope suppress_fault_only_first_traps() {
+      return FaultOnlyFirstTrapScope(*this);
+    }
+
+    bool fault_only_first_trap_suppressed_Q_() const {
+      return m_fault_only_first_trap_suppressed;
+    }
+
+    [[noreturn]] void abort_fault_only_first_read() {
+      udb_assert(m_fault_only_first_trap_suppressed,
+                 "fault-only-first trap suppression is not active");
+      throw FaultOnlyFirstTrap();
+    }
+
+    void begin_fault_only_first_reads() {
+      m_fault_only_first_read_values.clear();
+      m_fault_only_first_read_count = 0;
+    }
+
+    template <typename LenType, typename AddrType, typename EncodingType>
+    bool fault_only_first_read_Q_(const LenType& len,
+                                  const AddrType& virtual_address,
+                                  const EncodingType& encoding) {
+      return fault_only_first_read_native(len.get(), virtual_address.get(), encoding.get());
+    }
+
+    template <typename IndexType>
+    PossiblyUnknownBits<64> fault_only_first_read_value(const IndexType& index) const {
+      const std::size_t value_index = static_cast<std::size_t>(index.get());
+      udb_assert(value_index < m_fault_only_first_read_count,
+                 "fault-only-first read value is unavailable");
+      return m_fault_only_first_read_values[value_index];
+    }
+
     // external interrupt interface
     virtual void set_mmode_ext_int() = 0;
     virtual void clear_mmode_ext_int() = 0;
@@ -404,7 +464,15 @@ namespace udb {
 
     virtual TranslateResult translate_native(uint64_t vaddr, MemoryOperation op, PrivilegeMode mode, uint64_t encoding) = 0;
 
+    virtual bool fault_only_first_read_native(uint64_t len, uint64_t virtual_address,
+                                              uint64_t encoding) = 0;
+
    protected:
+    void append_fault_only_first_read_value(PossiblyUnknownBits<64> value) {
+      m_fault_only_first_read_values.push_back(value);
+      ++m_fault_only_first_read_count;
+    }
+
     const unsigned m_hart_id;
     SocType& m_soc;
     const Config m_cfg;
@@ -413,6 +481,9 @@ namespace udb {
     std::string m_exit_reason;
 
     bool m_exit_requested;
+    bool m_fault_only_first_trap_suppressed;
+    std::vector<PossiblyUnknownBits<64>> m_fault_only_first_read_values;
+    std::size_t m_fault_only_first_read_count;
 
     // the number of instruction *executed*
     // THIS IS NOT minstret (some executed instructions do not retire)
