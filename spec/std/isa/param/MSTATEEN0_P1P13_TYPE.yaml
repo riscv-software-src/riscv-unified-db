@@ -32,3 +32,5 @@ definedBy:
         allOf:
           - name: H
           - name: Smstateen
+          - name: S
+            version: ">= 1.13"
