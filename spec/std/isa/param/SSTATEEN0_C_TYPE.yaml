@@ -1,0 +1,67 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SSTATEEN0_C_TYPE
+description: |
+  Behavior of the `sstateen0.C` bit:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+long_name: Behavior of sstateen0.C
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+requirements:
+  allOf:
+    # sstateen0.C is read-only zero when mstateen0.C is read-only zero
+    - if:
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: MSTATEEN0_C_TYPE
+              equal: read-only-0
+      then:
+        param:
+          name: SSTATEEN0_C_TYPE
+          equal: read-only-0
+    # sstateen0.C cannot be read-only one unless mstateen0.C is read-only one
+    - if:
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: SSTATEEN0_C_TYPE
+              equal: read-only-1
+      then:
+        param:
+          name: MSTATEEN0_C_TYPE
+          equal: read-only-1
+    # when H is implemented, sstateen0.C cannot be read-only one unless hstateen0.C is read-only one
+    - if:
+        allOf:
+          - extension:
+              name: H
+          - param:
+              name: SSTATEEN0_C_TYPE
+              equal: read-only-1
+      then:
+        param:
+          name: HSTATEEN0_C_TYPE
+          equal: read-only-1
+definedBy:
+  allOf:
+    - extension:
+        name: S
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen
