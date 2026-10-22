@@ -1,0 +1,26 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TDATA2_IMPLEMENTED
+description: |
+  Specifies if the tdata2 CSR is implemented.
+
+  Debug spec 1.0, tdata2: "This register is optional if no implemented triggers use it."
+long_name: tdata2 CSR is implemented
+schema:
+  type: boolean
+requirements:
+  idl(): |
+    (
+      $array_includes?(SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS, true) ||
+      $array_includes?(SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS, true) ||
+      $array_includes?(SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS, true)
+    ) -> TDATA2_IMPLEMENTED;
+  reason: These trigger types require the tdata2 CSR.
+definedBy:
+  extension:
+    name: Sdtrig

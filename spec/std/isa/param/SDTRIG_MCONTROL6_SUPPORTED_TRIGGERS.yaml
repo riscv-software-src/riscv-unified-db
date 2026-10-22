@@ -1,0 +1,25 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS
+description: |
+  Indicates which triggers support mcontrol6. Entry i is true if the trigger selected by
+  tselect=i supports mcontrol6. Must have exactly SDTRIG_NUM_TRIGGERS entries.
+long_name: List of triggers that support mcontrol6
+schema:
+  type: array
+  items:
+    type: boolean
+  maxItems: 18446744073709551616 # 2**64, max tselect values (2**XLEN)
+  minItems: 1
+definedBy:
+  extension:
+    name: Sdtrig
+# TODO: uncomment when we have support for parameter comparison to other parameters
+# requirements:
+#   idl(): |
+#     -> $array_size(SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS) == SDTRIG_NUM_TRIGGERS;

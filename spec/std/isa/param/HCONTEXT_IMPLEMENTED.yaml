@@ -1,0 +1,29 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HCONTEXT_IMPLEMENTED
+description: |
+  Specifies if the hcontext CSR is implemented
+long_name: hcontext CSR is implemented
+schema:
+  type: boolean
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - extension:
+        name: H
+requirements:
+  if:
+    param:
+      name: HCONTEXT_IMPLEMENTED
+      equal: true
+  then:
+    param:
+      name: MCONTEXT_IMPLEMENTED
+      equal: true
+      reason: HCONTEXT cannot exist without MCONTEXT

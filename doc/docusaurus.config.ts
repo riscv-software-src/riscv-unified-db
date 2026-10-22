@@ -12,6 +12,9 @@ const config: Config = {
 
   future: {
     v4: true,
+    faster: {
+      gitEagerVcs: false,
+    },
   },
 
   url: process.env.DOCUSAURUS_URL ?? 'https://riscv.github.io',

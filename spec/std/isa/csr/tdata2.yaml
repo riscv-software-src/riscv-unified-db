@@ -21,8 +21,12 @@ description: |
   If XLEN is less than DXLEN, writes to this register are sign-extended.
 
 definedBy:
-  extension:
-    name: Sdtrig
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: TDATA2_IMPLEMENTED
+        equal: true
 fields:
   DATA:
     location_rv32: 31-0

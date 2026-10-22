@@ -400,6 +400,15 @@ file "#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml" => [
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
+file "#{$resolver.std_path}/csr/Smcdeleg/scountinhibit.yaml" => [
+  "#{$resolver.std_path}/csr/Smcdeleg/scountinhibit.layout",
+  __FILE__
+] do |t|
+  erb = ERB.new(File.read($resolver.std_path / "csr/Smcdeleg/scountinhibit.layout"), trim_mode: "-")
+  erb.filename = "#{$resolver.std_path}/csr/Smcdeleg/scountinhibit.layout"
+  File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+end
+
 # Define all acquire/release combinations
 aq_rl_variants = [
   { suffix: "", aq: false, rl: false },           # base instruction
@@ -584,6 +593,7 @@ namespace :gen do
     gen_arch_file("#{$resolver.std_path}/csr/Sscofpmf/scountovf.yaml")
     gen_arch_file("#{$resolver.std_path}/csr/H/hcounteren.yaml")
     gen_arch_file("#{$resolver.std_path}/csr/Zicntr/mcountinhibit.yaml")
+    gen_arch_file("#{$resolver.std_path}/csr/Smcdeleg/scountinhibit.yaml")
 
     (0..63).each do |pmpaddr_num|
       gen_arch_file("#{$resolver.std_path}/csr/I/pmpaddr#{pmpaddr_num}.yaml")

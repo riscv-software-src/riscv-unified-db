@@ -1,0 +1,22 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_NUM_TRIGGERS
+description: |
+  The number of triggers implemented. Triggers are indexed by tselect from 0 to SDTRIG_NUM_TRIGGERS - 1.
+long_name: Number of triggers implemented
+schema:
+  type: integer
+  minimum: 1
+  maximum: 18446744073709551615 # 2**64 - 1; 2**64 overflows the 64-bit Z3 term
+definedBy:
+  extension:
+    name: Sdtrig
+
+requirements:
+  idl(): |
+    MXLEN == 32 -> SDTRIG_NUM_TRIGGERS <= 33'h100000000;

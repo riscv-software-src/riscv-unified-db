@@ -1,0 +1,29 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: TDATA3_IMPLEMENTED
+description: |
+  Specifies if the tdata3 CSR is implemented.
+
+  Debug spec 1.0, tdata3: "This register is optional if no implemented triggers use it."
+
+  Must be true if any trigger supports type 2-6 (mcontrol, icount, itrigger, etrigger, mcontrol6).
+long_name: tdata3 CSR is implemented
+schema:
+  type: boolean
+requirements:
+  idl(): |
+    (
+      $array_includes?(SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS, true) ||
+      $array_includes?(SDTRIG_ICOUNT_SUPPORTED_TRIGGERS, true) ||
+      $array_includes?(SDTRIG_ITRIGGER_SUPPORTED_TRIGGERS, true) ||
+      $array_includes?(SDTRIG_ETRIGGER_SUPPORTED_TRIGGERS, true)
+    ) -> TDATA3_IMPLEMENTED;
+  reason: Trigger types 2-6 (mcontrol, icount, itrigger, etrigger, mcontrol6) use tdata3.
+definedBy:
+  extension:
+    name: Sdtrig

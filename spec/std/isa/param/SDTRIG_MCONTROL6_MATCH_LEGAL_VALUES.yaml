@@ -1,0 +1,41 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES
+description: |
+  The set of values that mcontrol6.MATCH supports.
+long_name: Legal values of mcontrol6.MATCH
+schema:
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 8
+      - 9
+      - 12
+      - 13
+  maxItems: 10
+  minItems: 1
+  uniqueItems: true
+requirements:
+  idl(): |
+    -> $array_includes?(SDTRIG_MCONTROL6_MATCH_LEGAL_VALUES, 0);
+  reason: The reset value of mcontrol6.match is 0, so 0 must be a legal value.
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: SDTRIG_MCONTROL6_SUPPORTED_TRIGGERS
+        includes: true
+        reason: Only relevant if at least one trigger supports mcontrol6.

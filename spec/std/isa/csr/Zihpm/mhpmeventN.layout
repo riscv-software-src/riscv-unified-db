@@ -9,6 +9,8 @@ kind: csr
 name: <%= "mhpmevent#{hpm_num}" %>
 long_name: Machine Hardware Performance Counter <%= hpm_num %> Control
 address: <%= "0x" + (0x320 + hpm_num).to_s(16).upcase %>
+indirect_address: <%= "0x" + (0x40 + hpm_num).to_s(16).upcase %>
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64
@@ -16,13 +18,8 @@ description: |
   Programmable hardware performance counter event selector
   <%% if ext?(:Sscofpmf) %> and overflow/filtering control<%% end %>
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
-    - param:
-        name: HPM_COUNTER_EN
-        index: <%= hpm_num %>
-        equal: true
+  extension:
+    name: Sm
 fields:
   OF:
     location: 63

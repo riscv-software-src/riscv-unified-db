@@ -35,5 +35,10 @@ requirements:
   allOf:
     - extension:
         name: Sscsrind
-    - extension:
-        name: Smpmpdeleg
+    - anyOf:
+      - not:
+          extension:
+            name: Sm
+            version: "~> 1.13"
+      - extension:
+          name: Smpmpdeleg

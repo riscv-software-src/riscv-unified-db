@@ -9,17 +9,14 @@ kind: csr
 name: <%= "mhpmcounter#{hpm_num}" %>
 long_name: Machine Hardware Performance Counter <%= hpm_num %>
 address: <%= "0x" + (0xB00 + hpm_num).to_s(16).upcase %>
+indirect_address: <%= "0x" + (0x40 + hpm_num).to_s(16).upcase %>
+indirect_slot: 1
 writable: true
 priv_mode: M
 length: 64
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
-    - param:
-        name: HPM_COUNTER_EN
-        index: <%= hpm_num %>
-        equal: true
+  extension:
+    name: Sm
 description: |
   Programmable hardware performance counter.
 

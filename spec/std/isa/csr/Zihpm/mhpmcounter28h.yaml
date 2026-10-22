@@ -11,6 +11,8 @@ kind: csr
 name: mhpmcounter28h
 long_name: Machine Hardware Performance Counter 28, Upper half
 address: 0xB9C
+indirect_address: 0x5C
+indirect_slot: 4
 writable: true
 priv_mode: M
 length: 32
@@ -67,10 +69,6 @@ definedBy:
     - extension:
         name: Sm
     - xlen: 32
-    - param:
-        name: HPM_COUNTER_EN
-        index: 28
-        equal: true
 fields:
   COUNT:
     location: 31-0

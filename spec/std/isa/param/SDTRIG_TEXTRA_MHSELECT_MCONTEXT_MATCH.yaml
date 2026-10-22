@@ -1,0 +1,24 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_TEXTRA_MHSELECT_MCONTEXT_MATCH
+description: |
+  If true, textra.mhselect values 4 (and, with H, 1 and 5) are supported, matching on mcontext.
+  Unsupported mhselect values are legalized to 0 (ignore).
+long_name: textra.mhselect supports mcontext matching
+schema:
+  type: boolean
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: MCONTEXT_IMPLEMENTED
+        equal: true
+    - param:
+        name: TDATA3_IMPLEMENTED
+        equal: true

@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent11
 long_name: Machine Hardware Performance Counter 11 Control
 address: 0x32B
+indirect_address: 0x4B
+indirect_slot: 2
 writable: true
 priv_mode: M
 length: 64
@@ -18,13 +20,8 @@ description: |
   Programmable hardware performance counter event selector
   <% if ext?(:Sscofpmf) %> and overflow/filtering control<% end %>
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
-    - param:
-        name: HPM_COUNTER_EN
-        index: 11
-        equal: true
+  extension:
+    name: Sm
 fields:
   OF:
     location: 63

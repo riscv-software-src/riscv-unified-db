@@ -11,17 +11,14 @@ kind: csr
 name: mhpmcounter27
 long_name: Machine Hardware Performance Counter 27
 address: 0xB1B
+indirect_address: 0x5B
+indirect_slot: 1
 writable: true
 priv_mode: M
 length: 64
 definedBy:
-  allOf:
-    - extension:
-        name: Sm
-    - param:
-        name: HPM_COUNTER_EN
-        index: 27
-        equal: true
+  extension:
+    name: Sm
 description: |
   Programmable hardware performance counter.
 

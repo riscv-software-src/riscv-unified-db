@@ -1,0 +1,111 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: scountinhibit
+long_name: Supervisor Counter Inhibit
+address: 0x120
+writable: true
+priv_mode: S
+length: 32
+description: |
+  `scountinhibit` is a masked alias of `mcountinhibit`. For counters delegated to S-mode,
+  the associated `mcountinhibit` bits can be accessed via `scountinhibit`. For counters
+  not delegated to S-mode, the associated bits in `scountinhibit` are read-only zero.
+
+  A counter _i_ is delegated to S-mode when `mcounteren`[_i_]=1 and `menvcfg.CDE`=1.
+
+  When `menvcfg.CDE`=0, attempts to access `scountinhibit` raise an `Illegal Instruction`
+  exception. When Supervisor Counter Delegation is enabled, attempts to access
+  `scountinhibit` from VS-mode or VU-mode raise a `Virtual Instruction` exception.
+definedBy:
+  allOf:
+    - extension:
+        name: Ssccfg
+    - param:
+        name: MCOUNTINHIBIT_IMPLEMENTED
+        equal: true
+sw_read(): |
+  if (CSR[menvcfg].CDE == 1'b0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if (virtual_mode?()) {
+    raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+  }
+  return $bits(CSR[mcountinhibit]) & $bits(CSR[mcounteren]);
+fields:
+  CY:
+    location: 0
+    alias: mcountinhibit.CY
+    description: |
+      Alias of `mcountinhibit.CY` when `mcycle` is delegated to S-mode (`mcounteren.CY`=1);
+      otherwise read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[0] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].CY == 1'b1) {
+        CSR[mcountinhibit].CY = csr_value.CY;
+        return csr_value.CY;
+      }
+      return 1'b0;
+  IR:
+    location: 2
+    alias: mcountinhibit.IR
+    description: |
+      Alias of `mcountinhibit.IR` when `minstret` is delegated to S-mode (`mcounteren.IR`=1);
+      otherwise read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[2] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].IR == 1'b1) {
+        CSR[mcountinhibit].IR = csr_value.IR;
+        return csr_value.IR;
+      }
+      return 1'b0;
+  <%- (3..31).each do |hpm_num| -%>
+  HPM<%= hpm_num %>:
+    location: <%= hpm_num %>
+    alias: mcountinhibit.HPM<%= hpm_num %>
+    description: |
+      [when="COUNTINHIBIT_EN[<%= hpm_num %>] == true"]
+      Alias of `mcountinhibit.HPM<%= hpm_num %>` when `mhpmcounter<%= hpm_num %>` is delegated to S-mode
+      (`mcounteren.HPM<%= hpm_num %>`=1); otherwise read-only zero.
+
+      [when="COUNTINHIBIT_EN[<%= hpm_num %>] == false"]
+      Since `mcountinhibit.HPM<%= hpm_num %>` is not writable, this field is read-only zero.
+    type(): |
+      return COUNTINHIBIT_EN[<%= hpm_num %>] ? CsrFieldType::RWR : CsrFieldType::RO;
+    reset_value(): |
+      return COUNTINHIBIT_EN[<%= hpm_num %>] ? UNDEFINED_LEGAL : 0;
+    sw_write(csr_value): |
+      if (CSR[menvcfg].CDE == 1'b0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      if (virtual_mode?()) {
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+      }
+      if (CSR[mcounteren].HPM<%= hpm_num %> == 1'b1) {
+        CSR[mcountinhibit].HPM<%= hpm_num %> = csr_value.HPM<%= hpm_num %>;
+        return csr_value.HPM<%= hpm_num %>;
+      }
+      return 1'b0;
+  <%- end -%>

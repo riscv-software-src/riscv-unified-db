@@ -630,7 +630,6 @@ params:
   SEI_INTR_IMPL: false
   SSI_INTR_IMPL: false
   STI_INTR_IMPL: true
-  VSTI_INTR_IMPL: true
   WFI_U_MODE: false
   WFI_FINITE: true
   NON_STANDARD_EXTENSION_IMPLEMENTED: false

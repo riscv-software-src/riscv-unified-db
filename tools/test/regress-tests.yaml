@@ -152,8 +152,6 @@ tests:
 
   regress-profile-strict-cfg:
     ci_stage: pr
-    tags:
-      - smoke
     test:
       - name: Check that profile configs are up to date
         run: ./bin/chore gen -f profile-cfgs

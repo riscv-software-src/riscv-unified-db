@@ -11,6 +11,8 @@ kind: csr
 name: mhpmevent28h
 long_name: Machine Hardware Performance Counter 28 Control, High half
 address: 0x73C
+indirect_address: 0x5C
+indirect_slot: 5
 writable: true
 priv_mode: M
 length: 32
@@ -24,10 +26,8 @@ definedBy:
     - extension:
         name: Sm
     - xlen: 32
-    - param:
-        name: HPM_COUNTER_EN
-        index: 28
-        equal: true
+    - extension:
+        name: Sscofpmf
 fields:
   OF:
     location: 31
