@@ -23,26 +23,35 @@ requirements:
   allOf:
     # hstateen0.FCSR is read-only zero when mstateen0.FCSR is read-only zero
     - if:
-        param:
-          name: MSTATEEN0_FCSR_TYPE
-          equal: read-only-0
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: MSTATEEN0_FCSR_TYPE
+              equal: read-only-0
       then:
         param:
           name: HSTATEEN0_FCSR_TYPE
           equal: read-only-0
     # hstateen0.FCSR cannot be read-only one unless mstateen0.FCSR is read-only one
     - if:
-        param:
-          name: HSTATEEN0_FCSR_TYPE
-          equal: read-only-1
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: HSTATEEN0_FCSR_TYPE
+              equal: read-only-1
       then:
         param:
           name: MSTATEEN0_FCSR_TYPE
           equal: read-only-1
 definedBy:
-  extension:
-    allOf:
-      - name: Zfinx
-      - name: H
-      - name: Smstateen
-      - name: Ssstateen
+  allOf:
+    - extension:
+        name: Zfinx
+    - extension:
+        name: H
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen

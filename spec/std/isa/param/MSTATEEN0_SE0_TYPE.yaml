@@ -37,7 +37,7 @@ requirements:
     - if:
         allOf:
           - extension:
-              name: Ssstateen
+              name: S
           - param:
               name: MSTATEEN0_SE0_TYPE
               equal: read-only-0
@@ -55,7 +55,9 @@ requirements:
                 equal: read-only-0
           - if:
               extension:
-                name: Zcmt
+                allOf:
+                  - name: Zcmt
+                  - name: Ssstateen
             then:
               param:
                 name: SSTATEEN_JVT_TYPE

@@ -23,18 +23,24 @@ requirements:
   allOf:
     # sstateen0.C is read-only zero when mstateen0.C is read-only zero
     - if:
-        param:
-          name: MSTATEEN0_C_TYPE
-          equal: read-only-0
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: MSTATEEN0_C_TYPE
+              equal: read-only-0
       then:
         param:
           name: SSTATEEN0_C_TYPE
           equal: read-only-0
     # sstateen0.C cannot be read-only one unless mstateen0.C is read-only one
     - if:
-        param:
-          name: SSTATEEN0_C_TYPE
-          equal: read-only-1
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: SSTATEEN0_C_TYPE
+              equal: read-only-1
       then:
         param:
           name: MSTATEEN0_C_TYPE
@@ -52,7 +58,10 @@ requirements:
           name: HSTATEEN0_C_TYPE
           equal: read-only-1
 definedBy:
-  extension:
-    allOf:
-      - name: Smstateen
-      - name: Ssstateen
+  allOf:
+    - extension:
+        name: S
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen
