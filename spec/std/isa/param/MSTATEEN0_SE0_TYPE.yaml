@@ -55,9 +55,7 @@ requirements:
                 equal: read-only-0
           - if:
               extension:
-                allOf:
-                  - name: Zcmt
-                  - name: Ssstateen
+                name: Zcmt
             then:
               param:
                 name: SSTATEEN_JVT_TYPE
