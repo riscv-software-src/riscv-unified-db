@@ -42,7 +42,7 @@ operation(): |
     vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
   }
 
-  XReg sext_xs1 = $signed(X[xs1]);
+  Bits<ELEN> sext_xs1 = $signed(X[xs1]);
 
   U32 elems_per_reg = VLEN >> state.log2_sew;
   for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {

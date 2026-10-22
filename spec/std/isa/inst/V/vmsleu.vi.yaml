@@ -36,7 +36,7 @@ pseudoinstructions:
 data_independent_timing: false
 operation(): |
   VectorState state = vector_state();
-  XReg sext_imm = $signed(imm);
+  Bits<ELEN> sext_imm = $signed(imm);
 
   U32 elems_per_reg = VLEN >> state.log2_sew;
   for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {

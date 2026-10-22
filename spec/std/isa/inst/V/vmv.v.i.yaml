@@ -48,7 +48,7 @@ operation(): |
   }
 
   # Sign-extend the 5-bit immediate to XLEN bits for use in loop
-  XReg sext_imm = $signed(imm);
+  Bits<ELEN> sext_imm = $signed(imm);
 
   # Iterate through elements from vstart to vl
   U32 elems_per_reg = VLEN >> state.log2_sew;
