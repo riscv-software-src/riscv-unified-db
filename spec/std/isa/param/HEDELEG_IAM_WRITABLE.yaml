@@ -1,0 +1,34 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HEDELEG_IAM_WRITABLE
+long_name: Whether `hedeleg.IAM` is writable when IALIGN is always 16
+description: |
+  Indicates whether the `hedeleg.IAM` field (instruction address misaligned) is writable
+  when instruction address misaligned exceptions cannot occur, i.e., when `Zca` is
+  implemented and `misa.C` cannot be cleared (IALIGN is always 16).
+
+  The privileged specification only requires `hedeleg.IAM` to be writable when IALIGN=32,
+  so an implementation may still make it writable when IALIGN is always 16.
+
+  Options:
+
+    true::
+      `hedeleg.IAM` is writable.
+
+    false::
+      `hedeleg.IAM` is read-only zero.
+
+  This parameter has no effect when IALIGN can be 32 (`Zca` is not implemented, or `misa.C`
+  can be cleared); `hedeleg.IAM` is always writable in that case.
+schema:
+  type: boolean
+definedBy:
+  extension:
+    allOf:
+      - name: H
+      - name: Zca

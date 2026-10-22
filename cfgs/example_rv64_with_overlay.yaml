@@ -602,6 +602,9 @@ params:
   HW_MSTATUS_VS_DIRTY_UPDATE: precise
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
+  # when Zca is implemented and misa.C cannot be cleared (IALIGN is always 16),
+  # indicates whether or not hedeleg.IAM is writable.
+  HEDELEG_IAM_WRITABLE: false
   VSTVEC_MODES: [0, 1]
   TRAP_ON_ECALL_FROM_VS: true
   TRAP_ON_ECALL_FROM_S: true

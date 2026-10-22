@@ -51,18 +51,29 @@ fields:
       See `medeleg.IAM` for details.
 
       This field must be writable if IALIGN=32, i.e., when the `C` extension is not implemented
-      or when it can be disabled via `misa.C`. Otherwise, instruction address misaligned
-      exceptions cannot occur and this field is read-only 0.
+      or when it can be disabled via `misa.C`. When IALIGN is always 16 (`Zca` is implemented and
+      `misa.C` cannot be cleared), instruction address misaligned exceptions cannot occur, and
+      whether this field is writable or read-only 0 is controlled by `HEDELEG_IAM_WRITABLE`.
     type(): |
-      if (implemented?(ExtensionName::C)) {
-        return MUTABLE_MISA_C ? CsrFieldType::RW : CsrFieldType::RO;
+      if (implemented?(ExtensionName::Zca)) {
+        if (implemented?(ExtensionName::C)) {
+          if (MUTABLE_MISA_C) {
+            return CsrFieldType::RW;
+          }
+        }
+        return HEDELEG_IAM_WRITABLE ? CsrFieldType::RW : CsrFieldType::RO;
       }
-      return implemented?(ExtensionName::Zca) ? CsrFieldType::RO : CsrFieldType::RW;
+      return CsrFieldType::RW;
     reset_value(): |
-      if (implemented?(ExtensionName::C)) {
-        return MUTABLE_MISA_C ? UNDEFINED_LEGAL : 0;
+      if (implemented?(ExtensionName::Zca)) {
+        if (implemented?(ExtensionName::C)) {
+          if (MUTABLE_MISA_C) {
+            return UNDEFINED_LEGAL;
+          }
+        }
+        return HEDELEG_IAM_WRITABLE ? UNDEFINED_LEGAL : 0;
       }
-      return implemented?(ExtensionName::Zca) ? 0 : UNDEFINED_LEGAL;
+      return UNDEFINED_LEGAL;
   IAF:
     location: 1
     description: |
