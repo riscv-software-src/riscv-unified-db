@@ -43,35 +43,13 @@ fields:
       }
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (( implemented?(ExtensionName::Smstateen) && mode() != PrivilegeMode::M
-            && CSR[mstateen0].JVT == 1'b0 )
-          ||
-          ( implemented?(ExtensionName::S)
-            && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
-            && mode() == PrivilegeMode::U
-            && CSR[sstateen0].JVT == 1'b0 )
-          ||
-          ( implemented?(ExtensionName::H)
-            && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
-            && mode() == PrivilegeMode::VS
-            && CSR[hstateen0].JVT == 1'b0 )
-          ||
-          ( implemented?(ExtensionName::H)
-            && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
-            && mode() == PrivilegeMode::VU
-            && (CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0) )) {
-
-        unimplemented_csr($encoding);
-        return 0;
+      check_zcmt_enabled($encoding);
+      if (JVT_BASE_TYPE == "custom") {
+        unpredictable("jvt.BASE has custom behavior");
+      } else {
+        return csr_value.BASE & (JVT_BASE_MASK >> 6);
       }
-      else {
-        if (JVT_BASE_TYPE == "custom") {
-          unpredictable("jvt.BASE has custom behavior");
-        } else {
-          return csr_value.BASE & (JVT_BASE_MASK >> 6);
-        }
-        return csr_value.BASE == 0 ? 0 : UNDEFINED_LEGAL_DETERMINISTIC;
-      }
+      return csr_value.BASE == 0 ? 0 : UNDEFINED_LEGAL_DETERMINISTIC;
   MODE:
     location: 5-0
     description: |
