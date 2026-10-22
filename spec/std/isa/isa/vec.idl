@@ -76,7 +76,7 @@ function check_vector_register_group {
   }
   body {
     VectorState state = vector_state();
-    U32 group_regs = state.lmul_type == VectorLmulType::Multiply ? (1 << state.log2_lmul) : 1;
+    U32 group_regs = state.lmul_type == VectorLmulType::Multiply ? (32'd1 << state.log2_lmul) : 32'd1;
     if (reg % group_regs != 0 || reg + group_regs > 32'd32) {
       raise(ExceptionCode::IllegalInstruction, mode(), encoding);
     }
@@ -134,7 +134,7 @@ function check_vector_register_group_no_overlap {
   }
   body {
     VectorState state = vector_state();
-    U32 group_regs = state.lmul_type == VectorLmulType::Multiply ? (1 << state.log2_lmul) : 1;
+    U32 group_regs = state.lmul_type == VectorLmulType::Multiply ? (32'd1 << state.log2_lmul) : 32'd1;
     if (vd < vs2 + group_regs && vs2 < vd + group_regs) {
       raise(ExceptionCode::IllegalInstruction, mode(), encoding);
     }
@@ -231,7 +231,7 @@ function check_vector_widening_reduction_source_overlap {
   body {
     VectorState state = vector_state();
     U32 vs2_registers = state.lmul_type == VectorLmulType::Multiply ?
-      (1 << state.log2_lmul) : 1;
+      (32'd1 << state.log2_lmul) : 32'd1;
 
     if (vs2 <= vs1 && vs1 < vs2 + vs2_registers) {
       raise(ExceptionCode::IllegalInstruction, mode(), encoding);
