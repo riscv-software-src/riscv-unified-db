@@ -76,7 +76,7 @@ fields:
       if (CSR[mstateen0].JVT == 1'b0){
         return 0;
       }
-      else if (mode() == PrivilegeMode::VS && CSR[hstateen0].JVT == 1'b0) {
+      else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS && CSR[hstateen0].JVT == 1'b0) {
         return 0;
       }
       return csr_value.JVT;
@@ -100,7 +100,7 @@ fields:
       if (CSR[mstateen0].FCSR == 1'b0){
         return 0;
       }
-      else if (mode() == PrivilegeMode::VS && CSR[hstateen0].FCSR == 1'b0) {
+      else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS && CSR[hstateen0].FCSR == 1'b0) {
         return 0;
       }
       return csr_value.FCSR;
@@ -117,7 +117,7 @@ fields:
       if (CSR[mstateen0].C == 1'b0){
         return 0;
       }
-      else if (mode() == PrivilegeMode::VS && CSR[hstateen0].C == 1'b0) {
+      else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS && CSR[hstateen0].C == 1'b0) {
         return 0;
       }
       return csr_value.C;
@@ -129,7 +129,7 @@ sw_read(): |
 
   # For every bit in an hstateen CSR that is zero, the same bit
   # appears as read-only zero in sstateen when accessed in VS-mode.
-  if (mode() == PrivilegeMode::VS) {
+  if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
     Bits<64> hstateen0_mask = $bits(CSR[hstateen0]);
     sstateen0_value = sstateen0_value & hstateen0_mask;
   }
