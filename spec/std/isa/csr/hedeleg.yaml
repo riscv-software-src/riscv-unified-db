@@ -49,8 +49,24 @@ fields:
       Controls delegation of Instruction Address Misaligned exceptions to VS-mode.
 
       See `medeleg.IAM` for details.
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+
+      This field must be writable if IALIGN=32.
+    type(): |
+      if (implemented?(ExtensionName::Zca)) {
+        if (implemented?(ExtensionName::C) && MUTABLE_MISA_C && CSR[misa].C == 1'b0) {
+          return CsrFieldType::RW;
+        }
+        return HEDELEG_IAM_WRITABLE ? CsrFieldType::RW : CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (implemented?(ExtensionName::Zca)) {
+        if (implemented?(ExtensionName::C) && MUTABLE_MISA_C && CSR[misa].C == 1'b0) {
+          return UNDEFINED_LEGAL;
+        }
+        return HEDELEG_IAM_WRITABLE ? UNDEFINED_LEGAL : 0;
+      }
+      return UNDEFINED_LEGAL;
   IAF:
     location: 1
     description: |
@@ -197,6 +213,44 @@ fields:
       See `medeleg.SPF` for details.
     type: RW
     reset_value: UNDEFINED_LEGAL
+  DT:
+    location: 16
+    description: |
+      *Double Trap*
+
+      Double Trap exceptions _cannot be delegated to VS-mode_,
+      so this field is read-only 0.
+    type: RO
+    reset_value: 0
+    definedBy:
+      extension:
+        anyOf:
+          - name: Smdbltrp
+          - name: Ssdbltrp
+  SWC:
+    location: 18
+    description: |
+      *Software Check*
+
+      Controls delegation of Software Check exceptions to VS-mode.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy:
+      extension:
+        name: Sm
+        version: ">= 1.13"
+  HWE:
+    location: 19
+    description: |
+      *Hardware Error*
+
+      Controls delegation of Hardware Error exceptions to VS-mode.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+    definedBy:
+      extension:
+        name: Sm
+        version: ">= 1.12"
   IGPF:
     location: 20
     description: |
