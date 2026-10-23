@@ -32,7 +32,8 @@ operation(): |
   }
 
   VectorState state = vector_state();
+  Bits<ELEN> sext_xs1 = $signed(X[xs1]);
 
   if (CSR[vl].VALUE > 0) {
-    V[vd][state.sew-1:0] = X[xs1][state.sew-1:0];
+    V[vd][state.sew-1:0] = sext_xs1[state.sew-1:0];
   }
