@@ -33,12 +33,21 @@ schema:
   minItems: 1
   uniqueItems: true
 requirements:
-  idl(): |
-    -> $array_includes?(SDTRIG_ACTION_LEGAL_VALUES, 0);
-    !implemented?(ExtensionName::Sdext) -> !$array_includes?(SDTRIG_ACTION_LEGAL_VALUES, 1);
-  reason: |
-    The reset value of action is 0, so 0 must be a legal value.
-    Debug spec 1.0, action=1: "This action can only be supported if Sdext is implemented on the hart."
+  allOf:
+    - param:
+        name: SDTRIG_ACTION_LEGAL_VALUES
+        includes: 0
+        reason: The reset value of action is 0, so 0 must be a legal value.
+    - if:
+        not:
+          extension:
+            name: Sdext
+      then:
+        not:
+          param:
+            name: SDTRIG_ACTION_LEGAL_VALUES
+            includes: 1
+            reason: 'Debug spec 1.0, action=1: "This action can only be supported if Sdext is implemented on the hart."'
 definedBy:
   extension:
     name: Sdtrig
