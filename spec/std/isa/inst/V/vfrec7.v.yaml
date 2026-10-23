@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vfrec7.v
-long_name: No synopsis available
+long_name: "Vector floating-point reciprocal estimate to 7 bits"
 description: |
-  No description available.
+  Returns an estimate of 1/x accurate to 7 bits.
 definedBy:
   extension:
     anyOf:
@@ -31,3 +31,349 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  RoundingMode mode = rm_to_mode(3'b111, $encoding);
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      if (state.sew == 32) {
+        Bits<32> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<1>  sign_a = signF32UI(a);
+        Bits<8>  exp_a  = expF32UI(a);
+        Bits<23> frac_a = fracF32UI(a);
+        Bits<32> result;
+        if (exp_a == 8'hFF && frac_a != 0) {
+          if (is_sp_signaling_nan?(a)) { set_fp_flag(FpFlag::NV); }
+          result = SP_CANONICAL_NAN;
+        } else if (exp_a == 0 && frac_a == 0) {
+          set_fp_flag(FpFlag::DZ);
+          result = packToF32UI(sign_a, 8'hFF, 0);
+        } else if (exp_a == 8'hFF) {
+          result = packToF32UI(sign_a, 0, 0);
+        } else {
+          Bits<8>  norm_exp;
+          Bits<23> norm_frac;
+          if (exp_a == 0) {
+            Bits<8> lz = count_leading_zeros(23, frac_a);
+            norm_exp = -(lz);
+            norm_frac = frac_a << (lz + 1);
+          } else {
+            norm_exp = exp_a;
+            norm_frac = frac_a;
+          }
+          U32 table_idx = norm_frac[22:16];
+          U32 sig_out =
+          (table_idx == 0) ? 127 :
+          (table_idx == 1) ? 125 :
+          (table_idx == 2) ? 123 :
+          (table_idx == 3) ? 121 :
+          (table_idx == 4) ? 119 :
+          (table_idx == 5) ? 117 :
+          (table_idx == 6) ? 116 :
+          (table_idx == 7) ? 114 :
+          (table_idx == 8) ? 112 :
+          (table_idx == 9) ? 110 :
+          (table_idx == 10) ? 109 :
+          (table_idx == 11) ? 107 :
+          (table_idx == 12) ? 105 :
+          (table_idx == 13) ? 104 :
+          (table_idx == 14) ? 102 :
+          (table_idx == 15) ? 100 :
+          (table_idx == 16) ? 99 :
+          (table_idx == 17) ? 97 :
+          (table_idx == 18) ? 96 :
+          (table_idx == 19) ? 94 :
+          (table_idx == 20) ? 93 :
+          (table_idx == 21) ? 91 :
+          (table_idx == 22) ? 90 :
+          (table_idx == 23) ? 88 :
+          (table_idx == 24) ? 87 :
+          (table_idx == 25) ? 85 :
+          (table_idx == 26) ? 84 :
+          (table_idx == 27) ? 83 :
+          (table_idx == 28) ? 81 :
+          (table_idx == 29) ? 80 :
+          (table_idx == 30) ? 79 :
+          (table_idx == 31) ? 77 :
+          (table_idx == 32) ? 76 :
+          (table_idx == 33) ? 75 :
+          (table_idx == 34) ? 74 :
+          (table_idx == 35) ? 72 :
+          (table_idx == 36) ? 71 :
+          (table_idx == 37) ? 70 :
+          (table_idx == 38) ? 69 :
+          (table_idx == 39) ? 68 :
+          (table_idx == 40) ? 66 :
+          (table_idx == 41) ? 65 :
+          (table_idx == 42) ? 64 :
+          (table_idx == 43) ? 63 :
+          (table_idx == 44) ? 62 :
+          (table_idx == 45) ? 61 :
+          (table_idx == 46) ? 60 :
+          (table_idx == 47) ? 59 :
+          (table_idx == 48) ? 58 :
+          (table_idx == 49) ? 57 :
+          (table_idx == 50) ? 56 :
+          (table_idx == 51) ? 55 :
+          (table_idx == 52) ? 54 :
+          (table_idx == 53) ? 53 :
+          (table_idx == 54) ? 52 :
+          (table_idx == 55) ? 51 :
+          (table_idx == 56) ? 50 :
+          (table_idx == 57) ? 49 :
+          (table_idx == 58) ? 48 :
+          (table_idx == 59) ? 47 :
+          (table_idx == 60) ? 46 :
+          (table_idx == 61) ? 45 :
+          (table_idx == 62) ? 44 :
+          (table_idx == 63) ? 43 :
+          (table_idx == 64) ? 42 :
+          (table_idx == 65) ? 41 :
+          (table_idx == 66) ? 40 :
+          (table_idx == 67) ? 40 :
+          (table_idx == 68) ? 39 :
+          (table_idx == 69) ? 38 :
+          (table_idx == 70) ? 37 :
+          (table_idx == 71) ? 36 :
+          (table_idx == 72) ? 35 :
+          (table_idx == 73) ? 35 :
+          (table_idx == 74) ? 34 :
+          (table_idx == 75) ? 33 :
+          (table_idx == 76) ? 32 :
+          (table_idx == 77) ? 31 :
+          (table_idx == 78) ? 31 :
+          (table_idx == 79) ? 30 :
+          (table_idx == 80) ? 29 :
+          (table_idx == 81) ? 28 :
+          (table_idx == 82) ? 28 :
+          (table_idx == 83) ? 27 :
+          (table_idx == 84) ? 26 :
+          (table_idx == 85) ? 25 :
+          (table_idx == 86) ? 25 :
+          (table_idx == 87) ? 24 :
+          (table_idx == 88) ? 23 :
+          (table_idx == 89) ? 23 :
+          (table_idx == 90) ? 22 :
+          (table_idx == 91) ? 21 :
+          (table_idx == 92) ? 21 :
+          (table_idx == 93) ? 20 :
+          (table_idx == 94) ? 19 :
+          (table_idx == 95) ? 19 :
+          (table_idx == 96) ? 18 :
+          (table_idx == 97) ? 17 :
+          (table_idx == 98) ? 17 :
+          (table_idx == 99) ? 16 :
+          (table_idx == 100) ? 15 :
+          (table_idx == 101) ? 15 :
+          (table_idx == 102) ? 14 :
+          (table_idx == 103) ? 14 :
+          (table_idx == 104) ? 13 :
+          (table_idx == 105) ? 12 :
+          (table_idx == 106) ? 12 :
+          (table_idx == 107) ? 11 :
+          (table_idx == 108) ? 11 :
+          (table_idx == 109) ? 10 :
+          (table_idx == 110) ? 9 :
+          (table_idx == 111) ? 9 :
+          (table_idx == 112) ? 8 :
+          (table_idx == 113) ? 8 :
+          (table_idx == 114) ? 7 :
+          (table_idx == 115) ? 7 :
+          (table_idx == 116) ? 6 :
+          (table_idx == 117) ? 5 :
+          (table_idx == 118) ? 5 :
+          (table_idx == 119) ? 4 :
+          (table_idx == 120) ? 4 :
+          (table_idx == 121) ? 3 :
+          (table_idx == 122) ? 3 :
+          (table_idx == 123) ? 2 :
+          (table_idx == 124) ? 2 :
+          (table_idx == 125) ? 1 :
+          (table_idx == 126) ? 1 :
+          0;
+          Bits<16> out_exp_full = 16'h00FD - norm_exp;
+          Bits<8> out_exp = out_exp_full[7:0];
+          if ($signed(out_exp_full) == 0 || $signed(out_exp_full) == -2'sd1) {
+            # Subnormal output: output exponent is 0, shift significand
+            Bits<8> shift = (out_exp_full == 0) ? 1 : 2;
+            Bits<23> subnorm_sig = (32'h800000 | sig_out << 16) >> shift;
+            result = packToF32UI(sign_a, 0, subnorm_sig);
+          } else {
+            result = packToF32UI(sign_a, out_exp, sig_out << 16);
+          }
+        }
+        V[vd + reg_off][end_bit:start_bit] = result;
+      } else {
+        Bits<64> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<1>  sign_a = signF64UI(a);
+        Bits<16> exp_a  = expF64UI(a);
+        Bits<64> frac_a = fracF64UI(a);
+        Bits<64> result;
+        if (exp_a == 11'h7FF && frac_a != 0) {
+          if (is_dp_signaling_nan?(a)) { set_fp_flag(FpFlag::NV); }
+          result = DP_CANONICAL_NAN;
+        } else if (exp_a == 0 && frac_a == 0) {
+          set_fp_flag(FpFlag::DZ);
+          result = packToF64UI(sign_a, 11'h7FF, 0);
+        } else if (exp_a == 11'h7FF) {
+          result = packToF64UI(sign_a, 0, 0);
+        } else {
+          Bits<16> norm_exp;
+          Bits<64> norm_frac;
+          if (exp_a == 0) {
+            Bits<16> lz = count_leading_zeros(52, frac_a);
+            norm_exp = -(lz);
+            norm_frac = frac_a << (lz + 1);
+          } else {
+            norm_exp = exp_a;
+            norm_frac = frac_a;
+          }
+          U32 table_idx = norm_frac[51:45];
+          U32 sig_out =
+          (table_idx == 0) ? 127 :
+          (table_idx == 1) ? 125 :
+          (table_idx == 2) ? 123 :
+          (table_idx == 3) ? 121 :
+          (table_idx == 4) ? 119 :
+          (table_idx == 5) ? 117 :
+          (table_idx == 6) ? 116 :
+          (table_idx == 7) ? 114 :
+          (table_idx == 8) ? 112 :
+          (table_idx == 9) ? 110 :
+          (table_idx == 10) ? 109 :
+          (table_idx == 11) ? 107 :
+          (table_idx == 12) ? 105 :
+          (table_idx == 13) ? 104 :
+          (table_idx == 14) ? 102 :
+          (table_idx == 15) ? 100 :
+          (table_idx == 16) ? 99 :
+          (table_idx == 17) ? 97 :
+          (table_idx == 18) ? 96 :
+          (table_idx == 19) ? 94 :
+          (table_idx == 20) ? 93 :
+          (table_idx == 21) ? 91 :
+          (table_idx == 22) ? 90 :
+          (table_idx == 23) ? 88 :
+          (table_idx == 24) ? 87 :
+          (table_idx == 25) ? 85 :
+          (table_idx == 26) ? 84 :
+          (table_idx == 27) ? 83 :
+          (table_idx == 28) ? 81 :
+          (table_idx == 29) ? 80 :
+          (table_idx == 30) ? 79 :
+          (table_idx == 31) ? 77 :
+          (table_idx == 32) ? 76 :
+          (table_idx == 33) ? 75 :
+          (table_idx == 34) ? 74 :
+          (table_idx == 35) ? 72 :
+          (table_idx == 36) ? 71 :
+          (table_idx == 37) ? 70 :
+          (table_idx == 38) ? 69 :
+          (table_idx == 39) ? 68 :
+          (table_idx == 40) ? 66 :
+          (table_idx == 41) ? 65 :
+          (table_idx == 42) ? 64 :
+          (table_idx == 43) ? 63 :
+          (table_idx == 44) ? 62 :
+          (table_idx == 45) ? 61 :
+          (table_idx == 46) ? 60 :
+          (table_idx == 47) ? 59 :
+          (table_idx == 48) ? 58 :
+          (table_idx == 49) ? 57 :
+          (table_idx == 50) ? 56 :
+          (table_idx == 51) ? 55 :
+          (table_idx == 52) ? 54 :
+          (table_idx == 53) ? 53 :
+          (table_idx == 54) ? 52 :
+          (table_idx == 55) ? 51 :
+          (table_idx == 56) ? 50 :
+          (table_idx == 57) ? 49 :
+          (table_idx == 58) ? 48 :
+          (table_idx == 59) ? 47 :
+          (table_idx == 60) ? 46 :
+          (table_idx == 61) ? 45 :
+          (table_idx == 62) ? 44 :
+          (table_idx == 63) ? 43 :
+          (table_idx == 64) ? 42 :
+          (table_idx == 65) ? 41 :
+          (table_idx == 66) ? 40 :
+          (table_idx == 67) ? 40 :
+          (table_idx == 68) ? 39 :
+          (table_idx == 69) ? 38 :
+          (table_idx == 70) ? 37 :
+          (table_idx == 71) ? 36 :
+          (table_idx == 72) ? 35 :
+          (table_idx == 73) ? 35 :
+          (table_idx == 74) ? 34 :
+          (table_idx == 75) ? 33 :
+          (table_idx == 76) ? 32 :
+          (table_idx == 77) ? 31 :
+          (table_idx == 78) ? 31 :
+          (table_idx == 79) ? 30 :
+          (table_idx == 80) ? 29 :
+          (table_idx == 81) ? 28 :
+          (table_idx == 82) ? 28 :
+          (table_idx == 83) ? 27 :
+          (table_idx == 84) ? 26 :
+          (table_idx == 85) ? 25 :
+          (table_idx == 86) ? 25 :
+          (table_idx == 87) ? 24 :
+          (table_idx == 88) ? 23 :
+          (table_idx == 89) ? 23 :
+          (table_idx == 90) ? 22 :
+          (table_idx == 91) ? 21 :
+          (table_idx == 92) ? 21 :
+          (table_idx == 93) ? 20 :
+          (table_idx == 94) ? 19 :
+          (table_idx == 95) ? 19 :
+          (table_idx == 96) ? 18 :
+          (table_idx == 97) ? 17 :
+          (table_idx == 98) ? 17 :
+          (table_idx == 99) ? 16 :
+          (table_idx == 100) ? 15 :
+          (table_idx == 101) ? 15 :
+          (table_idx == 102) ? 14 :
+          (table_idx == 103) ? 14 :
+          (table_idx == 104) ? 13 :
+          (table_idx == 105) ? 12 :
+          (table_idx == 106) ? 12 :
+          (table_idx == 107) ? 11 :
+          (table_idx == 108) ? 11 :
+          (table_idx == 109) ? 10 :
+          (table_idx == 110) ? 9 :
+          (table_idx == 111) ? 9 :
+          (table_idx == 112) ? 8 :
+          (table_idx == 113) ? 8 :
+          (table_idx == 114) ? 7 :
+          (table_idx == 115) ? 7 :
+          (table_idx == 116) ? 6 :
+          (table_idx == 117) ? 5 :
+          (table_idx == 118) ? 5 :
+          (table_idx == 119) ? 4 :
+          (table_idx == 120) ? 4 :
+          (table_idx == 121) ? 3 :
+          (table_idx == 122) ? 3 :
+          (table_idx == 123) ? 2 :
+          (table_idx == 124) ? 2 :
+          (table_idx == 125) ? 1 :
+          (table_idx == 126) ? 1 :
+          0;
+          Bits<16> out_exp_full = 16'h07FD - norm_exp;
+          if ($signed(out_exp_full) == 0 || $signed(out_exp_full) == -2'sd1) {
+            Bits<16> shift = (out_exp_full == 0) ? 1 : 2;
+            Bits<64> subnorm_sig = (64'h10000000000000 | sig_out `<< 45) >> shift;
+            result = packToF64UI(sign_a, 0, subnorm_sig);
+          } else {
+            result = packToF64UI(sign_a, out_exp_full, sig_out `<< 45);
+          }
+        }
+        V[vd + reg_off][end_bit:start_bit] = result;
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

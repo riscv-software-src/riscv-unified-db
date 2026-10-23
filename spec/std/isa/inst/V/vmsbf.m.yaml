@@ -29,3 +29,23 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  if (vd == vs2) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+  Boolean found = false;
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      if (found) {
+        V[vd][i] = 1'b0;
+      } else if (V[vs2][i] == 1'b1) {
+        found = true;
+        V[vd][i] = 1'b0;
+      } else {
+        V[vd][i] = 1'b1;
+      }
+    }
+  }
+  CSR[vstart].VALUE = 0;

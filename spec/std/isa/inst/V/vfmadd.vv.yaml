@@ -33,3 +33,33 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  RoundingMode mode = rm_to_mode(3'b111, $encoding);
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      if (state.sew == 32) {
+        Bits<32> vs2_elem = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<32> vs1_elem = V[vs1 + reg_off][end_bit:start_bit];
+        Bits<32> vd_elem  = V[vd  + reg_off][end_bit:start_bit];
+        Bits<32> a = vs1_elem;
+        Bits<32> b = vd_elem;
+        Bits<32> c = vs2_elem;
+        V[vd + reg_off][end_bit:start_bit] = f32_muladd(a, b, c, F32MulAddOp::Softfloat_mulAdd_addC, mode);
+      } else {
+        Bits<64> vs2_elem = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<64> vs1_elem = V[vs1 + reg_off][end_bit:start_bit];
+        Bits<64> vd_elem  = V[vd  + reg_off][end_bit:start_bit];
+        Bits<64> a = vs1_elem;
+        Bits<64> b = vd_elem;
+        Bits<64> c = vs2_elem;
+        V[vd + reg_off][end_bit:start_bit] = f64_muladd(a, b, c, F32MulAddOp::Softfloat_mulAdd_addC, mode);
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

@@ -29,3 +29,33 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  # vstart != 0 is reserved for this instruction per the V spec
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  check_vector_register_group_no_overlap(vd, vs2, $encoding);
+
+  VectorState state = vector_state();
+
+  # vs1 is the compression mask (bit-indexed single register, NOT standard vm masking)
+  # vs2 is the source data register group
+  # vd is the destination register group
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  U32 d = 0;
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    if (V[vs1][i] == 1'b1) {
+      U32 src_reg_off = i / elems_per_reg;
+      U32 src_start = (i % elems_per_reg) * state.sew;
+      U32 src_end = src_start + state.sew - 1;
+
+      U32 dst_reg_off = d / elems_per_reg;
+      U32 dst_start = (d % elems_per_reg) * state.sew;
+      U32 dst_end = dst_start + state.sew - 1;
+
+      V[vd + dst_reg_off][dst_end:dst_start] = V[vs2 + src_reg_off][src_end:src_start];
+      d = d + 1;
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

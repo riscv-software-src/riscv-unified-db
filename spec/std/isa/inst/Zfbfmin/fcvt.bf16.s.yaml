@@ -29,3 +29,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
+  F[fd] = f16_result(f32_to_bf16(f32_operand(F[fs1]), rounding_mode));
+  mark_f_state_dirty();

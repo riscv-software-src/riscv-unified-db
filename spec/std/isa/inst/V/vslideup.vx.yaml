@@ -31,3 +31,20 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+
+  XReg offset = X[xs1];
+
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    U32 dst_start = i * state.sew;
+    U32 dst_end = dst_start + state.sew - 1;
+    if (i >= offset) {
+      XReg src_idx = i - offset;
+      U32 src_start = src_idx * state.sew;
+      U32 src_end = src_start + state.sew - 1;
+      V[vd][dst_end:dst_start] = V[vs2][src_end:src_start];
+    }
+    # Elements where i < offset are not written (keep vd value)
+  }
+
+  CSR[vstart].VALUE = 0;

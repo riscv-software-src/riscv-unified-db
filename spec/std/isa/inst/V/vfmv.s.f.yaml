@@ -29,3 +29,13 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  if (CSR[vl].VALUE > 0) {
+    V[vd][state.sew - 1:0] = F[fs1][state.sew - 1:0];
+  }
+  mark_f_state_dirty();

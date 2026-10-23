@@ -31,3 +31,39 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  U32 shamt = X[xs1][state.log2_sew-1:0];
+
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  XReg one = 1;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      XReg vs2_elem = V[vs2 + reg_off][end_bit:start_bit];
+      XReg sign_bit = vs2_elem[state.sew-1:state.sew-1];
+      XReg logical_shifted = vs2_elem >> shamt;
+      XReg fill_ones;
+      if (shamt == 0) {
+        fill_ones = 0;
+      } else {
+        fill_ones = (state.sew < 64) ? (((one << state.sew) - 1) & ~((one << (state.sew - shamt)) - 1))
+                                       : ~((one << (64 - shamt)) - 1);
+      }
+      XReg arith_shifted = (sign_bit == 1) ? (logical_shifted | fill_ones) : logical_shifted;
+      V[vd + reg_off][end_bit:start_bit] = arith_shifted[state.sew-1:0];
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

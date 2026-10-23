@@ -31,3 +31,32 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  XReg stride = X[xs2];
+  U32 elems_per_reg = VLEN / 64;
+  VectorState state = vector_state();
+  XReg le_emul;
+  XReg le_emul_log2_lmul = state.log2_lmul;
+  XReg le_emul_log2_sew = state.log2_sew;
+  if (state.lmul_type == VectorLmulType::Multiply) {
+    le_emul = le_emul_log2_lmul + 6 - le_emul_log2_sew;
+  } else {
+    le_emul = 6 - le_emul_log2_sew - le_emul_log2_lmul;
+  }
+  U32 dat_emul;
+  if ($signed(le_emul) > 0s) {
+    dat_emul = 32'd1 << le_emul;
+  } else {
+    dat_emul = 1;
+  }
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * 64;
+      U32 end_bit = start_bit + 63;
+      for (U32 f = 0; f < 2; f++) {
+        write_memory(64, virtual_address + i * stride + f * 8, V[vs3 + f * dat_emul + reg_off][end_bit:start_bit], $encoding);
+      }
+    }
+  }
+  CSR[vstart].VALUE = 0;

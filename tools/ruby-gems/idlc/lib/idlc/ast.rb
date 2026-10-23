@@ -4354,7 +4354,9 @@ module Idl
     include Rvalue
 
     sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
-    def const_eval?(symtab) = true
+    def const_eval?(symtab)
+      expression.const_eval?(symtab)
+    end
 
     def expression = @children[0]
 
@@ -4373,6 +4375,8 @@ module Idl
     def value(symtab)
       t = expression.type(symtab)
       internal_error "Expecting a bits type" unless t.kind == :bits
+      value_error "Signed cast width is not known" unless t.width.is_a?(Integer)
+
       v = expression.value(symtab)
 
       if ((v >> (t.width - 1)) & 1) == 1

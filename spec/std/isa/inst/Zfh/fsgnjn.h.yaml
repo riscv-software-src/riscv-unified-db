@@ -31,3 +31,8 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  Bits<16> a = f16_operand(F[fs1]);
+  Bits<16> b = f16_operand(F[fs2]);
+  F[fd] = f16_result({~b[15], a[14:0]});
+  mark_f_state_dirty();

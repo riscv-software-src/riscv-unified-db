@@ -31,3 +31,35 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  check_masked_vector_register_overlap(vm, vd, $encoding);
+  check_vector_register_group(vd, $encoding);
+  check_vector_register_group(vs2, $encoding);
+
+  Bits<ELEN> sext_xs1 = $signed(X[xs1]);
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  Bits<ELEN `+ 1> one = 1;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+
+      Bits<ELEN> a = $signed(V[vs2 + reg_off][end_bit:start_bit]);
+      Bits<ELEN> b = $signed(sext_xs1[state.sew-1:0]);
+      Bits<ELEN `+ 1> sum = $signed(a) `- $signed(b);
+      Boolean overflow = sum[state.sew] != sum[state.sew-1];
+      if (overflow) {
+        if (a[state.sew-1] == 1'b0) {
+          V[vd + reg_off][end_bit:start_bit] = (((one << state.sew) - 1) >> 1)[state.sew-1:0];
+        } else {
+          V[vd + reg_off][end_bit:start_bit] = (one << (state.sew - 1))[state.sew-1:0];
+        }
+        CSR[vcsr].VXSAT = 1'b1;
+      } else {
+        V[vd + reg_off][end_bit:start_bit] = sum[state.sew-1:0];
+      }
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

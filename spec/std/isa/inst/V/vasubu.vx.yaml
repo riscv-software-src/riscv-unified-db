@@ -31,3 +31,42 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  check_masked_vector_register_overlap(vm, vd, $encoding);
+  check_vector_register_group(vd, $encoding);
+  check_vector_register_group(vs2, $encoding);
+
+  Bits<2> vxrm_mode = CSR[vcsr].VXRM;
+  Bits<ELEN> sext_xs1 = $signed(X[xs1]);
+  Bits<ELEN> b_sew = sext_xs1[state.sew-1:0];
+  Bits<ELEN `+ 1> b = b_sew;
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+
+      Bits<ELEN `+ 1> a = V[vs2 + reg_off][end_bit:start_bit];
+      Bits<ELEN `+ 1> diff = a - b;
+
+      # Roundoff with d=1: v[0] is guard bit, v[1] is LSB of result
+      Bits<ELEN `+ 1> v0 = diff & 1;
+      Bits<ELEN `+ 1> v1 = (diff >> 1) & 1;
+      Bits<ELEN `+ 1> round_bit;
+      if (vxrm_mode == 2'b00) {
+        round_bit = v0;
+      } else if (vxrm_mode == 2'b01) {
+        round_bit = v0 & v1;
+      } else if (vxrm_mode == 2'b10) {
+        round_bit = 0;
+      } else {
+        round_bit = (1 - v1) & v0;
+      }
+
+      Bits<ELEN `+ 1> result = (diff >> 1) + round_bit;
+      V[vd + reg_off][end_bit:start_bit] = result[state.sew-1:0];
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

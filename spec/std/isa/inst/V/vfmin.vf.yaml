@@ -33,3 +33,70 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      if (state.sew == 16) {
+        Bits<16> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<16> b = f16_operand(F[fs1]);
+        Bits<16> result;
+        if (is_hp_nan?(a) || is_hp_nan?(b)) {
+          if (is_hp_signaling_nan?(a) || is_hp_signaling_nan?(b)) { set_fp_flag(FpFlag::NV); }
+          if (is_hp_nan?(a) && is_hp_nan?(b)) { result = HP_CANONICAL_NAN; }
+          else if (is_hp_nan?(a)) { result = b; }
+          else { result = a; }
+        } else {
+          Boolean sign_a = a[15] == 1;
+          Boolean sign_b = b[15] == 1;
+          Boolean a_lt_b;
+          if (sign_a != sign_b) { a_lt_b = sign_a; }
+          else { a_lt_b = (a != b) && (sign_a != (a < b)); }
+          result = a_lt_b ? a : b;
+        }
+        V[vd + reg_off][end_bit:start_bit] = result;
+      } else if (state.sew == 32) {
+        Bits<32> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<32> b = f32_operand(F[fs1]);
+        Bits<32> result;
+        if (is_sp_nan?(a) || is_sp_nan?(b)) {
+          if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b)) { set_fp_flag(FpFlag::NV); }
+          if (is_sp_nan?(a) && is_sp_nan?(b)) { result = SP_CANONICAL_NAN; }
+          else if (is_sp_nan?(a)) { result = b; }
+          else { result = a; }
+        } else {
+          Boolean sign_a = a[31] == 1;
+          Boolean sign_b = b[31] == 1;
+          Boolean a_lt_b;
+          if (sign_a != sign_b) { a_lt_b = sign_a; }
+          else { a_lt_b = (a != b) && (sign_a != (a < b)); }
+          result = a_lt_b ? a : b;
+        }
+        V[vd + reg_off][end_bit:start_bit] = result;
+      } else {
+        Bits<64> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<64> b = F[fs1];
+        Bits<64> result;
+        if (is_dp_nan?(a) || is_dp_nan?(b)) {
+          if (is_dp_signaling_nan?(a) || is_dp_signaling_nan?(b)) { set_fp_flag(FpFlag::NV); }
+          if (is_dp_nan?(a) && is_dp_nan?(b)) { result = DP_CANONICAL_NAN; }
+          else if (is_dp_nan?(a)) { result = b; }
+          else { result = a; }
+        } else {
+          Boolean sign_a = a[63] == 1;
+          Boolean sign_b = b[63] == 1;
+          Boolean a_lt_b;
+          if (sign_a != sign_b) { a_lt_b = sign_a; }
+          else { a_lt_b = (a != b) && (sign_a != (a < b)); }
+          result = a_lt_b ? a : b;
+        }
+        V[vd + reg_off][end_bit:start_bit] = result;
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

@@ -2644,7 +2644,7 @@ function misaligned_is_atomic? {
 }
 
 function read_memory_aligned {
-  returns XReg
+  returns Bits<64>
   arguments
     U32 LEN,
     XReg virtual_address,
@@ -2674,7 +2674,13 @@ function read_memory_aligned {
       memory_model_release();
     }
 
-    XReg value = read_physical_memory(LEN, result.paddr);
+    Bits<64> value;
+    if (xlen() == 32 && LEN == 64) {
+      value[31:0] = read_physical_memory(32, result.paddr);
+      value[63:32] = read_physical_memory(32, result.paddr + 4);
+    } else {
+      value = read_physical_memory(LEN, result.paddr);
+    }
 
     if (aq == 1'b1) {
       memory_model_acquire();
@@ -2685,7 +2691,7 @@ function read_memory_aligned {
 }
 
 function read_memory {
-  returns XReg
+  returns Bits<64>
   arguments
     U32 LEN,
     XReg virtual_address,
@@ -2697,7 +2703,7 @@ function read_memory {
   body {
     Boolean aligned = is_naturally_aligned(LEN, virtual_address);
     XReg physical_address;
-    XReg result;
+    Bits<64> result;
 
     if (aligned) {
       result = read_memory_aligned(LEN, virtual_address, encoding, 1'b0, 1'b0);
@@ -2726,7 +2732,12 @@ function read_memory {
 
       if (misaligned_is_atomic?(LEN, physical_address)) {
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
-        result = read_physical_memory(LEN, physical_address);
+        if (xlen() == 32 && LEN == 64) {
+          result[31:0] = read_physical_memory(32, physical_address);
+          result[63:32] = read_physical_memory(32, physical_address + 4);
+        } else {
+          result = read_physical_memory(LEN, physical_address);
+        }
         if (LEN > 8 && endianness() == Endian::Big) {
           U32 tmp;
           for (U32 i=0; i < LEN/2; i = i+8) {

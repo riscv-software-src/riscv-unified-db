@@ -27,3 +27,5 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  whole_register_store(vs3, virtual_address, 2, $encoding);

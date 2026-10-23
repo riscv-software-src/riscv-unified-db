@@ -185,14 +185,11 @@ module Idl
            var_type.sub_type.is_a?(Idl::RegFileElementType) &&
            var_type.qualifiers.include?(:global)
           rf_name = var_type.sub_type.name.downcase
-          value_result = value_try do
-            msb_val = msb.value(symtab)
-            lsb_val = lsb.value(symtab)
-            return "#{' ' * indent}__UDB_HART->_set_#{rf_name}reg( #{variable.index.gen_cpp(symtab, 0, indent_spaces:)}, ([&]() { auto __udb_reg_tmp = #{variable.gen_cpp(symtab)}; bit_insert<#{msb_val}, #{lsb_val}, #{variable.type(symtab).width}>(__udb_reg_tmp, #{write_value.gen_cpp(symtab)}); return __udb_reg_tmp; }()))"
-          end
-          value_else(value_result) do
-            return "#{' ' * indent}__UDB_HART->_set_#{rf_name}reg( #{variable.index.gen_cpp(symtab, 0, indent_spaces:)}, ([&]() { auto __udb_reg_tmp = #{variable.gen_cpp(symtab)}; bit_insert(__udb_reg_tmp, #{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)}); return __udb_reg_tmp; }()))"
-          end
+          # Always use the mutating overload, including when the bounds are
+          # compile-time constants. The constexpr overload only accepts native
+          # width Bits, whereas a register file can contain runtime-width
+          # vector registers (e.g. 65536 bits in the generic rv64 config).
+          return "#{' ' * indent}__UDB_HART->_set_#{rf_name}reg( #{variable.index.gen_cpp(symtab, 0, indent_spaces:)}, ([&]() { auto __udb_reg_tmp = #{variable.gen_cpp(symtab)}; bit_insert(__udb_reg_tmp, #{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)}); return __udb_reg_tmp; }()))"
         end
       end
 

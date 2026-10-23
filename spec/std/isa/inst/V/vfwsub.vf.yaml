@@ -33,3 +33,30 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  RoundingMode mode = rm_to_mode(3'b111, $encoding);
+  U32 src_elems_per_reg = VLEN >> state.log2_sew;
+  U32 dst_elems_per_reg = VLEN >> (state.log2_sew + 1);
+  Bits<32> fs1_f32 = f32_operand(F[fs1]);
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 src_reg_off = i / src_elems_per_reg;
+      U32 src_start = (i % src_elems_per_reg) * state.sew;
+      U32 src_end = src_start + state.sew - 1;
+      U32 dst_reg_off = i / dst_elems_per_reg;
+      U32 dst_start = (i % dst_elems_per_reg) * (state.sew << 1);
+      U32 dst_end = dst_start + (state.sew << 1) - 1;
+      if (state.sew == 16) {
+        Bits<32> a = f16_to_f32(V[vs2 + src_reg_off][src_end:src_start]);
+        Bits<32> b = f16_to_f32(f16_operand(F[fs1]));
+        V[vd + dst_reg_off][dst_end:dst_start] = f32_sub(a, b, mode);
+      } else if (state.sew == 32) {
+        Bits<64> a = f32_to_f64(V[vs2 + src_reg_off][src_end:src_start]);
+        Bits<64> b = f32_to_f64(fs1_f32);
+        V[vd + dst_reg_off][dst_end:dst_start] = f64_sub(a, b, mode);
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

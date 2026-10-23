@@ -40,6 +40,7 @@ operation(): |
     CSR[vtype].VTA = 0;
     CSR[vtype].VSEW = 0;
     CSR[vtype].VLMUL = 0;
+    CSR[vl].VALUE = 0;
   } else {
     # valid, do the write
     CSR[vtype].VILL = 0;
@@ -51,21 +52,32 @@ operation(): |
 
   VectorState state = vector_state();
   XReg vlen = VLEN;
-  XReg vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
-  XReg avl = X[xs1];
-  XReg ceil_avl_over_two = (avl + 1) / 2;
-  if (avl <= vlmax) {
-    CSR[vl].VALUE = avl;
-  } else if (avl < 2 * vlmax) {
-    if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
-      CSR[vl].VALUE = ceil_avl_over_two;
-    } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
-      CSR[vl].VALUE = vlmax;
-    } else {
-      unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
-    }
+  XReg vlmax;
+  if (state.lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
   } else {
+    # Fractional LMUL (mf2/mf4/mf8): divide VLEN by LMUL denominator
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+  if (xs1 == 0 && xd != 0) {
+    # rs1=x0, rd!=x0: set vl to vlmax
     CSR[vl].VALUE = vlmax;
+  } else if (xs1 != 0) {
+    XReg avl = X[xs1];
+    XReg ceil_avl_over_two = (avl + 1) / 2;
+    if (avl <= vlmax) {
+      CSR[vl].VALUE = avl;
+    } else if (avl < 2 * vlmax) {
+      if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "ceil(AVL/2)") {
+        CSR[vl].VALUE = ceil_avl_over_two;
+      } else if (RVV_VL_WHEN_AVL_LT_DOUBLE_VLMAX == "VLMAX") {
+        CSR[vl].VALUE = vlmax;
+      } else {
+        unpredictable("Implementations may choose a custom value for vl in the case AVL < (2*VLMAX), so long as ceil(AVL/2) <= vl <= VLMAX");
+      }
+    } else {
+      CSR[vl].VALUE = vlmax;
+    }
   }
 
   X[xd] = CSR[vl].VALUE;

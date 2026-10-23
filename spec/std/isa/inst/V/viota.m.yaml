@@ -29,3 +29,28 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  # vstart != 0 is reserved for this instruction per the V spec
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  VectorState state = vector_state();
+
+  # Write to vd[i] the exclusive prefix sum of vs2 mask bits at indices < i
+  # Only active elements (per mask) contribute to the sum AND are written
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  XReg sum = 0;
+  for (U32 i = 0; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      # Write BEFORE adding (exclusive prefix)
+      V[vd + reg_off][end_bit:start_bit] = sum;
+      if (V[vs2][i] == 1'b1) {
+        sum = sum + 1;
+      }
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

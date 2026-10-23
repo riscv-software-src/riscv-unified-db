@@ -31,3 +31,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  RoundingMode mode = rm_to_mode(rm, $encoding);
+  X[xd] = $signed(f32_to_i32(f16_to_f32(f16_operand(F[fs1])), mode));

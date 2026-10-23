@@ -31,3 +31,35 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  VectorState state = vector_state();
+  VectorLmulType lmul_type = state.lmul_type;
+
+  XReg vlen = VLEN;
+  XReg vlmax;
+  if (lmul_type == VectorLmulType::Multiply) {
+    vlmax = (vlen << state.log2_lmul) >> state.log2_sew;
+  } else {
+    vlmax = (vlen >> state.log2_lmul) >> state.log2_sew;
+  }
+
+  U32 src_elems_per_reg = VLEN >> state.log2_sew;
+  U32 dst_elems_per_reg = VLEN >> (state.log2_sew + 1);
+
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 src_reg_off = i / src_elems_per_reg;
+      U32 src_start = (i % src_elems_per_reg) * state.sew;
+      U32 src_end = src_start + state.sew - 1;
+
+      U32 dst_sew = state.sew << 1;
+      U32 dst_reg_off = i / dst_elems_per_reg;
+      U32 dst_start = (i % dst_elems_per_reg) * dst_sew;
+      U32 dst_end = dst_start + dst_sew - 1;
+
+      XReg a = V[vs2 + src_reg_off][src_end:src_start];
+      XReg b = V[vs1 + src_reg_off][src_end:src_start];
+      V[vd + dst_reg_off][dst_end:dst_start] = (a * b)[dst_sew-1:0];
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

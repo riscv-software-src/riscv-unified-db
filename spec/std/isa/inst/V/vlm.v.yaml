@@ -27,3 +27,17 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg virtual_address = X[xs1];
+  U32 active_bytes = (CSR[vl].VALUE + 7) / 8;
+  for (U32 i = 0; i < (VLEN / 8); i++) {
+    U32 byte_start = i * 8;
+    U32 byte_end = byte_start + 7;
+    if (i < active_bytes) {
+      V[vd][byte_end:byte_start] = read_memory(8, virtual_address + i, $encoding)[7:0];
+    } else {
+      if (CSR[vtype].VTA == 1'b1) {
+        V[vd][byte_end:byte_start] = 8'hFF;
+      }
+    }
+  }
+  CSR[vstart].VALUE = 0;

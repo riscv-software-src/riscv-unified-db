@@ -31,3 +31,57 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  if (state.sew == 32) {
+    Bits<32> acc = V[vs1][31:0];
+    for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+      if (vm == 1'b1 || V[0][i] == 1'b1) {
+        U32 reg_off = i / elems_per_reg;
+        U32 start_bit = (i % elems_per_reg) * state.sew;
+        Bits<32> elem = V[vs2 + reg_off][start_bit + state.sew - 1:start_bit];
+        if (!is_sp_nan?(elem) && !is_sp_nan?(acc)) {
+          Boolean sign_acc = acc[31] == 1;
+          Boolean sign_elem = elem[31] == 1;
+          Boolean elem_lt_acc;
+          if (sign_acc != sign_elem) { elem_lt_acc = sign_elem; }
+          else { elem_lt_acc = (elem != acc) && (sign_elem != (elem < acc)); }
+          if (elem_lt_acc) { acc = elem; }
+        } else if (!is_sp_nan?(elem)) {
+          acc = elem;
+        }
+      }
+    }
+    if (CSR[vl].VALUE > 0) {
+      V[vd][31:0] = acc;
+    }
+  } else {
+    Bits<64> acc = V[vs1][63:0];
+    for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+      if (vm == 1'b1 || V[0][i] == 1'b1) {
+        U32 reg_off = i / elems_per_reg;
+        U32 start_bit = (i % elems_per_reg) * state.sew;
+        Bits<64> elem = V[vs2 + reg_off][start_bit + state.sew - 1:start_bit];
+        if (!is_dp_nan?(elem) && !is_dp_nan?(acc)) {
+          Boolean sign_acc = acc[63] == 1;
+          Boolean sign_elem = elem[63] == 1;
+          Boolean elem_lt_acc;
+          if (sign_acc != sign_elem) { elem_lt_acc = sign_elem; }
+          else { elem_lt_acc = (elem != acc) && (sign_elem != (elem < acc)); }
+          if (elem_lt_acc) { acc = elem; }
+        } else if (!is_dp_nan?(elem)) {
+          acc = elem;
+        }
+      }
+    }
+    if (CSR[vl].VALUE > 0) {
+      V[vd][63:0] = acc;
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;

@@ -29,3 +29,26 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (CSR[vstart].VALUE != 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  VectorState state = vector_state();
+
+  U32 src_sew = state.sew >> 2;
+  U32 dst_elems_per_reg = VLEN >> state.log2_sew;
+  U32 src_elems_per_reg = dst_elems_per_reg << 2;
+
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 src_reg_off = i / src_elems_per_reg;
+      U32 src_start = (i % src_elems_per_reg) * src_sew;
+      U32 src_end = src_start + src_sew - 1;
+      U32 dst_reg_off = i / dst_elems_per_reg;
+      U32 dst_start = (i % dst_elems_per_reg) * state.sew;
+      U32 dst_end = dst_start + state.sew - 1;
+      V[vd + dst_reg_off][dst_end:dst_start] = V[vs2 + src_reg_off][src_end:src_start];
+    }
+  }
+
+  CSR[vstart].VALUE = 0;

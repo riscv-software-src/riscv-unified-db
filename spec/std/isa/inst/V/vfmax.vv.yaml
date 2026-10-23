@@ -33,3 +33,52 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  check_f_ok($encoding);
+  VectorState state = vector_state();
+  U32 elems_per_reg = VLEN >> state.log2_sew;
+  for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
+    if (vm == 1'b1 || V[0][i] == 1'b1) {
+      U32 reg_off = i / elems_per_reg;
+      U32 start_bit = (i % elems_per_reg) * state.sew;
+      U32 end_bit = start_bit + state.sew - 1;
+      if (state.sew == 32) {
+        Bits<32> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<32> b = V[vs1 + reg_off][end_bit:start_bit];
+        Bits<32> result;
+        if (is_sp_nan?(a) || is_sp_nan?(b)) {
+          if (is_sp_signaling_nan?(a) || is_sp_signaling_nan?(b)) { set_fp_flag(FpFlag::NV); }
+          if (is_sp_nan?(a) && is_sp_nan?(b)) { result = SP_CANONICAL_NAN; }
+          else if (is_sp_nan?(a)) { result = b; }
+          else { result = a; }
+        } else {
+          Boolean sign_a = a[31] == 1;
+          Boolean sign_b = b[31] == 1;
+          Boolean a_gt_b;
+          if (sign_a != sign_b) { a_gt_b = sign_b; }
+          else { a_gt_b = (a != b) && (sign_b != (b < a)); }
+          result = a_gt_b ? a : b;
+        }
+        V[vd + reg_off][end_bit:start_bit] = result;
+      } else {
+        Bits<64> a = V[vs2 + reg_off][end_bit:start_bit];
+        Bits<64> b = V[vs1 + reg_off][end_bit:start_bit];
+        Bits<64> result;
+        if (is_dp_nan?(a) || is_dp_nan?(b)) {
+          if (is_dp_signaling_nan?(a) || is_dp_signaling_nan?(b)) { set_fp_flag(FpFlag::NV); }
+          if (is_dp_nan?(a) && is_dp_nan?(b)) { result = DP_CANONICAL_NAN; }
+          else if (is_dp_nan?(a)) { result = b; }
+          else { result = a; }
+        } else {
+          Boolean sign_a = a[63] == 1;
+          Boolean sign_b = b[63] == 1;
+          Boolean a_gt_b;
+          if (sign_a != sign_b) { a_gt_b = sign_b; }
+          else { a_gt_b = (a != b) && (sign_b != (b < a)); }
+          result = a_gt_b ? a : b;
+        }
+        V[vd + reg_off][end_bit:start_bit] = result;
+      }
+    }
+  }
+  mark_f_state_dirty();
+  CSR[vstart].VALUE = 0;
