@@ -37,7 +37,8 @@ operation(): |
   check_vector_register_group(vs2, $encoding);
 
   Bits<2> vxrm_mode = CSR[vcsr].VXRM;
-  Bits<ELEN `+ 1> b = $signed(X[xs1][state.sew-1:0]);
+  Bits<ELEN> sext_xs1 = $signed(X[xs1]);
+  Bits<ELEN `+ 1> b = $signed(sext_xs1[state.sew-1:0]);
   U32 elems_per_reg = VLEN >> state.log2_sew;
   for (U32 i = CSR[vstart].VALUE; i < CSR[vl].VALUE; i++) {
     if (vm == 1'b1 || V[0][i] == 1'b1) {
