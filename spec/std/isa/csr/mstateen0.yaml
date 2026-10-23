@@ -72,8 +72,16 @@ fields:
         version: ">= 1.11"
     description: |
       The ENVCFG bit in `mstateen0` controls access to the `henvcfg`, `henvcfgh`, and the `senvcfg` CSRs.
-    type: RW
-    reset_value: 0
+    type(): |
+      if (MSTATEEN_ENVCFG_TYPE == "read-only-0" || MSTATEEN_ENVCFG_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (MSTATEEN_ENVCFG_TYPE == "read-only-1") {
+        return 1;
+      }
+      return 0;
   CSRIND:
     long_name: siselect, sireg*, vsiselect, and vsireg* access control
     location: 60
@@ -83,8 +91,16 @@ fields:
     description: |
       The CSRIND bit in `mstateen0` controls access to the `siselect`, `sireg*`, `vsiselect`, and the `vsireg*`
       CSRs provided by the Sscsrind extensions.
-    type: RW
-    reset_value: 0
+    type(): |
+      if (MSTATEEN_CSRIND_TYPE == "read-only-0" || MSTATEEN_CSRIND_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (MSTATEEN_CSRIND_TYPE == "read-only-1") {
+        return 1;
+      }
+      return 0;
   AIA:
     long_name: Ssaia state access control
     location: 59
@@ -94,8 +110,16 @@ fields:
     description: |
       The AIA bit in `mstateen0` controls access to all state introduced by the Ssaia extension and is not
       controlled by either the CSRIND or the IMSIC bits.
-    type: RW
-    reset_value: 0
+    type(): |
+      if (MSTATEEN_AIA_TYPE == "read-only-0" || MSTATEEN_AIA_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (MSTATEEN_AIA_TYPE == "read-only-1") {
+        return 1;
+      }
+      return 0;
   IMSIC:
     long_name: IMSIC state access control
     location: 58
@@ -105,8 +129,16 @@ fields:
     description: |
       The IMSIC bit in `mstateen0` controls access to the IMSIC state, including CSRs `stopei` and `vstopei`,
       provided by the Ssaia extension.
-    type: RW
-    reset_value: 0
+    type(): |
+      if (MSTATEEN_IMSIC_TYPE == "read-only-0" || MSTATEEN_IMSIC_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (MSTATEEN_IMSIC_TYPE == "read-only-1") {
+        return 1;
+      }
+      return 0;
   CONTEXT:
     long_name: scontext and hcontext access control
     location: 57
@@ -116,8 +148,16 @@ fields:
     description: |
       The CONTEXT bit in `mstateen0` controls access to the `scontext` and `hcontext` CSRs provided by the
       Sdtrig extension.
-    type: RW
-    reset_value: 0
+    type(): |
+      if (MSTATEEN_CONTEXT_TYPE == "read-only-0" || MSTATEEN_CONTEXT_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (MSTATEEN_CONTEXT_TYPE == "read-only-1") {
+        return 1;
+      }
+      return 0;
   P1P13:
     long_name: hedelegh access control
     location: 56
@@ -153,8 +193,16 @@ fields:
         name: Zcmt
     description: |
       The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
-    type: RW
-    reset_value: 0
+    type(): |
+      if (MSTATEEN_JVT_TYPE == "read-only-0" || MSTATEEN_JVT_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (MSTATEEN_JVT_TYPE == "read-only-1") {
+        return 1;
+      }
+      return 0;
   FCSR:
     long_name: fcsr access control
     location: 1

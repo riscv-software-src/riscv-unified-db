@@ -67,8 +67,18 @@ fields:
         name: Zcmt
     description: |
       The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
-    type: RW
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      if (SSTATEEN_JVT_TYPE == "read-only-0" || SSTATEEN_JVT_TYPE == "read-only-1") {
+        return CsrFieldType::RO;
+      }
+      return CsrFieldType::RW;
+    reset_value(): |
+      if (SSTATEEN_JVT_TYPE == "read-only-0") {
+        return 0;
+      } else if (SSTATEEN_JVT_TYPE == "read-only-1") {
+        return 1;
+      }
+      return UNDEFINED_LEGAL;
     sw_write(csr_value): |
       if (CSR[mstateen0].JVT == 1'b0){
         return 0;
