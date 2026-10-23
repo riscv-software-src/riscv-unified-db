@@ -1,0 +1,23 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_TEXTRA_SBYTEMASK_WRITABLE
+description: |
+  If true, textra.sbytemask is writable, so bytes of svalue can be ignored when comparing
+  against scontext (textra32.sbytemask[1:0] masks bytes 0-1, textra64.sbytemask[3:0] masks bytes 0-3).
+  If false, textra.sbytemask is read-only 0. Since sbytemask resets to 0, 0 is always supported.
+long_name: textra.sbytemask is writable
+schema:
+  type: boolean
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: SDTRIG_TEXTRA_SSELECT_SCONTEXT_MATCH
+        equal: true
+        reason: sbytemask only applies when textra.sselect=1 (scontext match).
