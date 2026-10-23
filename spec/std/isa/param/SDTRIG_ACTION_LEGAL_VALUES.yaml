@@ -1,0 +1,53 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_ACTION_LEGAL_VALUES
+description: |
+  The set of values that the trigger action field supports (Debug spec 1.0, Sdtrig "action encoding").
+
+  * 0: Raise a breakpoint exception.
+  * 1: Enter Debug Mode (only legal when the trigger's dmode is 1).
+  * 2: Trace on.
+  * 3: Trace off.
+  * 4: Trace notify.
+  * 8: Send a signal to TM external trigger output 0.
+  * 9: Send a signal to TM external trigger output 1.
+long_name: Legal values of the trigger action field
+schema:
+  type: array
+  items:
+    type: integer
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 8
+      - 9
+  maxItems: 7
+  minItems: 1
+  uniqueItems: true
+requirements:
+  allOf:
+    - param:
+        name: SDTRIG_ACTION_LEGAL_VALUES
+        includes: 0
+        reason: The reset value of action is 0, so 0 must be a legal value.
+    - if:
+        not:
+          extension:
+            name: Sdext
+      then:
+        not:
+          param:
+            name: SDTRIG_ACTION_LEGAL_VALUES
+            includes: 1
+            reason: 'Debug spec 1.0, action=1: "This action can only be supported if Sdext is implemented on the hart."'
+definedBy:
+  extension:
+    name: Sdtrig

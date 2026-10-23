@@ -1,0 +1,31 @@
+# Copyright (C) 2026 Harvey Mudd College
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: SDTRIG_ICOUNT_COUNT_WIDTH
+description: |
+  The number of implemented icount.count bits, starting from bit 0 of the field. Bits above these are
+  read-only zero, so the largest count that can be written is 2^SDTRIG_ICOUNT_COUNT_WIDTH - 1.
+
+  Debug spec 1.0, icount: "Systems that support multiple privilege modes that want to debug software
+  running in lower privilege modes don't need to support icount.count greater than 1."
+long_name: Number of implemented icount.count bits
+schema:
+  type: integer
+  minimum: 1
+  maximum: 14
+requirements:
+  idl(): |
+    SDTRIG_ICOUNT_COUNT_HARDWIRED_1 -> (SDTRIG_ICOUNT_COUNT_WIDTH == 1);
+  reason: A count hard-wired to 1 has a single implemented bit.
+definedBy:
+  allOf:
+    - extension:
+        name: Sdtrig
+    - param:
+        name: SDTRIG_ICOUNT_SUPPORTED_TRIGGERS
+        includes: true
+        reason: Only relevant if at least one trigger supports icount.
