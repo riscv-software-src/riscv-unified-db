@@ -33,6 +33,7 @@ data_independent_timing: false
 operation(): |
   VectorState state = vector_state();
   VectorLmulType lmul_type = state.lmul_type;
+  Bits<ELEN> sext_xs1 = $signed(X[xs1]);
 
   XReg vlen = VLEN;
   XReg vlmax;
@@ -48,8 +49,8 @@ operation(): |
       U32 reg_off = i / elems_per_reg;
       U32 start_bit = (i % elems_per_reg) * state.sew;
       U32 end_bit = start_bit + state.sew - 1;
-      Bits<64> vs2_elem = $signed(V[vs2 + reg_off][end_bit:start_bit]);
-      Bits<64> vs1_elem = X[xs1][state.sew-1:0];
+      Bits<ELEN> vs2_elem = $signed(V[vs2 + reg_off][end_bit:start_bit]);
+      Bits<ELEN> vs1_elem = sext_xs1[state.sew-1:0];
       if (state.sew == 64) {
         Boolean neg_result = (vs2_elem[63:63] == 1'b1);
         Bits<64> abs_a = neg_result ? -vs2_elem : vs2_elem;
