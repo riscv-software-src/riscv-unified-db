@@ -25,8 +25,9 @@ definedBy:
   allOf:
     - xlen: 32
     - extension:
-        allOf:
-          - name: H
+        name: H
+    - extension:
+        anyOf:
           - name: Smstateen
           - name: Ssstateen
 fields:
@@ -35,7 +36,7 @@ fields:
     location: 31
     alias: hstateen0.SE0
     sw_write(csr_value): |
-      if (CSR[mstateen0].SE0 == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].SE0 == 1'b0){
         return 0;
       }
       CSR[hstateen0].SE0 = csr_value.SE0;
@@ -53,7 +54,7 @@ fields:
         version: ">= 1.11"
     alias: hstateen0.ENVCFG
     sw_write(csr_value): |
-      if (CSR[mstateen0].ENVCFG == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].ENVCFG == 1'b0){
         return 0;
       }
       CSR[hstateen0].ENVCFG = csr_value.ENVCFG;
@@ -70,7 +71,7 @@ fields:
         name: Sscsrind
     alias: hstateen0.CSRIND
     sw_write(csr_value): |
-      if (CSR[mstateen0].CSRIND == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CSRIND == 1'b0){
         return 0;
       }
       CSR[hstateen0].CSRIND = csr_value.CSRIND;
@@ -89,7 +90,7 @@ fields:
         name: Ssaia
     alias: hstateen0.AIA
     sw_write(csr_value): |
-      if (CSR[mstateen0].AIA == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].AIA == 1'b0){
         return 0;
       }
       CSR[hstateen0].AIA = csr_value.AIA;
@@ -108,7 +109,7 @@ fields:
         name: Ssaia
     alias: hstateen0.IMSIC
     sw_write(csr_value): |
-      if (CSR[mstateen0].IMSIC == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].IMSIC == 1'b0){
         return 0;
       }
       CSR[hstateen0].IMSIC = csr_value.IMSIC;
@@ -129,7 +130,7 @@ fields:
         name: Sdtrig
     alias: hstateen0.CONTEXT
     sw_write(csr_value): |
-      if (CSR[mstateen0].CONTEXT == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CONTEXT == 1'b0){
         return 0;
       }
       CSR[hstateen0].CONTEXT = csr_value.CONTEXT;
@@ -144,7 +145,7 @@ fields:
     location: 22
     alias: hstateen0.CTR
     sw_write(csr_value): |
-      if (CSR[mstateen0].CTR == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CTR == 1'b0){
         return 0;
       }
       CSR[hstateen0].CTR = csr_value.CTR;

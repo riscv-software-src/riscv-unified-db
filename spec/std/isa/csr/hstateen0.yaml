@@ -43,11 +43,13 @@ description: |
   in the matching `mstateen` CSR.
 
 definedBy:
-  extension:
-    allOf:
-      - name: H
-      - name: Smstateen
-      - name: Ssstateen
+  allOf:
+    - extension:
+        name: H
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen
 fields:
   SE0:
     long_name: sstateen0 access control
@@ -57,7 +59,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].SE0 == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].SE0 == 1'b0){
         return 0;
       }
       return csr_value.SE0;
@@ -73,7 +75,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].ENVCFG == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].ENVCFG == 1'b0){
         return 0;
       }
       return csr_value.ENVCFG;
@@ -90,7 +92,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].CSRIND == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CSRIND == 1'b0){
         return 0;
       }
       return csr_value.CSRIND;
@@ -107,7 +109,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].AIA == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].AIA == 1'b0){
         return 0;
       }
       return csr_value.AIA;
@@ -126,7 +128,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].IMSIC == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].IMSIC == 1'b0){
         return 0;
       }
       return csr_value.IMSIC;
@@ -142,7 +144,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].CONTEXT == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CONTEXT == 1'b0){
         return 0;
       }
       return csr_value.CONTEXT;
@@ -157,7 +159,7 @@ fields:
     type: RW
     reset_value: 0
     sw_write(csr_value): |
-      if (CSR[mstateen0].CTR == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].CTR == 1'b0){
         return 0;
       }
       return csr_value.CTR;
@@ -172,7 +174,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].JVT == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].JVT == 1'b0){
         return 0;
       }
       return csr_value.JVT;
@@ -193,7 +195,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].FCSR == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].FCSR == 1'b0){
         return 0;
       }
       return csr_value.FCSR;
@@ -207,7 +209,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].C == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].C == 1'b0){
         return 0;
       }
       return csr_value.C;
@@ -215,6 +217,9 @@ sw_read(): |
   # for every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching hstateen CSR
 
-  Bits<64> mstateen0_mask = $bits(CSR[mstateen0]);
-  Bits<64> hstateen0_value = $bits(CSR[hstateen0]) & mstateen0_mask;
+  Bits<64> hstateen0_value = $bits(CSR[hstateen0]);
+  if (implemented?(ExtensionName::Smstateen)) {
+    Bits<64> mstateen0_mask = $bits(CSR[mstateen0]);
+    hstateen0_value = hstateen0_value & mstateen0_mask;
+  }
   return hstateen0_value;

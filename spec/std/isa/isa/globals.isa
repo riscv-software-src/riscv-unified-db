@@ -3267,28 +3267,29 @@ function check_zcmt_enabled {
   arguments
     Bits<INSTR_ENC_SIZE> encoding
   description {
-    If the Smstateen extension is implemented, then bit 2 in `mstateen0`, `sstateen0`, and `hstateen0` is
-    implemented. If bit 2 of a controlling `stateen0` CSR is zero, then access to the `jvt` CSR and execution
-    of a `cm.jalt` or `cm.jt` instruction by a lower privilege level results in an illegal-instruction trap (or, if
+    If the Smstateen or Ssstateen extension is implemented, and the JVT
+    field of a controlling `stateen0` CSR is zero, then access to the
+    `jvt` CSR and execution of a `cm.jalt` or `cm.jt` instruction by a
+    lower privilege level results in an illegal-instruction trap (or, if
     appropriate, a virtual-instruction trap).
   }
   body {
-    if (( mode() != PrivilegeMode::M && implemented?(ExtensionName::Smstateen)
-          && CSR[mstateen0].JVT == 1'b0 )
-        ||
-        ( mode() == PrivilegeMode::U && implemented?(ExtensionName::Ssstateen)
-          && CSR[sstateen0].JVT == 1'b0 )) {
-
+    if ( implemented?(ExtensionName::Smstateen)
+         && mode() != PrivilegeMode::M
+         && CSR[mstateen0].JVT == 1'b0 ) {
       raise(ExceptionCode::IllegalInstruction, mode(), encoding);
     }
-    else
-      if (( mode() == PrivilegeMode::VS && implemented?(ExtensionName::Ssstateen)
-            && CSR[hstateen0].JVT == 1'b0 )
-          ||
-          ( mode() == PrivilegeMode::VU && implemented?(ExtensionName::Ssstateen)
-            && (CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0) )) {
-
-        raise(ExceptionCode::VirtualInstruction, mode(), encoding);
-      }
+    else if ( implemented?(ExtensionName::H)
+              && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
+              && (mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU)
+              && CSR[hstateen0].JVT == 1'b0 ) {
+      raise(ExceptionCode::VirtualInstruction, mode(), encoding);
+    }
+    else if ( implemented?(ExtensionName::S)
+              && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
+              && (mode() == PrivilegeMode::U || mode() == PrivilegeMode::VU)
+              && CSR[sstateen0].JVT == 1'b0 ) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
   }
 }

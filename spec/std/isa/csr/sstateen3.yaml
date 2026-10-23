@@ -54,42 +54,10 @@ description: |
   only if the hypervisor extension is not implemented and the matching supervisor-level `sstateen` CSR is all read-only zeros.
 
 definedBy:
-  extension:
-    allOf:
-      - name: Smstateen
-      - name: Ssstateen
-
-fields:
-  DATA:
-    location: 31-0
-    description: Data value
-    type: RW
-    sw_write(csr_value): |
-      # For every bit in an mstateen CSR that is zero, the same bit
-      # appears as read-only zero in the matching sstateen CSR.
-      Bits<64> mstateen3_mask = $bits(CSR[mstateen3]);
-      Bits<64> data_value = csr_value.DATA & mstateen3_mask;
-
-      # For every bit in an hstateen CSR that is zero, the same bit
-      # appears as read-only zero in sstateen when accessed in VS-mode.
-      if (mode() == PrivilegeMode::VS) {
-        Bits<64> hstateen3_mask = $bits(CSR[hstateen3]);
-        data_value = data_value & hstateen3_mask;
-      }
-
-      return data_value;
-    reset_value: UNDEFINED_LEGAL
-sw_read(): |
-  # For every bit in an mstateen CSR that is zero, the same bit
-  # appears as read-only zero in the matching sstateen CSR.
-  Bits<64> mstateen3_mask = $bits(CSR[mstateen3]);
-  Bits<64> sstateen3_value = $bits(CSR[sstateen3]) & mstateen3_mask;
-
-  # For every bit in an hstateen CSR that is zero, the same bit
-  # appears as read-only zero in sstateen when accessed in VS-mode.
-  if (mode() == PrivilegeMode::VS) {
-    Bits<64> hstateen3_mask = $bits(CSR[hstateen3]);
-    sstateen3_value = sstateen3_value & hstateen3_mask;
-  }
-
-  return sstateen3_value;
+  allOf:
+    - extension:
+        name: S
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen

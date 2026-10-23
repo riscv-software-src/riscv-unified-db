@@ -25,8 +25,9 @@ definedBy:
   allOf:
     - xlen: 32
     - extension:
-        allOf:
-          - name: H
+        name: H
+    - extension:
+        anyOf:
           - name: Smstateen
           - name: Ssstateen
 fields:
@@ -35,7 +36,7 @@ fields:
     location: 31
     alias: hstateen3.SE0
     sw_write(csr_value): |
-      if (CSR[mstateen3].SE0 == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen3].SE0 == 1'b0){
         return 0;
       }
       CSR[hstateen3].SE0 = csr_value.SE0;
