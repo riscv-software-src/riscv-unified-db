@@ -3274,25 +3274,22 @@ function check_zcmt_enabled {
     appropriate, a virtual-instruction trap).
   }
   body {
-    if (( implemented?(ExtensionName::Smstateen) && mode() != PrivilegeMode::M
-          && CSR[mstateen0].JVT == 1'b0 )
-        ||
-        ( implemented?(ExtensionName::S)
-          && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
-          && mode() == PrivilegeMode::U
-          && CSR[sstateen0].JVT == 1'b0 )) {
-
+    if ( implemented?(ExtensionName::Smstateen)
+         && mode() != PrivilegeMode::M
+         && CSR[mstateen0].JVT == 1'b0 ) {
       raise(ExceptionCode::IllegalInstruction, mode(), encoding);
     }
     else if ( implemented?(ExtensionName::H)
               && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
-              && (( mode() == PrivilegeMode::VS
-                    && CSR[hstateen0].JVT == 1'b0 )
-                  ||
-                  ( mode() == PrivilegeMode::VU
-                    && (CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0) ))) {
-
-        raise(ExceptionCode::VirtualInstruction, mode(), encoding);
-      }
+              && (mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU)
+              && CSR[hstateen0].JVT == 1'b0 ) {
+      raise(ExceptionCode::VirtualInstruction, mode(), encoding);
+    }
+    else if ( implemented?(ExtensionName::S)
+              && (implemented?(ExtensionName::Smstateen) || implemented?(ExtensionName::Ssstateen))
+              && (mode() == PrivilegeMode::U || mode() == PrivilegeMode::VU)
+              && CSR[sstateen0].JVT == 1'b0 ) {
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
   }
 }
