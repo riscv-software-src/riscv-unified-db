@@ -9,11 +9,11 @@ name: HEDELEG_IAM_WRITABLE
 long_name: Whether `hedeleg.IAM` is writable when IALIGN is always 16
 description: |
   Indicates whether the `hedeleg.IAM` field (instruction address misaligned) is writable
-  when instruction address misaligned exceptions cannot occur, i.e., when `Zca` is
-  implemented and `misa.C` cannot be cleared (IALIGN is always 16).
+  when instruction address misaligned exceptions cannot occur, i.e., when IALIGN=16
+  (`Zca` is implemented or `C` is implemented and a mutable `misa.C` is set).
 
   The privileged specification only requires `hedeleg.IAM` to be writable when IALIGN=32,
-  so an implementation may still make it writable when IALIGN is always 16.
+  but an implementation may still make it writable when IALIGN is 16.
 
   Options:
 
@@ -23,8 +23,8 @@ description: |
     false::
       `hedeleg.IAM` is read-only zero.
 
-  This parameter has no effect when IALIGN can be 32 (`Zca` is not implemented, or `misa.C`
-  can be cleared); `hedeleg.IAM` is always writable in that case.
+  This parameter has no effect when IALIGN is 32 (`Zca` is not implemented or mutable
+  `misa.C` is cleared); `hedeleg.IAM` is always writable in that case.
 schema:
   type: boolean
 definedBy:

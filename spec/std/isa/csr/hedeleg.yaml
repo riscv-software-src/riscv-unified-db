@@ -50,26 +50,19 @@ fields:
 
       See `medeleg.IAM` for details.
 
-      This field must be writable if IALIGN=32, i.e., when the `C` extension is not implemented
-      or when it can be disabled via `misa.C`. When IALIGN is always 16 (`Zca` is implemented and
-      `misa.C` cannot be cleared), instruction address misaligned exceptions cannot occur, and
-      whether this field is writable or read-only 0 is controlled by `HEDELEG_IAM_WRITABLE`.
+      This field must be writable if IALIGN=32.
     type(): |
       if (implemented?(ExtensionName::Zca)) {
-        if (implemented?(ExtensionName::C)) {
-          if (MUTABLE_MISA_C) {
-            return CsrFieldType::RW;
-          }
+        if (implemented?(ExtensionName::C) && MUTABLE_MISA_C && CSR[misa].C == 1'b0) {
+          return CsrFieldType::RW;
         }
         return HEDELEG_IAM_WRITABLE ? CsrFieldType::RW : CsrFieldType::RO;
       }
       return CsrFieldType::RW;
     reset_value(): |
       if (implemented?(ExtensionName::Zca)) {
-        if (implemented?(ExtensionName::C)) {
-          if (MUTABLE_MISA_C) {
-            return UNDEFINED_LEGAL;
-          }
+        if (implemented?(ExtensionName::C) && MUTABLE_MISA_C && CSR[misa].C == 1'b0) {
+          return UNDEFINED_LEGAL;
         }
         return HEDELEG_IAM_WRITABLE ? UNDEFINED_LEGAL : 0;
       }
@@ -245,7 +238,7 @@ fields:
     definedBy:
       extension:
         name: Sm
-        version: ">= 1.13.0"
+        version: ">= 1.13"
   HWE:
     location: 19
     description: |
