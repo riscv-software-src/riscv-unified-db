@@ -73,7 +73,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].JVT == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].JVT == 1'b0){
         return 0;
       }
       else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS && CSR[hstateen0].JVT == 1'b0) {
@@ -97,7 +97,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].FCSR == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].FCSR == 1'b0){
         return 0;
       }
       else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS && CSR[hstateen0].FCSR == 1'b0) {
@@ -114,7 +114,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (CSR[mstateen0].C == 1'b0){
+      if (implemented?(ExtensionName::Smstateen) && CSR[mstateen0].C == 1'b0){
         return 0;
       }
       else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS && CSR[hstateen0].C == 1'b0) {
@@ -124,8 +124,11 @@ fields:
 sw_read(): |
   # For every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching sstateen CSR.
-  Bits<64> mstateen0_mask = $bits(CSR[mstateen0]);
-  Bits<64> sstateen0_value = $bits(CSR[sstateen0]) & mstateen0_mask;
+  Bits<64> sstateen0_value = $bits(CSR[sstateen0]);
+  if (implemented?(ExtensionName::Smstateen)) {
+    Bits<64> mstateen0_mask = $bits(CSR[mstateen0]);
+    sstateen0_value = sstateen0_value & mstateen0_mask;
+  }
 
   # For every bit in an hstateen CSR that is zero, the same bit
   # appears as read-only zero in sstateen when accessed in VS-mode.
