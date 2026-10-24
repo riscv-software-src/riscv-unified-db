@@ -3,8 +3,17 @@
 
 """Python access to the RISC-V Unified Database."""
 
-from .database import Csr, Database, DatabaseObject, Extension, Instruction, Profile
-from .errors import DataError, ObjectNotFoundError, UdbError, UnknownKindError
+from .database import (
+    Csr,
+    Database,
+    DatabaseObject,
+    Extension,
+    Instruction,
+    Profile,
+    ResolvedDatabase,
+)
+from .errors import DataError, ObjectNotFoundError, ResolutionError, UdbError, UnknownKindError
+from .resolver import YamlResolver, merge_patch
 
 __all__ = [
     "Csr",
@@ -15,6 +24,10 @@ __all__ = [
     "Instruction",
     "ObjectNotFoundError",
     "Profile",
+    "ResolutionError",
+    "ResolvedDatabase",
     "UdbError",
     "UnknownKindError",
+    "YamlResolver",
+    "merge_patch",
 ]

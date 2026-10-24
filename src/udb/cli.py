@@ -21,6 +21,18 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="read a raw ISA directory instead of the data bundled with udb",
     )
+    parser.add_argument(
+        "--resolved",
+        action="store_true",
+        help="resolve inheritance and removals before querying (not a configured architecture)",
+    )
+    parser.add_argument(
+        "--overlay",
+        type=Path,
+        action="append",
+        default=[],
+        help="apply an ISA overlay before resolution; repeat in precedence order; requires --resolved",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     list_parser = subparsers.add_parser("list", help="list raw UDB records")
@@ -35,8 +47,12 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if args.overlay and not args.resolved:
+        parser.error("--overlay requires --resolved")
     try:
         database = Database.from_path(args.path) if args.path else Database.bundled()
+        if args.resolved:
+            database = database.resolve(overlays=args.overlay)
         if args.command == "list":
             for record in database.objects(args.kind):
                 print(record.name)

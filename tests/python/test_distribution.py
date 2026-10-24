@@ -114,6 +114,9 @@ assert '.whl/udb/' in udb.__file__
 assert (files('udb') / '_data' / 'isa' / 'ext' / 'Zvkg.yaml').is_file()
 assert (files('udb') / '_data' / 'schemas' / 'inst_schema.json').is_file()
 assert udb.Database.bundled().extension('Zvkg').name == 'Zvkg'
+resolved = udb.Database.bundled().resolve()
+assert resolved.profile('RVI20U64')['extensions']['I']['presence'] == 'mandatory'
+assert '$inherits' not in resolved.profile('RVI20U64')
 """
     environment = os.environ.copy()
     environment["PYTHONPATH"] = str(rebuilt_wheel)
