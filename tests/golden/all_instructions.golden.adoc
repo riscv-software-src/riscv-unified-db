@@ -42469,6 +42469,406 @@ Included in::
 
 
 
+[#udb:doc:inst:vdot4a_vv]
+== vdot4a.vv
+
+Synopsis::
+Vector 4-element signed-signed dot-product accumulate (vector-vector)
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vdot4a.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2c,"type":2}]}
+....
+
+Description::
+Computes the dot product of four signed 8-bit elements from `vs2` and four
+signed 8-bit elements from `vs1` (both packed within the same 32-bit element
+group), sums the four products, and accumulates the signed 32-bit result into
+the corresponding 32-bit element of `vd`.
+
+No saturation is performed; given the 8-bit source width and 32-bit
+accumulation width, overflow is presumed infrequent.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvdot4a8i*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vdot4a_vx]
+== vdot4a.vx
+
+Synopsis::
+Vector 4-element signed-signed dot-product accumulate (vector-scalar)
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vdot4a.vx vd, vs2, rs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2c,"type":2}]}
+....
+
+Description::
+Computes the dot product of four signed 8-bit elements from `vs2` and four
+signed 8-bit elements packed/replicated from the scalar `rs1`, sums the four
+products, and accumulates the signed 32-bit result into the corresponding
+32-bit element of `vd`.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|rs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvdot4a8i*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vdot4asu_vv]
+== vdot4asu.vv
+
+Synopsis::
+Vector 4-element signed-unsigned dot-product accumulate (vector-vector)
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vdot4asu.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2a,"type":2}]}
+....
+
+Description::
+Computes the dot product of four signed 8-bit elements from `vs2` and four
+unsigned 8-bit elements from `vs1`, sums the four products, and accumulates
+the signed 32-bit result into the corresponding 32-bit element of `vd`.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvdot4a8i*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vdot4asu_vx]
+== vdot4asu.vx
+
+Synopsis::
+Vector 4-element signed-unsigned dot-product accumulate (vector-scalar)
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vdot4asu.vx vd, vs2, rs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2a,"type":2}]}
+....
+
+Description::
+Computes the dot product of four signed 8-bit elements from `vs2` and four
+unsigned 8-bit elements packed/replicated from the scalar `rs1`, sums the
+four products, and accumulates the signed 32-bit result into the
+corresponding 32-bit element of `vd`.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|rs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvdot4a8i*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vdot4au_vv]
+== vdot4au.vv
+
+Synopsis::
+Vector 4-element unsigned-unsigned dot-product accumulate (vector-vector)
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vdot4au.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x28,"type":2}]}
+....
+
+Description::
+Computes the dot product of four unsigned 8-bit elements from `vs2` and four
+unsigned 8-bit elements from `vs1`, sums the four products, and accumulates
+the unsigned 32-bit result into the corresponding 32-bit element of `vd`.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvdot4a8i*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vdot4au_vx]
+== vdot4au.vx
+
+Synopsis::
+Vector 4-element unsigned-unsigned dot-product accumulate (vector-scalar)
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vdot4au.vx vd, vs2, rs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x28,"type":2}]}
+....
+
+Description::
+Computes the dot product of four unsigned 8-bit elements from `vs2` and four
+unsigned 8-bit elements packed/replicated from the scalar `rs1`, sums the
+four products, and accumulates the unsigned 32-bit result into the
+corresponding 32-bit element of `vd`.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|rs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvdot4a8i*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vdot4aus_vx]
+== vdot4aus.vx
+
+Synopsis::
+Vector 4-element unsigned-signed dot-product accumulate (vector-scalar)
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vdot4aus.vx vd, vs2, rs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x6,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x2e,"type":2}]}
+....
+
+Description::
+Computes the dot product of four unsigned 8-bit elements from `vs2` and four
+signed 8-bit elements packed/replicated from the scalar `rs1`, sums the
+four products, and accumulates the signed 32-bit result into the
+corresponding 32-bit element of `vd`.
+
+This vector-scalar variant exists to save encoding space: the
+unsigned-vs2/signed-vs1 vector-vector combination is not separately
+encoded, since operand order can simply be swapped to use
+xref:insts:vdot4asu_vv.adoc#udb:doc:inst:vdot4asu_vv[vdot4asu.vv] instead. That swap isn't possible for the vector-scalar
+form, since the scalar operand's signedness is fixed to `rs1`'s position,
+so this variant is provided explicitly.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|rs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvdot4a8i*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vfadd_vf]
 == vfadd.vf
 
