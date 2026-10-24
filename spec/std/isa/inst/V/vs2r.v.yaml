@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vs2r.v
-long_name: "Vector store 2 elements"
+long_name: "Vector store 2 whole registers"
 description: |
-  Stores 2 elements from vector register vs2 to memory starting at address in xs1 register, using vector mask vm. This operation stores elements with register stride.
+  Stores 2 whole vector registers, starting at vs3, to memory starting at the address in xs1. This is a unit-stride, unmasked operation -- there is no stride or mask operand, and the operation does not depend on SEW.
 definedBy:
   extension:
     name: Zvl32b
