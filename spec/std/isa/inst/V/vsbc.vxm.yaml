@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsbc.vxm
-long_name: "Vector subtract with borrow and scalar, masked"
+long_name: "Vector integer subtract-with-borrow-in scalar"
 description: |
-  Subtracts the source operands (vs2 - xs1) and the borrow-in, and writes the result to vector register vd. The borrow-in comes from the implicit v0 register.
+  Subtract from each element of vector register vs2 the scalar register xs1 and the respective borrow-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] - x[xs1] - v0.mask[i]`
 definedBy:
   extension:
     name: Zvl32b

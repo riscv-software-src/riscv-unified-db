@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vadc.vim
-long_name: "Vector add with carry and masked"
+long_name: "Vector integer add-with-carry-in immediate"
 description: |
-  Adds the source operands vs2 and imm and the carry-in, and writes the result to vector register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
+  Add each element from vector register vs2 to the immediate value imm and the respective carry-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] + imm + v0.mask[i]`
 definedBy:
   extension:
     name: Zvl32b
