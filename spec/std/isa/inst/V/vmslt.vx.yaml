@@ -8,7 +8,7 @@ kind: instruction
 name: vmslt.vx
 long_name: Vector mask less than signed scalar
 description: |
-  Sets mask bits where elements in vs2 are less than scalar in rs1 (signed), according to mask vm, and stores results in vd. Element width is determined by SEW setting. Supports vector masking and follows vector tail policy.
+  Sets mask bits where elements in vs2 are less than scalar in xs1 (signed), according to mask vm, and stores results in vd. Element width is determined by SEW setting. Supports vector masking and follows vector tail policy.
 definedBy:
   extension:
     name: Zvl32b

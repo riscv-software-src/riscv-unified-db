@@ -8,7 +8,7 @@ kind: instruction
 name: vsub.vx
 long_name: Vector-scalar integer subtraction
 description: |
-  Subtracts elements of vs2 from scalar rs1 according to mask vm and stores results in vd. Element width is determined by SEW setting.
+  Subtracts elements of vs2 from scalar xs1 according to mask vm and stores results in vd. Element width is determined by SEW setting.
 definedBy:
   extension:
     name: Zvl32b

@@ -8,7 +8,7 @@ kind: instruction
 name: vsra.vx
 long_name: Vector shift right arithmetic scalar
 description: |
-  Performs arithmetic right shift on elements from vs2 using shift amount from rs1, according to mask vm, and stores results in vd. Only the low lg2(SEW) bits of the shift amount are used. Supports vector masking and follows vector tail policy.
+  Performs arithmetic right shift on elements from vs2 using shift amount from xs1, according to mask vm, and stores results in vd. Only the low lg2(SEW) bits of the shift amount are used. Supports vector masking and follows vector tail policy.
 definedBy:
   extension:
     name: Zvl32b

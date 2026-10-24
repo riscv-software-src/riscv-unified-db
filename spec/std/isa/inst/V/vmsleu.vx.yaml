@@ -8,7 +8,7 @@ kind: instruction
 name: vmsleu.vx
 long_name: Vector mask less than or equal unsigned scalar
 description: |
-  Sets mask bits where elements in vs2 are less than or equal to scalar in rs1 (unsigned), according to mask vm, and stores results in vd. Element width is determined by SEW setting. Supports vector masking and follows vector tail policy.
+  Sets mask bits where elements in vs2 are less than or equal to scalar in xs1 (unsigned), according to mask vm, and stores results in vd. Element width is determined by SEW setting. Supports vector masking and follows vector tail policy.
 definedBy:
   extension:
     name: Zvl32b

@@ -11,7 +11,7 @@ description: |
   Stores a 32-bit value in register xs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 4,
   to the base address in register xs1.
-  It expands to `sw` `rs2, offset(xs1)`.
+  It expands to `sw` `xs2, offset(xs1)`.
 definedBy:
   extension:
     name: Zca

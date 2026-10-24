@@ -8,7 +8,7 @@ kind: instruction
 name: vsrl.vx
 long_name: Vector shift right logical scalar
 description: |
-  Performs logical right shift on elements from vs2 using shift amount from rs1, according to mask vm, and stores results in vd. Only the low lg2(SEW) bits of the shift amount are used. Supports vector masking and follows vector tail policy.
+  Performs logical right shift on elements from vs2 using shift amount from xs1, according to mask vm, and stores results in vd. Only the low lg2(SEW) bits of the shift amount are used. Supports vector masking and follows vector tail policy.
 definedBy:
   extension:
     name: Zvl32b
