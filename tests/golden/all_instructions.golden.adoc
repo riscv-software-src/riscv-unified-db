@@ -64282,7 +64282,7 @@ Included in::
 == vsadd.vi
 
 Synopsis::
-Vector unsigned addition with immediate
+Vector signed addition with immediate
 
 Base::
 
@@ -64301,165 +64301,6 @@ Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
 {"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x21,"type":2}]}
-....
-
-Description::
-Performs unsigned addition on elements from vector register vs2 and immediate value and stores results in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
-
-
-Decode Variables::
-[width="100%", cols="1,2", options="header"]
-|===
-|Variable Name |Location
-|vm |$encoding[25]
-|vs2 |$encoding[24:20]
-|imm |sext($encoding[19:15], 5)
-|vd |$encoding[11:7]
-|===
-
-Included in::
-
-
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
-
-| *Zvl32b*
-| any
-|===
-
-
-
-
-[#udb:doc:inst:vsadd_vv]
-== vsadd.vv
-
-Synopsis::
-Vector unsigned addition
-
-Base::
-
-[cols="1,1"]
-|===
-| RV32 | RV64
-
-| &#x2713;
-| &#x2713;
-|===
-
-Assembly::
-vsadd.vv vd, vs2, vs1, vm
-
-Encoding::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x21,"type":2}]}
-....
-
-Description::
-Performs unsigned addition on elements from vector registers vs2 and vs1 and stores results in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
-
-
-Decode Variables::
-[width="100%", cols="1,2", options="header"]
-|===
-|Variable Name |Location
-|vm |$encoding[25]
-|vs2 |$encoding[24:20]
-|vs1 |$encoding[19:15]
-|vd |$encoding[11:7]
-|===
-
-Included in::
-
-
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
-
-| *Zvl32b*
-| any
-|===
-
-
-
-
-[#udb:doc:inst:vsadd_vx]
-== vsadd.vx
-
-Synopsis::
-Vector unsigned addition with scalar
-
-Base::
-
-[cols="1,1"]
-|===
-| RV32 | RV64
-
-| &#x2713;
-| &#x2713;
-|===
-
-Assembly::
-vsadd.vx vd, vs2, xs1, vm
-
-Encoding::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x21,"type":2}]}
-....
-
-Description::
-Performs unsigned addition on elements from vector register vs2 and scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
-
-
-Decode Variables::
-[width="100%", cols="1,2", options="header"]
-|===
-|Variable Name |Location
-|vm |$encoding[25]
-|vs2 |$encoding[24:20]
-|xs1 |$encoding[19:15]
-|vd |$encoding[11:7]
-|===
-
-Included in::
-
-
-[width="100%",cols="1,2",options="header"]
-|===
-| Extension | Version
-
-| *Zvl32b*
-| any
-|===
-
-
-
-
-[#udb:doc:inst:vsaddu_vi]
-== vsaddu.vi
-
-Synopsis::
-Vector signed addition with immediate
-
-Base::
-
-[cols="1,1"]
-|===
-| RV32 | RV64
-
-| &#x2713;
-| &#x2713;
-|===
-
-Assembly::
-vsaddu.vi vd, vs2, imm, vm
-
-Encoding::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x20,"type":2}]}
 ....
 
 Description::
@@ -64490,8 +64331,8 @@ Included in::
 
 
 
-[#udb:doc:inst:vsaddu_vv]
-== vsaddu.vv
+[#udb:doc:inst:vsadd_vv]
+== vsadd.vv
 
 Synopsis::
 Vector signed addition
@@ -64507,12 +64348,12 @@ Base::
 |===
 
 Assembly::
-vsaddu.vv vd, vs2, vs1, vm
+vsadd.vv vd, vs2, vs1, vm
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x20,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x21,"type":2}]}
 ....
 
 Description::
@@ -64543,11 +64384,170 @@ Included in::
 
 
 
+[#udb:doc:inst:vsadd_vx]
+== vsadd.vx
+
+Synopsis::
+Vector signed addition with scalar
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vsadd.vx vd, vs2, xs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x21,"type":2}]}
+....
+
+Description::
+Performs signed addition on elements from vector register vs2 and scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation follows standard signed arithmetic rules.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvl32b*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vsaddu_vi]
+== vsaddu.vi
+
+Synopsis::
+Vector unsigned addition with immediate
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vsaddu.vi vd, vs2, imm, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "imm","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x20,"type":2}]}
+....
+
+Description::
+Performs unsigned addition on elements from vector register vs2 and immediate value and stores results in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|imm |sext($encoding[19:15], 5)
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvl32b*
+| any
+|===
+
+
+
+
+[#udb:doc:inst:vsaddu_vv]
+== vsaddu.vv
+
+Synopsis::
+Vector unsigned addition
+
+Base::
+
+[cols="1,1"]
+|===
+| RV32 | RV64
+
+| &#x2713;
+| &#x2713;
+|===
+
+Assembly::
+vsaddu.vv vd, vs2, vs1, vm
+
+Encoding::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "vs1","type":4},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x20,"type":2}]}
+....
+
+Description::
+Performs unsigned addition on elements from vector registers vs2 and vs1 and stores results in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
+
+
+Decode Variables::
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+|vm |$encoding[25]
+|vs2 |$encoding[24:20]
+|vs1 |$encoding[19:15]
+|vd |$encoding[11:7]
+|===
+
+Included in::
+
+
+[width="100%",cols="1,2",options="header"]
+|===
+| Extension | Version
+
+| *Zvl32b*
+| any
+|===
+
+
+
+
 [#udb:doc:inst:vsaddu_vx]
 == vsaddu.vx
 
 Synopsis::
-Vector signed addition with scalar
+Vector unsigned addition with scalar
 
 Base::
 
@@ -64569,7 +64569,7 @@ Encoding::
 ....
 
 Description::
-Performs signed addition on elements from vector register vs2 and scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation follows standard signed arithmetic rules.
+Performs unsigned addition on elements from vector register vs2 and scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
 
 
 Decode Variables::
@@ -74109,7 +74109,7 @@ Included in::
 == vwadd.vv
 
 Synopsis::
-Vector widening unsigned addition
+Vector widening signed addition
 
 Base::
 
@@ -74131,7 +74131,7 @@ Encoding::
 ....
 
 Description::
-Performs unsigned addition on elements from vector registers vs2 and vs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
+Performs signed addition on elements from vector registers vs2 and vs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard signed arithmetic rules.
 
 
 Decode Variables::
@@ -74162,7 +74162,7 @@ Included in::
 == vwadd.vx
 
 Synopsis::
-Vector widening unsigned addition with scalar
+Vector widening signed addition with scalar
 
 Base::
 
@@ -74184,7 +74184,7 @@ Encoding::
 ....
 
 Description::
-Performs unsigned addition on elements from vector register vs2 and scalar register xs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
+Performs signed addition on elements from vector register vs2 and scalar register xs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard signed arithmetic rules.
 
 
 Decode Variables::
@@ -74321,7 +74321,7 @@ Included in::
 == vwaddu.vv
 
 Synopsis::
-Vector widening signed addition
+Vector widening unsigned addition
 
 Base::
 
@@ -74343,7 +74343,7 @@ Encoding::
 ....
 
 Description::
-Performs signed addition on elements from vector registers vs2 and vs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard signed arithmetic rules.
+Performs unsigned addition on elements from vector registers vs2 and vs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
 
 
 Decode Variables::
@@ -74374,7 +74374,7 @@ Included in::
 == vwaddu.vx
 
 Synopsis::
-Vector widening signed addition with scalar
+Vector widening unsigned addition with scalar
 
 Base::
 
@@ -74396,7 +74396,7 @@ Encoding::
 ....
 
 Description::
-Performs signed addition on elements from vector register vs2 and scalar register xs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard signed arithmetic rules.
+Performs unsigned addition on elements from vector register vs2 and scalar register xs1, widens the results, and stores them in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
 
 
 Decode Variables::
@@ -74661,7 +74661,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed-unsigned multiplication on elements from vector registers vs2 (signed) and vs1 (unsigned), adds the result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
+Performs widening signed-unsigned multiplication on elements from vector registers vs2 (unsigned) and vs1 (signed), adds the result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
 
 
 Decode Variables::
@@ -74714,7 +74714,7 @@ Encoding::
 ....
 
 Description::
-Performs widening signed-unsigned multiplication on elements from vector register vs2 (signed) and scalar register xs1 (unsigned), adds the result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
+Performs widening signed-unsigned multiplication on elements from vector register vs2 (unsigned) and scalar register xs1 (signed), adds the result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
 
 
 Decode Variables::
@@ -74851,7 +74851,7 @@ Included in::
 == vwmaccus.vx
 
 Synopsis::
-Vector widening unsigned multiply-add with scalar, signed
+Vector widening unsigned-signed multiply-add with scalar
 
 Base::
 
@@ -74873,7 +74873,7 @@ Encoding::
 ....
 
 Description::
-Performs widening unsigned multiplication on elements from vector register vs2 and scalar register xs1, adds the signed result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
+Performs widening unsigned-signed multiplication on elements from vector register vs2 (signed) and scalar register xs1 (unsigned), adds the result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
 
 
 Decode Variables::
