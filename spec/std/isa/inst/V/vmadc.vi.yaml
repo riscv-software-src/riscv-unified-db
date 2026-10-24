@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmadc.vi
-long_name: "Vector multiply-add with carry and immediate"
+long_name: "Vector integer add-with-carry-out immediate"
 description: |
-  Performs multiply-add operation on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+  Add each element from vector register vs2 to the immediate value imm, and write the respective carry-out to mask register vd. There is no carry-in. `vd.mask[i] = carry_out(vs2[i] + imm)`
 definedBy:
   extension:
     name: Zvl32b

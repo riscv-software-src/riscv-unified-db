@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmsbc.vx
-long_name: "Vector multiply-subtract with carry and scalar"
+long_name: "Vector integer subtract-with-borrow-out scalar"
 description: |
-  Performs multiply-subtract operation on elements from vector register vs2 and scalar register xs1, subtracts the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+  Subtract from each element of vector register vs2 the scalar register xs1, and write the respective borrow-out to mask register vd. There is no borrow-in. The borrow is defined to be 1 iff the difference, prior to truncation, is negative. `vd.mask[i] = borrow_out(vs2[i] - x[xs1])`
 definedBy:
   extension:
     name: Zvl32b

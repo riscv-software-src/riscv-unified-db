@@ -40330,7 +40330,7 @@ Included in::
 == vadc.vim
 
 Synopsis::
-Vector add with carry and masked
+Vector integer add-with-carry-in immediate
 
 Base::
 
@@ -40352,7 +40352,7 @@ Encoding::
 ....
 
 Description::
-Performs addition on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Add each element from vector register vs2 to the immediate value imm and the respective carry-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] + imm + v0.mask[i]`
 
 
 Decode Variables::
@@ -40382,7 +40382,7 @@ Included in::
 == vadc.vvm
 
 Synopsis::
-Vector add with carry and masked
+Vector integer add-with-carry-in vector
 
 Base::
 
@@ -40404,7 +40404,7 @@ Encoding::
 ....
 
 Description::
-Performs addition on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Add each element from vector register vs2 to the respective element from vector register vs1 and the respective carry-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] + vs1[i] + v0.mask[i]`
 
 
 Decode Variables::
@@ -40434,7 +40434,7 @@ Included in::
 == vadc.vxm
 
 Synopsis::
-Vector add with carry and scalar, masked
+Vector integer add-with-carry-in scalar
 
 Base::
 
@@ -40456,7 +40456,7 @@ Encoding::
 ....
 
 Description::
-Performs addition on elements from vector register vs2 and scalar register xs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Add each element from vector register vs2 to the scalar register xs1 and the respective carry-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] + x[xs1] + v0.mask[i]`
 
 
 Decode Variables::
@@ -57422,7 +57422,7 @@ Included in::
 == vmadc.vi
 
 Synopsis::
-Vector multiply-add with carry and immediate
+Vector integer add-with-carry-out immediate
 
 Base::
 
@@ -57444,7 +57444,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Add each element from vector register vs2 to the immediate value imm, and write the respective carry-out to mask register vd. There is no carry-in. `vd.mask[i] = carry_out(vs2[i] + imm)`
 
 
 Decode Variables::
@@ -57474,7 +57474,7 @@ Included in::
 == vmadc.vim
 
 Synopsis::
-Vector multiply-add with carry and masked
+Vector integer add-with-carry-in-out immediate
 
 Base::
 
@@ -57496,7 +57496,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Add each element from vector register vs2 to the immediate value imm and the respective carry-in from vector register v0, and write the respective carry-out to mask register vd. `vd.mask[i] = carry_out(vs2[i] + imm + v0.mask[i])`
 
 
 Decode Variables::
@@ -57526,7 +57526,7 @@ Included in::
 == vmadc.vv
 
 Synopsis::
-Vector multiply-add with carry
+Vector integer add-with-carry-out vector
 
 Base::
 
@@ -57548,7 +57548,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Add each element from vector register vs2 to the respective element from vector register vs1, and write the respective carry-out to mask register vd. There is no carry-in. `vd.mask[i] = carry_out(vs2[i] + vs1[i])`
 
 
 Decode Variables::
@@ -57578,7 +57578,7 @@ Included in::
 == vmadc.vvm
 
 Synopsis::
-Vector multiply-add with carry and masked
+Vector integer add-with-carry-in-out vector
 
 Base::
 
@@ -57600,7 +57600,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Add each element from vector register vs2 to the respective element from vector register vs1 and the respective carry-in from vector register v0, and write the respective carry-out to mask register vd. `vd.mask[i] = carry_out(vs2[i] + vs1[i] + v0.mask[i])`
 
 
 Decode Variables::
@@ -57630,7 +57630,7 @@ Included in::
 == vmadc.vx
 
 Synopsis::
-Vector multiply-add with carry and scalar
+Vector integer add-with-carry-out scalar
 
 Base::
 
@@ -57652,7 +57652,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and scalar register xs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Add each element from vector register vs2 to the scalar register xs1, and write the respective carry-out to mask register vd. There is no carry-in. `vd.mask[i] = carry_out(vs2[i] + x[xs1])`
 
 
 Decode Variables::
@@ -57682,7 +57682,7 @@ Included in::
 == vmadc.vxm
 
 Synopsis::
-Vector multiply-add with carry and scalar, masked
+Vector integer add-with-carry-in-out scalar
 
 Base::
 
@@ -57704,7 +57704,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and scalar register xs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Add each element from vector register vs2 to the scalar register xs1 and the respective carry-in from vector register v0, and write the respective carry-out to mask register vd. `vd.mask[i] = carry_out(vs2[i] + x[xs1] + v0.mask[i])`
 
 
 Decode Variables::
@@ -59262,7 +59262,7 @@ Included in::
 == vmsbc.vv
 
 Synopsis::
-Vector multiply-subtract with carry
+Vector integer subtract-with-borrow-out vector
 
 Base::
 
@@ -59284,7 +59284,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-subtract operation on elements from vector registers vs2 and vs1, subtracts the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtract from each element of vector register vs2 the respective element from vector register vs1, and write the respective borrow-out to mask register vd. There is no borrow-in. The borrow is defined to be 1 iff the difference, prior to truncation, is negative. `vd.mask[i] = borrow_out(vs2[i] - vs1[i])`
 
 
 Decode Variables::
@@ -59314,7 +59314,7 @@ Included in::
 == vmsbc.vvm
 
 Synopsis::
-No synopsis available
+Vector integer subtract-with-borrow-in-out vector
 
 Base::
 
@@ -59366,7 +59366,7 @@ Included in::
 == vmsbc.vx
 
 Synopsis::
-Vector multiply-subtract with carry and scalar
+Vector integer subtract-with-borrow-out scalar
 
 Base::
 
@@ -59388,7 +59388,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-subtract operation on elements from vector register vs2 and scalar register xs1, subtracts the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtract from each element of vector register vs2 the scalar register xs1, and write the respective borrow-out to mask register vd. There is no borrow-in. The borrow is defined to be 1 iff the difference, prior to truncation, is negative. `vd.mask[i] = borrow_out(vs2[i] - x[xs1])`
 
 
 Decode Variables::
@@ -59418,7 +59418,7 @@ Included in::
 == vmsbc.vxm
 
 Synopsis::
-No synopsis available
+Vector integer subtract-with-borrow-in-out scalar
 
 Base::
 
@@ -64600,7 +64600,7 @@ Included in::
 == vsbc.vvm
 
 Synopsis::
-Vector subtract with borrow and masked
+Vector integer subtract-with-borrow-in vector
 
 Base::
 
@@ -64622,7 +64622,7 @@ Encoding::
 ....
 
 Description::
-Performs subtraction on elements from vector registers vs2 and vs1, subtracts the borrow-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtract from each element of vector register vs2 the respective element from vector register vs1 and the respective borrow-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] - vs1[i] - v0.mask[i]`
 
 
 Decode Variables::
@@ -64652,7 +64652,7 @@ Included in::
 == vsbc.vxm
 
 Synopsis::
-Vector subtract with borrow and scalar, masked
+Vector integer subtract-with-borrow-in scalar
 
 Base::
 
@@ -64674,7 +64674,7 @@ Encoding::
 ....
 
 Description::
-Performs subtraction on elements from vector register vs2 and scalar register xs1, subtracts the borrow-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtract from each element of vector register vs2 the scalar register xs1 and the respective borrow-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] - x[xs1] - v0.mask[i]`
 
 
 Decode Variables::

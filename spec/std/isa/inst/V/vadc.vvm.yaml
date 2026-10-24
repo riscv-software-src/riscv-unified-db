@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vadc.vvm
-long_name: "Vector add with carry and masked"
+long_name: "Vector integer add-with-carry-in vector"
 description: |
-  Performs addition on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+  Add each element from vector register vs2 to the respective element from vector register vs1 and the respective carry-in from vector register v0, and write the result to vector register vd. `vd[i] = vs2[i] + vs1[i] + v0.mask[i]`
 definedBy:
   extension:
     name: Zvl32b
