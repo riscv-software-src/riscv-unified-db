@@ -9,7 +9,7 @@ name: VUXLEN
 description: |
   Set of XLENs supported in VU-mode. When both 32 and 64 are supported, VUXLEN can be changed
   via `vsstatus.UXL`.
-long_name: TODO
+long_name: Virtual User Mode Register Widths
 schema:
   type: array
   items:

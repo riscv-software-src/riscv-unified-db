@@ -20,7 +20,7 @@ description: |
   zero.
 
   Must be between 0 and NUM_PMP_ENTRIES, inclusive.
-long_name: TODO
+long_name: Number of Usable PMP Entries
 schema:
   type: integer
   minimum: 0

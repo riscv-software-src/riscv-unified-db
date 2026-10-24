@@ -10,7 +10,7 @@ description: |
   Whether or not the Naturally Aligned Power-Of-Two (NAPOT) PMP address
   matching mode is supported.
 
-long_name: PMP NAPOT mode supported
+long_name: Support for NAPOT PMP Mode
 schema:
   type: boolean
 definedBy:

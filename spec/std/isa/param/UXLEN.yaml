@@ -9,7 +9,7 @@ name: UXLEN
 description: |
   Set of XLENs supported in U-mode. When both 32 and 64 are supported, UXLEN can be changed,
   via mstatus.UXL, between 32 and 64.
-long_name: TODO
+long_name: User Mode Register Widths
 schema:
   type: array
   items:

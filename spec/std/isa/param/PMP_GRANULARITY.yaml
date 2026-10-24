@@ -15,7 +15,7 @@ description: |
 
   Note that PMP_GRANULARITY is equal to G+2 (not G) as described in
   the privileged architecture.
-long_name: TODO
+long_name: PMP Grain Size
 schema:
   type: integer
   minimum: 2
