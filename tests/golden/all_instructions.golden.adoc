@@ -40352,7 +40352,7 @@ Encoding::
 ....
 
 Description::
-Performs addition on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Adds the source operands vs2 and imm and the carry-in, and writes the result to vector register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 
 
 Decode Variables::
@@ -40404,7 +40404,7 @@ Encoding::
 ....
 
 Description::
-Performs addition on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Adds the source operands vs2 and vs1 and the carry-in, and writes the result to vector register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 
 
 Decode Variables::
@@ -40456,7 +40456,7 @@ Encoding::
 ....
 
 Description::
-Performs addition on elements from vector register vs2 and scalar register xs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Adds the source operands vs2 and xs1 and the carry-in, and writes the result to vector register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 
 
 Decode Variables::
@@ -57422,7 +57422,7 @@ Included in::
 == vmadc.vi
 
 Synopsis::
-Vector multiply-add with carry and immediate
+Vector add with carry-out and immediate
 
 Base::
 
@@ -57444,7 +57444,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Adds the source operands vs2 and imm and writes the resulting carry-out back to mask register vd. This is the unmasked form (vm=1), so there is no carry-in.
 
 
 Decode Variables::
@@ -57474,7 +57474,7 @@ Included in::
 == vmadc.vim
 
 Synopsis::
-Vector multiply-add with carry and masked
+Vector add with carry-in and carry-out, immediate
 
 Base::
 
@@ -57496,7 +57496,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Adds the source operands vs2 and imm and the carry-in, and writes the resulting carry-out back to mask register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 
 
 Decode Variables::
@@ -57526,7 +57526,7 @@ Included in::
 == vmadc.vv
 
 Synopsis::
-Vector multiply-add with carry
+Vector add with carry-out
 
 Base::
 
@@ -57548,7 +57548,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Adds the source operands vs2 and vs1 and writes the resulting carry-out back to mask register vd. This is the unmasked form (vm=1), so there is no carry-in.
 
 
 Decode Variables::
@@ -57578,7 +57578,7 @@ Included in::
 == vmadc.vvm
 
 Synopsis::
-Vector multiply-add with carry and masked
+Vector add with carry-in and carry-out
 
 Base::
 
@@ -57600,7 +57600,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Adds the source operands vs2 and vs1 and the carry-in, and writes the resulting carry-out back to mask register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 
 
 Decode Variables::
@@ -57630,7 +57630,7 @@ Included in::
 == vmadc.vx
 
 Synopsis::
-Vector multiply-add with carry and scalar
+Vector add with carry-out and scalar
 
 Base::
 
@@ -57652,7 +57652,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and scalar register xs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Adds the source operands vs2 and xs1 and writes the resulting carry-out back to mask register vd. This is the unmasked form (vm=1), so there is no carry-in.
 
 
 Decode Variables::
@@ -57682,7 +57682,7 @@ Included in::
 == vmadc.vxm
 
 Synopsis::
-Vector multiply-add with carry and scalar, masked
+Vector add with carry-in and carry-out, scalar
 
 Base::
 
@@ -57704,7 +57704,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-add operation on elements from vector register vs2 and scalar register xs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+Adds the source operands vs2 and xs1 and the carry-in, and writes the resulting carry-out back to mask register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 
 
 Decode Variables::
@@ -59262,7 +59262,7 @@ Included in::
 == vmsbc.vv
 
 Synopsis::
-Vector multiply-subtract with carry
+Vector subtract with borrow-out
 
 Base::
 
@@ -59284,7 +59284,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-subtract operation on elements from vector registers vs2 and vs1, subtracts the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtracts the source operands (vs2 - vs1) and writes the resulting borrow-out back to mask register vd. This is the unmasked form (vm=1), so there is no borrow-in. The borrow is defined to be 1 iff the difference, prior to truncation, is negative.
 
 
 Decode Variables::
@@ -59366,7 +59366,7 @@ Included in::
 == vmsbc.vx
 
 Synopsis::
-Vector multiply-subtract with carry and scalar
+Vector subtract with borrow-out and scalar
 
 Base::
 
@@ -59388,7 +59388,7 @@ Encoding::
 ....
 
 Description::
-Performs multiply-subtract operation on elements from vector register vs2 and scalar register xs1, subtracts the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtracts the source operands (vs2 - xs1) and writes the resulting borrow-out back to mask register vd. This is the unmasked form (vm=1), so there is no borrow-in. The borrow is defined to be 1 iff the difference, prior to truncation, is negative.
 
 
 Decode Variables::
@@ -64622,7 +64622,7 @@ Encoding::
 ....
 
 Description::
-Performs subtraction on elements from vector registers vs2 and vs1, subtracts the borrow-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtracts the source operands (vs2 - vs1) and the borrow-in, and writes the result to vector register vd. The borrow-in comes from the implicit v0 register.
 
 
 Decode Variables::
@@ -64674,7 +64674,7 @@ Encoding::
 ....
 
 Description::
-Performs subtraction on elements from vector register vs2 and scalar register xs1, subtracts the borrow-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+Subtracts the source operands (vs2 - xs1) and the borrow-in, and writes the result to vector register vd. The borrow-in comes from the implicit v0 register.
 
 
 Decode Variables::
