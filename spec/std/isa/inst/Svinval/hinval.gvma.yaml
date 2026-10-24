@@ -27,6 +27,18 @@ access:
   u: never
   vs: never
   vu: never
+access_detail: |
+  `hinval.gvma` is accessible from M-mode and HS-mode.
+  In HS-mode, access is further controlled by `mstatus.TVM`:
+
+  [%autowidth]
+  |===
+  | [.rotate]#`mstatus.TVM`# | `hinval.gvma` in HS-mode
+  | 0 | executes
+  | 1 | `Illegal Instruction`
+  |===
+
+  VS-mode and VU-mode always raise a `Virtual Instruction` exception.
 assembly: xs1, xs2
 operation(): |
   XReg gpa = X[xs1];

@@ -1,0 +1,106 @@
+---
+title: Inst Schema (v0.3)
+sidebar_label: Inst Schema
+custom_edit_url: null
+# This file is auto-generated from inst_schema.json
+# Do not edit manually - run `bin/chore gen schema-docs` to regenerate
+---
+
+
+import AnchorOpenDetails from '@site/src/components/AnchorOpenDetails';
+
+<AnchorOpenDetails />
+
+# Inst Schema
+
+<span class="badge badge--secondary">v0.3</span>
+
+<br />
+
+:::note Auto-generated
+This page is generated from [`inst_schema.json`](https://github.com/riscv/riscv-unified-db/blob/main/spec/schemas/inst_schema.json) by the [schema doc generator](https://github.com/riscv/riscv-unified-db/blob/main/tools/internal-gems/schema_doc_gen/lib/schema_doc_gen.rb). To update this page, edit the schema file and run `bin/chore gen schema-docs`.
+:::
+
+
+## Schema Structure
+
+This schema requires **all of** the following:
+
+- (Complex type)
+
+
+## Definitions
+
+<details>
+<summary><a id="fully-resolved-opcodes"></a><strong><code>fully_resolved_opcodes</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `location` | `schema_defs.json#/$defs/field_location` | ✓ |  |
+| `display_name` | `string` | ✓ | field name, displayed in encoding drawings |
+| `value` | One of: An integer, either native to JSON or a number-like string \| `object` | ✓ |  |
+| `$child_of` | One of: `string` \| Array&lt;`string`&gt; |  |  |
+
+</details>
+
+<details>
+<summary><a id="fully-resolved-variables"></a><strong><code>fully_resolved_variables</code></strong></summary>
+
+
+</details>
+
+<details>
+<summary><a id="fully-resolved-format"></a><strong><code>fully_resolved_format</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="old-encoding"></a><strong><code>old_encoding</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `match` | One of: `string` \| `string` \| `string` |  |  |
+| `variables` | Array&lt;[`field`](#field)&gt; |  |  |
+| `additionalProperties` | `never` |  |  |
+
+</details>
+
+<details>
+<summary><a id="type"></a><strong><code>type</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$ref` | `string` | ✓ | Reference to an instruction type definition |
+
+</details>
+
+<details>
+<summary><a id="subtype"></a><strong><code>subtype</code></strong></summary>
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `$ref` | `string` | ✓ | Reference to an instruction subtype definition |
+
+</details>
+
+<details>
+<summary><a id="variable-metadata"></a><strong><code>variable_metadata</code></strong></summary>
+
+</details>
+
+<details>
+<summary><a id="field"></a><strong><code>field</code></strong> — Decode field</summary>
+
+Decode field
+
+
+</details>
+
+
+
+## Schema Information
+
+| Property | Value |
+|----------|-------|
+| Version | `v0.3` |
+| JSON Schema Version | [Draft 07](https://json-schema.org/draft-07) |
