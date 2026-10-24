@@ -1,0 +1,36 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MSTATEEN0_P1P13_TYPE
+description: |
+  Behavior of the `mstateen0.P1P13` bit, which controls access to `hedelegh`:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+
+  `hedelegh` exists only when the hypervisor extension is implemented and HS-mode
+  can run with XLEN=32 (SXLEN includes 32). Otherwise, `mstateen0.P1P13` is read-only
+  zero and this parameter does not exist.
+long_name: Behavior of mstateen0.P1P13
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+definedBy:
+  allOf:
+    - param:
+        name: SXLEN
+        includes: 32
+    - extension:
+        allOf:
+          - name: H
+          - name: Smstateen
+          - name: S
+            version: ">= 1.13"

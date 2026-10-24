@@ -20,18 +20,50 @@ schema:
     - read-only-0
     - read-only-1
 requirements:
-  idl(): |
-    MSTATEEN_JVT_TYPE == "read-only-0" -> SSTATEEN_JVT_TYPE == "read-only-0";
-    MSTATEEN_JVT_TYPE == "read-only-1" -> SSTATEEN_JVT_TYPE == "read-only-1";
-
-    HSTATEEN_JVT_TYPE == "read-only-0" -> SSTATEEN_JVT_TYPE == "read-only-0";
-    HSTATEEN_JVT_TYPE == "read-only-1" -> SSTATEEN_JVT_TYPE == "read-only-1";
-  reason: |
-    SSTATEEN cannot have more options that MSTATEEN
-
-    SSTATEEN cannot have more options that HSTATEEN
+  allOf:
+    # sstateen0.JVT is read-only zero when mstateen0.JVT is read-only zero
+    - if:
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: MSTATEEN_JVT_TYPE
+              equal: read-only-0
+      then:
+        param:
+          name: SSTATEEN_JVT_TYPE
+          equal: read-only-0
+    # sstateen0.JVT cannot be read-only one unless mstateen0.JVT is read-only one
+    - if:
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: SSTATEEN_JVT_TYPE
+              equal: read-only-1
+      then:
+        param:
+          name: MSTATEEN_JVT_TYPE
+          equal: read-only-1
+    # when H is implemented, sstateen0.JVT cannot be read-only one unless hstateen0.JVT is read-only one
+    - if:
+        allOf:
+          - extension:
+              name: H
+          - param:
+              name: SSTATEEN_JVT_TYPE
+              equal: read-only-1
+      then:
+        param:
+          name: HSTATEEN_JVT_TYPE
+          equal: read-only-1
 definedBy:
-  extension:
-    allOf:
-      - name: Zcmt
-      - name: Ssstateen
+  allOf:
+    - extension:
+        name: Zcmt
+    - extension:
+        name: S
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen

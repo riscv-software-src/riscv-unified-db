@@ -1,0 +1,57 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: HSTATEEN0_FCSR_TYPE
+description: |
+  Behavior of the `hstateen0.FCSR` bit:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+long_name: Behavior of hstateen0.FCSR
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+requirements:
+  allOf:
+    # hstateen0.FCSR is read-only zero when mstateen0.FCSR is read-only zero
+    - if:
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: MSTATEEN0_FCSR_TYPE
+              equal: read-only-0
+      then:
+        param:
+          name: HSTATEEN0_FCSR_TYPE
+          equal: read-only-0
+    # hstateen0.FCSR cannot be read-only one unless mstateen0.FCSR is read-only one
+    - if:
+        allOf:
+          - extension:
+              name: Smstateen
+          - param:
+              name: HSTATEEN0_FCSR_TYPE
+              equal: read-only-1
+      then:
+        param:
+          name: MSTATEEN0_FCSR_TYPE
+          equal: read-only-1
+definedBy:
+  allOf:
+    - extension:
+        name: Zfinx
+    - extension:
+        name: H
+    - extension:
+        anyOf:
+          - name: Smstateen
+          - name: Ssstateen

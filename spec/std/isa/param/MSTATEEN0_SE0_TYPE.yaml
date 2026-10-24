@@ -1,0 +1,65 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MSTATEEN0_SE0_TYPE
+description: |
+  Behavior of the `mstateen0.SE0`, which controls access to
+  `hstateen0`, `hstateen0h`, and `sstateen0`:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+
+  `mstateen0.SE0` may be read-only zero only if the hypervisor extension is not
+  implemented and `sstateen0` is all read-only zeros.
+long_name: Behavior of mstateen0.SE0
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+requirements:
+  allOf:
+    # mstateen0.SE0 cannot be read-only zero when H is implemented
+    - if:
+        extension:
+          name: H
+      then:
+        param:
+          name: MSTATEEN0_SE0_TYPE
+          notEqual: read-only-0
+    # mstateen0.SE0 can be read-only zero only if sstateen0 is all read-only zeros
+    - if:
+        allOf:
+          - extension:
+              name: S
+          - param:
+              name: MSTATEEN0_SE0_TYPE
+              equal: read-only-0
+      then:
+        allOf:
+          - param:
+              name: SSTATEEN0_C_TYPE
+              equal: read-only-0
+          - if:
+              extension:
+                name: Zfinx
+            then:
+              param:
+                name: SSTATEEN0_FCSR_TYPE
+                equal: read-only-0
+          - if:
+              extension:
+                name: Zcmt
+            then:
+              param:
+                name: SSTATEEN_JVT_TYPE
+                equal: read-only-0
+definedBy:
+  extension:
+    name: Smstateen

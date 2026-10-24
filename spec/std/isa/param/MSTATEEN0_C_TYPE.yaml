@@ -1,0 +1,26 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MSTATEEN0_C_TYPE
+description: |
+  Behavior of the `mstateen0.C` bit, which controls access to any and all custom state:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+
+  An implementation with no custom state must set this to 'read-only-0'.
+long_name: Behavior of mstateen0.C
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+definedBy:
+  extension:
+    name: Smstateen

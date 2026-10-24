@@ -1,0 +1,39 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/param_schema.json
+
+$schema: param_schema.json#
+kind: parameter
+name: MSTATEEN3_SE0_TYPE
+long_name: Behavior of mstateen3.SE0
+description: |
+  Behavior of the `mstateen3.SE0`, which controls access to
+  `hstateen3`, `hstateen3h`, and `sstateen3`:
+
+    * 'rw': read-write
+    * 'read-only-0': read-only, fixed to 0
+    * 'read-only-1': read-only, fixed to 1
+
+  `mstateen3.SE0` may be read-only zero only if the hypervisor extension is not
+  implemented and `sstateen3` is all read-only zeros.
+  No bits of `sstateen3` are currently defined, so only the hypervisor
+  condition applies.
+schema:
+  type: string
+  enum:
+    - rw
+    - read-only-0
+    - read-only-1
+definedBy:
+  extension:
+    name: Smstateen
+requirements:
+  # mstateen3.SE0 cannot be read-only zero when H is implemented
+  if:
+    extension:
+      name: H
+  then:
+    param:
+      name: MSTATEEN3_SE0_TYPE
+      notEqual: read-only-0
