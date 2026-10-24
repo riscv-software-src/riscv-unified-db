@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmadc.vx
-long_name: "Vector multiply-add with carry and scalar"
+long_name: "Vector add with carry-out and scalar"
 description: |
-  Performs multiply-add operation on elements from vector register vs2 and scalar register xs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+  Adds the source operands vs2 and xs1 and writes the resulting carry-out back to mask register vd. This is the unmasked form (vm=1), so there is no carry-in.
 definedBy:
   extension:
     name: Zvl32b

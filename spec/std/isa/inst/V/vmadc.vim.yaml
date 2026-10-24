@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmadc.vim
-long_name: "Vector multiply-add with carry and masked"
+long_name: "Vector add with carry-in and carry-out, immediate"
 description: |
-  Performs multiply-add operation on elements from vector register vs2 and immediate value, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+  Adds the source operands vs2 and imm and the carry-in, and writes the resulting carry-out back to mask register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 definedBy:
   extension:
     name: Zvl32b
