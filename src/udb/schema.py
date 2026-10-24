@@ -10,7 +10,7 @@ import re
 from collections.abc import Mapping
 from copy import deepcopy
 from os import PathLike
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -42,6 +42,7 @@ class SchemaStore:
             raise SchemaError(f"Schema directory does not exist: {schema_root}")
         self._root = schema_root
         self._versions: dict[str, str] | None = None
+        self._schemas: dict[str, dict[str, Any]] | None = None
         self._registry: Registry[Any] | None = None
         self._validators: dict[str, Draft7Validator] = {}
 
@@ -97,11 +98,28 @@ class SchemaStore:
                 f"{source_name}: schema validation failed against {versioned_uri!r}: {details}"
             )
 
+    def resolved_schemas(self, *, base_url: str) -> Mapping[PurePosixPath, Mapping[str, Any]]:
+        """Return publishable schemas keyed by their versioned relative paths."""
+        if not isinstance(base_url, str) or not base_url.strip():
+            raise SchemaError("Schema publication base URL must be a non-empty string")
+        self._load()
+        assert self._versions is not None
+        assert self._schemas is not None
+        prefix = base_url.rstrip("/")
+        result: dict[PurePosixPath, Mapping[str, Any]] = {}
+        for filename in sorted(self._versions):
+            version = self._versions[filename]
+            schema = deepcopy(self._schemas[filename])
+            schema["$id"] = f"{prefix}/{filename}/{version}/{filename}"
+            result[PurePosixPath(filename, version, filename)] = schema
+        return result
+
     def _load(self) -> None:
         if self._registry is not None:
             return
 
         versions: dict[str, str] = {}
+        schemas: dict[str, dict[str, Any]] = {}
         resources: list[tuple[str, Resource[Any]]] = []
         schema_files = sorted(
             (
@@ -135,6 +153,7 @@ class SchemaStore:
                         f"{schema_file}: '$id' must be a version such as 'v0.1', not {identifier!r}"
                     )
                 versions[schema_file.name] = identifier
+                schemas[schema_file.name] = deepcopy(schema)
 
             normalized_schema = deepcopy(schema)
             normalized_schema["$id"] = f"{_BASE_URI}{schema_file.name}"
@@ -159,6 +178,7 @@ class SchemaStore:
                 )
 
         self._versions = versions
+        self._schemas = schemas
         self._registry = Registry().with_resources(resources)
 
     def _validator(self, uri: str) -> Draft7Validator:

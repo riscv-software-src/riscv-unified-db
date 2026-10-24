@@ -78,6 +78,30 @@ For lower-level validation, use `SchemaStore(db.schemas_root).validate(record, s
 schema URI with the bundled version prefix. This is an explicit operation for consumers that
 serialize records; querying and validation leave the record's original `$schema` unchanged.
 
+Resolved data can be written as a deterministic YAML tree:
+
+```python
+resolved = Database.bundled().resolve(validate=True)
+resolved.write("build/resolved-isa")
+```
+
+The output keeps source-relative document paths, writes sorted `index.yaml` and `index.json`
+manifests, removes documents made stale by its previous manifest, and records versioned schema URIs
+when the database has an associated schema store, without changing the in-memory database.
+Repeated writes of the same semantic data are byte-identical. The serializer rejects absolute
+`$source` values because checkout-specific paths would make the artifact non-portable.
+Serialization errors identify the logical document and JSON Pointer containing the unsupported
+value. A private ownership manifest records hashes so a later write cannot silently delete a stale
+file that a user changed.
+
+`write_config(mapping, path)` provides the same canonical YAML or JSON encoding for configuration
+mappings. It does not add a `$source` field. `write_resolved_schemas(SchemaStore(...), output)`
+publishes schemas beneath `<schema-name>/<version>/<schema-name>` and replaces each `$id` with its
+canonical publication URL. Published schema JSON preserves source member order so existing
+same-version artifacts remain byte-identical to Ruby output. `dumps_yaml()` and `dumps_json()`
+expose the canonical encoders for callers that own their output stream; generic JSON sorts mapping
+keys, while YAML preserves scalar key types and quotes strings that YAML 1.1 would misinterpret.
+
 The package also installs a small command-line interface for inspecting raw records:
 
 ```shell
@@ -88,6 +112,8 @@ udb --resolved show profile RVI20U64
 udb --resolved --validate show profile RVI20U64
 udb --resolved --overlay my-isa-overlay show profile RVI20U64
 udb --path my-isa --schemas my-schemas --resolved --validate show extension Xdemo
+udb --path my-isa --schemas my-schemas --validate resolve build/resolved-isa
+udb --schemas my-schemas schemas build/schemas
 ```
 
 The same commands are available through `python -m udb`.
