@@ -11,17 +11,18 @@ $ ./profile_extensions [--profiles P1[,P2]] $UDB_ROOT/gen/resolved_spec/_
 """
 
 import argparse
+from collections.abc import Sequence
 
-import udb
+from udb import Database
 
 
-def main() -> None:
+def main(argv: Sequence[str] | None = None) -> None:
     """List extensions associated with profiles."""
 
     parser = argparse.ArgumentParser(description="List extensions associated with profiles")
     parser.add_argument("-p", "--profiles")
-    parser.add_argument("paths", nargs="*", default=".")
-    params = parser.parse_args()
+    parser.add_argument("paths", nargs="*", default=["."])
+    params = parser.parse_args(argv)
 
     profiles_filter = []
     if params.profiles is not None:
@@ -29,23 +30,19 @@ def main() -> None:
 
     profiles = []
     for path in params.paths:
-        profiles += udb.find_and_load_yaml(path, ["profile"])
+        profiles.extend(Database.from_path(path).profiles)
 
     for profile in sorted(profiles, key=lambda x: x["name"]):
         if (
             len(profiles_filter) == 0 or profile["name"] in profiles_filter
         ) and "extensions" in profile:
             print(f"{profile['name']}:")
-            if "$child_of" in profile["extensions"]:
-                del profile["extensions"]["$child_of"]
-            if "$parent_of" in profile["extensions"]:
-                del profile["extensions"]["$parent_of"]
-
             # convert extensions from dict to array to facilitate sorting by closure
             extensions = []
-            for extension in profile["extensions"]:
-                profile["extensions"][extension]["name"] = extension
-                extensions.append(profile["extensions"][extension])
+            for extension, details in profile["extensions"].items():
+                if extension.startswith("$"):
+                    continue
+                extensions.append({**details, "name": extension})
 
             for extension in sorted(extensions, key=lambda x: f"{x['presence']},{x['name']}"):
                 version = "any"
