@@ -8,7 +8,7 @@ kind: instruction
 name: vwmaccsu.vv
 long_name: "Vector widening signed-unsigned multiply-add"
 description: |
-  Performs widening signed-unsigned multiplication on elements from vector registers vs2 (signed) and vs1 (unsigned), adds the result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
+  Performs widening signed-unsigned multiplication on elements from vector registers vs2 (unsigned) and vs1 (signed), adds the result to elements from vector register vd, and stores the final results in vector register vd, using vector mask vm.
 definedBy:
   extension:
     name: Zvl32b

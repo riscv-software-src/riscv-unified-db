@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsaddu.vx
-long_name: "Vector signed addition with scalar"
+long_name: "Vector unsigned addition with scalar"
 description: |
-  Performs signed addition on elements from vector register vs2 and scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation follows standard signed arithmetic rules.
+  Performs unsigned addition on elements from vector register vs2 and scalar register xs1 and stores results in vector register vd, using vector mask vm. The operation follows standard unsigned arithmetic rules.
 definedBy:
   extension:
     name: Zvl32b
