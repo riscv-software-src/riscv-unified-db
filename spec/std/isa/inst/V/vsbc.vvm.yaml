@@ -8,7 +8,7 @@ kind: instruction
 name: vsbc.vvm
 long_name: "Vector subtract with borrow and masked"
 description: |
-  Performs subtraction on elements from vector registers vs2 and vs1, subtracts the borrow-in from vector register vs3, and stores results in vector register vd, using vector mask vm.
+  Subtracts the source operands (vs2 - vs1) and the borrow-in, and writes the result to vector register vd. The borrow-in comes from the implicit v0 register.
 definedBy:
   extension:
     name: Zvl32b

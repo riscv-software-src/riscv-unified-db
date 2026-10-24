@@ -8,7 +8,7 @@ kind: instruction
 name: vadc.vvm
 long_name: "Vector add with carry and masked"
 description: |
-  Performs addition on elements from vector registers vs2 and vs1, adds the carry-in from vector register vs3, and stores results in vector register vd, using vector mask vm. This variant includes additional masking behavior.
+  Adds the source operands vs2 and vs1 and the carry-in, and writes the result to vector register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
 definedBy:
   extension:
     name: Zvl32b
