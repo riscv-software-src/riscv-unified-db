@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmadc.vxm
-long_name: "Vector add with carry-in and carry-out, scalar"
+long_name: "Vector integer add-with-carry-in-out scalar"
 description: |
-  Adds the source operands vs2 and xs1 and the carry-in, and writes the resulting carry-out back to mask register vd. The carry-in comes from the implicit v0 register. This variant includes additional masking behavior.
+  Add each element from vector register vs2 to the scalar register xs1 and the respective carry-in from vector register v0, and write the respective carry-out to mask register vd. `vd.mask[i] = carry_out(vs2[i] + x[xs1] + v0.mask[i])`
 definedBy:
   extension:
     name: Zvl32b

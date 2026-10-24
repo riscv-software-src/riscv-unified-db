@@ -6,7 +6,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmsbc.vxm
-long_name: No synopsis available
+long_name: "Vector integer subtract-with-borrow-in-out scalar"
 description: |
   No description available.
 definedBy:

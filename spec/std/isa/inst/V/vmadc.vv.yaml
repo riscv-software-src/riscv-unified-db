@@ -6,9 +6,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vmadc.vv
-long_name: "Vector add with carry-out"
+long_name: "Vector integer add-with-carry-out vector"
 description: |
-  Adds the source operands vs2 and vs1 and writes the resulting carry-out back to mask register vd. This is the unmasked form (vm=1), so there is no carry-in.
+  Add each element from vector register vs2 to the respective element from vector register vs1, and write the respective carry-out to mask register vd. There is no carry-in. `vd.mask[i] = carry_out(vs2[i] + vs1[i])`
 definedBy:
   extension:
     name: Zvl32b
