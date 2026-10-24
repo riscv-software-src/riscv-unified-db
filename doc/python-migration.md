@@ -7,7 +7,7 @@
 | Migration planning and repository inventory | Complete |
 | Stage 1: packaged source database and raw API | Complete locally; CI pending |
 | Stage 2a: YAML inheritance and overlays | Complete locally; CI pending |
-| Stage 2b: schema validation | Implemented separately; integration pending |
+| Stage 2b: schema validation | Complete locally; CI pending |
 | Stage 2c: layout authoring, serialization, and remaining resolution work | Pending |
 | Stage 3: versions, configurations, conditions, and solving | Pending |
 | Stage 4: IDL compiler and semantic passes | Pending |
@@ -51,7 +51,7 @@ These are local branches until publication of the PR stack.
 | --- | --- | --- |
 | `migration/python-01-package` | `main` | Installable standard database and raw API |
 | `migration/python-02-resolution` | `migration/python-01-package` | Inheritance, overlays, and profile-report cutover |
-| `migration/python-03-schema` (next) | `migration/python-02-resolution` | Offline schema validation |
+| `migration/python-03-schema` | `migration/python-02-resolution` | Offline schema validation |
 
 The migration is organized by capabilities that can be integrated and tested,
 not by the current gem boundaries. The Ruby code remains the behavioral oracle
@@ -643,3 +643,28 @@ system-installed native dependencies used by UDB itself.
 - Schema defaults are annotations, not values inserted by this resolver.
   Stage 2b adds explicit schema validation; layout generation, serialization,
   source spans, and the remaining Stage 2 authoring workflow are still pending.
+
+### 2026-09-29: Stage 2b offline schema validation
+
+- Added an instance-scoped Draft 7 schema store, explicit validation through
+  `resolve(validate=True)` and `ResolvedDatabase.validate()`, and CLI options
+  for validation and a custom schema directory.
+- Validation resolves only registered local schemas, checks schema versions,
+  preserves input records, and never inserts defaults. The in-memory record
+  retains its original `$schema`; `SchemaStore.versioned_uri()` provides
+  version stamping for the later serializer. Ruby's on-disk URI rewrite is
+  therefore deferred with serialization rather than copied into the query API.
+- Passed all 92 Python tests with the live Ruby differential enabled. All
+  2,306 resolved standard documents pass schema validation. Ruff, formatting,
+  and diff checks passed.
+- Fresh wheel and isolated-sdist installations passed offline after caching
+  the declared dependencies. Both installed copies resolved and validated all
+  standard records and exercised the CLI from outside the checkout with Ruby
+  and Git absent from `PATH`.
+- Added the ninth confirmed Ruby defect to the running log: the repository's
+  pinned JSON library silently merges distinct YAML keys that stringify to
+  the same JSON name. Python rejects those ambiguous inputs.
+- Full repository regression and remote platform CI remain pending. The next
+  Stage 2 chunk covers deterministic resolved output, provenance/source spans,
+  and replacing Ruby layout generation; configurations and IDL remain later
+  stages.

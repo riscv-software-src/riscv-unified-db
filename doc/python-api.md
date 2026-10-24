@@ -59,6 +59,25 @@ and `$parent_of` record inheritance relationships. Data `$ref` links remain refe
 not expanded. Resolution does not apply schema defaults, choose extension versions, evaluate
 configurations or conditions, or compile IDL. It does not yet provide a configured architecture.
 
+Schema validation is explicit and uses only local or bundled Draft 7 schemas:
+
+```python
+validated = db.resolve(validate=True)
+validated.validate()  # also available on an existing resolved database
+
+custom_source = Database.from_path("my-isa", schemas_path="my-schemas")
+custom_source.resolve(validate=True)
+```
+
+Validation checks every resolved document and reports its source path and failing field. Missing
+schemas and schema-version mismatches are errors. It does not insert `default` values or change
+records. Ambiguous YAML keys that would collapse to the same JSON key are rejected.
+
+For lower-level validation, use `SchemaStore(db.schemas_root).validate(record, source="name.yaml")`.
+`SchemaStore` is exported from `udb`; its `versioned_uri("ext_schema.json#")` method returns the
+schema URI with the bundled version prefix. This is an explicit operation for consumers that
+serialize records; querying and validation leave the record's original `$schema` unchanged.
+
 The package also installs a small command-line interface for inspecting raw records:
 
 ```shell
@@ -66,7 +85,9 @@ udb list extension
 udb show extension Zvkg
 udb --path spec/std/isa list extension
 udb --resolved show profile RVI20U64
+udb --resolved --validate show profile RVI20U64
 udb --resolved --overlay my-isa-overlay show profile RVI20U64
+udb --path my-isa --schemas my-schemas --resolved --validate show extension Xdemo
 ```
 
 The same commands are available through `python -m udb`.
